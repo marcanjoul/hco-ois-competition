@@ -376,6 +376,7 @@ html, body {
   transition: border-color 0.15s;
   -webkit-appearance: none;
   appearance: none;
+  cursor: text;
 }
 
 .log-input:focus { border-color: var(--accent); }
@@ -690,6 +691,180 @@ select.log-input { cursor: pointer; }
   letter-spacing: 2px;
   color: var(--text2);
   cursor: pointer;
+}
+
+.scope-toggle {
+  flex: 1;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text2);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.5px;
+}
+
+.scope-toggle.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.admin-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-log-item {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-log-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-log-item-day {
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--text);
+  flex: 1;
+}
+
+.admin-log-item-comp {
+  font-size: 0.7rem;
+  color: var(--text3);
+  margin-left: 8px;
+}
+
+.admin-log-item-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+.admin-log-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-log-detail-label {
+  color: var(--text3);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.admin-log-detail-value {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.admin-log-item-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-log-item-actions button {
+  flex: 1;
+  padding: 8px 8px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.admin-edit-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.admin-delete-btn:hover {
+  border-color: #e53e3e;
+  color: #e53e3e;
+}
+
+.admin-log-item.editing {
+  background: var(--surface);
+  border-color: var(--accent);
+}
+
+.admin-log-item-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-log-item-edit-form .log-fields {
+  margin: 0;
+  gap: 8px;
+}
+
+.admin-log-item-edit-form .log-input {
+  padding: 10px 12px;
+  font-size: 0.9rem;
+}
+
+.admin-log-item-edit-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-log-item-edit-actions button {
+  flex: 1;
+  padding: 8px 8px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.admin-log-save-btn {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+}
+
+.admin-log-cancel-btn:hover {
+  border-color: var(--text3);
+  color: var(--text3);
+}
+
+.admin-log-empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--text3);
+  font-size: 0.8rem;
+}
+
+.admin-create-form {
+  background: var(--bg) !important;
+  border: 2px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
 }
 
 /* ── Toast ── */

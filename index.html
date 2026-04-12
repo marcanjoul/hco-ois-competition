@@ -127,7 +127,7 @@
       <div class="modal-title">🔐 ADMIN</div>
       <div id="admin-pin-wrap">
         <p class="modal-sub">Enter your PIN to continue</p>
-        <input type="password" id="input-pin" class="log-input center" placeholder="••••" maxlength="4" inputmode="numeric" />
+        <input type="number" id="input-pin" class="log-input center" placeholder="1234" maxlength="4" inputmode="numeric" />
         <button class="log-btn" id="btn-pin-submit">UNLOCK</button>
         <p class="pin-error hidden" id="pin-error">Wrong PIN, bestie 😬</p>
       </div>
@@ -149,21 +149,40 @@
           </div>
         </div>
         <div class="admin-section">
-          <div class="admin-section-title">EDIT A LOG</div>
-          <p class="modal-sub" style="margin-top:0">Select employee → day → update values</p>
-          <select id="admin-edit-emp" class="log-input"></select>
-          <select id="admin-edit-day" class="log-input" style="margin-top:8px"></select>
-          <div class="log-fields" style="margin-top:8px">
-            <div class="log-field-wrap">
-              <label class="field-label">SALES ($)</label>
-              <input type="number" id="admin-edit-sales" class="log-input" placeholder="0.00" />
+          <div class="admin-section-title">VIEW/EDIT LOGS</div>
+          <p class="modal-sub" style="margin-top:0">Select employee to view all logs</p>
+          <select id="admin-view-emp" class="log-input"></select>
+
+          <div class="admin-create-form" style="margin-top:14px; padding:12px; background:var(--bg); border-radius:10px; border:2px solid var(--border)">
+            <p class="modal-sub" style="margin-top:0">Create new log for selected employee</p>
+            <div class="log-fields">
+              <div class="log-field-wrap">
+                <label class="field-label">COMPETITION</label>
+                <select id="admin-create-comp" class="log-input"></select>
+              </div>
+              <div class="log-field-wrap">
+                <label class="field-label">DAY</label>
+                <select id="admin-create-day" class="log-input"></select>
+              </div>
             </div>
-            <div class="log-field-wrap">
-              <label class="field-label">HOURS</label>
-              <input type="number" id="admin-edit-hours" class="log-input" placeholder="0.0" />
+            <div class="log-fields">
+              <div class="log-field-wrap">
+                <label class="field-label">SALES ($)</label>
+                <input type="number" id="admin-create-sales" class="log-input" placeholder="0.00" min="0" step="0.01" />
+              </div>
+              <div class="log-field-wrap">
+                <label class="field-label">HOURS</label>
+                <input type="number" id="admin-create-hours" class="log-input" placeholder="0.0" min="0" step="0.5" />
+              </div>
             </div>
+            <button class="log-btn" id="btn-admin-create-log" style="margin-top:8px">CREATE LOG</button>
           </div>
-          <button class="log-btn" id="btn-admin-save-log" style="margin-top:10px">SAVE LOG</button>
+
+          <div style="margin-top:12px; display:flex; gap:8px">
+            <button class="scope-toggle active" id="scope-current" data-scope="current">Current Comp</button>
+            <button class="scope-toggle" id="scope-all" data-scope="all">All Comps</button>
+          </div>
+          <div id="admin-log-list" class="admin-log-list" style="margin-top:14px;max-height:300px;overflow-y:auto"></div>
         </div>
         <button class="close-btn" id="btn-admin-close">DONE</button>
       </div>
