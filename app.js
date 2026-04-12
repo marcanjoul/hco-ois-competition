@@ -1,0 +1,652 @@
+// ╔══════════════════════════════════════════════════╗
+// ║           ORDER WARS — app.js                    ║
+// ║  Paste your Firebase config below (Step 1)       ║
+// ║  Add your employees below (Step 2)               ║
+// ╚══════════════════════════════════════════════════╝
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue, update, remove }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ─────────────────────────────────────────────────────
+// STEP 1 ▸ Paste your Firebase config object here
+// ─────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_apiKey_HERE",
+  authDomain: "PASTE_YOUR_authDomain_HERE",
+  databaseURL: "PASTE_YOUR_databaseURL_HERE",
+  projectId: "PASTE_YOUR_projectId_HERE",
+  storageBucket: "PASTE_YOUR_storageBucket_HERE",
+  messagingSenderId: "PASTE_YOUR_messagingSenderId_HERE",
+  appId: "PASTE_YOUR_appId_HERE"
+};
+
+// ─────────────────────────────────────────────────────
+// STEP 2 ▸ Add your employee names here
+// ─────────────────────────────────────────────────────
+const DEFAULT_EMPLOYEES = [
+  "Employee 1",
+  "Employee 2",
+  "Employee 3",
+  // Add more names here...
+];
+
+// ─────────────────────────────────────────────────────
+// STEP 3 ▸ Set your admin PIN here
+// ─────────────────────────────────────────────────────
+const ADMIN_PIN = "1234"; // Change this!
+
+// ══════════════════════════════════════════════════════
+// App init
+// ══════════════════════════════════════════════════════
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getDatabase(firebaseApp);
+
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+// ── State ──────────────────────────────────────────
+let state = {
+  competitions: {},   // { compId: { name, createdAt } }
+  employees: {},      // { empId: { name } }
+  logs: {},           // { compId: { empId: { Mon: {sales, hours}, ... } } }
+  currentComp: null,
+  currentUser: null,
+  selectedDay: DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1],
+};
+
+// ── Firebase refs ───────────────────────────────────
+const dbRef = {
+  comps: () => ref(db, "competitions"),
+  comp: (id) => ref(db, `competitions/${id}`),
+  emps: () => ref(db, "employees"),
+  emp: (id) => ref(db, `employees/${id}`),
+  logs: () => ref(db, "logs"),
+  compLogs: (cId) => ref(db, `logs/${cId}`),
+  empLog: (cId, eId) => ref(db, `logs/${cId}/${eId}`),
+  dayLog: (cId, eId, day) => ref(db, `logs/${cId}/${eId}/${day}`),
+};
+
+// ══════════════════════════════════════════════════════
+// Bootstrap — seed employees & first competition
+// ══════════════════════════════════════════════════════
+async function bootstrap() {
+  const [empSnap, compSnap] = await Promise.all([
+    get(dbRef.emps()),
+    get(dbRef.comps()),
+  ]);
+
+  // Seed employees if empty
+  if (!empSnap.exists()) {
+    const empUpdates = {};
+    DEFAULT_EMPLOYEES.forEach(name => {
+      const id = slugify(name);
+      empUpdates[id] = { name };
+    });
+    await update(dbRef.emps(), empUpdates);
+  }
+
+  // Seed first competition if empty
+  if (!compSnap.exists()) {
+    const id = `comp_${Date.now()}`;
+    await set(dbRef.comp(id), { name: "Week 1", createdAt: Date.now() });
+  }
+}
+
+function slugify(str) {
+  return str.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
+}
+
+// ══════════════════════════════════════════════════════
+// Realtime listeners
+// ══════════════════════════════════════════════════════
+function startListeners() {
+  onValue(dbRef.comps(), snap => {
+    state.competitions = snap.val() || {};
+    if (!state.currentComp) {
+      // Default to most recent comp
+      const ids = Object.keys(state.competitions);
+      if (ids.length) state.currentComp = ids[ids.length - 1];
+    }
+    renderPickScreen();
+    renderAdminComps();
+  });
+
+  onValue(dbRef.emps(), snap => {
+    state.employees = snap.val() || {};
+    renderPickScreen();
+    renderAdminEmps();
+    renderAdminEditSelects();
+  });
+
+  onValue(dbRef.logs(), snap => {
+    state.logs = snap.val() || {};
+    renderPickScreen();
+    if (state.currentUser) {
+      renderDash();
+      renderBoard();
+      renderAllTime();
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// Vibe phrases
+// ══════════════════════════════════════════════════════
+function getVibe(sph, total, hasLogs) {
+  if (!hasLogs) return { emoji: "👋", text: "Tap 'Log It' to get on the board. Let's go!" };
+  if (sph >= 200) return { emoji: "🔥", text: "BRO. You're literally on fire rn. Unreal numbers." };
+  if (sph >= 150) return { emoji: "💰", text: "Okay bestie, you're EATING. Keep that energy up." };
+  if (sph >= 100) return { emoji: "⚡", text: "Solid numbers. You're built different fr." };
+  if (sph >= 60)  return { emoji: "📈", text: "Not bad at all! Push a little harder and you're top 3." };
+  if (sph >= 30)  return { emoji: "🤔", text: "You got this, but the board is calling your name. Wake up!" };
+  return { emoji: "😬", text: "Bestie... we need to talk. Grind time." };
+}
+
+function getBigOrderReaction(amount) {
+  if (amount >= 500) return `💀 $${amount.toFixed(0)} ORDER?! They said take their whole wallet!`;
+  if (amount >= 300) return `🤑 $${amount.toFixed(0)} — okay they did NOT have to go that hard!`;
+  if (amount >= 200) return `🔥 $${amount.toFixed(0)} — sheesh! You're out here COLLECTING.`;
+  if (amount >= 100) return `💪 $${amount.toFixed(0)} order just dropped. Keep stacking!`;
+  return null;
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER — Pick Screen
+// ══════════════════════════════════════════════════════
+function renderPickScreen() {
+  // Competition tabs
+  const tabsEl = document.getElementById("comp-tabs");
+  if (tabsEl) {
+    tabsEl.innerHTML = "";
+    Object.entries(state.competitions).forEach(([id, comp]) => {
+      const btn = document.createElement("button");
+      btn.className = `comp-tab${state.currentComp === id ? " active" : ""}`;
+      btn.textContent = comp.name;
+      btn.onclick = () => { state.currentComp = id; renderPickScreen(); };
+      tabsEl.appendChild(btn);
+    });
+  }
+
+  // Name grid — show rank pips
+  const grid = document.getElementById("name-grid");
+  if (!grid) return;
+  grid.innerHTML = "";
+
+  const ranked = getRankedPlayers(state.currentComp);
+
+  Object.entries(state.employees).forEach(([id, emp]) => {
+    const rank = ranked.findIndex(r => r.id === id);
+    const pip = rank === 0 ? "👑" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : "";
+    const btn = document.createElement("button");
+    btn.className = "name-btn";
+    btn.innerHTML = `${pip ? `<span class="rank-pip">${pip}</span>` : ""}${emp.name}`;
+    btn.onclick = () => enterAsDashboard(id);
+    grid.appendChild(btn);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// Enter dashboard as user
+// ══════════════════════════════════════════════════════
+function enterAsDashboard(empId) {
+  state.currentUser = empId;
+  showScreen("dash");
+  renderDash();
+  renderBoard();
+  renderAllTime();
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER — Dashboard
+// ══════════════════════════════════════════════════════
+function renderDash() {
+  const emp = state.employees[state.currentUser];
+  if (!emp) return;
+
+  document.getElementById("dash-name").textContent = emp.name.toUpperCase();
+  const comp = state.competitions[state.currentComp];
+  document.getElementById("dash-comp-badge").textContent = comp ? comp.name : "";
+
+  const myLogs = (state.logs[state.currentComp] || {})[state.currentUser] || {};
+  let totalSales = 0, totalHours = 0;
+  Object.values(myLogs).forEach(d => {
+    totalSales += d.sales || 0;
+    totalHours += d.hours || 0;
+  });
+  const sph = totalHours > 0 ? totalSales / totalHours : 0;
+  const hasLogs = Object.keys(myLogs).length > 0;
+
+  document.getElementById("stat-sph").textContent = `$${sph.toFixed(0)}`;
+  document.getElementById("stat-total").textContent = `$${totalSales.toFixed(0)}`;
+
+  // Rank
+  const ranked = getRankedPlayers(state.currentComp);
+  const myRank = ranked.findIndex(r => r.id === state.currentUser) + 1;
+  document.getElementById("stat-rank").textContent = myRank > 0 ? `#${myRank}` : "—";
+
+  // Vibe
+  const vibe = getVibe(sph, totalSales, hasLogs);
+  document.getElementById("vibe-emoji").textContent = vibe.emoji;
+  document.getElementById("vibe-text").textContent = vibe.text;
+
+  // Day selector
+  const dayRow = document.getElementById("day-row");
+  dayRow.innerHTML = "";
+  DAYS.forEach(d => {
+    const btn = document.createElement("button");
+    btn.className = `day-btn${state.selectedDay === d ? " active" : ""}`;
+    btn.textContent = d;
+    const hasEntry = myLogs[d] && (myLogs[d].sales > 0 || myLogs[d].hours > 0);
+    if (hasEntry) btn.textContent += " ✓";
+    btn.onclick = () => { state.selectedDay = d; renderDash(); };
+    dayRow.appendChild(btn);
+  });
+
+  // Pre-fill existing log for selected day
+  const existing = myLogs[state.selectedDay];
+  document.getElementById("input-sales").value = existing ? existing.sales || "" : "";
+  document.getElementById("input-hours").value = existing ? existing.hours || "" : "";
+
+  // History
+  const historyList = document.getElementById("history-list");
+  historyList.innerHTML = "";
+  const entries = Object.entries(myLogs);
+  if (entries.length === 0) {
+    historyList.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:16px">No logs yet this competition</p>`;
+  } else {
+    // Show in week order
+    DAYS.forEach(day => {
+      const log = myLogs[day];
+      if (!log) return;
+      const daySph = log.hours > 0 ? (log.sales / log.hours) : 0;
+      const item = document.createElement("div");
+      item.className = "history-item";
+      item.innerHTML = `
+        <div class="history-day">${day}</div>
+        <div class="history-info">
+          <div class="history-sales">$${(log.sales || 0).toFixed(2)}</div>
+          <div class="history-meta">${log.hours || 0} hrs worked</div>
+        </div>
+        <div class="history-sph">$${daySph.toFixed(0)}/hr</div>
+      `;
+      historyList.appendChild(item);
+    });
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER — Leaderboard
+// ══════════════════════════════════════════════════════
+function renderBoard() {
+  const comp = state.competitions[state.currentComp];
+  document.getElementById("board-comp-badge").textContent = comp ? comp.name : "";
+
+  const ranked = getRankedPlayers(state.currentComp);
+  const body = document.getElementById("board-body");
+  body.innerHTML = "";
+
+  if (ranked.length === 0) {
+    body.innerHTML = `<p style="color:var(--text3);text-align:center;padding:40px;font-size:0.85rem">No logs yet — be the first! 🔥</p>`;
+    return;
+  }
+
+  const topSph = ranked[0]?.sph || 1;
+
+  ranked.forEach((player, i) => {
+    const rankLabel = i === 0 ? "👑" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
+    const pct = topSph > 0 ? Math.max(4, (player.sph / topSph) * 100) : 4;
+    const card = document.createElement("div");
+    card.className = `board-card${i < 3 ? ` rank-${i + 1}` : ""}`;
+    card.style.animationDelay = `${i * 0.05}s`;
+    card.innerHTML = `
+      <div class="board-rank">${rankLabel}</div>
+      <div class="board-info">
+        <div class="board-name">${player.name}</div>
+        <div class="board-meta">$${player.total.toFixed(2)} total · ${player.hours.toFixed(1)} hrs</div>
+        <div class="board-bar-wrap"><div class="board-bar" style="width:${pct}%"></div></div>
+      </div>
+      <div>
+        <div class="board-sph" style="color:${i === 0 ? 'var(--accent)' : 'var(--text)'}">$${player.sph.toFixed(0)}</div>
+        <div class="board-sph-label">/HR</div>
+      </div>
+    `;
+    card.onclick = () => { state.currentUser = player.id; showScreen("dash"); renderDash(); };
+    body.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER — All-Time
+// ══════════════════════════════════════════════════════
+function renderAllTime() {
+  const body = document.getElementById("alltime-body");
+  body.innerHTML = "";
+
+  // Aggregate across ALL competitions
+  const totals = {};
+  Object.entries(state.employees).forEach(([id, emp]) => {
+    totals[id] = { id, name: emp.name, total: 0, hours: 0 };
+  });
+
+  Object.entries(state.logs).forEach(([compId, compLogs]) => {
+    Object.entries(compLogs || {}).forEach(([empId, empLogs]) => {
+      if (!totals[empId]) return;
+      Object.values(empLogs || {}).forEach(log => {
+        totals[empId].total += log.sales || 0;
+        totals[empId].hours += log.hours || 0;
+      });
+    });
+  });
+
+  const ranked = Object.values(totals)
+    .map(p => ({ ...p, sph: p.hours > 0 ? p.total / p.hours : 0 }))
+    .filter(p => p.total > 0 || p.hours > 0)
+    .sort((a, b) => b.sph - a.sph);
+
+  if (ranked.length === 0) {
+    body.innerHTML = `<p style="color:var(--text3);text-align:center;padding:40px;font-size:0.85rem">No all-time data yet. Start logging! 🏆</p>`;
+    return;
+  }
+
+  const topSph = ranked[0]?.sph || 1;
+
+  ranked.forEach((player, i) => {
+    const rankLabel = i === 0 ? "👑" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
+    const pct = topSph > 0 ? Math.max(4, (player.sph / topSph) * 100) : 4;
+    const card = document.createElement("div");
+    card.className = `board-card${i < 3 ? ` rank-${i + 1}` : ""}`;
+    card.style.animationDelay = `${i * 0.05}s`;
+    card.innerHTML = `
+      <div class="board-rank">${rankLabel}</div>
+      <div class="board-info">
+        <div class="board-name">${player.name}</div>
+        <div class="board-meta">$${player.total.toFixed(2)} total · ${player.hours.toFixed(1)} hrs all-time</div>
+        <div class="board-bar-wrap"><div class="board-bar" style="width:${pct}%"></div></div>
+      </div>
+      <div>
+        <div class="board-sph" style="color:${i === 0 ? 'var(--accent)' : 'var(--text)'}">$${player.sph.toFixed(0)}</div>
+        <div class="board-sph-label">/HR</div>
+      </div>
+    `;
+    body.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// Helper — get ranked players for a competition
+// ══════════════════════════════════════════════════════
+function getRankedPlayers(compId) {
+  const compLogs = (state.logs[compId] || {});
+  const players = Object.entries(state.employees).map(([id, emp]) => {
+    const empLogs = compLogs[id] || {};
+    let total = 0, hours = 0;
+    Object.values(empLogs).forEach(log => {
+      total += log.sales || 0;
+      hours += log.hours || 0;
+    });
+    const sph = hours > 0 ? total / hours : 0;
+    return { id, name: emp.name, total, hours, sph };
+  });
+  return players.sort((a, b) => b.sph - a.sph);
+}
+
+// ══════════════════════════════════════════════════════
+// Log entry
+// ══════════════════════════════════════════════════════
+async function logEntry() {
+  const sales = parseFloat(document.getElementById("input-sales").value);
+  const hours = parseFloat(document.getElementById("input-hours").value);
+
+  if (isNaN(sales) || sales < 0) { showToast("Enter a valid sales amount 💸"); return; }
+  if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked ⏱️"); return; }
+
+  await set(dbRef.dayLog(state.currentComp, state.currentUser, state.selectedDay), { sales, hours });
+
+  const reaction = getBigOrderReaction(sales);
+  if (reaction) {
+    showToast(reaction, 3500);
+    launchConfetti();
+  } else {
+    showToast("Logged! Keep grinding 💪");
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// Admin
+// ══════════════════════════════════════════════════════
+function renderAdminComps() {
+  const list = document.getElementById("admin-comp-list");
+  if (!list) return;
+  list.innerHTML = "";
+  Object.entries(state.competitions).forEach(([id, comp]) => {
+    const item = document.createElement("div");
+    item.className = "admin-item";
+    item.innerHTML = `<span class="admin-item-name">${comp.name}</span>`;
+    const del = document.createElement("button");
+    del.className = "del-btn";
+    del.textContent = "✕ Delete";
+    del.onclick = async () => {
+      if (confirm(`Delete "${comp.name}"? This removes all its logs too.`)) {
+        await remove(dbRef.comp(id));
+        await remove(dbRef.compLogs(id));
+        if (state.currentComp === id) state.currentComp = null;
+      }
+    };
+    item.appendChild(del);
+    list.appendChild(item);
+  });
+}
+
+function renderAdminEmps() {
+  const list = document.getElementById("admin-emp-list");
+  if (!list) return;
+  list.innerHTML = "";
+  Object.entries(state.employees).forEach(([id, emp]) => {
+    const item = document.createElement("div");
+    item.className = "admin-item";
+    item.innerHTML = `<span class="admin-item-name">${emp.name}</span>`;
+    const del = document.createElement("button");
+    del.className = "del-btn";
+    del.textContent = "✕ Remove";
+    del.onclick = async () => {
+      if (confirm(`Remove "${emp.name}" from the roster?`)) {
+        await remove(dbRef.emp(id));
+      }
+    };
+    item.appendChild(del);
+    list.appendChild(item);
+  });
+}
+
+function renderAdminEditSelects() {
+  const empSel = document.getElementById("admin-edit-emp");
+  const daySel = document.getElementById("admin-edit-day");
+  if (!empSel || !daySel) return;
+
+  empSel.innerHTML = "";
+  Object.entries(state.employees).forEach(([id, emp]) => {
+    const opt = document.createElement("option");
+    opt.value = id;
+    opt.textContent = emp.name;
+    empSel.appendChild(opt);
+  });
+
+  daySel.innerHTML = "";
+  DAYS.forEach(d => {
+    const opt = document.createElement("option");
+    opt.value = d;
+    opt.textContent = d;
+    daySel.appendChild(opt);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// Screen management
+// ══════════════════════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(`screen-${name}`).classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+// ══════════════════════════════════════════════════════
+// Toast
+// ══════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, duration = 2200) {
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.classList.remove("hidden");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.add("hidden"), duration);
+}
+
+// ══════════════════════════════════════════════════════
+// Confetti
+// ══════════════════════════════════════════════════════
+function launchConfetti() {
+  const canvas = document.getElementById("confetti-canvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const pieces = Array.from({ length: 80 }, () => ({
+    x: Math.random() * canvas.width,
+    y: -20,
+    r: Math.random() * 8 + 4,
+    color: ["#FF4D1C","#FF8C00","#F5A623","#1DB954","#0096FF"][Math.floor(Math.random()*5)],
+    vx: (Math.random() - 0.5) * 4,
+    vy: Math.random() * 4 + 3,
+    spin: Math.random() * 0.2 - 0.1,
+    angle: 0,
+    life: 1,
+  }));
+
+  let frame;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    pieces.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.angle += p.spin; p.life -= 0.012;
+      if (p.life <= 0 || p.y > canvas.height) return;
+      alive = true;
+      ctx.save();
+      ctx.globalAlpha = p.life;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r * 0.6);
+      ctx.restore();
+    });
+    if (alive) frame = requestAnimationFrame(draw);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  cancelAnimationFrame(frame);
+  draw();
+}
+
+// ══════════════════════════════════════════════════════
+// Event wiring
+// ══════════════════════════════════════════════════════
+document.addEventListener("DOMContentLoaded", async () => {
+  await bootstrap();
+  startListeners();
+
+  // Back buttons
+  document.getElementById("btn-back").onclick = () => showScreen("pick");
+  document.getElementById("btn-back-board").onclick = () => showScreen("pick");
+  document.getElementById("btn-back-alltime").onclick = () => showScreen("pick");
+
+  // Log button
+  document.getElementById("btn-log").onclick = logEntry;
+
+  // Nav tabs (dashboard screen)
+  document.getElementById("nav-dash").onclick   = () => { showScreen("dash"); setActiveNav("dash"); };
+  document.getElementById("nav-board").onclick  = () => { showScreen("board"); setActiveNav("board"); };
+  document.getElementById("nav-alltime").onclick = () => { showScreen("alltime"); setActiveNav("alltime"); };
+
+  // Nav tabs (board screen)
+  document.getElementById("nav-dash-2").onclick   = () => { showScreen("dash"); setActiveNav("dash"); };
+  document.getElementById("nav-board-2").onclick  = () => { showScreen("board"); setActiveNav("board"); };
+  document.getElementById("nav-alltime-2").onclick = () => { showScreen("alltime"); setActiveNav("alltime"); };
+
+  // Nav tabs (alltime screen)
+  document.getElementById("nav-dash-3").onclick   = () => { showScreen("dash"); setActiveNav("dash"); };
+  document.getElementById("nav-board-3").onclick  = () => { showScreen("board"); setActiveNav("board"); };
+  document.getElementById("nav-alltime-3").onclick = () => { showScreen("alltime"); setActiveNav("alltime"); };
+
+  // Admin modal
+  document.getElementById("btn-admin-open").onclick = () => {
+    document.getElementById("modal-admin").classList.remove("hidden");
+    document.getElementById("admin-pin-wrap").classList.remove("hidden");
+    document.getElementById("admin-panel").classList.add("hidden");
+    document.getElementById("input-pin").value = "";
+    document.getElementById("pin-error").classList.add("hidden");
+  };
+
+  document.getElementById("btn-pin-submit").onclick = () => {
+    const pin = document.getElementById("input-pin").value;
+    if (pin === ADMIN_PIN) {
+      document.getElementById("admin-pin-wrap").classList.add("hidden");
+      document.getElementById("admin-panel").classList.remove("hidden");
+      renderAdminComps();
+      renderAdminEmps();
+      renderAdminEditSelects();
+    } else {
+      document.getElementById("pin-error").classList.remove("hidden");
+    }
+  };
+
+  document.getElementById("input-pin").addEventListener("keydown", e => {
+    if (e.key === "Enter") document.getElementById("btn-pin-submit").click();
+  });
+
+  document.getElementById("btn-admin-close").onclick = () => {
+    document.getElementById("modal-admin").classList.add("hidden");
+  };
+
+  document.getElementById("modal-admin").onclick = (e) => {
+    if (e.target === document.getElementById("modal-admin"))
+      document.getElementById("modal-admin").classList.add("hidden");
+  };
+
+  // Add competition
+  document.getElementById("btn-add-comp").onclick = async () => {
+    const name = document.getElementById("input-new-comp").value.trim();
+    if (!name) return;
+    const id = `comp_${Date.now()}`;
+    await set(dbRef.comp(id), { name, createdAt: Date.now() });
+    state.currentComp = id;
+    document.getElementById("input-new-comp").value = "";
+    showToast(`"${name}" competition created! 🏆`);
+  };
+
+  // Add employee
+  document.getElementById("btn-add-emp").onclick = async () => {
+    const name = document.getElementById("input-new-emp").value.trim();
+    if (!name) return;
+    const id = slugify(name) + `_${Date.now()}`;
+    await set(dbRef.emp(id), { name });
+    document.getElementById("input-new-emp").value = "";
+    showToast(`${name} added to the roster!`);
+  };
+
+  // Save edited log
+  document.getElementById("btn-admin-save-log").onclick = async () => {
+    const empId = document.getElementById("admin-edit-emp").value;
+    const day = document.getElementById("admin-edit-day").value;
+    const sales = parseFloat(document.getElementById("admin-edit-sales").value);
+    const hours = parseFloat(document.getElementById("admin-edit-hours").value);
+    if (!empId || !day || isNaN(sales) || isNaN(hours)) {
+      showToast("Fill in all fields first"); return;
+    }
+    await set(dbRef.dayLog(state.currentComp, empId, day), { sales, hours });
+    showToast("Log updated ✅");
+  };
+});
+
+function setActiveNav(tab) {
+  document.querySelectorAll(".nav-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.tab === tab);
+  });
+}
