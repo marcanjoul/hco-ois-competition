@@ -6,7 +6,7 @@
   <title>Order Wars 🏆</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
 
@@ -39,9 +39,7 @@
       </div>
       <div class="dash-header-right"></div>
     </header>
-
     <div class="dash-body">
-      <!-- stat cards -->
       <div class="stat-row">
         <div class="stat-card accent">
           <div class="stat-label">SALES / HR</div>
@@ -56,14 +54,10 @@
           <div class="stat-value" id="stat-rank">—</div>
         </div>
       </div>
-
-      <!-- vibe phrase -->
       <div class="vibe-card" id="vibe-card">
         <span id="vibe-emoji">🔥</span>
         <span id="vibe-text">Log your first order to get started!</span>
       </div>
-
-      <!-- log form -->
       <div class="log-card">
         <div class="log-card-title">LOG AN ORDER</div>
         <div class="day-row" id="day-row"></div>
@@ -79,15 +73,11 @@
         </div>
         <button class="log-btn" id="btn-log">+ LOG IT</button>
       </div>
-
-      <!-- history -->
       <div class="history-wrap">
         <div class="history-title">MY LOGS</div>
         <div id="history-list" class="history-list"></div>
       </div>
     </div>
-
-    <!-- nav -->
     <nav class="bottom-nav">
       <button class="nav-btn active" data-tab="dash" id="nav-dash">📊 My Stats</button>
       <button class="nav-btn" data-tab="board" id="nav-board">🏆 Board</button>
@@ -180,13 +170,9 @@
     </div>
   </div>
 
-  <!-- ── TOAST ── -->
   <div id="toast" class="toast hidden"></div>
-
-  <!-- ── CONFETTI CANVAS ── -->
   <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
 
-  <!-- Firebase SDK -->
-  <script type="module" src="app.js"></script>
+  <script type="module" src="/src/main.js"></script>
 </body>
 </html>

@@ -1,54 +1,32 @@
-// ╔══════════════════════════════════════════════════╗
-// ║           ORDER WARS — app.js                    ║
-// ║  Paste your Firebase config below (Step 1)       ║
-// ║  Add your employees below (Step 2)               ║
-// ╚══════════════════════════════════════════════════╝
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, get, onValue, update, remove }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+// src/main.js
+import { db } from "./firebase.js";
+import { ref, set, get, onValue, update, remove } from "firebase/database";
 
 // ─────────────────────────────────────────────────────
-// STEP 1 ▸ Paste your Firebase config object here
-// ─────────────────────────────────────────────────────
-const firebaseConfig = {
-  apiKey: "PASTE_YOUR_apiKey_HERE",
-  authDomain: "PASTE_YOUR_authDomain_HERE",
-  databaseURL: "PASTE_YOUR_databaseURL_HERE",
-  projectId: "PASTE_YOUR_projectId_HERE",
-  storageBucket: "PASTE_YOUR_storageBucket_HERE",
-  messagingSenderId: "PASTE_YOUR_messagingSenderId_HERE",
-  appId: "PASTE_YOUR_appId_HERE"
-};
-
-// ─────────────────────────────────────────────────────
-// STEP 2 ▸ Add your employee names here
+// STEP 1 ▸ Add your employee names here
 // ─────────────────────────────────────────────────────
 const DEFAULT_EMPLOYEES = [
   "Employee 1",
   "Employee 2",
   "Employee 3",
-  // Add more names here...
+  // Add more names...
 ];
 
 // ─────────────────────────────────────────────────────
-// STEP 3 ▸ Set your admin PIN here
+// STEP 2 ▸ Set your admin PIN here
 // ─────────────────────────────────────────────────────
 const ADMIN_PIN = "1234"; // Change this!
 
 // ══════════════════════════════════════════════════════
-// App init
+// Constants
 // ══════════════════════════════════════════════════════
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getDatabase(firebaseApp);
-
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 // ── State ──────────────────────────────────────────
 let state = {
-  competitions: {},   // { compId: { name, createdAt } }
-  employees: {},      // { empId: { name } }
-  logs: {},           // { compId: { empId: { Mon: {sales, hours}, ... } } }
+  competitions: {},
+  employees: {},
+  logs: {},
   currentComp: null,
   currentUser: null,
   selectedDay: DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1],
@@ -56,18 +34,18 @@ let state = {
 
 // ── Firebase refs ───────────────────────────────────
 const dbRef = {
-  comps: () => ref(db, "competitions"),
-  comp: (id) => ref(db, `competitions/${id}`),
-  emps: () => ref(db, "employees"),
-  emp: (id) => ref(db, `employees/${id}`),
-  logs: () => ref(db, "logs"),
-  compLogs: (cId) => ref(db, `logs/${cId}`),
-  empLog: (cId, eId) => ref(db, `logs/${cId}/${eId}`),
-  dayLog: (cId, eId, day) => ref(db, `logs/${cId}/${eId}/${day}`),
+  comps:    ()              => ref(db, "competitions"),
+  comp:     (id)            => ref(db, `competitions/${id}`),
+  emps:     ()              => ref(db, "employees"),
+  emp:      (id)            => ref(db, `employees/${id}`),
+  logs:     ()              => ref(db, "logs"),
+  compLogs: (cId)           => ref(db, `logs/${cId}`),
+  empLog:   (cId, eId)      => ref(db, `logs/${cId}/${eId}`),
+  dayLog:   (cId, eId, day) => ref(db, `logs/${cId}/${eId}/${day}`),
 };
 
 // ══════════════════════════════════════════════════════
-// Bootstrap — seed employees & first competition
+// Bootstrap
 // ══════════════════════════════════════════════════════
 async function bootstrap() {
   const [empSnap, compSnap] = await Promise.all([
@@ -75,17 +53,14 @@ async function bootstrap() {
     get(dbRef.comps()),
   ]);
 
-  // Seed employees if empty
   if (!empSnap.exists()) {
     const empUpdates = {};
     DEFAULT_EMPLOYEES.forEach(name => {
-      const id = slugify(name);
-      empUpdates[id] = { name };
+      empUpdates[slugify(name)] = { name };
     });
     await update(dbRef.emps(), empUpdates);
   }
 
-  // Seed first competition if empty
   if (!compSnap.exists()) {
     const id = `comp_${Date.now()}`;
     await set(dbRef.comp(id), { name: "Week 1", createdAt: Date.now() });
@@ -103,7 +78,6 @@ function startListeners() {
   onValue(dbRef.comps(), snap => {
     state.competitions = snap.val() || {};
     if (!state.currentComp) {
-      // Default to most recent comp
       const ids = Object.keys(state.competitions);
       if (ids.length) state.currentComp = ids[ids.length - 1];
     }
@@ -139,7 +113,7 @@ function getVibe(sph, total, hasLogs) {
   if (sph >= 100) return { emoji: "⚡", text: "Solid numbers. You're built different fr." };
   if (sph >= 60)  return { emoji: "📈", text: "Not bad at all! Push a little harder and you're top 3." };
   if (sph >= 30)  return { emoji: "🤔", text: "You got this, but the board is calling your name. Wake up!" };
-  return { emoji: "😬", text: "Bestie... we need to talk. Grind time." };
+  return           { emoji: "😬", text: "Bestie... we need to talk. Grind time." };
 }
 
 function getBigOrderReaction(amount) {
@@ -154,7 +128,6 @@ function getBigOrderReaction(amount) {
 // RENDER — Pick Screen
 // ══════════════════════════════════════════════════════
 function renderPickScreen() {
-  // Competition tabs
   const tabsEl = document.getElementById("comp-tabs");
   if (tabsEl) {
     tabsEl.innerHTML = "";
@@ -167,7 +140,6 @@ function renderPickScreen() {
     });
   }
 
-  // Name grid — show rank pips
   const grid = document.getElementById("name-grid");
   if (!grid) return;
   grid.innerHTML = "";
@@ -186,7 +158,7 @@ function renderPickScreen() {
 }
 
 // ══════════════════════════════════════════════════════
-// Enter dashboard as user
+// Enter dashboard
 // ══════════════════════════════════════════════════════
 function enterAsDashboard(empId) {
   state.currentUser = empId;
@@ -205,7 +177,7 @@ function renderDash() {
 
   document.getElementById("dash-name").textContent = emp.name.toUpperCase();
   const comp = state.competitions[state.currentComp];
-  document.getElementById("dash-comp-badge").textContent = comp ? comp.name : "";
+  document.getElementById("dash-comp-name").textContent = comp ? comp.name : "";
 
   const myLogs = (state.logs[state.currentComp] || {})[state.currentUser] || {};
   let totalSales = 0, totalHours = 0;
@@ -216,45 +188,38 @@ function renderDash() {
   const sph = totalHours > 0 ? totalSales / totalHours : 0;
   const hasLogs = Object.keys(myLogs).length > 0;
 
-  document.getElementById("stat-sph").textContent = `$${sph.toFixed(0)}`;
+  document.getElementById("stat-sph").textContent   = `$${sph.toFixed(0)}`;
   document.getElementById("stat-total").textContent = `$${totalSales.toFixed(0)}`;
 
-  // Rank
   const ranked = getRankedPlayers(state.currentComp);
   const myRank = ranked.findIndex(r => r.id === state.currentUser) + 1;
   document.getElementById("stat-rank").textContent = myRank > 0 ? `#${myRank}` : "—";
 
-  // Vibe
   const vibe = getVibe(sph, totalSales, hasLogs);
   document.getElementById("vibe-emoji").textContent = vibe.emoji;
-  document.getElementById("vibe-text").textContent = vibe.text;
+  document.getElementById("vibe-text").textContent  = vibe.text;
 
-  // Day selector
   const dayRow = document.getElementById("day-row");
   dayRow.innerHTML = "";
   DAYS.forEach(d => {
     const btn = document.createElement("button");
-    btn.className = `day-btn${state.selectedDay === d ? " active" : ""}`;
-    btn.textContent = d;
     const hasEntry = myLogs[d] && (myLogs[d].sales > 0 || myLogs[d].hours > 0);
-    if (hasEntry) btn.textContent += " ✓";
+    btn.className = `day-btn${state.selectedDay === d ? " active" : ""}`;
+    btn.textContent = d + (hasEntry ? " ✓" : "");
     btn.onclick = () => { state.selectedDay = d; renderDash(); };
     dayRow.appendChild(btn);
   });
 
-  // Pre-fill existing log for selected day
   const existing = myLogs[state.selectedDay];
   document.getElementById("input-sales").value = existing ? existing.sales || "" : "";
   document.getElementById("input-hours").value = existing ? existing.hours || "" : "";
 
-  // History
   const historyList = document.getElementById("history-list");
   historyList.innerHTML = "";
-  const entries = Object.entries(myLogs);
-  if (entries.length === 0) {
+  const hasAnyLogs = DAYS.some(d => myLogs[d]);
+  if (!hasAnyLogs) {
     historyList.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:16px">No logs yet this competition</p>`;
   } else {
-    // Show in week order
     DAYS.forEach(day => {
       const log = myLogs[day];
       if (!log) return;
@@ -306,11 +271,11 @@ function renderBoard() {
         <div class="board-bar-wrap"><div class="board-bar" style="width:${pct}%"></div></div>
       </div>
       <div>
-        <div class="board-sph" style="color:${i === 0 ? 'var(--accent)' : 'var(--text)'}">$${player.sph.toFixed(0)}</div>
+        <div class="board-sph" style="color:${i === 0 ? "var(--accent)" : "var(--text)"}">$${player.sph.toFixed(0)}</div>
         <div class="board-sph-label">/HR</div>
       </div>
     `;
-    card.onclick = () => { state.currentUser = player.id; showScreen("dash"); renderDash(); };
+    card.onclick = () => { state.currentUser = player.id; showScreen("dash"); renderDash(); setActiveNav("dash"); };
     body.appendChild(card);
   });
 }
@@ -322,13 +287,12 @@ function renderAllTime() {
   const body = document.getElementById("alltime-body");
   body.innerHTML = "";
 
-  // Aggregate across ALL competitions
   const totals = {};
   Object.entries(state.employees).forEach(([id, emp]) => {
     totals[id] = { id, name: emp.name, total: 0, hours: 0 };
   });
 
-  Object.entries(state.logs).forEach(([compId, compLogs]) => {
+  Object.entries(state.logs).forEach(([, compLogs]) => {
     Object.entries(compLogs || {}).forEach(([empId, empLogs]) => {
       if (!totals[empId]) return;
       Object.values(empLogs || {}).forEach(log => {
@@ -364,7 +328,7 @@ function renderAllTime() {
         <div class="board-bar-wrap"><div class="board-bar" style="width:${pct}%"></div></div>
       </div>
       <div>
-        <div class="board-sph" style="color:${i === 0 ? 'var(--accent)' : 'var(--text)'}">$${player.sph.toFixed(0)}</div>
+        <div class="board-sph" style="color:${i === 0 ? "var(--accent)" : "var(--text)"}">$${player.sph.toFixed(0)}</div>
         <div class="board-sph-label">/HR</div>
       </div>
     `;
@@ -373,21 +337,18 @@ function renderAllTime() {
 }
 
 // ══════════════════════════════════════════════════════
-// Helper — get ranked players for a competition
+// Helper
 // ══════════════════════════════════════════════════════
 function getRankedPlayers(compId) {
-  const compLogs = (state.logs[compId] || {});
-  const players = Object.entries(state.employees).map(([id, emp]) => {
-    const empLogs = compLogs[id] || {};
-    let total = 0, hours = 0;
-    Object.values(empLogs).forEach(log => {
-      total += log.sales || 0;
-      hours += log.hours || 0;
-    });
-    const sph = hours > 0 ? total / hours : 0;
-    return { id, name: emp.name, total, hours, sph };
-  });
-  return players.sort((a, b) => b.sph - a.sph);
+  const compLogs = state.logs[compId] || {};
+  return Object.entries(state.employees)
+    .map(([id, emp]) => {
+      const empLogs = compLogs[id] || {};
+      let total = 0, hours = 0;
+      Object.values(empLogs).forEach(log => { total += log.sales || 0; hours += log.hours || 0; });
+      return { id, name: emp.name, total, hours, sph: hours > 0 ? total / hours : 0 };
+    })
+    .sort((a, b) => b.sph - a.sph);
 }
 
 // ══════════════════════════════════════════════════════
@@ -403,16 +364,12 @@ async function logEntry() {
   await set(dbRef.dayLog(state.currentComp, state.currentUser, state.selectedDay), { sales, hours });
 
   const reaction = getBigOrderReaction(sales);
-  if (reaction) {
-    showToast(reaction, 3500);
-    launchConfetti();
-  } else {
-    showToast("Logged! Keep grinding 💪");
-  }
+  if (reaction) { showToast(reaction, 3500); launchConfetti(); }
+  else showToast("Logged! Keep grinding 💪");
 }
 
 // ══════════════════════════════════════════════════════
-// Admin
+// Admin renders
 // ══════════════════════════════════════════════════════
 function renderAdminComps() {
   const list = document.getElementById("admin-comp-list");
@@ -426,7 +383,7 @@ function renderAdminComps() {
     del.className = "del-btn";
     del.textContent = "✕ Delete";
     del.onclick = async () => {
-      if (confirm(`Delete "${comp.name}"? This removes all its logs too.`)) {
+      if (confirm(`Delete "${comp.name}"? All its logs will be removed too.`)) {
         await remove(dbRef.comp(id));
         await remove(dbRef.compLogs(id));
         if (state.currentComp === id) state.currentComp = null;
@@ -449,9 +406,7 @@ function renderAdminEmps() {
     del.className = "del-btn";
     del.textContent = "✕ Remove";
     del.onclick = async () => {
-      if (confirm(`Remove "${emp.name}" from the roster?`)) {
-        await remove(dbRef.emp(id));
-      }
+      if (confirm(`Remove "${emp.name}" from the roster?`)) await remove(dbRef.emp(id));
     };
     item.appendChild(del);
     list.appendChild(item);
@@ -462,20 +417,16 @@ function renderAdminEditSelects() {
   const empSel = document.getElementById("admin-edit-emp");
   const daySel = document.getElementById("admin-edit-day");
   if (!empSel || !daySel) return;
-
   empSel.innerHTML = "";
   Object.entries(state.employees).forEach(([id, emp]) => {
     const opt = document.createElement("option");
-    opt.value = id;
-    opt.textContent = emp.name;
+    opt.value = id; opt.textContent = emp.name;
     empSel.appendChild(opt);
   });
-
   daySel.innerHTML = "";
   DAYS.forEach(d => {
     const opt = document.createElement("option");
-    opt.value = d;
-    opt.textContent = d;
+    opt.value = d; opt.textContent = d;
     daySel.appendChild(opt);
   });
 }
@@ -487,6 +438,12 @@ function showScreen(name) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   document.getElementById(`screen-${name}`).classList.add("active");
   window.scrollTo(0, 0);
+}
+
+function setActiveNav(tab) {
+  document.querySelectorAll(".nav-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.tab === tab);
+  });
 }
 
 // ══════════════════════════════════════════════════════
@@ -509,19 +466,13 @@ function launchConfetti() {
   const ctx = canvas.getContext("2d");
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-
   const pieces = Array.from({ length: 80 }, () => ({
-    x: Math.random() * canvas.width,
-    y: -20,
+    x: Math.random() * canvas.width, y: -20,
     r: Math.random() * 8 + 4,
     color: ["#FF4D1C","#FF8C00","#F5A623","#1DB954","#0096FF"][Math.floor(Math.random()*5)],
-    vx: (Math.random() - 0.5) * 4,
-    vy: Math.random() * 4 + 3,
-    spin: Math.random() * 0.2 - 0.1,
-    angle: 0,
-    life: 1,
+    vx: (Math.random() - 0.5) * 4, vy: Math.random() * 4 + 3,
+    spin: Math.random() * 0.2 - 0.1, angle: 0, life: 1,
   }));
-
   let frame;
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -552,28 +503,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   await bootstrap();
   startListeners();
 
-  // Back buttons
-  document.getElementById("btn-back").onclick = () => showScreen("pick");
-  document.getElementById("btn-back-board").onclick = () => showScreen("pick");
+  document.getElementById("btn-back").onclick        = () => showScreen("pick");
+  document.getElementById("btn-back-board").onclick  = () => showScreen("pick");
   document.getElementById("btn-back-alltime").onclick = () => showScreen("pick");
+  document.getElementById("btn-log").onclick         = logEntry;
 
-  // Log button
-  document.getElementById("btn-log").onclick = logEntry;
-
-  // Nav tabs (dashboard screen)
-  document.getElementById("nav-dash").onclick   = () => { showScreen("dash"); setActiveNav("dash"); };
-  document.getElementById("nav-board").onclick  = () => { showScreen("board"); setActiveNav("board"); };
-  document.getElementById("nav-alltime").onclick = () => { showScreen("alltime"); setActiveNav("alltime"); };
-
-  // Nav tabs (board screen)
-  document.getElementById("nav-dash-2").onclick   = () => { showScreen("dash"); setActiveNav("dash"); };
-  document.getElementById("nav-board-2").onclick  = () => { showScreen("board"); setActiveNav("board"); };
-  document.getElementById("nav-alltime-2").onclick = () => { showScreen("alltime"); setActiveNav("alltime"); };
-
-  // Nav tabs (alltime screen)
-  document.getElementById("nav-dash-3").onclick   = () => { showScreen("dash"); setActiveNav("dash"); };
-  document.getElementById("nav-board-3").onclick  = () => { showScreen("board"); setActiveNav("board"); };
-  document.getElementById("nav-alltime-3").onclick = () => { showScreen("alltime"); setActiveNav("alltime"); };
+  // Nav
+  const navMap = { "nav-dash": "dash", "nav-board": "board", "nav-alltime": "alltime",
+                   "nav-dash-2": "dash", "nav-board-2": "board", "nav-alltime-2": "alltime",
+                   "nav-dash-3": "dash", "nav-board-3": "board", "nav-alltime-3": "alltime" };
+  Object.entries(navMap).forEach(([btnId, screen]) => {
+    document.getElementById(btnId).onclick = () => { showScreen(screen); setActiveNav(screen); };
+  });
 
   // Admin modal
   document.getElementById("btn-admin-open").onclick = () => {
@@ -585,13 +526,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   document.getElementById("btn-pin-submit").onclick = () => {
-    const pin = document.getElementById("input-pin").value;
-    if (pin === ADMIN_PIN) {
+    if (document.getElementById("input-pin").value === ADMIN_PIN) {
       document.getElementById("admin-pin-wrap").classList.add("hidden");
       document.getElementById("admin-panel").classList.remove("hidden");
-      renderAdminComps();
-      renderAdminEmps();
-      renderAdminEditSelects();
+      renderAdminComps(); renderAdminEmps(); renderAdminEditSelects();
     } else {
       document.getElementById("pin-error").classList.remove("hidden");
     }
@@ -601,16 +539,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (e.key === "Enter") document.getElementById("btn-pin-submit").click();
   });
 
-  document.getElementById("btn-admin-close").onclick = () => {
+  document.getElementById("btn-admin-close").onclick = () =>
     document.getElementById("modal-admin").classList.add("hidden");
-  };
 
   document.getElementById("modal-admin").onclick = (e) => {
     if (e.target === document.getElementById("modal-admin"))
       document.getElementById("modal-admin").classList.add("hidden");
   };
 
-  // Add competition
   document.getElementById("btn-add-comp").onclick = async () => {
     const name = document.getElementById("input-new-comp").value.trim();
     if (!name) return;
@@ -618,35 +554,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     await set(dbRef.comp(id), { name, createdAt: Date.now() });
     state.currentComp = id;
     document.getElementById("input-new-comp").value = "";
-    showToast(`"${name}" competition created! 🏆`);
+    showToast(`"${name}" created! 🏆`);
   };
 
-  // Add employee
   document.getElementById("btn-add-emp").onclick = async () => {
     const name = document.getElementById("input-new-emp").value.trim();
     if (!name) return;
-    const id = slugify(name) + `_${Date.now()}`;
+    const id = `${slugify(name)}_${Date.now()}`;
     await set(dbRef.emp(id), { name });
     document.getElementById("input-new-emp").value = "";
-    showToast(`${name} added to the roster!`);
+    showToast(`${name} added!`);
   };
 
-  // Save edited log
   document.getElementById("btn-admin-save-log").onclick = async () => {
     const empId = document.getElementById("admin-edit-emp").value;
-    const day = document.getElementById("admin-edit-day").value;
+    const day   = document.getElementById("admin-edit-day").value;
     const sales = parseFloat(document.getElementById("admin-edit-sales").value);
     const hours = parseFloat(document.getElementById("admin-edit-hours").value);
-    if (!empId || !day || isNaN(sales) || isNaN(hours)) {
-      showToast("Fill in all fields first"); return;
-    }
+    if (!empId || !day || isNaN(sales) || isNaN(hours)) { showToast("Fill in all fields"); return; }
     await set(dbRef.dayLog(state.currentComp, empId, day), { sales, hours });
     showToast("Log updated ✅");
   };
 });
-
-function setActiveNav(tab) {
-  document.querySelectorAll(".nav-btn").forEach(b => {
-    b.classList.toggle("active", b.dataset.tab === tab);
-  });
-}
