@@ -7,6 +7,10 @@ const ADMIN_PIN = import.meta.env.VITE_ADMIN_PIN;
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const PREVIEW_COUNT = 5;
 
+function getTodayDate() {
+  return new Date().toISOString().split("T")[0];
+}
+
 let state = {
   competitions: {},
   employees: {},
@@ -16,7 +20,7 @@ let state = {
   currentComp: null,      // active comp shown on pick screen
   boardComp: null,        // comp selected on leaderboard
   currentUser: null,
-  selectedDay: DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1],
+  selectedDate: getTodayDate(),
   currentScreen: "pick",
   adminUnlocked: false,
   admin: {
@@ -24,6 +28,7 @@ let state = {
     showAllEmps: false,
     selectedEmp: null,
     selectedComp: null,
+    selectedDate: getTodayDate(),
     empSearch: "",
     tab: "competitions",
   },
@@ -36,7 +41,7 @@ const dbRef = {
   emp:      (id)            => ref(db, `employees/${id}`),
   logs:     ()              => ref(db, "logs"),
   compLogs: (cId)           => ref(db, `logs/${cId}`),
-  dayLog:   (cId, eId, day) => ref(db, `logs/${cId}/${eId}/${day}`),
+  dateLog:  (cId, eId, date) => ref(db, `logs/${cId}/${eId}/${date}`),
   settings: ()              => ref(db, "settings"),
   goals:    ()              => ref(db, "goals"),
 };
@@ -112,6 +117,37 @@ function formatDate(dateStr) {
   if (!dateStr) return "";
   const d = new Date(dateStr + "T00:00:00");
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+function getWeekForDate(dateStr) {
+  // Returns { startDate, endDate, days: [{date, dayName, dayNum}, ...] } for the week containing dateStr
+  const date = new Date(dateStr + "T00:00:00");
+  const dayOfWeek = date.getDay();
+  const startOfWeek = new Date(date);
+  startOfWeek.setDate(date.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1)); // Monday
+
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(startOfWeek);
+    d.setDate(startOfWeek.getDate() + i);
+    const dateString = d.toISOString().split("T")[0];
+    const dayName = DAYS[d.getDay() === 0 ? 6 : d.getDay() - 1];
+    const dayNum = d.getDate();
+    days.push({ date: dateString, dayName, dayNum });
+  }
+  return { days, startDate: days[0].date, endDate: days[6].date };
+}
+
+function prevWeek(dateStr) {
+  const date = new Date(dateStr + "T00:00:00");
+  date.setDate(date.getDate() - 7);
+  return date.toISOString().split("T")[0];
+}
+
+function nextWeek(dateStr) {
+  const date = new Date(dateStr + "T00:00:00");
+  date.setDate(date.getDate() + 7);
+  return date.toISOString().split("T")[0];
 }
 
 function daysRemaining(comp) {
@@ -190,7 +226,7 @@ function getPlayerSph(empId, compId) {
 }
 
 function getTodaySph(empId, compId) {
-  const log = (state.logs[compId] || {})[empId]?.[state.selectedDay];
+  const log = (state.logs[compId] || {})[empId]?.[state.selectedDate];
   if (!log) return { total: 0, hours: 0, sph: 0 };
   return { total: log.sales || 0, hours: log.hours || 0, sph: log.hours > 0 ? (log.sales / log.hours) : 0 };
 }
@@ -456,19 +492,24 @@ function renderDash() {
     goalsEl.style.display = goalsHtml ? "flex" : "none";
   }
 
-  // Day buttons
+  // Week view with dates
+  const week = getWeekForDate(state.selectedDate);
   const dayRow = document.getElementById("day-row");
-  dayRow.innerHTML = "";
-  DAYS.forEach(d => {
+  dayRow.innerHTML = `<button class="week-nav-btn" id="prev-week-btn">←</button>`;
+
+  week.days.forEach(dayInfo => {
+    const hasEntry = myLogs[dayInfo.date] && (myLogs[dayInfo.date].sales > 0 || myLogs[dayInfo.date].hours > 0);
     const btn = document.createElement("button");
-    const hasEntry = myLogs[d] && (myLogs[d].sales > 0 || myLogs[d].hours > 0);
-    btn.className = `day-btn${state.selectedDay === d ? " active" : ""}${hasEntry ? " logged" : ""}`;
-    btn.textContent = d + (hasEntry ? " ✓" : "");
-    btn.onclick = () => { state.selectedDay = d; renderDash(); };
+    btn.className = `day-btn${state.selectedDate === dayInfo.date ? " active" : ""}${hasEntry ? " logged" : ""}`;
+    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark">✓</div>' : ''}`;
+    btn.onclick = () => { state.selectedDate = dayInfo.date; renderDash(); };
     dayRow.appendChild(btn);
   });
 
-  const existing = myLogs[state.selectedDay];
+  dayRow.appendChild(makeBtn("→", "week-nav-btn", () => { state.selectedDate = nextWeek(state.selectedDate); renderDash(); }));
+  document.getElementById("prev-week-btn").onclick = () => { state.selectedDate = prevWeek(state.selectedDate); renderDash(); };
+
+  const existing = myLogs[state.selectedDate];
   const isLocked = !!(existing && (existing.sales > 0 || existing.hours > 0));
   const salesInput = document.getElementById("input-sales");
   const hoursInput = document.getElementById("input-hours");
@@ -491,18 +532,22 @@ function renderDash() {
 
   const historyList = document.getElementById("history-list");
   historyList.innerHTML = "";
-  const hasAnyLogs = DAYS.some(d => myLogs[d]);
+  const hasAnyLogs = Object.keys(myLogs).length > 0;
   if (!hasAnyLogs) {
     historyList.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:16px">No logs yet this competition</p>`;
   } else {
-    DAYS.forEach(day => {
-      const log = myLogs[day];
+    const sortedDates = Object.keys(myLogs).sort().reverse();
+    sortedDates.forEach(date => {
+      const log = myLogs[date];
       if (!log) return;
       const daySph = log.hours > 0 ? (log.sales / log.hours) : 0;
+      const d = new Date(date + "T00:00:00");
+      const dayName = DAYS[d.getDay() === 0 ? 6 : d.getDay() - 1];
+      const dayNum = d.getDate();
       const item = document.createElement("div");
       item.className = "history-item";
       item.innerHTML = `
-        <div class="history-day">${day}</div>
+        <div class="history-day">${dayName} ${dayNum}</div>
         <div class="history-info">
           <div class="history-sales">$${(log.sales || 0).toFixed(2)}</div>
           <div class="history-meta">${log.hours || 0} hrs worked</div>
@@ -592,6 +637,10 @@ function renderBoard() {
 // ══════════════════════════════════════════════════════
 // All-Time
 // ══════════════════════════════════════════════════════
+function renderAllTime() {
+  // Placeholder - all-time screen removed
+}
+
 // ══════════════════════════════════════════════════════
 // Helper
 // ══════════════════════════════════════════════════════
@@ -637,7 +686,8 @@ async function logEntry() {
   if (isNaN(sales) || sales < 0) { showToast("Enter a valid sales amount 💸"); return; }
   if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked ⏱️"); return; }
   if (state.competitions[state.currentComp]?.status === "closed") { showToast("This competition is closed 🔒"); return; }
-  await set(dbRef.dayLog(state.currentComp, state.currentUser, state.selectedDay), { sales, hours });
+  const today = new Date().toISOString().split("T")[0];
+  await set(dbRef.dateLog(state.currentComp, state.currentUser, today), { sales, hours });
   const reaction = getBigOrderReaction(sales);
   if (reaction) { showToast(reaction, 3500); launchConfetti(); }
   else showToast("Logged! Keep grinding 💪");
@@ -1013,41 +1063,60 @@ function refreshAdminDayView() {
   }
 
   const empLogs = (state.logs[compId] || {})[empId] || {};
-  dayContainer.innerHTML = "";
+  const week = getWeekForDate(state.admin.selectedDate);
 
-  DAYS.forEach(day => {
-    const hasLog = !!empLogs[day];
+  dayContainer.innerHTML = `<button class="week-nav-btn" id="admin-prev-week-btn">←</button>`;
+
+  week.days.forEach(dayInfo => {
+    const hasLog = !!empLogs[dayInfo.date];
     const btn = document.createElement("button");
     btn.className = `admin-day-btn${hasLog ? " has-log" : ""}`;
-    btn.textContent = day;
-    btn.title = hasLog ? `$${empLogs[day].sales} / ${empLogs[day].hours}hrs` : "No log yet";
+    btn.innerHTML = `<div class="admin-day-btn-dayname">${dayInfo.dayName}</div><div class="admin-day-btn-date">${dayInfo.dayNum}</div>`;
+    btn.title = hasLog ? `$${empLogs[dayInfo.date].sales} / ${empLogs[dayInfo.date].hours}hrs` : "No log yet";
     btn.onclick = () => {
       document.querySelectorAll("#admin-logs-days .admin-day-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      if (hasLog) renderAdminLogDetail(empId, compId, day, empLogs[day]);
-      else renderAdminLogCreate(empId, compId, day);
+      if (hasLog) renderAdminLogDetail(empId, compId, dayInfo.date, empLogs[dayInfo.date]);
+      else renderAdminLogCreate(empId, compId, dayInfo.date);
     };
     dayContainer.appendChild(btn);
   });
 
-  const autoDay = empLogs[state.selectedDay] ? state.selectedDay : (DAYS.find(d => empLogs[d]) || DAYS[0]);
-  const autoBtn = dayContainer.children[DAYS.indexOf(autoDay)];
+  const nextBtn = makeBtn("→", "week-nav-btn", () => {
+    state.admin.selectedDate = nextWeek(state.admin.selectedDate);
+    refreshAdminDayView();
+  });
+  nextBtn.id = "admin-next-week-btn";
+  dayContainer.appendChild(nextBtn);
+
+  document.getElementById("admin-prev-week-btn").onclick = () => {
+    state.admin.selectedDate = prevWeek(state.admin.selectedDate);
+    refreshAdminDayView();
+  };
+
+  // Auto-select the first logged date or the current selected date
+  const autoDate = empLogs[state.admin.selectedDate] ? state.admin.selectedDate : (Object.keys(empLogs)[0] || week.days[0]?.date);
+  const autoBtnIndex = week.days.findIndex(d => d.date === autoDate) + 1; // +1 for prev button
+  const autoBtn = dayContainer.children[autoBtnIndex];
   if (autoBtn) {
     autoBtn.classList.add("active");
-    if (empLogs[autoDay]) renderAdminLogDetail(empId, compId, autoDay, empLogs[autoDay]);
-    else renderAdminLogCreate(empId, compId, autoDay);
+    const autoLog = empLogs[autoDate];
+    if (autoLog) renderAdminLogDetail(empId, compId, autoDate, autoLog);
+    else renderAdminLogCreate(empId, compId, autoDate);
   }
 }
 
-function renderAdminLogDetail(empId, compId, day, log) {
+function renderAdminLogDetail(empId, compId, date, log) {
   const detail = document.getElementById("admin-logs-detail");
   if (!detail) return;
   const sph = log.hours > 0 ? (log.sales / log.hours).toFixed(0) : "—";
+  const d = new Date(date + "T00:00:00");
+  const dayName = DAYS[d.getDay() === 0 ? 6 : d.getDay() - 1];
   detail.innerHTML = `
     <div class="admin-log-header">
       <div class="admin-log-header-info">
         <div class="admin-log-header-name">${state.employees[empId]?.name || ""}</div>
-        <div class="admin-log-header-sub">${day} · ${state.competitions[compId]?.name || ""}</div>
+        <div class="admin-log-header-sub">${dayName} ${date} · ${state.competitions[compId]?.name || ""}</div>
       </div>
       <div class="admin-log-header-badge logged">✓ Logged</div>
     </div>
@@ -1061,23 +1130,25 @@ function renderAdminLogDetail(empId, compId, day, log) {
       <button class="admin-action-delete" id="admin-delete-log-btn">🗑️ Delete</button>
     </div>
   `;
-  document.getElementById("admin-edit-log-btn").onclick = () => renderAdminLogEdit(empId, compId, day, log);
+  document.getElementById("admin-edit-log-btn").onclick = () => renderAdminLogEdit(empId, compId, date, log);
   document.getElementById("admin-delete-log-btn").onclick = async () => {
-    if (confirm(`Delete ${day} log for ${state.employees[empId]?.name}?`)) {
-      await remove(dbRef.dayLog(compId, empId, day));
+    if (confirm(`Delete log for ${state.employees[empId]?.name} on ${date}?`)) {
+      await remove(dbRef.dateLog(compId, empId, date));
       showToast("Log deleted ✅");
     }
   };
 }
 
-function renderAdminLogCreate(empId, compId, day) {
+function renderAdminLogCreate(empId, compId, date) {
   const detail = document.getElementById("admin-logs-detail");
   if (!detail) return;
+  const d = new Date(date + "T00:00:00");
+  const dayName = DAYS[d.getDay() === 0 ? 6 : d.getDay() - 1];
   detail.innerHTML = `
     <div class="admin-log-header">
       <div class="admin-log-header-info">
         <div class="admin-log-header-name">${state.employees[empId]?.name || ""}</div>
-        <div class="admin-log-header-sub">${day} · ${state.competitions[compId]?.name || ""}</div>
+        <div class="admin-log-header-sub">${dayName} ${date} · ${state.competitions[compId]?.name || ""}</div>
       </div>
       <div class="admin-log-header-badge not-logged">✗ No Log Yet</div>
     </div>
@@ -1100,20 +1171,22 @@ function renderAdminLogCreate(empId, compId, day) {
     const hours = parseFloat(h.value);
     if (isNaN(sales) || sales < 0) { showToast("Enter valid sales amount"); return; }
     if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked"); return; }
-    await set(dbRef.dayLog(compId, empId, day), { sales, hours });
+    await set(dbRef.dateLog(compId, empId, date), { sales, hours });
     showToast("Log created ✅");
     if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
   };
 }
 
-function renderAdminLogEdit(empId, compId, day, log) {
+function renderAdminLogEdit(empId, compId, date, log) {
   const detail = document.getElementById("admin-logs-detail");
   if (!detail) return;
+  const d = new Date(date + "T00:00:00");
+  const dayName = DAYS[d.getDay() === 0 ? 6 : d.getDay() - 1];
   detail.innerHTML = `
     <div class="admin-log-header">
       <div class="admin-log-header-info">
         <div class="admin-log-header-name">${state.employees[empId]?.name || ""}</div>
-        <div class="admin-log-header-sub">Editing ${day} · ${state.competitions[compId]?.name || ""}</div>
+        <div class="admin-log-header-sub">Editing ${dayName} ${date} · ${state.competitions[compId]?.name || ""}</div>
       </div>
     </div>
     <div class="log-fields" style="margin-top:14px;">
@@ -1130,11 +1203,11 @@ function renderAdminLogEdit(empId, compId, day, log) {
     const hours = parseFloat(document.getElementById("admin-edit-hours").value);
     if (isNaN(sales) || sales < 0) { showToast("Enter valid sales amount"); return; }
     if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked"); return; }
-    await set(dbRef.dayLog(compId, empId, day), { sales, hours });
+    await set(dbRef.dateLog(compId, empId, date), { sales, hours });
     showToast("Log updated ✅");
     if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
   };
-  document.getElementById("admin-cancel-edit-btn").onclick = () => renderAdminLogDetail(empId, compId, day, log);
+  document.getElementById("admin-cancel-edit-btn").onclick = () => renderAdminLogDetail(empId, compId, date, log);
 }
 
 // ══════════════════════════════════════════════════════

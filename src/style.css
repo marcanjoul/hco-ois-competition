@@ -583,20 +583,33 @@ html, body {
 /* ── Log Card ── */
 .log-card { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow); border: 2px solid var(--border); }
 .log-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px; color: var(--text); margin-bottom: 12px; }
-.day-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.day-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; justify-content: space-between; }
+.week-nav-btn { padding: 6px 10px; border-radius: 99px; border: 2px solid var(--border); background: var(--bg); color: var(--text2); font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.12s; flex-shrink: 0; }
+.week-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
 .day-btn {
-  padding: 6px 12px;
-  border-radius: 99px;
+  flex: 1;
+  min-width: 48px;
+  padding: 8px 6px;
+  border-radius: var(--radius-sm);
   border: 2px solid var(--border);
   background: var(--bg);
   color: var(--text2);
   font-family: 'Nunito', sans-serif;
   font-weight: 800;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   cursor: pointer;
   transition: all 0.12s;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  position: relative;
 }
+.day-btn-dayname { font-size: 0.75rem; font-weight: 800; }
+.day-btn-date { font-size: 1rem; font-weight: 900; line-height: 1; }
+.day-btn-checkmark { position: absolute; top: 2px; right: 2px; font-size: 0.8rem; }
 .day-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .day-btn.logged { border-color: var(--green); color: var(--green); background: #f0fdf4; }
 .day-btn.logged.active { background: var(--green); border-color: var(--green); color: #fff; }
@@ -714,8 +727,29 @@ select.log-input { cursor: pointer; }
 .view-all-btn { background: none; border: none; color: var(--accent); font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.72rem; cursor: pointer; padding: 4px 0; display: block; margin-top: 4px; }
 
 /* ── Admin Day Buttons ── */
-.admin-day-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
-.admin-day-btn { padding: 8px 14px; border-radius: 99px; border: 2px solid var(--border); background: var(--bg); color: var(--text2); font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.75rem; cursor: pointer; transition: all 0.12s; letter-spacing: 0.5px; }
+.admin-day-buttons { display: flex; gap: 6px; flex-wrap: nowrap; align-items: center; margin-bottom: 12px; }
+.admin-day-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 4px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+  background: var(--bg);
+  color: var(--text2);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.65rem;
+  cursor: pointer;
+  transition: all 0.12s;
+  letter-spacing: 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+.admin-day-btn-dayname { font-size: 0.65rem; font-weight: 800; }
+.admin-day-btn-date { font-size: 0.9rem; font-weight: 900; line-height: 1; }
 .admin-day-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .admin-day-btn.has-log { border-color: var(--green); color: var(--green); }
 .admin-day-btn.has-log.active { background: var(--green); border-color: var(--green); color: #fff; }
