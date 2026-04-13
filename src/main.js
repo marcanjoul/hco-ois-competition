@@ -593,13 +593,13 @@ function showSelectedEmployeeProfile(empId, emp) {
   }
 
   profileCard.innerHTML = `
-    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px;background:rgba(25,32,56,0.4);border-radius:12px;margin-bottom:16px;">
-      <div class="avatar avatar-large avatar-interactive" id="pick-emp-avatar-btn" style="cursor:pointer;opacity:0.9;" title="Click to edit avatar">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px;background:rgba(25,32,56,0.4);border-radius:12px;margin-bottom:12px;">
+      <div class="avatar avatar-large avatar-interactive" id="pick-emp-avatar-btn" style="cursor:pointer;opacity:0.9;width:100px;height:100px;" title="Click to edit avatar">
         ${getAvatarHtml(emp, "", empId)}
       </div>
       <div style="text-align:center;">
-        <div style="font-size:20px;font-weight:700;color:var(--text);">${emp.name}</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:4px;">Click avatar to edit</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text);">${emp.name}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px;">Click avatar to edit</div>
       </div>
     </div>
   `;
@@ -1304,7 +1304,7 @@ function openEditAvatarModal(empId, emp) {
       <div class="admin-edit-emp-avatar-section">
         <label class="field-label">AVATAR</label>
         <div id="edit-avatar-preview" class="admin-edit-emp-avatar-large">
-          ${getAvatarHtml(emp, "", empId)}
+          ${getAvatarHtml(emp, "large", empId)}
         </div>
         <div class="avatar-upload">
           <input type="file" id="edit-avatar-file-input" accept="image/*" />
@@ -1337,7 +1337,7 @@ function openEditAvatarModal(empId, emp) {
     if (file.size > 500000) { showToast("Image too large (max 500KB)"); return; }
     const base64 = await fileToBase64(file);
     const preview = modal.querySelector("#edit-avatar-preview");
-    preview.innerHTML = `<img class="avatar-img" src="${base64}" alt="preview" />`;
+    preview.innerHTML = `<div class="avatar avatar-large"><img class="avatar-img" src="${base64}" alt="preview" /></div>`;
     window.editAvatarData = base64;
   };
 
@@ -1348,7 +1348,7 @@ function openEditAvatarModal(empId, emp) {
       if (confirm("Remove your avatar?")) {
         window.editAvatarData = null;
         const preview = modal.querySelector("#edit-avatar-preview");
-        if (preview) preview.innerHTML = getAvatarHtml(emp, "", empId);
+        if (preview) preview.innerHTML = `<div class="avatar avatar-large">${getAvatarPlaceholder(empId)}</div>`;
       }
     };
   }
@@ -1408,7 +1408,7 @@ function openEditEmpModal(empId, emp) {
       <div class="admin-edit-emp-avatar-section">
         <label class="field-label">AVATAR</label>
         <div id="edit-emp-avatar-preview" class="admin-edit-emp-avatar-large">
-          ${getAvatarHtml(emp, "", empId)}
+          ${getAvatarHtml(emp, "large", empId)}
         </div>
         <div class="avatar-upload">
           <input type="file" id="edit-emp-avatar-input" accept="image/*" />
@@ -1441,7 +1441,7 @@ function openEditEmpModal(empId, emp) {
     if (file.size > 500000) { showToast("Image too large (max 500KB)"); return; }
     const base64 = await fileToBase64(file);
     const preview = modal.querySelector("#edit-emp-avatar-preview");
-    preview.innerHTML = `<img class="avatar-img" src="${base64}" alt="preview" />`;
+    preview.innerHTML = `<div class="avatar avatar-large"><img class="avatar-img" src="${base64}" alt="preview" /></div>`;
     window.editEmpAvatarData = base64;
   };
 
@@ -1452,7 +1452,7 @@ function openEditEmpModal(empId, emp) {
       if (confirm("Remove avatar for this employee?")) {
         window.editEmpAvatarData = null;
         const preview = modal.querySelector("#edit-emp-avatar-preview");
-        if (preview) preview.innerHTML = getAvatarHtml(emp, "", empId);
+        if (preview) preview.innerHTML = `<div class="avatar avatar-large">${getAvatarPlaceholder(empId)}</div>`;
       }
     };
   }
