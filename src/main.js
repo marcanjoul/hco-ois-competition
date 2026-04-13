@@ -210,6 +210,7 @@ function startListeners() {
   onValue(dbRef.goals(), snap => {
     state.goals = snap.val() || {};
     if (state.currentUser) renderDash();
+    renderPickScreen();
     if (state.admin.tab === "goals") renderAdminTab();
   });
 }
@@ -384,6 +385,27 @@ function renderPickScreen(filterText = "") {
       compHero.classList.toggle("comp-ended", ended && winner);
       compHero.style.display = "block";
     }
+  }
+
+  // Display goals on pick screen if competition exists
+  const goalsEl = document.getElementById("pick-goals");
+  if (goalsEl && state.currentComp && state.currentUser) {
+    const compGoals = getCompGoals(state.currentComp);
+    const sph = getPlayerSph(state.currentUser, state.currentComp);
+    const todaySph = getTodaySph(state.currentUser, state.currentComp);
+    let goalsHtml = "";
+    if (compGoals.competition?.value) {
+      const g = compGoals.competition;
+      goalsHtml += `<div class="goal-block"><div class="goal-label">🎯 Competition Goal</div>${renderGoalBar(g.type === "sph" ? sph.sph : sph.total, g.value, g.type)}</div>`;
+    }
+    if (compGoals.daily?.value) {
+      const g = compGoals.daily;
+      goalsHtml += `<div class="goal-block"><div class="goal-label">☀️ Daily Goal</div>${renderGoalBar(g.type === "sph" ? todaySph.sph : todaySph.total, g.value, g.type)}</div>`;
+    }
+    goalsEl.innerHTML = goalsHtml;
+    goalsEl.style.display = goalsHtml ? "block" : "none";
+  } else if (goalsEl) {
+    goalsEl.style.display = "none";
   }
 
   const grid = document.getElementById("name-grid");

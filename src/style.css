@@ -552,6 +552,7 @@ html, body {
 
 /* ── Goals ── */
 .dash-goals { flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.pick-goals { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; padding: 0 20px; }
 .goal-block { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; box-shadow: var(--shadow); }
 .goal-label { font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; color: var(--text2); margin-bottom: 8px; }
 .goal-progress-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
