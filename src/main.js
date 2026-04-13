@@ -448,7 +448,7 @@ function renderPickScreen(filterText = "") {
 
   if (filtered.length === 0) {
     grid.classList.add("empty");
-    grid.innerHTML = filterText ? "No employees found 🔍" : "No employees yet — add them in Admin";
+    grid.innerHTML = filterText ? "No employees found" : "No employees yet — add them in Manager";
     document.getElementById("search-results-info")?.classList.add("hidden");
     return;
   }
