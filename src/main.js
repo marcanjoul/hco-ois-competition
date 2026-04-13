@@ -74,6 +74,16 @@ function slugify(str) {
   return str.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
 }
 
+// ── Reactive button state helper ──────────────────────
+window.updateBtnState = function(inputId, btnId) {
+  const input = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  if (!input || !btn) return;
+  const hasValue = input.value.trim().length > 0;
+  btn.disabled = !hasValue;
+  btn.classList.toggle("btn-ghost", !hasValue);
+};
+
 // ══════════════════════════════════════════════════════
 // Realtime listeners
 // ══════════════════════════════════════════════════════
@@ -221,15 +231,39 @@ function renderDash() {
   DAYS.forEach(d => {
     const btn = document.createElement("button");
     const hasEntry = myLogs[d] && (myLogs[d].sales > 0 || myLogs[d].hours > 0);
-    btn.className = `day-btn${state.selectedDay === d ? " active" : ""}`;
+    btn.className = `day-btn${state.selectedDay === d ? " active" : ""}${hasEntry ? " logged" : ""}`;
     btn.textContent = d + (hasEntry ? " ✓" : "");
     btn.onclick = () => { state.selectedDay = d; renderDash(); };
     dayRow.appendChild(btn);
   });
 
   const existing = myLogs[state.selectedDay];
-  document.getElementById("input-sales").value = existing ? existing.sales || "" : "";
-  document.getElementById("input-hours").value = existing ? existing.hours || "" : "";
+  const isLocked = !!(existing && (existing.sales > 0 || existing.hours > 0));
+
+  const salesInput = document.getElementById("input-sales");
+  const hoursInput = document.getElementById("input-hours");
+  const logBtn = document.getElementById("btn-log");
+
+  salesInput.value = existing ? existing.sales || "" : "";
+  hoursInput.value = existing ? existing.hours || "" : "";
+
+  if (isLocked) {
+    salesInput.readOnly = true;
+    hoursInput.readOnly = true;
+    salesInput.classList.add("input-locked");
+    hoursInput.classList.add("input-locked");
+    logBtn.disabled = true;
+    logBtn.classList.add("btn-disabled");
+    logBtn.textContent = "✓ Already Logged — See Admin to Edit";
+  } else {
+    salesInput.readOnly = false;
+    hoursInput.readOnly = false;
+    salesInput.classList.remove("input-locked");
+    hoursInput.classList.remove("input-locked");
+    logBtn.disabled = false;
+    logBtn.classList.remove("btn-disabled");
+    logBtn.textContent = "+ LOG IT";
+  }
 
   const historyList = document.getElementById("history-list");
   historyList.innerHTML = "";
@@ -634,8 +668,19 @@ function renderAdminLogCreate(empId, compId, day) {
         <input type="number" id="admin-create-hours" class="log-input" placeholder="0.0" min="0" step="0.5" />
       </div>
     </div>
-    <button class="log-btn" id="admin-create-log-btn" style="margin-top:10px;">+ CREATE LOG</button>
+    <button class="log-btn btn-ghost" id="admin-create-log-btn" style="margin-top:10px;" disabled>+ CREATE LOG</button>
   `;
+
+  // Make create button reactive to inputs
+  const salesEl = document.getElementById("admin-create-sales");
+  const hoursEl = document.getElementById("admin-create-hours");
+  function checkCreateReady() {
+    const ready = salesEl.value.trim() !== "" && hoursEl.value.trim() !== "";
+    const btn = document.getElementById("admin-create-log-btn");
+    if (btn) { btn.disabled = !ready; btn.classList.toggle("btn-ghost", !ready); }
+  }
+  salesEl.oninput = checkCreateReady;
+  hoursEl.oninput = checkCreateReady;
 
   document.getElementById("admin-create-log-btn").onclick = async () => {
     const sales = parseFloat(document.getElementById("admin-create-sales").value);

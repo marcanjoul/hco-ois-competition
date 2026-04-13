@@ -148,8 +148,8 @@
           </div>
           <div id="admin-comp-list" class="admin-list"></div>
           <div class="admin-new-row" style="margin-top:8px;">
-            <input type="text" id="input-new-comp" class="log-input" placeholder="New competition name" />
-            <button class="mini-btn" id="btn-add-comp">+ Add</button>
+            <input type="text" id="input-new-comp" class="log-input" placeholder="New competition name" oninput="updateBtnState('input-new-comp','btn-add-comp')" />
+            <button class="mini-btn btn-ghost" id="btn-add-comp" disabled>+ Add</button>
           </div>
         </div>
 
@@ -162,8 +162,8 @@
           <input type="text" id="admin-emp-search" class="log-input" placeholder="🔍 Search employees..." style="margin-bottom:10px;" />
           <div id="admin-emp-list" class="admin-list"></div>
           <div class="admin-new-row" style="margin-top:8px;">
-            <input type="text" id="input-new-emp" class="log-input" placeholder="New employee name" />
-            <button class="mini-btn" id="btn-add-emp">+ Add</button>
+            <input type="text" id="input-new-emp" class="log-input" placeholder="New employee name" oninput="updateBtnState('input-new-emp','btn-add-emp')" />
+            <button class="mini-btn btn-ghost" id="btn-add-emp" disabled>+ Add</button>
           </div>
         </div>
 

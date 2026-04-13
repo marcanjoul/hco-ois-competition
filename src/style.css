@@ -871,3 +871,42 @@ select.log-input { cursor: pointer; }
 
 .admin-action-edit:hover { border-color: var(--accent); color: var(--accent); }
 .admin-action-delete:hover { border-color: #e53e3e; color: #e53e3e; }
+
+/* ── Locked / disabled states ── */
+.btn-disabled {
+  background: var(--surface2) !important;
+  color: var(--text3) !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  border: 2px solid var(--border) !important;
+  opacity: 1;
+}
+
+.btn-ghost {
+  background: var(--surface) !important;
+  color: var(--text3) !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  border: 2px solid var(--border) !important;
+  opacity: 1;
+}
+
+.input-locked {
+  background: var(--surface2) !important;
+  color: var(--text2) !important;
+  cursor: not-allowed !important;
+  border-color: var(--border) !important;
+}
+
+/* ── Day btn logged state ── */
+.day-btn.logged {
+  border-color: var(--green);
+  color: var(--green);
+  background: #f0fdf4;
+}
+
+.day-btn.logged.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
