@@ -243,9 +243,9 @@ function renderPickScreen(filterText = "") {
   const searchInput = document.getElementById("input-search-employees");
   if (searchInput && searchInput.value !== filterText) searchInput.value = filterText;
 
-  // Competition card — show only active comp
-  const compCard = document.getElementById("pick-comp-card");
-  if (compCard && state.currentComp) {
+  // Competition hero section — show only active comp
+  const compHero = document.getElementById("pick-comp-hero");
+  if (compHero && state.currentComp) {
     const comp = state.competitions[state.currentComp];
     if (comp) {
       const ended = isCompEnded(comp);
@@ -253,31 +253,34 @@ function renderPickScreen(filterText = "") {
       const winner = comp.winner ? state.employees[comp.winner] : null;
       const ranked = getRankedPlayers(state.currentComp);
       const winnerStats = winner ? ranked.find(r => r.id === comp.winner) : null;
-      let html = `<div class="pick-comp-name">${comp.name}</div>`;
 
-      if (ended && winner) {
-        html += `
-          <div class="comp-ended-banner">
-            <div class="comp-ended-trophy">🏆</div>
-            <div class="comp-ended-winner">${winner.name}</div>
-            <div class="comp-ended-sub">Won this competition</div>
-            ${winnerStats ? `<div class="comp-ended-stats">$${winnerStats.sph.toFixed(0)}/hr · $${winnerStats.total.toFixed(0)} total</div>` : ""}
-          </div>
-        `;
-      } else if (!ended && days !== null) {
-        const dayText = days <= 0 ? "Ends today!" : `${days} day${days !== 1 ? "s" : ""} left`;
-        html += `<div class="comp-countdown">${dayText}</div>`;
-      }
+      let html = `<div class="pick-comp-hero-content">`;
+      html += `<div class="pick-comp-hero-title">${comp.name}</div>`;
 
       if (comp.prize) {
-        html += `<div class="comp-reward"><span class="comp-reward-label">🎁 REWARD</span><span class="comp-reward-value">${comp.prize}</span></div>`;
-      }
-      if (comp.startDate && comp.endDate) {
-        html += `<div class="comp-dates">${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}</div>`;
+        html += `<div class="pick-comp-hero-reward">🎁 ${comp.prize}</div>`;
       }
 
-      compCard.innerHTML = html;
-      compCard.style.display = "block";
+      if (comp.startDate && comp.endDate) {
+        html += `<div class="pick-comp-hero-dates">${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}</div>`;
+      }
+
+      if (ended && winner) {
+        html += `<div class="pick-comp-hero-countdown">🏆 ${winner.name} won!`;
+        if (winnerStats) {
+          html += ` $${winnerStats.sph.toFixed(0)}/hr`;
+        }
+        html += `</div>`;
+      } else if (!ended && days !== null) {
+        const dayText = days <= 0 ? "⏰ Ends today!" : `⏱️ ${days} day${days !== 1 ? "s" : ""} left`;
+        html += `<div class="pick-comp-hero-countdown">${dayText}</div>`;
+      }
+
+      html += `</div>`;
+
+      compHero.innerHTML = html;
+      compHero.classList.toggle("comp-ended", ended && winner);
+      compHero.style.display = "block";
     }
   }
 
@@ -329,6 +332,14 @@ function showScreen(name) {
   state.currentScreen = name;
   window.scrollTo(0, 0);
 
+  // Hide header on home page
+  const header = document.getElementById("app-header");
+  if (name === "pick") {
+    header.classList.add("hidden");
+  } else {
+    header.classList.remove("hidden");
+  }
+
   // Update nav active state
   document.querySelectorAll(".nav-btn").forEach(b => {
     const screen = b.dataset.screen;
@@ -363,7 +374,6 @@ function enterAsDashboard(empId) {
   state.currentUser = empId;
   document.getElementById("input-search-employees").value = "";
   document.getElementById("app-header").classList.remove("hidden");
-  document.getElementById("bottom-nav").classList.remove("hidden");
   showScreen("dash");
   renderDash(); renderBoard(); renderAllTime();
 }
@@ -1352,6 +1362,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (searchInput) searchInput.oninput = () => renderPickScreen(searchInput.value);
 
   // Bottom nav
+  document.getElementById("nav-home").onclick = () => showScreen("pick");
   document.getElementById("nav-dash").onclick = () => showScreen("dash");
   document.getElementById("nav-board").onclick = () => { renderBoard(); showScreen("board"); };
   document.getElementById("nav-alltime").onclick = () => { renderAllTime(); showScreen("alltime"); };

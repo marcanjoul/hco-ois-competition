@@ -19,8 +19,12 @@
   </header>
 
   <!-- ── PERSISTENT BOTTOM NAV ── -->
-  <nav class="bottom-nav hidden" id="bottom-nav">
-    <button class="nav-btn active" data-screen="dash" id="nav-dash">
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="nav-btn" data-screen="pick" id="nav-home">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Home</span>
+    </button>
+    <button class="nav-btn" data-screen="dash" id="nav-dash">
       <span class="nav-icon">📊</span>
       <span class="nav-label">My Stats</span>
     </button>
@@ -42,13 +46,15 @@
   <div id="screen-pick" class="screen active">
     <div class="pick-bg-stripe"></div>
     <div class="pick-inner">
+      <!-- Active competition hero section -->
+      <div id="pick-comp-hero" class="pick-comp-hero" style="display:none;"></div>
+
       <div class="logo-lockup">
         <div class="logo-icon">🏆</div>
         <h1 class="logo-title store-name">OIS Competition</h1>
       </div>
       <div id="site-banner" class="site-banner" style="display:none;"></div>
-      <!-- Active competition card -->
-      <div id="pick-comp-card" class="pick-comp-card" style="display:none;"></div>
+
       <label class="field-label" style="margin-top:16px;">WHO ARE YOU?</label>
       <div class="search-wrap">
         <input type="text" id="input-search-employees" class="log-input" placeholder="🔍 Search employees..." autocomplete="off" />
