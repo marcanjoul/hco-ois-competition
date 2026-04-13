@@ -64,42 +64,42 @@
   /* ── Typography Scale ── */
   /* Display: Huge, rare, only for app branding */
   --type-display-family: 'Bebas Neue', sans-serif;
-  --type-display-size: 36px;
+  --type-display-size: 28px;
   --type-display-weight: 400;
   --type-display-letter-spacing: 2px;
   --type-display-line-height: 1;
 
   /* Heading: Page/section titles, hero moments */
   --type-heading-family: 'Bebas Neue', sans-serif;
-  --type-heading-size: 36px;
+  --type-heading-size: 28px;
   --type-heading-weight: 400;
   --type-heading-letter-spacing: 2px;
   --type-heading-line-height: 1;
 
   /* Subheading: Card titles, stat labels */
   --type-subheading-family: 'Bebas Neue', sans-serif;
-  --type-subheading-size: 32px;
+  --type-subheading-size: 28px;
   --type-subheading-weight: 400;
   --type-subheading-letter-spacing: 1px;
   --type-subheading-line-height: 1.1;
 
   /* Title: Component headings */
   --type-title-family: 'Bebas Neue', sans-serif;
-  --type-title-size: 24px;
+  --type-title-size: 22px;
   --type-title-weight: 400;
   --type-title-letter-spacing: 1px;
   --type-title-line-height: 1.2;
 
   /* Body: Main content, readable prose */
   --type-body-family: 'Nunito', sans-serif;
-  --type-body-size: 18px;
+  --type-body-size: 16px;
   --type-body-weight: 600;
   --type-body-letter-spacing: 0;
   --type-body-line-height: 1.5;
 
   /* Label: Form labels, small headings, uppercase */
   --type-label-family: 'Nunito', sans-serif;
-  --type-label-size: 14px;
+  --type-label-size: 12px;
   --type-label-weight: 800;
   --type-label-letter-spacing: 1px;
   --type-label-line-height: 1.2;
@@ -113,7 +113,7 @@
 
   /* Small: Tiny supporting text, secondary info */
   --type-small-family: 'Nunito', sans-serif;
-  --type-small-size: 12px;
+  --type-small-size: 11px;
   --type-small-weight: 600;
   --type-small-letter-spacing: 0;
   --type-small-line-height: 1.3;
