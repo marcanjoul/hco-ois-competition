@@ -348,7 +348,7 @@ async function logEntryFromPick() {
   const hours = parseFloat(document.getElementById("pick-input-hours").value);
   if (isNaN(sales) || sales < 0) { showToast("Enter a valid sales amount 💸"); return; }
   if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked ⏱️"); return; }
-  if (!state.currentUser) { showToast("Select who you are first 👤"); return; }
+  if (!state.currentUser) { showToast("Select your name first 👤"); return; }
   if (state.competitions[state.currentComp]?.status === "closed") { showToast("This competition is closed 🔒"); return; }
 
   const today = getTodayDate();
