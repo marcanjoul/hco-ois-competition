@@ -121,7 +121,7 @@
   /* ── Layout ── */
   --header-height: 60px;
   --nav-height: 72px;
-  --max-width: 480px;
+  --max-width: 580px;
   --gutter: 16px;
 }
 
@@ -787,7 +787,7 @@ input, select, textarea {
   background: rgba(25, 32, 56, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-md);
-  padding: var(--space-4);
+  padding: var(--space-4) var(--space-8);
   margin-bottom: var(--space-4);
   box-shadow: var(--shadow-elevation-1);
   backdrop-filter: blur(20px);
@@ -874,27 +874,28 @@ input, select, textarea {
   gap: var(--space-2);
   margin-bottom: var(--space-3);
   align-items: center;
-  margin-left: calc(var(--space-4) * -1);
-  margin-right: calc(var(--space-4) * -1);
-  padding: 0 var(--space-2);
+  margin-left: calc(var(--space-8) * -1);
+  margin-right: calc(var(--space-8) * -1);
+  padding: 0 var(--space-4);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 .week-nav-btn {
-  padding: var(--space-2) var(--space-2);
+  padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(25, 32, 56, 0.3);
   color: var(--color-text-primary);
   font-family: var(--type-body-family);
   font-weight: 800;
-  font-size: 16px;
+  font-size: 20px;
   flex-shrink: 0;
   transition: all 0.15s ease;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  min-width: 48px;
+  min-width: 56px;
+  min-height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1076,6 +1077,17 @@ input, select, textarea {
 
 /* ── INPUTS & FORM FIELDS ── */
 
+/* Remove number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 .log-input {
   width: 100%;
   background: rgba(25, 32, 56, 0.3);
@@ -1182,13 +1194,14 @@ select.log-input:focus {
 .log-btn:disabled,
 .log-btn.btn-disabled,
 .log-btn.btn-ghost {
-  background: rgba(25, 32, 56, 0.3);
+  background: rgba(25, 32, 56, 0.2);
   color: var(--color-text-tertiary);
   box-shadow: none;
   cursor: not-allowed;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  opacity: 0.5;
 }
 
 .admin-gate-body #btn-pin-submit {
