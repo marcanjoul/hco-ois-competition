@@ -1115,8 +1115,16 @@ function renderAdminComps(container) {
   const newCompSection = document.createElement("div");
   newCompSection.className = "goal-admin-block";
   newCompSection.style.marginTop = "14px";
-  newCompSection.innerHTML = `
-    <div class="goal-admin-label">+ NEW COMPETITION</div>
+
+  const toggleBtn = document.createElement("button");
+  toggleBtn.className = "collapsible-toggle";
+  toggleBtn.innerHTML = `+ NEW COMPETITION <span class="collapsible-toggle-icon">▼</span>`;
+
+  const collapsibleContent = document.createElement("div");
+  collapsibleContent.id = "new-comp-form";
+  collapsibleContent.style.display = "none";
+  collapsibleContent.style.marginTop = "8px";
+  collapsibleContent.innerHTML = `
     <div style="margin-top:8px;">
       <label class="field-label">NAME *</label>
       <input type="text" id="input-new-comp" class="log-input" placeholder="e.g.OIS Competition" style="margin-bottom:8px;" />
@@ -1142,7 +1150,17 @@ function renderAdminComps(container) {
     </div>
     <button class="log-btn btn-ghost" id="btn-add-comp" disabled>+ CREATE COMPETITION</button>
   `;
+
+  newCompSection.appendChild(toggleBtn);
+  newCompSection.appendChild(collapsibleContent);
   container.appendChild(newCompSection);
+
+  // Toggle functionality
+  toggleBtn.onclick = () => {
+    const isHidden = collapsibleContent.style.display === "none";
+    collapsibleContent.style.display = isHidden ? "block" : "none";
+    toggleBtn.classList.toggle("expanded", isHidden);
+  };
 
   // Setup formatting buttons for new competition
   setupPrizeFormatButtons("input-new-comp-prize");
