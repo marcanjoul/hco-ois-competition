@@ -474,3 +474,85 @@ select.log-input { cursor: pointer; }
 
 /* ── Utility ── */
 .hidden { display: none !important; }
+
+/* ── Competition Info Card ── */
+.comp-info-card {
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.comp-ended-banner {
+  background: linear-gradient(135deg, #FFFBF0, #FFF8E1);
+  border: 2px solid var(--gold);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.comp-ended-trophy { font-size: 2rem; margin-bottom: 4px; }
+
+.comp-ended-winner {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  color: #92400e;
+  line-height: 1;
+}
+
+.comp-ended-sub {
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #b45309;
+  margin-top: 4px;
+}
+
+.comp-ended-stats {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #92400e;
+  margin-top: 6px;
+}
+
+.comp-countdown {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+
+.comp-reward {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 8px;
+}
+
+.comp-reward-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--text2);
+  white-space: nowrap;
+}
+
+.comp-reward-value {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.comp-dates {
+  font-size: 0.72rem;
+  color: var(--text3);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-align: center;
+}

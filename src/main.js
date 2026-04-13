@@ -109,6 +109,7 @@ function startListeners() {
       if (ids.length) state.currentComp = ids[ids.length - 1];
     }
     renderPickScreen();
+    checkAndAutoCloseComps();
     if (state.admin.tab === "competitions") renderAdminTab();
     if (state.admin.tab === "goals") renderAdminTab();
   });
@@ -207,12 +208,62 @@ function renderPickScreen(filterText = "") {
     Object.entries(state.competitions)
       .filter(([, c]) => c.status !== "archived")
       .forEach(([id, comp]) => {
+        const ended = isCompEnded(comp);
         const btn = document.createElement("button");
         btn.className = `comp-tab${state.currentComp === id ? " active" : ""}`;
-        btn.textContent = comp.name + (comp.status === "closed" ? " 🔒" : "");
+        btn.textContent = comp.name + (ended ? " 🏁" : comp.status === "closed" ? " 🔒" : "");
         btn.onclick = () => { state.currentComp = id; renderPickScreen(filterText); };
         tabsEl.appendChild(btn);
       });
+  }
+
+  // Competition info card
+  const infoCard = document.getElementById("comp-info-card");
+  if (infoCard && state.currentComp) {
+    const comp = state.competitions[state.currentComp];
+    if (comp) {
+      const ended = isCompEnded(comp);
+      const days = daysRemaining(comp);
+      const winner = comp.winner ? state.employees[comp.winner] : null;
+      const ranked = getRankedPlayers(state.currentComp);
+      const winnerStats = winner ? ranked.find(r => r.id === comp.winner) : null;
+
+      let html = "";
+
+      if (ended && winner) {
+        // Ended — show winner prominently
+        html += `
+          <div class="comp-ended-banner">
+            <div class="comp-ended-trophy">🏆</div>
+            <div class="comp-ended-winner">${winner.name}</div>
+            <div class="comp-ended-sub">Won this competition</div>
+            ${winnerStats ? `<div class="comp-ended-stats">$${winnerStats.sph.toFixed(0)}/hr · $${winnerStats.total.toFixed(0)} total</div>` : ""}
+          </div>
+        `;
+      } else if (!ended) {
+        // Active — show countdown
+        if (days !== null && days > 0) {
+          html += `<div class="comp-countdown">${days} day${days !== 1 ? "s" : ""} left</div>`;
+        } else if (days === 0) {
+          html += `<div class="comp-countdown" style="color:var(--accent)">Ends today!</div>`;
+        }
+      }
+
+      // Reward
+      if (comp.prize) {
+        html += `<div class="comp-reward"><span class="comp-reward-label">🎁 REWARD</span><span class="comp-reward-value">${comp.prize}</span></div>`;
+      }
+
+      // Dates
+      if (comp.startDate && comp.endDate) {
+        html += `<div class="comp-dates">${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}</div>`;
+      }
+
+      infoCard.innerHTML = html;
+      infoCard.style.display = html ? "block" : "none";
+    } else {
+      infoCard.style.display = "none";
+    }
   }
 
   const searchInput = document.getElementById("input-search-employees");
@@ -504,6 +555,54 @@ function getRankedPlayers(compId) {
 }
 
 // ══════════════════════════════════════════════════════
+// Competition status helpers
+// ══════════════════════════════════════════════════════
+function isCompEnded(comp) {
+  if (!comp?.endDate) return false;
+  const end = new Date(comp.endDate);
+  end.setHours(23, 59, 59, 999);
+  return new Date() > end;
+}
+
+function isCompActive(comp) {
+  if (!comp?.startDate || !comp?.endDate) return comp?.status === "active";
+  const now = new Date();
+  const start = new Date(comp.startDate);
+  const end = new Date(comp.endDate);
+  end.setHours(23, 59, 59, 999);
+  return now >= start && now <= end && comp.status !== "closed" && comp.status !== "archived";
+}
+
+async function checkAndAutoCloseComps() {
+  for (const [id, comp] of Object.entries(state.competitions)) {
+    if (comp.status === "active" && isCompEnded(comp)) {
+      // Auto-close and pick winner
+      const ranked = getRankedPlayers(id);
+      const winner = ranked.find(p => p.hours > 0);
+      await update(dbRef.comp(id), {
+        status: "closed",
+        winner: winner ? winner.id : null,
+        autoClosedAt: Date.now(),
+      });
+    }
+  }
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+function daysRemaining(comp) {
+  if (!comp?.endDate) return null;
+  const end = new Date(comp.endDate);
+  end.setHours(23, 59, 59, 999);
+  const diff = Math.ceil((end - new Date()) / (1000 * 60 * 60 * 24));
+  return diff;
+}
+
+// ══════════════════════════════════════════════════════
 // Log entry
 // ══════════════════════════════════════════════════════
 async function logEntry() {
@@ -587,22 +686,63 @@ function renderAdminComps(container) {
     ));
   }
 
-  const addRow = document.createElement("div");
-  addRow.className = "admin-new-row";
-  addRow.style.marginTop = "12px";
-  addRow.innerHTML = `
-    <input type="text" id="input-new-comp" class="log-input" placeholder="New competition name" oninput="updateBtnState('input-new-comp','btn-add-comp')" />
-    <button class="mini-btn btn-ghost" id="btn-add-comp" disabled>+ Add</button>
+  // New competition form
+  const newCompSection = document.createElement("div");
+  newCompSection.className = "goal-admin-block";
+  newCompSection.style.marginTop = "14px";
+  newCompSection.innerHTML = `
+    <div class="goal-admin-label">+ NEW COMPETITION</div>
+    <div style="margin-top:8px;">
+      <label class="field-label">NAME *</label>
+      <input type="text" id="input-new-comp" class="log-input" placeholder="e.g. April OIS Competition" style="margin-bottom:8px;" />
+    </div>
+    <div style="margin-top:4px;">
+      <label class="field-label">REWARD (what the winner gets)</label>
+      <input type="text" id="input-new-comp-prize" class="log-input" placeholder="e.g. $50 gift card, early release Friday..." style="margin-bottom:8px;" />
+    </div>
+    <div class="log-fields" style="margin-bottom:8px;">
+      <div class="log-field-wrap">
+        <label class="field-label">START DATE *</label>
+        <input type="date" id="input-new-comp-start" class="log-input" />
+      </div>
+      <div class="log-field-wrap">
+        <label class="field-label">END DATE *</label>
+        <input type="date" id="input-new-comp-end" class="log-input" />
+      </div>
+    </div>
+    <button class="log-btn btn-ghost" id="btn-add-comp" disabled>+ CREATE COMPETITION</button>
   `;
-  container.appendChild(addRow);
+  container.appendChild(newCompSection);
+
+  // Reactive — enable button only when name + dates filled
+  const checkNewCompReady = () => {
+    const name = document.getElementById("input-new-comp")?.value.trim();
+    const start = document.getElementById("input-new-comp-start")?.value;
+    const end = document.getElementById("input-new-comp-end")?.value;
+    const btn = document.getElementById("btn-add-comp");
+    if (!btn) return;
+    const ready = !!(name && start && end && start <= end);
+    btn.disabled = !ready;
+    btn.classList.toggle("btn-ghost", !ready);
+  };
+  document.getElementById("input-new-comp").oninput = checkNewCompReady;
+  document.getElementById("input-new-comp-start").onchange = checkNewCompReady;
+  document.getElementById("input-new-comp-end").onchange = checkNewCompReady;
+
   document.getElementById("btn-add-comp").onclick = async () => {
     const name = document.getElementById("input-new-comp").value.trim();
-    if (!name) return;
+    const prize = document.getElementById("input-new-comp-prize").value.trim();
+    const startDate = document.getElementById("input-new-comp-start").value;
+    const endDate = document.getElementById("input-new-comp-end").value;
+    if (!name || !startDate || !endDate) return;
     const id = `comp_${Date.now()}`;
-    await set(dbRef.comp(id), { name, createdAt: Date.now(), status: "active" });
+    await set(dbRef.comp(id), { name, prize, startDate, endDate, createdAt: Date.now(), status: "active" });
     state.currentComp = id;
     document.getElementById("input-new-comp").value = "";
-    updateBtnState("input-new-comp", "btn-add-comp");
+    document.getElementById("input-new-comp-prize").value = "";
+    document.getElementById("input-new-comp-start").value = "";
+    document.getElementById("input-new-comp-end").value = "";
+    checkNewCompReady();
     showToast(`"${name}" created! 🏆`);
   };
 }
@@ -1085,6 +1225,54 @@ function renderAdminGoals(container) {
     document.getElementById("goal-val-globalAssociate").value = "";
     showToast("Cleared");
   };
+
+  // Individual goals
+  const indivTitle = document.createElement("div");
+  indivTitle.style.cssText = "font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;color:var(--text2);margin:16px 0 10px;border-top:2px solid var(--border);padding-top:14px;";
+  indivTitle.textContent = "INDIVIDUAL GOALS";
+  container.appendChild(indivTitle);
+
+  Object.entries(state.employees)
+    .filter(([, e]) => e.active !== false)
+    .sort(([, a], [, b]) => a.name.localeCompare(b.name))
+    .forEach(([empId, emp]) => {
+      const existing = compGoals.perAssociate?.[empId] || {};
+      const empSection = document.createElement("div");
+      empSection.className = "goal-admin-block";
+      empSection.innerHTML = `
+        <div class="goal-admin-label">${emp.name}</div>
+        <div class="log-fields" style="margin-top:6px;">
+          <div class="log-field-wrap">
+            <label class="field-label">TYPE</label>
+            <select id="goal-type-emp-${empId}" class="log-input">
+              <option value="sph"${existing.type === "sph" ? " selected" : ""}>$/hr</option>
+              <option value="total"${existing.type === "total" ? " selected" : ""}>Total $</option>
+            </select>
+          </div>
+          <div class="log-field-wrap">
+            <label class="field-label">TARGET</label>
+            <input type="number" id="goal-val-emp-${empId}" class="log-input" placeholder="optional" value="${existing.value || ""}" min="0" step="1" />
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <button class="mini-btn" id="goal-save-emp-${empId}">Save</button>
+          <button class="mini-btn" style="background:var(--bg);color:var(--text2);border:2px solid var(--border);" id="goal-clear-emp-${empId}">Clear</button>
+        </div>
+      `;
+      container.appendChild(empSection);
+      document.getElementById(`goal-save-emp-${empId}`).onclick = async () => {
+        const type = document.getElementById(`goal-type-emp-${empId}`).value;
+        const value = parseFloat(document.getElementById(`goal-val-emp-${empId}`).value);
+        if (isNaN(value) || value <= 0) { showToast("Enter a valid target"); return; }
+        await set(ref(db, `goals/${compId}/perAssociate/${empId}`), { type, value });
+        showToast(`${emp.name}'s goal saved ✅`);
+      };
+      document.getElementById(`goal-clear-emp-${empId}`).onclick = async () => {
+        await remove(ref(db, `goals/${compId}/perAssociate/${empId}`));
+        document.getElementById(`goal-val-emp-${empId}`).value = "";
+        showToast("Cleared");
+      };
+    });
 }
 
 // ══════════════════════════════════════════════════════
