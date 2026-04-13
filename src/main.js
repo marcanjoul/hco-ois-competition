@@ -154,7 +154,7 @@ function startListeners() {
   onValue(dbRef.emps(), snap => {
     state.employees = snap.val() || {};
     renderPickScreen();
-    if (state.currentUser) { renderDash(); renderBoard(); renderAllTime(); }
+    if (state.currentUser) { renderDash(); renderBoard(); }
     if (state.admin.tab === "employees") renderAdminTab();
     if (state.admin.tab === "logs") renderAdminTab();
     if (state.admin.tab === "goals") renderAdminTab();
@@ -163,7 +163,7 @@ function startListeners() {
   onValue(dbRef.logs(), snap => {
     state.logs = snap.val() || {};
     renderPickScreen();
-    if (state.currentUser) { renderDash(); renderBoard(); renderAllTime(); }
+    if (state.currentUser) { renderDash(); renderBoard(); }
     if (state.admin.tab === "logs" && state.admin.selectedEmp) refreshAdminDayView();
   });
 
@@ -291,7 +291,7 @@ function renderPickScreen(filterText = "") {
   const hasLogs = hasLogsInComp(state.currentComp);
   const players = hasLogs ? getRankedPlayers(state.currentComp) : getAlphabeticalPlayers(state.currentComp);
   const filtered = Object.entries(state.employees)
-    .filter(([, emp]) => emp.active !== false && emp.name.toLowerCase().includes(filterText.toLowerCase()));
+    .filter(([, emp]) => emp.name.toLowerCase().includes(filterText.toLowerCase()));
 
   if (filtered.length === 0) {
     grid.classList.add("empty");
@@ -304,7 +304,7 @@ function renderPickScreen(filterText = "") {
   const resultsInfo = document.getElementById("search-results-info");
   if (resultsInfo) {
     if (filterText) {
-      resultsInfo.textContent = `${filtered.length} of ${Object.values(state.employees).filter(e => e.active !== false).length} employees`;
+      resultsInfo.textContent = `${filtered.length} of ${Object.keys(state.employees).length} employees`;
       resultsInfo.classList.remove("hidden");
     } else {
       resultsInfo.classList.add("hidden");
@@ -354,9 +354,6 @@ function showScreen(name) {
     if (name === "board") {
       headerName.textContent = "LEADERBOARD";
       headerComp.textContent = state.competitions[state.boardComp]?.name || "";
-    } else if (name === "alltime") {
-      headerName.textContent = "ALL-TIME";
-      headerComp.textContent = "All competitions";
     } else if (name === "dash") {
       const emp = state.employees[state.currentUser];
       if (emp) headerName.textContent = emp.name.toUpperCase();
@@ -590,50 +587,6 @@ function renderBoard() {
 // ══════════════════════════════════════════════════════
 // All-Time
 // ══════════════════════════════════════════════════════
-function renderAllTime() {
-  const body = document.getElementById("alltime-body");
-  if (!body) return;
-  body.innerHTML = "";
-  const totals = {};
-  Object.entries(state.employees).forEach(([id, emp]) => { totals[id] = { id, name: emp.name, total: 0, hours: 0 }; });
-  Object.entries(state.logs).forEach(([, compLogs]) => {
-    Object.entries(compLogs || {}).forEach(([empId, empLogs]) => {
-      if (!totals[empId]) return;
-      Object.values(empLogs || {}).forEach(log => { totals[empId].total += log.sales || 0; totals[empId].hours += log.hours || 0; });
-    });
-  });
-  const ranked = Object.values(totals)
-    .map(p => ({ ...p, sph: p.hours > 0 ? p.total / p.hours : 0 }))
-    .filter(p => p.total > 0 || p.hours > 0)
-    .sort((a, b) => b.sph - a.sph);
-
-  if (ranked.length === 0) {
-    body.innerHTML = `<p style="color:var(--text3);text-align:center;padding:40px;font-size:0.85rem">No all-time data yet. Start logging! 🏆</p>`;
-    return;
-  }
-  const topSph = ranked[0]?.sph || 1;
-  ranked.forEach((player, i) => {
-    const rankLabel = i === 0 ? "👑" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
-    const pct = topSph > 0 ? Math.max(4, (player.sph / topSph) * 100) : 4;
-    const card = document.createElement("div");
-    card.className = `board-card${i < 3 ? ` rank-${i + 1}` : ""}`;
-    card.style.animationDelay = `${i * 0.05}s`;
-    card.innerHTML = `
-      <div class="board-rank">${rankLabel}</div>
-      <div class="board-info">
-        <div class="board-name">${player.name}</div>
-        <div class="board-meta">$${player.total.toFixed(2)} total · ${player.hours.toFixed(1)} hrs all-time</div>
-        <div class="board-bar-wrap"><div class="board-bar" style="width:${pct}%"></div></div>
-      </div>
-      <div>
-        <div class="board-sph" style="color:${i === 0 ? "var(--accent)" : "var(--text)"}">$${player.sph.toFixed(0)}</div>
-        <div class="board-sph-label">/HR</div>
-      </div>
-    `;
-    body.appendChild(card);
-  });
-}
-
 // ══════════════════════════════════════════════════════
 // Helper
 // ══════════════════════════════════════════════════════
@@ -648,7 +601,6 @@ function hasLogsInComp(compId) {
 function getAlphabeticalPlayers(compId) {
   const compLogs = state.logs[compId] || {};
   return Object.entries(state.employees)
-    .filter(([, emp]) => emp.active !== false)
     .map(([id, emp]) => {
       const empLogs = compLogs[id] || {};
       let total = 0, hours = 0;
@@ -662,7 +614,6 @@ function getRankedPlayers(compId) {
   const compLogs = state.logs[compId] || {};
   const metric = state.settings.rankingMetric || "sph";
   return Object.entries(state.employees)
-    .filter(([, emp]) => emp.active !== false)
     .map(([id, emp]) => {
       const empLogs = compLogs[id] || {};
       let total = 0, hours = 0;
@@ -765,7 +716,7 @@ function renderAdminComps(container) {
     <div class="goal-admin-label">+ NEW COMPETITION</div>
     <div style="margin-top:8px;">
       <label class="field-label">NAME *</label>
-      <input type="text" id="input-new-comp" class="log-input" placeholder="e.g. April OIS Competition" style="margin-bottom:8px;" />
+      <input type="text" id="input-new-comp" class="log-input" placeholder="e.g.OIS Competition" style="margin-bottom:8px;" />
     </div>
     <div style="margin-top:4px;">
       <label class="field-label">REWARD (what the winner gets)</label>
@@ -862,7 +813,6 @@ function renderCompEditPanel(compId, comp) {
   noWin.value = ""; noWin.textContent = "— Auto / No winner set —";
   winnerSel.appendChild(noWin);
   Object.entries(state.employees)
-    .filter(([, e]) => e.active !== false)
     .sort(([, a], [, b]) => a.name.localeCompare(b.name))
     .forEach(([id, emp]) => {
       const opt = document.createElement("option");
@@ -892,7 +842,7 @@ function renderCompEditPanel(compId, comp) {
     if (confirm(`Delete "${comp.name}"? All logs will be removed.`)) {
       await remove(dbRef.comp(compId));
       await remove(ref(db, `logs/${compId}`));
-      renderAllTime();
+      delete state.logs[compId];
       state.admin.tab = "competitions"; renderAdminTabBar(); renderAdminTab();
     }
   });
@@ -928,13 +878,8 @@ function renderAdminEmps(container) {
       const item = document.createElement("div");
       item.className = "admin-item";
       item.id = `admin-emp-item-${id}`;
-      const inactive = emp.active === false;
-      item.innerHTML = `<span class="admin-item-name${inactive ? " inactive-emp" : ""}">${inactive ? "😴 " : ""}${emp.name}</span>`;
+      item.innerHTML = `<span class="admin-item-name">${emp.name}</span>`;
       item.appendChild(makeBtn("✏️ Rename", "del-btn", () => inlineRenameEmp(id, emp.name)));
-      item.appendChild(makeBtn(inactive ? "✅ Activate" : "😴 Deactivate", "del-btn", async () => {
-        await update(dbRef.emp(id), { active: !inactive });
-        showToast(inactive ? `${emp.name} activated` : `${emp.name} deactivated`);
-      }));
       item.appendChild(makeBtn("✕", "del-btn danger", async () => {
         if (confirm(`Remove "${emp.name}"?`)) await remove(dbRef.emp(id));
       }));
@@ -1004,7 +949,6 @@ function renderAdminLogs(container) {
   empSel.className = "log-input"; empSel.id = "admin-logs-emp";
   empSel.innerHTML = `<option value="">— Select employee —</option>`;
   Object.entries(state.employees)
-    .filter(([, e]) => e.active !== false)
     .sort(([, a], [, b]) => a.name.localeCompare(b.name))
     .forEach(([id, emp]) => {
       const opt = document.createElement("option");
@@ -1300,7 +1244,6 @@ function renderAdminGoals(container) {
   container.appendChild(indivTitle);
 
   Object.entries(state.employees)
-    .filter(([, e]) => e.active !== false)
     .sort(([, a], [, b]) => a.name.localeCompare(b.name))
     .forEach(([empId, emp]) => {
       const existing = compGoals.perAssociate?.[empId] || {};
@@ -1402,7 +1345,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Bottom nav
   document.getElementById("nav-home").onclick = () => showScreen("pick");
   document.getElementById("nav-board").onclick = () => { renderBoard(); showScreen("board"); };
-  document.getElementById("nav-alltime").onclick = () => { renderAllTime(); showScreen("alltime"); };
   document.getElementById("nav-admin").onclick = () => {
     if (state.adminUnlocked) {
       openAdminPanel();

@@ -28,13 +28,9 @@
       <span class="nav-icon">🏆</span>
       <span class="nav-label">Board</span>
     </button>
-    <button class="nav-btn" data-screen="alltime" id="nav-alltime">
-      <span class="nav-icon">⭐</span>
-      <span class="nav-label">All-Time</span>
-    </button>
     <button class="nav-btn" data-screen="admin-gate" id="nav-admin">
       <span class="nav-icon">🔐</span>
-      <span class="nav-label">Admin</span>
+      <span class="nav-label">Manager</span>
     </button>
   </nav>
 
@@ -44,11 +40,8 @@
     <div class="pick-inner">
       <!-- Active competition hero section -->
       <div id="pick-comp-hero" class="pick-comp-hero" style="display:none;"></div>
+      <div id="no-comps-message" class="pick-comp-hero" style="display:none;text-align:center;padding:40px 20px;color:var(--text3);">No competitions at the moment. Come back soon! 🏆</div>
 
-      <div class="logo-lockup">
-        <div class="logo-icon">🏆</div>
-        <h1 class="logo-title store-name">OIS Competition</h1>
-      </div>
       <div id="site-banner" class="site-banner" style="display:none;"></div>
 
       <label class="field-label" style="margin-top:16px;">WHO ARE YOU?</label>
@@ -113,16 +106,6 @@
         <select id="board-comp-select" class="comp-select"></select>
       </div>
       <div class="board-body" id="board-body"></div>
-    </div>
-  </div>
-
-  <!-- ── SCREEN: All-Time ── -->
-  <div id="screen-alltime" class="screen">
-    <div class="screen-inner">
-      <div class="screen-top-bar">
-        <div class="screen-top-title">ALL-TIME</div>
-      </div>
-      <div class="board-body" id="alltime-body"></div>
     </div>
   </div>
 
