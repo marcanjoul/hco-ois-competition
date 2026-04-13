@@ -389,17 +389,17 @@ function renderPickScreen(filterText = "") {
 
       // Competition details (goals)
       const detailsEl = document.getElementById("pick-comp-details");
-      if (detailsEl && state.currentUser) {
+      if (detailsEl) {
         const compGoals = getCompGoals(state.currentComp);
         let detailsHtml = "";
 
         if (compGoals.competition?.value) {
           const g = compGoals.competition;
-          const sph = getPlayerSph(state.currentUser, state.currentComp);
+          const sph = state.currentUser ? getPlayerSph(state.currentUser, state.currentComp) : { sph: 0, total: 0 };
           const current = g.type === "sph" ? sph.sph : sph.total;
           detailsHtml += `
             <div class="comp-detail">
-              <div class="detail-label">Competition Goal</div>
+              <div class="detail-label">COMPETITION GOAL</div>
               ${renderGoalBar(current, g.value, g.type)}
             </div>
           `;
