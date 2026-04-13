@@ -1551,6 +1551,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   };
 
+  // Set home button as active on initial load
+  document.getElementById("nav-home").classList.add("active");
+
   // PIN submit
   document.getElementById("btn-pin-submit").onclick = () => {
     if (document.getElementById("input-pin").value.trim() === ADMIN_PIN) {
