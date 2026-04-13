@@ -252,21 +252,22 @@ function renderGoalBar(current, target, type) {
 // ══════════════════════════════════════════════════════
 // Vibe phrases
 // ══════════════════════════════════════════════════════
-function getVibe(sph, total, hasLogs) {
-  if (!hasLogs) return { emoji: "👋", text: "Tap 'Log It' to get on the board. Let's go!" };
-  if (sph >= 200) return { emoji: "🔥", text: "BRO. You're literally on fire rn. Unreal numbers." };
-  if (sph >= 150) return { emoji: "💰", text: "Okay bestie, you're EATING. Keep that energy up." };
-  if (sph >= 100) return { emoji: "⚡", text: "Solid numbers. You're built different fr." };
-  if (sph >= 60)  return { emoji: "📈", text: "Not bad at all! Push a little harder and you're top 3." };
-  if (sph >= 30)  return { emoji: "🤔", text: "You got this, but the board is calling your name. Wake up!" };
-  return           { emoji: "😬", text: "Bestie... we need to talk. Grind time." };
+function getVibe(sph, total, hasLogs, name = "") {
+  const greeting = name ? name : "You";
+  if (!hasLogs) return `Hey ${greeting}! Log your first OIS. You got this! 🚀`;
+  if (sph >= 25) return `You're crushing it ${greeting}!!!`;
+  if (sph >= 20) return `Yo ${greeting}, you're on another level today. Keep it going!`;
+  if (sph >= 15) return `You're killing it ${greeting}.`;
+  if (sph >= 10) return `Let's go ${greeting}! `;
+  if (sph >= 5)  return `Nice ${greeting}! Keep that energy and you'll be unstoppable.`;
+  return                `Keep pushing ${greeting}!`;
 }
 
 function getBigOrderReaction(amount) {
-  if (amount >= 500) return `💀 $${amount.toFixed(0)} ORDER?! They said take their whole wallet!`;
-  if (amount >= 300) return `🤑 $${amount.toFixed(0)} — okay they did NOT have to go that hard!`;
-  if (amount >= 200) return `🔥 $${amount.toFixed(0)} — sheesh! You're out here COLLECTING.`;
-  if (amount >= 100) return `💪 $${amount.toFixed(0)} order just dropped. Keep stacking!`;
+  if (amount >= 500) return `$${amount.toFixed(0)} ORDER?! They said take their whole wallet!`;
+  if (amount >= 300) return `$${amount.toFixed(0)}! Okay you did NOT have to go that hard!`;
+  if (amount >= 200) return `$${amount.toFixed(0)}! You're out here COLLECTING.`;
+  if (amount >= 100) return `$${amount.toFixed(0)} order just dropped. Keep stacking!`;
   return null;
 }
 
@@ -449,7 +450,7 @@ function renderDash() {
     }
   }
 
-  const vibe = getVibe(sph, totalSales, hasLogs);
+  const vibe = getVibe(sph, totalSales, hasLogs, emp.name);
   document.getElementById("vibe-emoji").textContent = vibe.emoji;
   document.getElementById("vibe-text").textContent  = vibe.text;
 
