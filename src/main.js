@@ -86,8 +86,11 @@ window.updateBtnState = function(inputId, btnId) {
 function applySettings(s = {}) {
   const color = s.accentColor || "#FF4D1C";
   const banner = s.bannerMessage || "";
-  document.documentElement.style.setProperty("--accent", color);
-  document.documentElement.style.setProperty("--accent2", color + "CC");
+  // Only apply valid hex colors
+  if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+    document.documentElement.style.setProperty("--accent", color);
+    // Don't touch accent2 — leave it as CSS default
+  }
   const bannerEl = document.getElementById("site-banner");
   if (bannerEl) {
     bannerEl.textContent = banner;
