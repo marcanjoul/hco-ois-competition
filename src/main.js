@@ -68,6 +68,37 @@ function slugify(str) {
   return str.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
 }
 
+// ══════════════════════════════════════════════════════
+// Avatar helpers
+// ══════════════════════════════════════════════════════
+const CUTE_PLACEHOLDERS = ["😊", "🎉", "⭐", "🚀", "🔥", "💎", "🎯", "👑", "🌟", "💪"];
+
+function getAvatarPlaceholder(empIdOrStr) {
+  // Deterministic placeholder based on employee ID
+  const str = (empIdOrStr || "").toString();
+  if (!str) return CUTE_PLACEHOLDERS[0];
+  const index = str.charCodeAt(0) % CUTE_PLACEHOLDERS.length;
+  return CUTE_PLACEHOLDERS[index];
+}
+
+function getAvatarHtml(emp, size = "", empId = "") {
+  const sizeClass = size ? ` avatar-${size}` : "";
+  if (emp.avatar && emp.avatar.startsWith("data:")) {
+    return `<div class="avatar${sizeClass}"><img class="avatar-img" src="${emp.avatar}" alt="${emp.name}" /></div>`;
+  }
+  const placeholder = getAvatarPlaceholder(empId || emp.id || emp.name);
+  return `<div class="avatar${sizeClass}"><span class="avatar-placeholder">${placeholder}</span></div>`;
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 window.updateBtnState = function(inputId, btnId) {
   const input = document.getElementById(inputId);
   const btn = document.getElementById(btnId);
@@ -470,7 +501,12 @@ function renderPickScreen(filterText = "") {
     const isWinner = state.competitions[state.currentComp]?.winner === id;
     const btn = document.createElement("button");
     btn.className = `name-btn${isWinner ? " name-btn-winner" : ""}`;
-    btn.innerHTML = `${pip ? `<span class="rank-pip">${pip}</span>` : ""}${isWinner ? "🏆 " : ""}${emp.name}`;
+    btn.innerHTML = `
+      ${getAvatarHtml(emp, "small", id)}
+      <div>
+        ${pip ? `<span class="rank-pip">${pip}</span>` : ""}${isWinner ? "🏆 " : ""}${emp.name}
+      </div>
+    `;
     btn.onclick = () => enterAsDashboard(id);
     grid.appendChild(btn);
   });
@@ -537,9 +573,47 @@ function enterAsDashboard(empId) {
   const empGrid = document.getElementById("pick-emp-grid");
   if (empGrid) empGrid.style.display = "none";
 
+  // Show selected employee profile card with editable avatar
+  showSelectedEmployeeProfile(empId, emp);
+
   // Update day row
   renderPickDayRow();
   updatePickLogBtnState();
+}
+
+function showSelectedEmployeeProfile(empId, emp) {
+  let profileCard = document.getElementById("pick-emp-profile");
+  if (!profileCard) {
+    profileCard = document.createElement("div");
+    profileCard.id = "pick-emp-profile";
+    const selector = document.getElementById("pick-emp-selector");
+    if (selector && selector.parentElement) {
+      selector.parentElement.parentElement.insertBefore(profileCard, selector.parentElement.nextSibling);
+    }
+  }
+
+  profileCard.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px;background:rgba(25,32,56,0.4);border-radius:12px;margin-bottom:16px;">
+      <div class="avatar avatar-large avatar-interactive" id="pick-emp-avatar-btn" style="cursor:pointer;opacity:0.9;" title="Click to edit avatar">
+        ${getAvatarHtml(emp, "", empId)}
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:20px;font-weight:700;color:var(--text);">${emp.name}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px;">Click avatar to edit</div>
+      </div>
+    </div>
+  `;
+
+  // Make avatar clickable to edit
+  document.getElementById("pick-emp-avatar-btn").onclick = (e) => {
+    e.stopPropagation();
+    openEditEmpModal(empId, emp);
+  };
+}
+
+function hideSelectedEmployeeProfile() {
+  const profileCard = document.getElementById("pick-emp-profile");
+  if (profileCard) profileCard.style.display = "none";
 }
 
 function renderPickEmpGrid(filterText = "") {
@@ -564,7 +638,7 @@ function renderPickEmpGrid(filterText = "") {
   filtered.forEach(([id, emp]) => {
     const btn = document.createElement("button");
     btn.className = "name-btn";
-    btn.textContent = emp.name;
+    btn.innerHTML = `${getAvatarHtml(emp, "small", id)} <span>${emp.name}</span>`;
     btn.onclick = () => enterAsDashboard(id);
     list.appendChild(btn);
   });
@@ -831,13 +905,17 @@ function renderBoard() {
     const val = metric === "sph" ? player.sph : player.total;
     const pct = topVal > 0 ? Math.max(4, (val / topVal) * 100) : 4;
     const isWinner = winner === player.id;
+    const emp = state.employees[player.id];
     const card = document.createElement("div");
     card.className = `board-card${i < 3 ? ` rank-${i + 1}` : ""}${isWinner ? " winner-card" : ""}`;
     card.style.animationDelay = `${i * 0.05}s`;
     card.innerHTML = `
       <div class="board-rank">${isWinner ? "🏆" : rankLabel}</div>
       <div class="board-info">
-        <div class="board-name">${player.name}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          ${getAvatarHtml(emp, "small", player.id)}
+          <div class="board-name">${player.name}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}</div>
+        </div>
         <div class="board-meta">$${player.total.toFixed(2)} total · ${player.hours.toFixed(1)} hrs</div>
         <div class="board-bar-wrap"><div class="board-bar" style="width:${pct}%"></div></div>
       </div>
@@ -1160,8 +1238,8 @@ function renderAdminEmps(container) {
       const item = document.createElement("div");
       item.className = "admin-item";
       item.id = `admin-emp-item-${id}`;
-      item.innerHTML = `<span class="admin-item-name">${emp.name}</span>`;
-      item.appendChild(makeBtn("✏️ Rename", "del-btn", () => inlineRenameEmp(id, emp.name)));
+      item.innerHTML = `${getAvatarHtml(emp, "small", id)} <span class="admin-item-name">${emp.name}</span>`;
+      item.appendChild(makeBtn("✏️ Edit", "del-btn", () => openEditEmpModal(id, emp)));
       item.appendChild(makeBtn("✕", "del-btn danger", async () => {
         if (confirm(`Remove "${emp.name}"?`)) await remove(dbRef.emp(id));
       }));
@@ -1197,25 +1275,120 @@ function renderAdminEmps(container) {
   };
 }
 
+// ══════════════════════════════════════════════════════
+// ADMIN — Edit Employee Modal
+// ══════════════════════════════════════════════════════
+function openEditEmpModal(empId, emp) {
+  // Create modal if it doesn't exist
+  let modal = document.getElementById("admin-edit-emp-modal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "admin-edit-emp-modal";
+    modal.className = "admin-edit-emp-modal";
+    document.body.appendChild(modal);
+    // Close on background click
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeEditEmpModal();
+    });
+  }
+
+  const empIdForPlaceholder = empId;
+  const currentAvatar = emp.avatar || getAvatarPlaceholder(empId);
+  const isCustomAvatar = emp.avatar && emp.avatar.startsWith("data:");
+
+  modal.innerHTML = `
+    <div class="admin-edit-emp-modal-content">
+      <div class="admin-edit-emp-modal-header">
+        <div>Edit Employee</div>
+        <button class="admin-edit-emp-modal-close" onclick="closeEditEmpModal()">✕</button>
+      </div>
+
+      <div class="admin-edit-emp-section">
+        <label class="field-label">NAME</label>
+        <input type="text" id="edit-emp-name" class="log-input" value="${emp.name}" placeholder="Employee name" />
+      </div>
+
+      <div class="admin-edit-emp-avatar-section">
+        <label class="field-label">AVATAR</label>
+        <div id="edit-emp-avatar-preview" class="admin-edit-emp-avatar-large">
+          ${getAvatarHtml(emp, "", empId)}
+        </div>
+        <div class="avatar-upload">
+          <input type="file" id="edit-emp-avatar-input" accept="image/*" />
+          <button class="avatar-upload-btn" onclick="document.getElementById('edit-emp-avatar-input').click()">📸 Upload Photo</button>
+        </div>
+        ${isCustomAvatar ? `<button class="mini-btn del-btn danger" onclick="deleteEmpAvatar('${empId}')">Remove Avatar</button>` : ""}
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <button class="log-btn" onclick="saveEditEmp('${empId}')">SAVE CHANGES</button>
+        <button class="log-btn" style="background:var(--bg);color:var(--text2);border:2px solid var(--border);box-shadow:none;" onclick="closeEditEmpModal()">CANCEL</button>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add("active");
+
+  // Handle avatar upload
+  const fileInput = document.getElementById("edit-emp-avatar-input");
+  fileInput.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Max 500KB
+    if (file.size > 500000) { showToast("Image too large (max 500KB)"); return; }
+
+    const base64 = await fileToBase64(file);
+    const preview = document.getElementById("edit-emp-avatar-preview");
+    preview.innerHTML = `<img class="avatar-img" src="${base64}" alt="preview" />`;
+    window.editEmpAvatarData = base64;
+  };
+}
+
+function closeEditEmpModal() {
+  const modal = document.getElementById("admin-edit-emp-modal");
+  if (modal) modal.classList.remove("active");
+  window.editEmpAvatarData = null;
+}
+
+function deleteEmpAvatar(empId) {
+  if (confirm("Remove avatar for this employee?")) {
+    window.editEmpAvatarData = null;
+    const emp = state.employees[empId];
+    if (emp) {
+      emp.avatar = null;
+      const preview = document.getElementById("edit-emp-avatar-preview");
+      if (preview) preview.innerHTML = getAvatarHtml(emp, "", empId);
+    }
+  }
+}
+
+async function saveEditEmp(empId) {
+  const newName = document.getElementById("edit-emp-name").value.trim();
+  if (!newName) { showToast("Enter a name"); return; }
+
+  const updates = { name: newName };
+
+  // Only update avatar if it was changed
+  if (window.editEmpAvatarData !== undefined) {
+    updates.avatar = window.editEmpAvatarData || null;
+  }
+
+  await update(dbRef.emp(empId), updates);
+  showToast("Employee updated ✅");
+  closeEditEmpModal();
+
+  // Refresh profile card if visible
+  const emp = state.employees[empId];
+  if (emp && state.currentUser === empId) {
+    showSelectedEmployeeProfile(empId, emp);
+  }
+
+  renderAdminTab();
+}
+
 function inlineRenameEmp(empId, currentName) {
-  const item = document.getElementById(`admin-emp-item-${empId}`);
-  if (!item) return;
-  item.innerHTML = "";
-  const wrap = document.createElement("div");
-  wrap.style.cssText = "display:flex;gap:8px;flex:1;align-items:center;";
-  const input = document.createElement("input");
-  input.type = "text"; input.className = "log-input"; input.value = currentName; input.style.flex = "1";
-  const saveBtn = makeBtn("Save", "mini-btn", async () => {
-    const newName = input.value.trim();
-    if (!newName) { showToast("Enter a name"); return; }
-    await update(dbRef.emp(empId), { name: newName });
-    showToast("Renamed ✅");
-  });
-  const cancelBtn = makeBtn("Cancel", "mini-btn", () => renderAdminTab());
-  cancelBtn.style.cssText += "background:var(--bg);color:var(--text2);border:2px solid var(--border);";
-  wrap.appendChild(input); wrap.appendChild(saveBtn); wrap.appendChild(cancelBtn);
-  item.appendChild(wrap);
-  input.focus(); input.select();
+  openEditEmpModal(empId, state.employees[empId]);
 }
 
 // ══════════════════════════════════════════════════════
@@ -1579,8 +1752,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       const isHidden = empGrid.classList.contains("hidden");
       empGrid.classList.toggle("hidden");
       if (isHidden) {
+        // Show grid and hide profile
+        const profileCard = document.getElementById("pick-emp-profile");
+        if (profileCard) profileCard.style.display = "none";
         renderPickEmpGrid();
         document.getElementById("pick-emp-search").focus();
+      } else {
+        // Hide grid and show profile
+        const profileCard = document.getElementById("pick-emp-profile");
+        if (profileCard) profileCard.style.display = "block";
       }
     };
   }
