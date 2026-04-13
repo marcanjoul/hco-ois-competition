@@ -1463,6 +1463,27 @@ select.log-input:focus {
   text-align: center;
 }
 
+#input-pin {
+  background: rgba(25, 32, 56, 0.5) !important;
+  border: 2px solid rgba(0, 217, 255, 0.3) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  font-size: 32px !important;
+  letter-spacing: 8px;
+  font-weight: 700 !important;
+  color: var(--color-accent) !important;
+}
+
+#input-pin:focus {
+  background: rgba(25, 32, 56, 0.7) !important;
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.3), inset 0 0 10px rgba(0, 217, 255, 0.1) !important;
+}
+
+#input-pin::placeholder {
+  color: rgba(0, 217, 255, 0.4) !important;
+}
+
 .admin-gate-icon {
   font-size: 48px;
   margin-bottom: var(--space-4);
