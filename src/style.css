@@ -145,150 +145,6 @@ html, body {
   margin-bottom: 20px;
 }
 
-.search-wrap {
-  margin-bottom: 16px;
-}
-
-.search-results-info {
-  font-size: 0.75rem;
-  color: var(--text3);
-  text-align: center;
-  margin-top: 8px;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-.search-results-info.hidden {
-  display: none;
-}
-
-.name-grid.empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  color: var(--text3);
-  font-size: 0.9rem;
-  text-align: center;
-  padding: 40px 20px;
-}
-
-.admin-day-buttons {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.admin-day-btn {
-  padding: 8px 14px;
-  border-radius: 99px;
-  border: 2px solid var(--border);
-  background: var(--bg);
-  color: var(--text2);
-  font-family: 'Nunito', sans-serif;
-  font-weight: 800;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 0.12s;
-  letter-spacing: 0.5px;
-  position: relative;
-}
-
-.admin-day-btn.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-
-.admin-day-btn.has-log::after {
-  content: " ✓";
-  color: var(--green);
-  font-weight: 900;
-}
-
-.admin-log-detail {
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 16px;
-}
-
-.admin-log-display {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 14px;
-}
-
-.admin-log-value {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.admin-log-value-label {
-  font-size: 0.65rem;
-  color: var(--text3);
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.admin-log-value-amount {
-  font-size: 1.4rem;
-  color: var(--text);
-  font-weight: 900;
-  font-family: 'Bebas Neue', sans-serif;
-}
-
-.admin-log-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.admin-log-actions button {
-  flex: 1;
-  padding: 10px 12px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Nunito', sans-serif;
-  font-weight: 800;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.admin-log-edit-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.admin-log-delete-btn:hover {
-  border-color: #e53e3e;
-  color: #e53e3e;
-}
-
-.admin-create-form {
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 16px;
-  margin-bottom: 14px;
-}
-
-.admin-comp-selector {
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 14px;
-}
-
-.admin-comp-selector.hidden {
-  display: none;
-}
-
 .name-btn {
   background: var(--surface);
   border: 2px solid var(--border);
@@ -520,7 +376,6 @@ html, body {
   transition: border-color 0.15s;
   -webkit-appearance: none;
   appearance: none;
-  cursor: text;
 }
 
 .log-input:focus { border-color: var(--accent); }
@@ -837,180 +692,6 @@ select.log-input { cursor: pointer; }
   cursor: pointer;
 }
 
-.scope-toggle {
-  flex: 1;
-  padding: 10px 12px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--bg);
-  color: var(--text2);
-  font-family: 'Nunito', sans-serif;
-  font-weight: 800;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 0.15s;
-  letter-spacing: 0.5px;
-}
-
-.scope-toggle.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-
-.admin-log-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.admin-log-item {
-  background: var(--bg);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.admin-log-item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.admin-log-item-day {
-  font-weight: 800;
-  font-size: 0.9rem;
-  color: var(--text);
-  flex: 1;
-}
-
-.admin-log-item-comp {
-  font-size: 0.7rem;
-  color: var(--text3);
-  margin-left: 8px;
-}
-
-.admin-log-item-details {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-  font-size: 0.8rem;
-}
-
-.admin-log-detail {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.admin-log-detail-label {
-  color: var(--text3);
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-}
-
-.admin-log-detail-value {
-  color: var(--text);
-  font-weight: 700;
-}
-
-.admin-log-item-actions {
-  display: flex;
-  gap: 6px;
-}
-
-.admin-log-item-actions button {
-  flex: 1;
-  padding: 8px 8px;
-  border: 2px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Nunito', sans-serif;
-  font-weight: 800;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.admin-edit-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.admin-delete-btn:hover {
-  border-color: #e53e3e;
-  color: #e53e3e;
-}
-
-.admin-log-item.editing {
-  background: var(--surface);
-  border-color: var(--accent);
-}
-
-.admin-log-item-edit-form {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.admin-log-item-edit-form .log-fields {
-  margin: 0;
-  gap: 8px;
-}
-
-.admin-log-item-edit-form .log-input {
-  padding: 10px 12px;
-  font-size: 0.9rem;
-}
-
-.admin-log-item-edit-actions {
-  display: flex;
-  gap: 6px;
-}
-
-.admin-log-item-edit-actions button {
-  flex: 1;
-  padding: 8px 8px;
-  border: 2px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Nunito', sans-serif;
-  font-weight: 800;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.admin-log-save-btn {
-  background: var(--accent) !important;
-  border-color: var(--accent) !important;
-  color: #fff !important;
-}
-
-.admin-log-cancel-btn:hover {
-  border-color: var(--text3);
-  color: var(--text3);
-}
-
-.admin-log-empty {
-  text-align: center;
-  padding: 20px;
-  color: var(--text3);
-  font-size: 0.8rem;
-}
-
-.admin-create-form {
-  background: var(--bg) !important;
-  border: 2px solid var(--border) !important;
-  border-radius: var(--radius-sm) !important;
-}
-
 /* ── Toast ── */
 .toast {
   position: fixed;
@@ -1046,3 +727,147 @@ select.log-input { cursor: pointer; }
 
 /* ── Utility ── */
 .hidden { display: none !important; }
+
+/* ── Admin section header ── */
+.admin-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.admin-section-header .admin-section-title {
+  margin-bottom: 0;
+}
+
+/* ── View all button ── */
+.view-all-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.72rem;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  padding: 4px 0;
+}
+
+/* ── Danger del btn ── */
+.del-btn.danger { border-color: #fcc; color: #e53e3e; }
+.del-btn.danger:hover { background: #fff0f0; border-color: #e53e3e; }
+
+/* ── Admin log detail wrap ── */
+.admin-log-detail-wrap {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+
+/* ── Admin log header ── */
+.admin-log-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.admin-log-header-name {
+  font-weight: 900;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.admin-log-header-sub {
+  font-size: 0.72rem;
+  color: var(--text2);
+  margin-top: 2px;
+}
+
+.admin-log-header-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.admin-log-header-badge.logged {
+  background: #e6f9ee;
+  color: var(--green);
+  border: 1.5px solid var(--green);
+}
+
+.admin-log-header-badge.not-logged {
+  background: #fff0ee;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+
+/* ── Admin log stats ── */
+.admin-log-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.admin-log-stat {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.admin-log-stat.accent {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.admin-log-stat.accent .admin-log-stat-label { color: rgba(255,255,255,0.8); }
+.admin-log-stat.accent .admin-log-stat-value { color: #fff; }
+
+.admin-log-stat-label {
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  color: var(--text2);
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.admin-log-stat-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  color: var(--text);
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+/* ── Admin log action buttons ── */
+.admin-log-actions-row {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-action-edit,
+.admin-action-delete {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.admin-action-edit:hover { border-color: var(--accent); color: var(--accent); }
+.admin-action-delete:hover { border-color: #e53e3e; color: #e53e3e; }

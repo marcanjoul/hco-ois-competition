@@ -6,8 +6,9 @@ import { ref, set, get, onValue, update, remove } from "firebase/database";
 // STEP 1 ▸ Add your employee names here
 // ─────────────────────────────────────────────────────
 const DEFAULT_EMPLOYEES = [
-"adam",
-"Ajla",
+  "adam",
+  "Ajla",
+  // Add more names...
 ];
 
 // ─────────────────────────────────────────────────────
@@ -19,6 +20,7 @@ const ADMIN_PIN = "1234"; // Change this!
 // Constants
 // ══════════════════════════════════════════════════════
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const PREVIEW_COUNT = 5;
 
 // ── State ──────────────────────────────────────────
 let state = {
@@ -28,6 +30,13 @@ let state = {
   currentComp: null,
   currentUser: null,
   selectedDay: DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1],
+  admin: {
+    showAllComps: false,
+    showAllEmps: false,
+    selectedEmp: null,
+    selectedComp: null,
+    empSearch: "",
+  },
 };
 
 // ── Firebase refs ───────────────────────────────────
@@ -50,15 +59,11 @@ async function bootstrap() {
     get(dbRef.emps()),
     get(dbRef.comps()),
   ]);
-
   if (!empSnap.exists()) {
     const empUpdates = {};
-    DEFAULT_EMPLOYEES.forEach(name => {
-      empUpdates[slugify(name)] = { name };
-    });
+    DEFAULT_EMPLOYEES.forEach(name => { empUpdates[slugify(name)] = { name }; });
     await update(dbRef.emps(), empUpdates);
   }
-
   if (!compSnap.exists()) {
     const id = `comp_${Date.now()}`;
     await set(dbRef.comp(id), { name: "Week 1", createdAt: Date.now() });
@@ -87,18 +92,13 @@ function startListeners() {
     state.employees = snap.val() || {};
     renderPickScreen();
     renderAdminEmps();
-    renderAdminEditSelects();
-    populateAdminViewEmp();
   });
 
   onValue(dbRef.logs(), snap => {
     state.logs = snap.val() || {};
     renderPickScreen();
-    if (state.currentUser) {
-      renderDash();
-      renderBoard();
-      renderAllTime();
-    }
+    if (state.currentUser) { renderDash(); renderBoard(); renderAllTime(); }
+    if (state.admin.selectedEmp) refreshAdminDayView();
   });
 }
 
@@ -139,24 +139,18 @@ function renderPickScreen(filterText = "") {
     });
   }
 
-  // Update search input
   const searchInput = document.getElementById("input-search-employees");
-  if (searchInput && searchInput.value !== filterText) {
-    searchInput.value = filterText;
-  }
+  if (searchInput && searchInput.value !== filterText) searchInput.value = filterText;
 
   const grid = document.getElementById("name-grid");
   if (!grid) return;
   grid.innerHTML = "";
 
   const ranked = getRankedPlayers(state.currentComp);
-
-  // Filter employees by search text
-  const filtered = Object.entries(state.employees).filter(([id, emp]) =>
+  const filtered = Object.entries(state.employees).filter(([, emp]) =>
     emp.name.toLowerCase().includes(filterText.toLowerCase())
   );
 
-  // Handle empty results
   if (filtered.length === 0) {
     grid.classList.add("empty");
     grid.innerHTML = filterText ? "No employees found 🔍" : "No employees loaded";
@@ -165,8 +159,6 @@ function renderPickScreen(filterText = "") {
   }
 
   grid.classList.remove("empty");
-
-  // Update results info
   const resultsInfo = document.getElementById("search-results-info");
   if (filterText) {
     resultsInfo.textContent = `${filtered.length} of ${Object.keys(state.employees).length} employees`;
@@ -175,7 +167,6 @@ function renderPickScreen(filterText = "") {
     resultsInfo.classList.add("hidden");
   }
 
-  // Render filtered employees
   filtered.forEach(([id, emp]) => {
     const rank = ranked.findIndex(r => r.id === id);
     const pip = rank === 0 ? "👑" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : "";
@@ -194,9 +185,7 @@ function enterAsDashboard(empId) {
   state.currentUser = empId;
   document.getElementById("input-search-employees").value = "";
   showScreen("dash");
-  renderDash();
-  renderBoard();
-  renderAllTime();
+  renderDash(); renderBoard(); renderAllTime();
 }
 
 // ══════════════════════════════════════════════════════
@@ -212,10 +201,7 @@ function renderDash() {
 
   const myLogs = (state.logs[state.currentComp] || {})[state.currentUser] || {};
   let totalSales = 0, totalHours = 0;
-  Object.values(myLogs).forEach(d => {
-    totalSales += d.sales || 0;
-    totalHours += d.hours || 0;
-  });
+  Object.values(myLogs).forEach(d => { totalSales += d.sales || 0; totalHours += d.hours || 0; });
   const sph = totalHours > 0 ? totalSales / totalHours : 0;
   const hasLogs = Object.keys(myLogs).length > 0;
 
@@ -276,7 +262,6 @@ function renderDash() {
 function renderBoard() {
   const comp = state.competitions[state.currentComp];
   document.getElementById("board-comp-badge").textContent = comp ? comp.name : "";
-
   const ranked = getRankedPlayers(state.currentComp);
   const body = document.getElementById("board-body");
   body.innerHTML = "";
@@ -287,7 +272,6 @@ function renderBoard() {
   }
 
   const topSph = ranked[0]?.sph || 1;
-
   ranked.forEach((player, i) => {
     const rankLabel = i === 0 ? "👑" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
     const pct = topSph > 0 ? Math.max(4, (player.sph / topSph) * 100) : 4;
@@ -317,22 +301,14 @@ function renderBoard() {
 function renderAllTime() {
   const body = document.getElementById("alltime-body");
   body.innerHTML = "";
-
   const totals = {};
-  Object.entries(state.employees).forEach(([id, emp]) => {
-    totals[id] = { id, name: emp.name, total: 0, hours: 0 };
-  });
-
+  Object.entries(state.employees).forEach(([id, emp]) => { totals[id] = { id, name: emp.name, total: 0, hours: 0 }; });
   Object.entries(state.logs).forEach(([, compLogs]) => {
     Object.entries(compLogs || {}).forEach(([empId, empLogs]) => {
       if (!totals[empId]) return;
-      Object.values(empLogs || {}).forEach(log => {
-        totals[empId].total += log.sales || 0;
-        totals[empId].hours += log.hours || 0;
-      });
+      Object.values(empLogs || {}).forEach(log => { totals[empId].total += log.sales || 0; totals[empId].hours += log.hours || 0; });
     });
   });
-
   const ranked = Object.values(totals)
     .map(p => ({ ...p, sph: p.hours > 0 ? p.total / p.hours : 0 }))
     .filter(p => p.total > 0 || p.hours > 0)
@@ -342,9 +318,7 @@ function renderAllTime() {
     body.innerHTML = `<p style="color:var(--text3);text-align:center;padding:40px;font-size:0.85rem">No all-time data yet. Start logging! 🏆</p>`;
     return;
   }
-
   const topSph = ranked[0]?.sph || 1;
-
   ranked.forEach((player, i) => {
     const rankLabel = i === 0 ? "👑" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
     const pct = topSph > 0 ? Math.max(4, (player.sph / topSph) * 100) : 4;
@@ -383,613 +357,343 @@ function getRankedPlayers(compId) {
 }
 
 // ══════════════════════════════════════════════════════
-// Log entry
+// Log entry (employee)
 // ══════════════════════════════════════════════════════
 async function logEntry() {
   const sales = parseFloat(document.getElementById("input-sales").value);
   const hours = parseFloat(document.getElementById("input-hours").value);
-
   if (isNaN(sales) || sales < 0) { showToast("Enter a valid sales amount 💸"); return; }
   if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked ⏱️"); return; }
-
   await set(dbRef.dayLog(state.currentComp, state.currentUser, state.selectedDay), { sales, hours });
-
   const reaction = getBigOrderReaction(sales);
   if (reaction) { showToast(reaction, 3500); launchConfetti(); }
   else showToast("Logged! Keep grinding 💪");
 }
 
 // ══════════════════════════════════════════════════════
-// Admin renders
+// ADMIN — Competitions
 // ══════════════════════════════════════════════════════
 function renderAdminComps() {
   const list = document.getElementById("admin-comp-list");
   if (!list) return;
   list.innerHTML = "";
-  Object.entries(state.competitions).forEach(([id, comp]) => {
+  const entries = Object.entries(state.competitions);
+  const toShow = state.admin.showAllComps ? entries : entries.slice(0, PREVIEW_COUNT);
+
+  toShow.forEach(([id, comp]) => {
     const item = document.createElement("div");
     item.className = "admin-item";
-    item.id = `admin-comp-${id}`;
+    item.id = `admin-comp-item-${id}`;
     item.innerHTML = `<span class="admin-item-name">${comp.name}</span>`;
-
     const editBtn = document.createElement("button");
     editBtn.className = "del-btn";
-    editBtn.textContent = "✏️ Edit";
-    editBtn.onclick = () => editAdminComp(id);
-
+    editBtn.textContent = "✏️ Rename";
+    editBtn.onclick = () => inlineRenameComp(id, comp.name);
     const delBtn = document.createElement("button");
-    delBtn.className = "del-btn";
-    delBtn.textContent = "✕ Delete";
+    delBtn.className = "del-btn danger";
+    delBtn.textContent = "✕";
     delBtn.onclick = async () => {
-      if (confirm(`Delete "${comp.name}"? All its logs will be removed too.`)) {
+      if (confirm(`Delete "${comp.name}"? All logs will be removed.`)) {
         await remove(dbRef.comp(id));
         await remove(dbRef.compLogs(id));
         if (state.currentComp === id) state.currentComp = null;
       }
     };
-
     item.appendChild(editBtn);
     item.appendChild(delBtn);
     list.appendChild(item);
   });
+
+  const toggleWrap = document.getElementById("admin-comp-toggle");
+  if (toggleWrap) {
+    toggleWrap.innerHTML = "";
+    if (entries.length > PREVIEW_COUNT) {
+      const btn = document.createElement("button");
+      btn.className = "view-all-btn";
+      btn.textContent = state.admin.showAllComps ? "Show less ▲" : `View all ${entries.length} ▼`;
+      btn.onclick = () => { state.admin.showAllComps = !state.admin.showAllComps; renderAdminComps(); };
+      toggleWrap.appendChild(btn);
+    }
+  }
 }
 
-function editAdminComp(compId) {
-  const comp = state.competitions[compId];
-  if (!comp) return;
-
-  const itemEl = document.getElementById(`admin-comp-${compId}`);
-  if (!itemEl) return;
-
-  const currentName = comp.name;
-  itemEl.innerHTML = "";
-
+function inlineRenameComp(compId, currentName) {
+  const item = document.getElementById(`admin-comp-item-${compId}`);
+  if (!item) return;
+  item.innerHTML = "";
+  const wrap = document.createElement("div");
+  wrap.style.cssText = "display:flex;gap:8px;flex:1;align-items:center;";
   const input = document.createElement("input");
-  input.type = "text";
-  input.className = "log-input";
-  input.value = currentName;
-  input.style.marginRight = "8px";
-
+  input.type = "text"; input.className = "log-input"; input.value = currentName; input.style.flex = "1";
   const saveBtn = document.createElement("button");
-  saveBtn.className = "mini-btn";
-  saveBtn.textContent = "Save";
+  saveBtn.className = "mini-btn"; saveBtn.textContent = "Save";
   saveBtn.onclick = async () => {
     const newName = input.value.trim();
-    if (!newName) {
-      showToast("Enter a competition name");
-      return;
-    }
-    if (newName === currentName) {
-      renderAdminComps();
-      return;
-    }
+    if (!newName) { showToast("Enter a name"); return; }
     await update(dbRef.comp(compId), { name: newName });
-    showToast("Competition renamed ✅");
+    showToast("Renamed ✅");
   };
-
   const cancelBtn = document.createElement("button");
   cancelBtn.className = "mini-btn";
-  cancelBtn.style.background = "var(--bg)";
-  cancelBtn.style.color = "var(--text2)";
-  cancelBtn.style.borderColor = "var(--border)";
+  cancelBtn.style.cssText = "background:var(--bg);color:var(--text2);border:2px solid var(--border);";
   cancelBtn.textContent = "Cancel";
   cancelBtn.onclick = renderAdminComps;
-
-  const inputWrapper = document.createElement("div");
-  inputWrapper.style.display = "flex";
-  inputWrapper.style.gap = "8px";
-  inputWrapper.appendChild(input);
-  inputWrapper.appendChild(saveBtn);
-  inputWrapper.appendChild(cancelBtn);
-
-  itemEl.appendChild(inputWrapper);
-  input.focus();
-  input.select();
+  wrap.appendChild(input); wrap.appendChild(saveBtn); wrap.appendChild(cancelBtn);
+  item.appendChild(wrap);
+  input.focus(); input.select();
 }
 
+// ══════════════════════════════════════════════════════
+// ADMIN — Employees
+// ══════════════════════════════════════════════════════
 function renderAdminEmps() {
   const list = document.getElementById("admin-emp-list");
   if (!list) return;
   list.innerHTML = "";
-  Object.entries(state.employees).forEach(([id, emp]) => {
-    const item = document.createElement("div");
-    item.className = "admin-item";
-    item.innerHTML = `<span class="admin-item-name">${emp.name}</span>`;
-    const del = document.createElement("button");
-    del.className = "del-btn";
-    del.textContent = "✕ Remove";
-    del.onclick = async () => {
-      if (confirm(`Remove "${emp.name}" from the roster?`)) await remove(dbRef.emp(id));
-    };
-    item.appendChild(del);
-    list.appendChild(item);
-  });
-}
 
-function renderAdminEditSelects() {
-  const empSel = document.getElementById("admin-edit-emp");
-  const daySel = document.getElementById("admin-edit-day");
-  if (!empSel || !daySel) return;
-  
-  empSel.innerHTML = "";
-  Object.entries(state.employees).forEach(([id, emp]) => {
-    const opt = document.createElement("option");
-    opt.value = id; opt.textContent = emp.name;
-    empSel.appendChild(opt);
-  });
-  
-  daySel.innerHTML = "";
-  DAYS.forEach(d => {
-    const opt = document.createElement("option");
-    opt.value = d; opt.textContent = d;
-    daySel.appendChild(opt);
-  });
+  const search = state.admin.empSearch.toLowerCase();
+  const allEntries = Object.entries(state.employees).sort(([, a], [, b]) => a.name.localeCompare(b.name));
+  const filtered = search ? allEntries.filter(([, emp]) => emp.name.toLowerCase().includes(search)) : allEntries;
+  const toShow = state.admin.showAllEmps ? filtered : filtered.slice(0, PREVIEW_COUNT);
 
-  function fillExisting() {
-    const empId = empSel.value;
-    const day = daySel.value;
-    const existing = (state.logs[state.currentComp] || {})[empId]?.[day];
-    document.getElementById("admin-edit-sales").value = existing ? existing.sales : "";
-    document.getElementById("admin-edit-hours").value = existing ? existing.hours : "";
+  if (toShow.length === 0) {
+    list.innerHTML = `<div style="color:var(--text3);font-size:0.8rem;text-align:center;padding:16px;">No employees found</div>`;
+  } else {
+    toShow.forEach(([id, emp]) => {
+      const item = document.createElement("div");
+      item.className = "admin-item";
+      item.innerHTML = `<span class="admin-item-name">${emp.name}</span>`;
+      const del = document.createElement("button");
+      del.className = "del-btn danger"; del.textContent = "✕ Remove";
+      del.onclick = async () => {
+        if (confirm(`Remove "${emp.name}" from the roster?`)) await remove(dbRef.emp(id));
+      };
+      item.appendChild(del);
+      list.appendChild(item);
+    });
   }
 
-  empSel.onchange = fillExisting;
-  daySel.onchange = fillExisting;
-  fillExisting();
+  const toggleWrap = document.getElementById("admin-emp-toggle");
+  if (toggleWrap) {
+    toggleWrap.innerHTML = "";
+    if (filtered.length > PREVIEW_COUNT) {
+      const btn = document.createElement("button");
+      btn.className = "view-all-btn";
+      btn.textContent = state.admin.showAllEmps ? "Show less ▲" : `View all ${filtered.length} employees ▼`;
+      btn.onclick = () => { state.admin.showAllEmps = !state.admin.showAllEmps; renderAdminEmps(); };
+      toggleWrap.appendChild(btn);
+    }
+  }
 }
 
 // ══════════════════════════════════════════════════════
-// Admin day-based log management
+// ADMIN — Logs section
 // ══════════════════════════════════════════════════════
-function renderAdminDayButtons(empId, compId) {
-  const container = document.getElementById("admin-day-buttons");
-  if (!container) return;
-  container.innerHTML = "";
+function renderAdminLogsSection() {
+  const empSel = document.getElementById("admin-logs-emp");
+  if (!empSel) return;
+
+  empSel.innerHTML = `<option value="">— Select employee —</option>`;
+  Object.entries(state.employees)
+    .sort(([, a], [, b]) => a.name.localeCompare(b.name))
+    .forEach(([id, emp]) => {
+      const opt = document.createElement("option");
+      opt.value = id; opt.textContent = emp.name;
+      empSel.appendChild(opt);
+    });
+
+  if (state.admin.selectedEmp && state.employees[state.admin.selectedEmp]) {
+    empSel.value = state.admin.selectedEmp;
+  } else {
+    state.admin.selectedEmp = null;
+  }
+
+  const compSel = document.getElementById("admin-logs-comp");
+  if (compSel) {
+    compSel.innerHTML = "";
+    Object.entries(state.competitions).forEach(([id, comp]) => {
+      const opt = document.createElement("option");
+      opt.value = id; opt.textContent = comp.name;
+      compSel.appendChild(opt);
+    });
+    const targetComp = state.admin.selectedComp || state.currentComp;
+    if (targetComp) { compSel.value = targetComp; state.admin.selectedComp = targetComp; }
+  }
+
+  refreshAdminDayView();
+}
+
+function refreshAdminDayView() {
+  const empId = state.admin.selectedEmp;
+  const compId = state.admin.selectedComp || state.currentComp;
+  const dayContainer = document.getElementById("admin-logs-days");
+  const dayDetail = document.getElementById("admin-logs-detail");
+  if (!dayContainer || !dayDetail) return;
+
+  if (!empId) {
+    dayContainer.innerHTML = "";
+    dayDetail.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">Select an employee above to view & manage their logs</p>`;
+    return;
+  }
 
   const empLogs = (state.logs[compId] || {})[empId] || {};
+  dayContainer.innerHTML = "";
 
-  DAYS.forEach((day, idx) => {
+  DAYS.forEach(day => {
+    const hasLog = !!empLogs[day];
     const btn = document.createElement("button");
-    btn.className = "admin-day-btn";
-    if (idx === 0) btn.classList.add("active");
-    if (empLogs[day]) btn.classList.add("has-log");
-
+    btn.className = `admin-day-btn${hasLog ? " has-log" : ""}`;
     btn.textContent = day;
-    btn.onclick = () => selectAdminDay(empId, compId, day);
-    container.appendChild(btn);
+    btn.title = hasLog ? `$${empLogs[day].sales} / ${empLogs[day].hours}hrs` : "No log yet";
+    btn.onclick = () => {
+      document.querySelectorAll("#admin-logs-days .admin-day-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      if (hasLog) renderAdminLogDetail(empId, compId, day, empLogs[day]);
+      else renderAdminLogCreate(empId, compId, day);
+    };
+    dayContainer.appendChild(btn);
   });
 
-  // Show first day by default
-  selectAdminDay(empId, compId, DAYS[0]);
-}
-
-function selectAdminDay(empId, compId, day) {
-  // Update active day button
-  document.querySelectorAll(".admin-day-btn").forEach(btn => {
-    btn.classList.toggle("active", btn.textContent === day);
-  });
-
-  const log = (state.logs[compId] || {})[empId]?.[day];
-
-  if (log) {
-    renderAdminLogDetail(empId, compId, day, log);
-  } else {
-    renderAdminCreateFormForDay(empId, compId, day);
+  // Auto-select today or first logged day
+  const today = state.selectedDay;
+  const autoDay = empLogs[today] ? today : (DAYS.find(d => empLogs[d]) || DAYS[0]);
+  const autoIdx = DAYS.indexOf(autoDay);
+  const autoBtn = dayContainer.children[autoIdx];
+  if (autoBtn) {
+    autoBtn.classList.add("active");
+    if (empLogs[autoDay]) renderAdminLogDetail(empId, compId, autoDay, empLogs[autoDay]);
+    else renderAdminLogCreate(empId, compId, autoDay);
   }
-}
-
-function renderAdminCreateFormForDay(empId, compId, day) {
-  const detail = document.getElementById("admin-log-detail");
-  if (!detail) return;
-
-  const compName = state.competitions[compId]?.name || compId;
-
-  detail.innerHTML = `
-    <p class="modal-sub" style="margin-top:0;margin-bottom:10px">Create new log for ${day}</p>
-    <div class="log-fields">
-      <div class="log-field-wrap">
-        <label class="field-label">COMPETITION</label>
-        <div style="padding:10px 12px; background:var(--bg); border:2px solid var(--border); border-radius:10px; color:var(--text); font-weight:700; font-size:0.9rem">${compName}</div>
-      </div>
-      <div class="log-field-wrap">
-        <label class="field-label">DAY</label>
-        <div style="padding:10px 12px; background:var(--bg); border:2px solid var(--border); border-radius:10px; color:var(--text); font-weight:700; font-size:0.9rem">${day}</div>
-      </div>
-    </div>
-    <div class="log-fields">
-      <div class="log-field-wrap">
-        <label class="field-label">SALES ($)</label>
-        <input type="number" id="temp-admin-sales" class="log-input" placeholder="0.00" min="0" step="0.01" />
-      </div>
-      <div class="log-field-wrap">
-        <label class="field-label">HOURS</label>
-        <input type="number" id="temp-admin-hours" class="log-input" placeholder="0.0" min="0" step="0.5" />
-      </div>
-    </div>
-    <button class="log-btn" style="margin-top:8px">CREATE LOG</button>
-  `;
-
-  const btn = detail.querySelector(".log-btn");
-  btn.onclick = async () => {
-    const sales = parseFloat(document.getElementById("temp-admin-sales").value);
-    const hours = parseFloat(document.getElementById("temp-admin-hours").value);
-
-    if (isNaN(sales) || sales < 0) {
-      showToast("Enter valid sales amount");
-      return;
-    }
-    if (isNaN(hours) || hours <= 0) {
-      showToast("Enter hours worked");
-      return;
-    }
-
-    await set(dbRef.dayLog(compId, empId, day), { sales, hours });
-    showToast("Log created ✅");
-    renderAdminDayButtons(empId, compId);
-  };
 }
 
 function renderAdminLogDetail(empId, compId, day, log) {
-  const detail = document.getElementById("admin-log-detail");
+  const detail = document.getElementById("admin-logs-detail");
   if (!detail) return;
-
   const sph = log.hours > 0 ? (log.sales / log.hours).toFixed(0) : "—";
-  const compName = state.competitions[compId]?.name || compId;
+  const empName = state.employees[empId]?.name || "";
+  const compName = state.competitions[compId]?.name || "";
 
   detail.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px">
-      <div>
-        <p class="modal-sub" style="margin:0;margin-bottom:4px">${day} in "${compName}"</p>
+    <div class="admin-log-header">
+      <div class="admin-log-header-info">
+        <div class="admin-log-header-name">${empName}</div>
+        <div class="admin-log-header-sub">${day} · ${compName}</div>
+      </div>
+      <div class="admin-log-header-badge logged">✓ Logged</div>
+    </div>
+    <div class="admin-log-stats">
+      <div class="admin-log-stat">
+        <div class="admin-log-stat-label">SALES</div>
+        <div class="admin-log-stat-value">$${log.sales.toFixed(2)}</div>
+      </div>
+      <div class="admin-log-stat">
+        <div class="admin-log-stat-label">HOURS</div>
+        <div class="admin-log-stat-value">${log.hours.toFixed(1)}</div>
+      </div>
+      <div class="admin-log-stat accent">
+        <div class="admin-log-stat-label">$/HR</div>
+        <div class="admin-log-stat-value">$${sph}</div>
       </div>
     </div>
-    <div class="admin-log-display">
-      <div class="admin-log-value">
-        <div class="admin-log-value-label">SALES</div>
-        <div class="admin-log-value-amount">$${log.sales.toFixed(2)}</div>
-      </div>
-      <div class="admin-log-value">
-        <div class="admin-log-value-label">HOURS</div>
-        <div class="admin-log-value-amount">${log.hours.toFixed(1)}</div>
-      </div>
-      <div class="admin-log-value">
-        <div class="admin-log-value-label">$/HR</div>
-        <div class="admin-log-value-amount">$${sph}</div>
-      </div>
-    </div>
-    <div class="admin-log-actions">
-      <button class="admin-log-edit-btn">✏️ Edit</button>
-      <button class="admin-log-delete-btn">🗑️ Delete</button>
+    <div class="admin-log-actions-row">
+      <button class="admin-action-edit" id="admin-edit-log-btn">✏️ Edit</button>
+      <button class="admin-action-delete" id="admin-delete-log-btn">🗑️ Delete</button>
     </div>
   `;
 
-  const editBtn = detail.querySelector(".admin-log-edit-btn");
-  const deleteBtn = detail.querySelector(".admin-log-delete-btn");
-
-  editBtn.onclick = () => renderAdminEditFormForDay(empId, compId, day, log);
-
-  deleteBtn.onclick = () => {
-    if (confirm(`Delete ${day} log from "${compName}"?`)) {
-      remove(dbRef.dayLog(compId, empId, day));
+  document.getElementById("admin-edit-log-btn").onclick = () => renderAdminLogEdit(empId, compId, day, log);
+  document.getElementById("admin-delete-log-btn").onclick = async () => {
+    if (confirm(`Delete ${day} log for ${state.employees[empId]?.name}?`)) {
+      await remove(dbRef.dayLog(compId, empId, day));
       showToast("Log deleted ✅");
-      renderAdminDayButtons(empId, compId);
     }
   };
 }
 
-function renderAdminEditFormForDay(empId, compId, day, log) {
-  const detail = document.getElementById("admin-log-detail");
+function renderAdminLogCreate(empId, compId, day) {
+  const detail = document.getElementById("admin-logs-detail");
   if (!detail) return;
-
-  const compName = state.competitions[compId]?.name || compId;
+  const empName = state.employees[empId]?.name || "";
+  const compName = state.competitions[compId]?.name || "";
 
   detail.innerHTML = `
-    <p class="modal-sub" style="margin-top:0;margin-bottom:10px">Edit log for ${day}</p>
-    <div class="log-fields">
+    <div class="admin-log-header">
+      <div class="admin-log-header-info">
+        <div class="admin-log-header-name">${empName}</div>
+        <div class="admin-log-header-sub">${day} · ${compName}</div>
+      </div>
+      <div class="admin-log-header-badge not-logged">✗ No Log Yet</div>
+    </div>
+    <div class="log-fields" style="margin-top:14px;">
       <div class="log-field-wrap">
         <label class="field-label">SALES ($)</label>
-        <input type="number" id="temp-edit-sales" class="log-input" value="${log.sales}" min="0" step="0.01" />
+        <input type="number" id="admin-create-sales" class="log-input" placeholder="0.00" min="0" step="0.01" />
       </div>
       <div class="log-field-wrap">
         <label class="field-label">HOURS</label>
-        <input type="number" id="temp-edit-hours" class="log-input" value="${log.hours}" min="0" step="0.5" />
+        <input type="number" id="admin-create-hours" class="log-input" placeholder="0.0" min="0" step="0.5" />
       </div>
     </div>
-    <div style="display:flex; gap:8px; margin-top:8px">
-      <button class="log-btn" style="flex:1">SAVE</button>
-      <button class="log-btn" style="flex:1; background:var(--bg); color:var(--text2); border:2px solid var(--border)">CANCEL</button>
-    </div>
+    <button class="log-btn" id="admin-create-log-btn" style="margin-top:10px;">+ CREATE LOG</button>
   `;
 
-  const buttons = detail.querySelectorAll(".log-btn");
-  const saveBtn = buttons[0];
-  const cancelBtn = buttons[1];
-
-  saveBtn.onclick = async () => {
-    const sales = parseFloat(document.getElementById("temp-edit-sales").value);
-    const hours = parseFloat(document.getElementById("temp-edit-hours").value);
-
-    if (isNaN(sales) || sales < 0) {
-      showToast("Enter valid sales amount");
-      return;
-    }
-    if (isNaN(hours) || hours <= 0) {
-      showToast("Enter hours worked");
-      return;
-    }
-
+  document.getElementById("admin-create-log-btn").onclick = async () => {
+    const sales = parseFloat(document.getElementById("admin-create-sales").value);
+    const hours = parseFloat(document.getElementById("admin-create-hours").value);
+    if (isNaN(sales) || sales < 0) { showToast("Enter valid sales amount"); return; }
+    if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked"); return; }
     await set(dbRef.dayLog(compId, empId, day), { sales, hours });
-    showToast("Log updated ✅");
-    renderAdminDayButtons(empId, compId);
-  };
-
-  cancelBtn.onclick = () => {
-    renderAdminLogDetail(empId, compId, day, log);
-  };
-}
-
-function populateAdminCompDropdown() {
-  const select = document.getElementById("admin-view-comp");
-  if (!select) return;
-
-  select.innerHTML = "";
-  Object.entries(state.competitions).forEach(([id, comp]) => {
-    const opt = document.createElement("option");
-    opt.value = id;
-    opt.textContent = comp.name;
-    select.appendChild(opt);
-  });
-
-  select.onchange = () => {
-    const empId = document.getElementById("admin-view-emp").value;
-    renderAdminDayButtons(empId, select.value);
-  };
-}
-
-// ══════════════════════════════════════════════════════
-// ══════════════════════════════════════════════════════
-function empHasLogsInCurrentComp(empId) {
-  const empLogs = (state.logs[state.currentComp] || {})[empId] || {};
-  return Object.keys(empLogs).length > 0;
-}
-
-function toggleCreateLogForm(empId) {
-  const createForm = document.querySelector(".admin-create-form");
-  if (!createForm) return;
-
-  if (empHasLogsInCurrentComp(empId)) {
-    createForm.style.display = "none";
-  } else {
-    createForm.style.display = "block";
-  }
-}
-function renderAdminLogList(empId, viewAllComps = false) {
-  const list = document.getElementById("admin-log-list");
-  if (!list) return;
-  list.innerHTML = "";
-
-  const logsToShow = {};
-
-  if (viewAllComps) {
-    // Collect logs from all competitions for this employee
-    Object.entries(state.logs).forEach(([compId, compLogs]) => {
-      const empLogs = (compLogs || {})[empId] || {};
-      const compName = state.competitions[compId]?.name || compId;
-      Object.entries(empLogs).forEach(([day, log]) => {
-        const key = `${compId}-${day}`;
-        logsToShow[key] = { ...log, day, compId, compName };
-      });
-    });
-  } else {
-    // Only show logs from current competition
-    const empLogs = (state.logs[state.currentComp] || {})[empId] || {};
-    Object.entries(empLogs).forEach(([day, log]) => {
-      const key = `${state.currentComp}-${day}`;
-      logsToShow[key] = { ...log, day, compId: state.currentComp, compName: state.competitions[state.currentComp]?.name };
-    });
-  }
-
-  if (Object.keys(logsToShow).length === 0) {
-    list.innerHTML = `<div class="admin-log-empty">No logs for this employee</div>`;
-    return;
-  }
-
-  // Sort by day of week, then by competition
-  const sortedLogs = Object.entries(logsToShow).sort(([, a], [, b]) => {
-    const dayOrder = DAYS.indexOf(a.day) - DAYS.indexOf(b.day);
-    return dayOrder !== 0 ? dayOrder : (a.compName || "").localeCompare(b.compName || "");
-  });
-
-  sortedLogs.forEach(([key, log]) => {
-    const item = document.createElement("div");
-    item.className = "admin-log-item";
-    item.id = `admin-log-${key}`;
-
-    const sph = log.hours > 0 ? (log.sales / log.hours).toFixed(0) : "—";
-
-    item.innerHTML = `
-      <div class="admin-log-item-header">
-        <div>
-          <span class="admin-log-item-day">${log.day}</span>
-          ${viewAllComps ? `<span class="admin-log-item-comp">${log.compName}</span>` : ""}
-        </div>
-      </div>
-      <div class="admin-log-item-details">
-        <div class="admin-log-detail">
-          <div class="admin-log-detail-label">SALES</div>
-          <div class="admin-log-detail-value">$${log.sales.toFixed(2)}</div>
-        </div>
-        <div class="admin-log-detail">
-          <div class="admin-log-detail-label">HOURS</div>
-          <div class="admin-log-detail-value">${log.hours.toFixed(1)}</div>
-        </div>
-        <div class="admin-log-detail">
-          <div class="admin-log-detail-label">$/HR</div>
-          <div class="admin-log-detail-value">$${sph}</div>
-        </div>
-      </div>
-      <div class="admin-log-item-actions">
-        <button class="admin-edit-btn" onclick="window.editAdminLog('${log.compId}', '${empId}', '${log.day}')">Edit</button>
-        <button class="admin-delete-btn" onclick="window.deleteAdminLog('${log.compId}', '${empId}', '${log.day}')">Delete</button>
-      </div>
-    `;
-    list.appendChild(item);
-  });
-}
-
-function editAdminLog(compId, empId, day) {
-  const itemId = `admin-log-${compId}-${day}`;
-  const item = document.getElementById(itemId);
-  if (!item) return;
-
-  const existing = (state.logs[compId] || {})[empId]?.[day] || {};
-
-  item.classList.add("editing");
-  item.innerHTML = `
-    <div class="admin-log-item-edit-form">
-      <div class="admin-log-detail">
-        <div class="admin-log-detail-label">${day} - ${state.competitions[compId]?.name}</div>
-      </div>
-      <div class="log-fields">
-        <div class="log-field-wrap">
-          <label class="field-label">SALES ($)</label>
-          <input type="number" class="log-input edit-sales" value="${existing.sales || 0}" step="0.01" />
-        </div>
-        <div class="log-field-wrap">
-          <label class="field-label">HOURS</label>
-          <input type="number" class="log-input edit-hours" value="${existing.hours || 0}" step="0.5" />
-        </div>
-      </div>
-      <div class="admin-log-item-edit-actions">
-        <button class="admin-log-save-btn">Save</button>
-        <button class="admin-log-cancel-btn">Cancel</button>
-      </div>
-    </div>
-  `;
-
-  const saveBtn = item.querySelector(".admin-log-save-btn");
-  const cancelBtn = item.querySelector(".admin-log-cancel-btn");
-  const salesInput = item.querySelector(".edit-sales");
-  const hoursInput = item.querySelector(".edit-hours");
-
-  saveBtn.onclick = async () => {
-    const sales = parseFloat(salesInput.value);
-    const hours = parseFloat(hoursInput.value);
-    if (isNaN(sales) || isNaN(hours)) {
-      showToast("Please enter valid numbers");
-      return;
-    }
-    await set(dbRef.dayLog(compId, empId, day), { sales, hours });
-    showToast("Log updated ✅");
-    renderAdminLogList(empId, document.getElementById("scope-all").classList.contains("active"));
-  };
-
-  cancelBtn.onclick = () => {
-    renderAdminLogList(empId, document.getElementById("scope-all").classList.contains("active"));
-  };
-}
-
-function deleteAdminLog(compId, empId, day) {
-  const compName = state.competitions[compId]?.name;
-  if (!confirm(`Delete ${day} log from "${compName}"?`)) return;
-
-  remove(dbRef.dayLog(compId, empId, day));
-  showToast("Log deleted ✅");
-  renderAdminLogList(empId, document.getElementById("scope-all").classList.contains("active"));
-}
-
-// Make functions accessible globally for inline onclick handlers
-window.editAdminLog = editAdminLog;
-window.deleteAdminLog = deleteAdminLog;
-
-// ══════════════════════════════════════════════════════
-// Admin log creation
-// ══════════════════════════════════════════════════════
-function populateAdminCreateSelects() {
-  const compSel = document.getElementById("admin-create-comp");
-  const daySel = document.getElementById("admin-create-day");
-  if (!compSel || !daySel) return;
-
-  // Populate competitions
-  compSel.innerHTML = "";
-  Object.entries(state.competitions).forEach(([id, comp]) => {
-    const opt = document.createElement("option");
-    opt.value = id;
-    opt.textContent = comp.name;
-    compSel.appendChild(opt);
-  });
-
-  // Populate days
-  daySel.innerHTML = "";
-  DAYS.forEach(d => {
-    const opt = document.createElement("option");
-    opt.value = d;
-    opt.textContent = d;
-    daySel.appendChild(opt);
-  });
-
-  // Clear input fields
-  document.getElementById("admin-create-sales").value = "";
-  document.getElementById("admin-create-hours").value = "";
-}
-
-async function createAdminLog(empId) {
-  const compId = document.getElementById("admin-create-comp").value;
-  const day = document.getElementById("admin-create-day").value;
-  const sales = parseFloat(document.getElementById("admin-create-sales").value);
-  const hours = parseFloat(document.getElementById("admin-create-hours").value);
-
-  // Validation
-  if (!compId || !day) {
-    showToast("Select competition and day");
-    return;
-  }
-  if (isNaN(sales) || sales < 0) {
-    showToast("Enter valid sales amount");
-    return;
-  }
-  if (isNaN(hours) || hours <= 0) {
-    showToast("Enter hours worked");
-    return;
-  }
-
-  // Check if log already exists
-  const existing = (state.logs[compId] || {})[empId]?.[day];
-  if (existing) {
-    if (!confirm(`A ${day} log already exists. Overwrite it?`)) return;
-  }
-
-  // Create the log
-  await set(dbRef.dayLog(compId, empId, day), { sales, hours });
-
-  // Refresh the log list if viewing that competition
-  const viewAllComps = document.getElementById("scope-all").classList.contains("active");
-  renderAdminLogList(empId, viewAllComps);
-
-  // If employee is currently viewing the dashboard, update it immediately
-  if (state.currentUser === empId) {
-    // If viewing same competition, show confirmation
-    if (state.currentComp === compId) {
-      showToast("Log created and visible on dashboard ✅");
-      renderDash();
-      renderBoard();
-      renderAllTime();
-    } else {
-      // Different competition - inform user
-      const empName = state.employees[empId]?.name || empId;
-      const compName = state.competitions[compId]?.name || compId;
-      showToast(`Log created for ${empName} in "${compName}" (not current view)`, 3000);
-    }
-  } else {
     showToast("Log created ✅");
-  }
-
-  // Clear form
-  document.getElementById("admin-create-sales").value = "";
-  document.getElementById("admin-create-hours").value = "";
-
-  // Hide create form if employee now has logs in this competition
-  toggleCreateLogForm(empId);
+    if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
+  };
 }
+
+function renderAdminLogEdit(empId, compId, day, log) {
+  const detail = document.getElementById("admin-logs-detail");
+  if (!detail) return;
+  const empName = state.employees[empId]?.name || "";
+  const compName = state.competitions[compId]?.name || "";
+
+  detail.innerHTML = `
+    <div class="admin-log-header">
+      <div class="admin-log-header-info">
+        <div class="admin-log-header-name">${empName}</div>
+        <div class="admin-log-header-sub">Editing ${day} · ${compName}</div>
+      </div>
+    </div>
+    <div class="log-fields" style="margin-top:14px;">
+      <div class="log-field-wrap">
+        <label class="field-label">SALES ($)</label>
+        <input type="number" id="admin-edit-sales" class="log-input" value="${log.sales}" min="0" step="0.01" />
+      </div>
+      <div class="log-field-wrap">
+        <label class="field-label">HOURS</label>
+        <input type="number" id="admin-edit-hours" class="log-input" value="${log.hours}" min="0" step="0.5" />
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="log-btn" id="admin-save-edit-btn">SAVE</button>
+      <button class="log-btn" id="admin-cancel-edit-btn" style="background:var(--bg);color:var(--text2);border:2px solid var(--border);box-shadow:none;">CANCEL</button>
+    </div>
+  `;
+
+  document.getElementById("admin-save-edit-btn").onclick = async () => {
+    const sales = parseFloat(document.getElementById("admin-edit-sales").value);
+    const hours = parseFloat(document.getElementById("admin-edit-hours").value);
+    if (isNaN(sales) || sales < 0) { showToast("Enter valid sales amount"); return; }
+    if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked"); return; }
+    await set(dbRef.dayLog(compId, empId, day), { sales, hours });
+    showToast("Log updated ✅");
+    if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
+  };
+
+  document.getElementById("admin-cancel-edit-btn").onclick = () =>
+    renderAdminLogDetail(empId, compId, day, log);
+}
+
+// ══════════════════════════════════════════════════════
+// Screen management
+// ══════════════════════════════════════════════════════
 function showScreen(name) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   document.getElementById(`screen-${name}`).classList.add("active");
@@ -1037,10 +741,8 @@ function launchConfetti() {
       p.x += p.vx; p.y += p.vy; p.angle += p.spin; p.life -= 0.012;
       if (p.life <= 0 || p.y > canvas.height) return;
       alive = true;
-      ctx.save();
-      ctx.globalAlpha = p.life;
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.angle);
+      ctx.save(); ctx.globalAlpha = p.life;
+      ctx.translate(p.x, p.y); ctx.rotate(p.angle);
       ctx.fillStyle = p.color;
       ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r * 0.6);
       ctx.restore();
@@ -1064,21 +766,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("btn-back-alltime").onclick = () => { document.getElementById("input-search-employees").value = ""; showScreen("pick"); };
   document.getElementById("btn-log").onclick         = logEntry;
 
-  // Employee search
   const searchInput = document.getElementById("input-search-employees");
-  if (searchInput) {
-    searchInput.oninput = () => renderPickScreen(searchInput.value);
-  }
+  if (searchInput) searchInput.oninput = () => renderPickScreen(searchInput.value);
 
-  // Nav
-  const navMap = { "nav-dash": "dash", "nav-board": "board", "nav-alltime": "alltime",
-                   "nav-dash-2": "dash", "nav-board-2": "board", "nav-alltime-2": "alltime",
-                   "nav-dash-3": "dash", "nav-board-3": "board", "nav-alltime-3": "alltime" };
+  const navMap = {
+    "nav-dash": "dash", "nav-board": "board", "nav-alltime": "alltime",
+    "nav-dash-2": "dash", "nav-board-2": "board", "nav-alltime-2": "alltime",
+    "nav-dash-3": "dash", "nav-board-3": "board", "nav-alltime-3": "alltime",
+  };
   Object.entries(navMap).forEach(([btnId, screen]) => {
     document.getElementById(btnId).onclick = () => { showScreen(screen); setActiveNav(screen); };
   });
 
-  // Admin modal
   document.getElementById("btn-admin-open").onclick = () => {
     document.getElementById("modal-admin").classList.remove("hidden");
     document.getElementById("admin-pin-wrap").classList.remove("hidden");
@@ -1091,7 +790,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (document.getElementById("input-pin").value.trim() === ADMIN_PIN) {
       document.getElementById("admin-pin-wrap").classList.add("hidden");
       document.getElementById("admin-panel").classList.remove("hidden");
-      renderAdminComps(); renderAdminEmps(); renderAdminEditSelects(); populateAdminViewEmp();
+      state.admin.showAllComps = false;
+      state.admin.showAllEmps = false;
+      state.admin.selectedEmp = null;
+      state.admin.selectedComp = state.currentComp;
+      state.admin.empSearch = "";
+      const empSearchEl = document.getElementById("admin-emp-search");
+      if (empSearchEl) empSearchEl.value = "";
+      renderAdminComps();
+      renderAdminEmps();
+      renderAdminLogsSection();
     } else {
       document.getElementById("pin-error").classList.remove("hidden");
     }
@@ -1128,76 +836,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     showToast(`${name} added!`);
   };
 
-  document.getElementById("btn-admin-save-log").onclick = async () => {
-    const empId = document.getElementById("admin-edit-emp").value;
-    const day   = document.getElementById("admin-edit-day").value;
-    const sales = parseFloat(document.getElementById("admin-edit-sales").value);
-    const hours = parseFloat(document.getElementById("admin-edit-hours").value);
-    if (!empId || !day || isNaN(sales) || isNaN(hours)) { showToast("Fill in all fields"); return; }
-    await set(dbRef.dayLog(state.currentComp, empId, day), { sales, hours });
-    showToast("Log updated ✅");
-  };
-
-  // Admin view/edit logs
-  function populateAdminViewEmp() {
-    const select = document.getElementById("admin-view-emp");
-    if (!select) return;
-    select.innerHTML = "";
-    Object.entries(state.employees).forEach(([id, emp]) => {
-      const opt = document.createElement("option");
-      opt.value = id;
-      opt.textContent = emp.name;
-      select.appendChild(opt);
-    });
-    if (select.options.length > 0) {
-      select.value = select.options[0].value;
-      const viewAllComps = document.getElementById("scope-all").classList.contains("active");
-      if (viewAllComps) {
-        document.getElementById("admin-comp-selector").classList.remove("hidden");
-        populateAdminCompDropdown();
-      } else {
-        document.getElementById("admin-comp-selector").classList.add("hidden");
-        renderAdminDayButtons(select.value, state.currentComp);
-      }
-    }
-  }
-
-  const adminViewEmp = document.getElementById("admin-view-emp");
-  if (adminViewEmp) {
-    adminViewEmp.onchange = () => {
-      const viewAllComps = document.getElementById("scope-all").classList.contains("active");
-      if (viewAllComps) {
-        document.getElementById("admin-comp-selector").classList.remove("hidden");
-        populateAdminCompDropdown();
-      } else {
-        document.getElementById("admin-comp-selector").classList.add("hidden");
-        renderAdminDayButtons(adminViewEmp.value, state.currentComp);
-      }
+  const adminEmpSearch = document.getElementById("admin-emp-search");
+  if (adminEmpSearch) {
+    adminEmpSearch.oninput = () => {
+      state.admin.empSearch = adminEmpSearch.value;
+      state.admin.showAllEmps = false;
+      renderAdminEmps();
     };
   }
 
-  const scopeCurrentBtn = document.getElementById("scope-current");
-  const scopeAllBtn = document.getElementById("scope-all");
-  if (scopeCurrentBtn && scopeAllBtn) {
-    scopeCurrentBtn.onclick = () => {
-      scopeCurrentBtn.classList.add("active");
-      scopeAllBtn.classList.remove("active");
-      document.getElementById("admin-comp-selector").classList.add("hidden");
-      const empId = adminViewEmp.value;
-      renderAdminDayButtons(empId, state.currentComp);
-    };
-    scopeAllBtn.onclick = () => {
-      scopeAllBtn.classList.add("active");
-      scopeCurrentBtn.classList.remove("active");
-      document.getElementById("admin-comp-selector").classList.remove("hidden");
-      populateAdminCompDropdown();
+  const adminLogsEmp = document.getElementById("admin-logs-emp");
+  if (adminLogsEmp) {
+    adminLogsEmp.onchange = () => {
+      state.admin.selectedEmp = adminLogsEmp.value || null;
+      refreshAdminDayView();
     };
   }
 
-  // When admin panel opens, populate the view/edit section
-  const originalAdminOpen = document.getElementById("btn-admin-open").onclick;
-  document.getElementById("btn-admin-open").onclick = () => {
-    populateAdminViewEmp();
-    originalAdminOpen();
-  };
+  const adminLogsComp = document.getElementById("admin-logs-comp");
+  if (adminLogsComp) {
+    adminLogsComp.onchange = () => {
+      state.admin.selectedComp = adminLogsComp.value;
+      refreshAdminDayView();
+    };
+  }
 });
