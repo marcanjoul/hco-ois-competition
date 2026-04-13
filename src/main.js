@@ -87,13 +87,11 @@ function isCompEnded(comp) {
 }
 
 function getActiveComp() {
-  // Find the most recent non-archived comp that is active or not yet ended
+  // Find the most recent non-archived, non-closed comp that is active or not yet ended
   const entries = Object.entries(state.competitions)
-    .filter(([, c]) => c.status !== "archived")
+    .filter(([, c]) => c.status !== "archived" && c.status !== "closed" && !isCompEnded(c))
     .sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0));
-  // Prefer actually active ones
-  const active = entries.find(([, c]) => c.status === "active" && !isCompEnded(c));
-  return active ? active[0] : (entries[0]?.[0] || null);
+  return entries[0]?.[0] || null;
 }
 
 async function checkAndAutoCloseComps() {
@@ -245,7 +243,13 @@ function renderPickScreen(filterText = "") {
 
   // Competition hero section — show only active comp
   const compHero = document.getElementById("pick-comp-hero");
-  if (compHero && state.currentComp) {
+  const noCompsMsg = document.getElementById("no-comps-message");
+
+  if (!state.currentComp) {
+    // No active competition
+    if (compHero) compHero.style.display = "none";
+    if (noCompsMsg) noCompsMsg.style.display = "block";
+  } else if (compHero && state.currentComp) {
     const comp = state.competitions[state.currentComp];
     if (comp) {
       const ended = isCompEnded(comp);
@@ -281,6 +285,7 @@ function renderPickScreen(filterText = "") {
       compHero.innerHTML = html;
       compHero.classList.toggle("comp-ended", ended && winner);
       compHero.style.display = "block";
+      if (noCompsMsg) noCompsMsg.style.display = "none";
     }
   }
 
