@@ -1334,7 +1334,7 @@ function openEditAvatarModal(empId, emp) {
   fileInput.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 500000) { showToast("Image too large (max 500KB)"); return; }
+    if (file.size > 5000000) { showToast("Image too large (max 5MB)"); return; }
     const base64 = await fileToBase64(file);
     const preview = modal.querySelector("#edit-avatar-preview");
     preview.innerHTML = `<div class="avatar avatar-large"><img class="avatar-img" src="${base64}" alt="preview" /></div>`;
@@ -1438,7 +1438,7 @@ function openEditEmpModal(empId, emp) {
   fileInput.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 500000) { showToast("Image too large (max 500KB)"); return; }
+    if (file.size > 5000000) { showToast("Image too large (max 5MB)"); return; }
     const base64 = await fileToBase64(file);
     const preview = modal.querySelector("#edit-emp-avatar-preview");
     preview.innerHTML = `<div class="avatar avatar-large"><img class="avatar-img" src="${base64}" alt="preview" /></div>`;
