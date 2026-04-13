@@ -16,8 +16,9 @@
     <div class="pick-inner">
       <div class="logo-lockup">
         <div class="logo-icon">🏆</div>
-        <h1 class="logo-title">OIS Competition</h1>
+        <h1 class="logo-title store-name">OIS Competition</h1>
       </div>
+      <div id="site-banner" class="site-banner" style="display:none;"></div>
       <div id="comp-selector-wrap" class="comp-selector-wrap">
         <label class="field-label">COMPETITION</label>
         <div id="comp-tabs" class="comp-tabs"></div>
@@ -43,6 +44,10 @@
       <div class="dash-header-right"></div>
     </header>
     <div class="dash-body">
+
+      <!-- Winner banner -->
+      <div id="winner-banner" class="winner-banner" style="display:none;"></div>
+
       <div class="stat-row">
         <div class="stat-card accent">
           <div class="stat-label">SALES / HR</div>
@@ -57,6 +62,10 @@
           <div class="stat-value" id="stat-rank">—</div>
         </div>
       </div>
+
+      <!-- Goals section -->
+      <div id="dash-goals" class="dash-goals" style="display:none;"></div>
+
       <div class="vibe-card" id="vibe-card">
         <span id="vibe-emoji">🔥</span>
         <span id="vibe-text">Log your first order to get started!</span>
@@ -139,56 +148,10 @@
 
       <!-- Admin panel -->
       <div id="admin-panel" class="hidden">
-
-        <!-- ── COMPETITIONS ── -->
-        <div class="admin-section">
-          <div class="admin-section-header">
-            <div class="admin-section-title">COMPETITIONS</div>
-            <div id="admin-comp-toggle"></div>
-          </div>
-          <div id="admin-comp-list" class="admin-list"></div>
-          <div class="admin-new-row" style="margin-top:8px;">
-            <input type="text" id="input-new-comp" class="log-input" placeholder="New competition name" oninput="updateBtnState('input-new-comp','btn-add-comp')" />
-            <button class="mini-btn btn-ghost" id="btn-add-comp" disabled>+ Add</button>
-          </div>
-        </div>
-
-        <!-- ── EMPLOYEES ── -->
-        <div class="admin-section">
-          <div class="admin-section-header">
-            <div class="admin-section-title">EMPLOYEES</div>
-            <div id="admin-emp-toggle"></div>
-          </div>
-          <input type="text" id="admin-emp-search" class="log-input" placeholder="🔍 Search employees..." style="margin-bottom:10px;" />
-          <div id="admin-emp-list" class="admin-list"></div>
-          <div class="admin-new-row" style="margin-top:8px;">
-            <input type="text" id="input-new-emp" class="log-input" placeholder="New employee name" oninput="updateBtnState('input-new-emp','btn-add-emp')" />
-            <button class="mini-btn btn-ghost" id="btn-add-emp" disabled>+ Add</button>
-          </div>
-        </div>
-
-        <!-- ── LOGS ── -->
-        <div class="admin-section">
-          <div class="admin-section-title">MANAGE LOGS</div>
-
-          <!-- Employee selector -->
-          <label class="field-label" style="margin-top:8px;">EMPLOYEE</label>
-          <select id="admin-logs-emp" class="log-input"></select>
-
-          <!-- Competition selector -->
-          <label class="field-label" style="margin-top:10px;">COMPETITION</label>
-          <select id="admin-logs-comp" class="log-input"></select>
-
-          <!-- Day buttons -->
-          <label class="field-label" style="margin-top:12px;">DAY</label>
-          <div id="admin-logs-days" class="admin-day-buttons"></div>
-
-          <!-- Log detail / create / edit -->
-          <div id="admin-logs-detail" class="admin-log-detail-wrap" style="margin-top:14px;">
-            <p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">Select an employee above to view & manage their logs</p>
-          </div>
-        </div>
-
+        <!-- Tab bar -->
+        <div id="admin-tab-bar" class="admin-tab-bar"></div>
+        <!-- Tab content -->
+        <div id="admin-tab-content" class="admin-tab-content"></div>
         <button class="close-btn" id="btn-admin-close">DONE</button>
       </div>
     </div>
@@ -196,7 +159,6 @@
 
   <div id="toast" class="toast hidden"></div>
   <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
-
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
