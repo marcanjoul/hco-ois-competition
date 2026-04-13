@@ -588,13 +588,13 @@ function renderBoard() {
   body.innerHTML = "";
 
   if (!hasLogs) {
-    body.innerHTML = `<p style="color:var(--text3);text-align:center;padding:40px;font-size:0.85rem">No logs yet — be the first! 🔥</p>`;
+    body.innerHTML = `<p style="color:var(--text3);text-align:center;padding:40px;font-size:0.85rem">No orders yet!</p>`;
     return;
   }
 
   const players = getRankedPlayers(compId);
   if (players.length === 0) {
-    body.innerHTML = `<p style="color:var(--text3);text-align:center;padding:40px;font-size:0.85rem">No logs yet — be the first! 🔥</p>`;
+    body.innerHTML = `<p style="color:var(--text3);text-align:center;padding:40px;font-size:0.85rem">No orders yet!</p>`;
     return;
   }
 
@@ -775,7 +775,7 @@ function renderAdminComps(container) {
     </div>
     <div style="margin-top:4px;">
       <label class="field-label">REWARD (what the winner gets)</label>
-      <input type="text" id="input-new-comp-prize" class="log-input" placeholder="e.g. $50 gift card, early release..." style="margin-bottom:8px;" />
+      <input type="text" id="input-new-comp-prize" class="log-input" placeholder="e.g. $50 gift card, more shifts..." style="margin-bottom:8px;" />
     </div>
     <div class="log-fields" style="margin-bottom:8px;">
       <div class="log-field-wrap">
