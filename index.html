@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Order Wars 🏆</title>
+  <title>OIS Competition 🏆</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/src/style.css" />
@@ -16,14 +16,23 @@
     <div class="pick-inner">
       <div class="logo-lockup">
         <div class="logo-icon">🏆</div>
-        <h1 class="logo-title">ORDER WARS</h1>
-        <p class="logo-sub">Hollister · Sales Competition</p>
+        <h1 class="logo-title">OIS Competition</h1>
       </div>
       <div id="comp-selector-wrap" class="comp-selector-wrap">
         <label class="field-label">COMPETITION</label>
         <div id="comp-tabs" class="comp-tabs"></div>
       </div>
       <label class="field-label">WHO ARE YOU?</label>
+      <div class="search-wrap">
+        <input
+          type="text"
+          id="input-search-employees"
+          class="log-input"
+          placeholder="🔍 Search employees..."
+          autocomplete="off"
+        />
+        <div id="search-results-info" class="search-results-info hidden"></div>
+      </div>
       <div id="name-grid" class="name-grid"></div>
       <button class="admin-link" id="btn-admin-open">🔐 Admin</button>
     </div>
@@ -153,36 +162,19 @@
           <p class="modal-sub" style="margin-top:0">Select employee to view all logs</p>
           <select id="admin-view-emp" class="log-input"></select>
 
-          <div class="admin-create-form" style="margin-top:14px; padding:12px; background:var(--bg); border-radius:10px; border:2px solid var(--border)">
-            <p class="modal-sub" style="margin-top:0">Create new log for selected employee</p>
-            <div class="log-fields">
-              <div class="log-field-wrap">
-                <label class="field-label">COMPETITION</label>
-                <select id="admin-create-comp" class="log-input"></select>
-              </div>
-              <div class="log-field-wrap">
-                <label class="field-label">DAY</label>
-                <select id="admin-create-day" class="log-input"></select>
-              </div>
-            </div>
-            <div class="log-fields">
-              <div class="log-field-wrap">
-                <label class="field-label">SALES ($)</label>
-                <input type="number" id="admin-create-sales" class="log-input" placeholder="0.00" min="0" step="0.01" />
-              </div>
-              <div class="log-field-wrap">
-                <label class="field-label">HOURS</label>
-                <input type="number" id="admin-create-hours" class="log-input" placeholder="0.0" min="0" step="0.5" />
-              </div>
-            </div>
-            <button class="log-btn" id="btn-admin-create-log" style="margin-top:8px">CREATE LOG</button>
+          <div class="admin-comp-selector hidden" style="margin-top:12px">
+            <label class="field-label">SELECT COMPETITION</label>
+            <select id="admin-view-comp" class="log-input"></select>
           </div>
+
+          <div id="admin-day-buttons" class="admin-day-buttons" style="margin-top:12px"></div>
+
+          <div id="admin-log-detail" class="admin-log-detail" style="margin-top:14px"></div>
 
           <div style="margin-top:12px; display:flex; gap:8px">
             <button class="scope-toggle active" id="scope-current" data-scope="current">Current Comp</button>
             <button class="scope-toggle" id="scope-all" data-scope="all">All Comps</button>
           </div>
-          <div id="admin-log-list" class="admin-log-list" style="margin-top:14px;max-height:300px;overflow-y:auto"></div>
         </div>
         <button class="close-btn" id="btn-admin-close">DONE</button>
       </div>

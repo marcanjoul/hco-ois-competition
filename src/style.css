@@ -145,6 +145,150 @@ html, body {
   margin-bottom: 20px;
 }
 
+.search-wrap {
+  margin-bottom: 16px;
+}
+
+.search-results-info {
+  font-size: 0.75rem;
+  color: var(--text3);
+  text-align: center;
+  margin-top: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.search-results-info.hidden {
+  display: none;
+}
+
+.name-grid.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--text3);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.admin-day-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.admin-day-btn {
+  padding: 8px 14px;
+  border-radius: 99px;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  color: var(--text2);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.12s;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.admin-day-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.admin-day-btn.has-log::after {
+  content: " ✓";
+  color: var(--green);
+  font-weight: 900;
+}
+
+.admin-log-detail {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+
+.admin-log-display {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.admin-log-value {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-log-value-label {
+  font-size: 0.65rem;
+  color: var(--text3);
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.admin-log-value-amount {
+  font-size: 1.4rem;
+  color: var(--text);
+  font-weight: 900;
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+.admin-log-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-log-actions button {
+  flex: 1;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.admin-log-edit-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.admin-log-delete-btn:hover {
+  border-color: #e53e3e;
+  color: #e53e3e;
+}
+
+.admin-create-form {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.admin-comp-selector {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+
+.admin-comp-selector.hidden {
+  display: none;
+}
+
 .name-btn {
   background: var(--surface);
   border: 2px solid var(--border);
