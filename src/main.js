@@ -67,9 +67,6 @@ async function bootstrap() {
     const id = `comp_${Date.now()}`;
     await set(dbRef.comp(id), { name: "Week 1", createdAt: Date.now(), status: "active" });
   }
-  if (!settingsSnap.exists()) {
-    await set(dbRef.settings(), { storeName: "Hollister", accentColor: "#FF4D1C", bannerMessage: "", rankingMetric: "sph", showHours: true });
-  }
 }
 
 function slugify(str) {
@@ -92,7 +89,6 @@ window.updateBtnState = function(inputId, btnId) {
 // Apply site settings
 // ══════════════════════════════════════════════════════
 function applySettings(s = {}) {
-  const name = s.storeName || "Hollister";
   const color = s.accentColor || "#FF4D1C";
   const banner = s.bannerMessage || "";
   document.querySelectorAll(".store-name").forEach(el => el.textContent = name);
@@ -261,9 +257,6 @@ async function bootstrap() {
     const id = `comp_${Date.now()}`;
     await set(dbRef.comp(id), { name: "Week 1", createdAt: Date.now(), status: "active" });
   }
-  if (!settingsSnap.exists()) {
-    await set(dbRef.settings(), { storeName: "Hollister", accentColor: "#FF4D1C", bannerMessage: "", rankingMetric: "sph", showHours: true });
-  }
 }
 
 function slugify(str) {
@@ -286,7 +279,6 @@ window.updateBtnState = function(inputId, btnId) {
 // Apply site settings
 // ══════════════════════════════════════════════════════
 function applySettings(s = {}) {
-  const name = s.storeName || "Hollister";
   const color = s.accentColor || "#FF4D1C";
   const banner = s.bannerMessage || "";
   document.querySelectorAll(".store-name").forEach(el => el.textContent = name);
@@ -1402,7 +1394,6 @@ function renderAdminSite(container) {
   container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">SITE SETTINGS</div>`;
 
   const fields = [
-    { label: "Store Name", id: "site-store-name", type: "text", value: s.storeName || "Hollister", placeholder: "e.g. Hollister" },
     { label: "Banner Message (shown on home screen)", id: "site-banner-msg", type: "text", value: s.bannerMessage || "", placeholder: "e.g. Good luck team! 🔥 (optional)" },
   ];
 
@@ -1456,7 +1447,6 @@ function renderAdminSite(container) {
   const saveBtn = makeBtn("SAVE SETTINGS", "log-btn", async () => {
     const activeSwatch = document.querySelector(".color-swatch.active");
     const updates = {
-      storeName: document.getElementById("site-store-name").value.trim() || "Hollister",
       bannerMessage: document.getElementById("site-banner-msg").value.trim(),
       accentColor: activeSwatch ? activeSwatch.style.background : (s.accentColor || "#FF4D1C"),
       rankingMetric: document.getElementById("site-ranking-metric").value,
@@ -2639,7 +2629,6 @@ function renderAdminSite(container) {
   container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">SITE SETTINGS</div>`;
 
   const fields = [
-    { label: "Store Name", id: "site-store-name", type: "text", value: s.storeName || "Hollister", placeholder: "e.g. Hollister" },
     { label: "Banner Message (shown on home screen)", id: "site-banner-msg", type: "text", value: s.bannerMessage || "", placeholder: "e.g. Good luck team! 🔥 (optional)" },
   ];
 
@@ -2693,7 +2682,6 @@ function renderAdminSite(container) {
   const saveBtn = makeBtn("SAVE SETTINGS", "log-btn", async () => {
     const activeSwatch = document.querySelector(".color-swatch.active");
     const updates = {
-      storeName: document.getElementById("site-store-name").value.trim() || "Hollister",
       bannerMessage: document.getElementById("site-banner-msg").value.trim(),
       accentColor: activeSwatch ? activeSwatch.style.background : (s.accentColor || "#FF4D1C"),
       rankingMetric: document.getElementById("site-ranking-metric").value,
