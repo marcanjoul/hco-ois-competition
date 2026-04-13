@@ -1085,54 +1085,6 @@ function renderAdminGoals(container) {
     document.getElementById("goal-val-globalAssociate").value = "";
     showToast("Cleared");
   };
-
-  // Individual goals
-  const indivTitle = document.createElement("div");
-  indivTitle.style.cssText = "font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;color:var(--text2);margin:16px 0 10px;border-top:2px solid var(--border);padding-top:14px;";
-  indivTitle.textContent = "INDIVIDUAL GOALS";
-  container.appendChild(indivTitle);
-
-  Object.entries(state.employees)
-    .filter(([, e]) => e.active !== false)
-    .sort(([, a], [, b]) => a.name.localeCompare(b.name))
-    .forEach(([empId, emp]) => {
-      const existing = compGoals.perAssociate?.[empId] || {};
-      const empSection = document.createElement("div");
-      empSection.className = "goal-admin-block";
-      empSection.innerHTML = `
-        <div class="goal-admin-label">${emp.name}</div>
-        <div class="log-fields" style="margin-top:6px;">
-          <div class="log-field-wrap">
-            <label class="field-label">TYPE</label>
-            <select id="goal-type-emp-${empId}" class="log-input">
-              <option value="sph"${existing.type === "sph" ? " selected" : ""}>$/hr</option>
-              <option value="total"${existing.type === "total" ? " selected" : ""}>Total $</option>
-            </select>
-          </div>
-          <div class="log-field-wrap">
-            <label class="field-label">TARGET</label>
-            <input type="number" id="goal-val-emp-${empId}" class="log-input" placeholder="optional" value="${existing.value || ""}" min="0" step="1" />
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:6px;">
-          <button class="mini-btn" id="goal-save-emp-${empId}">Save</button>
-          <button class="mini-btn" style="background:var(--bg);color:var(--text2);border:2px solid var(--border);" id="goal-clear-emp-${empId}">Clear</button>
-        </div>
-      `;
-      container.appendChild(empSection);
-      document.getElementById(`goal-save-emp-${empId}`).onclick = async () => {
-        const type = document.getElementById(`goal-type-emp-${empId}`).value;
-        const value = parseFloat(document.getElementById(`goal-val-emp-${empId}`).value);
-        if (isNaN(value) || value <= 0) { showToast("Enter a valid target"); return; }
-        await set(ref(db, `goals/${compId}/perAssociate/${empId}`), { type, value });
-        showToast(`${emp.name}'s goal saved ✅`);
-      };
-      document.getElementById(`goal-clear-emp-${empId}`).onclick = async () => {
-        await remove(ref(db, `goals/${compId}/perAssociate/${empId}`));
-        document.getElementById(`goal-val-emp-${empId}`).value = "";
-        showToast("Cleared");
-      };
-    });
 }
 
 // ══════════════════════════════════════════════════════
