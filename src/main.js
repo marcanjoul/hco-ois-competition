@@ -253,7 +253,6 @@ function startListeners() {
     renderBoardCompSelect();
     if (state.currentScreen === "board") renderBoard();
     if (state.admin.tab === "competitions") renderAdminTab();
-    if (state.admin.tab === "goals") renderAdminTab();
   });
 
   onValue(dbRef.emps(), snap => {
@@ -262,7 +261,6 @@ function startListeners() {
     if (state.currentUser) { renderDash(); renderBoard(); }
     if (state.admin.tab === "employees") renderAdminTab();
     if (state.admin.tab === "logs") renderAdminTab();
-    if (state.admin.tab === "goals") renderAdminTab();
   });
 
   onValue(dbRef.logs(), snap => {
@@ -281,7 +279,7 @@ function startListeners() {
     state.goals = snap.val() || {};
     if (state.currentUser) renderDash();
     renderPickScreen();
-    if (state.admin.tab === "goals") renderAdminTab();
+    if (state.admin.tab === "competitions") renderAdminTab();
   });
 }
 
@@ -464,6 +462,8 @@ function renderPickScreen(filterText = "") {
       const detailsEl = document.getElementById("pick-comp-details");
       if (detailsEl) {
         const compGoals = getCompGoals(state.currentComp);
+        const todayDate = getTodayDate();
+        const todayGoal = compGoals[`daily_${todayDate}`];
         let detailsHtml = "";
 
         if (compGoals.competition?.value) {
@@ -474,6 +474,15 @@ function renderPickScreen(filterText = "") {
             <div class="comp-detail">
               <div class="detail-label">COMPETITION GOAL</div>
               ${renderGoalBar(current, g.value, g.type)}
+            </div>
+          `;
+        }
+
+        if (todayGoal?.value) {
+          detailsHtml += `
+            <div class="comp-detail" style="margin-top:16px;">
+              <div class="detail-label">GOAL FOR TODAY</div>
+              <div style="font-size:24px;font-weight:700;color:var(--accent);padding:8px 0;">$${todayGoal.value}/hr</div>
             </div>
           `;
         }
@@ -499,13 +508,12 @@ function renderPickScreen(filterText = "") {
   const goalsEl = document.getElementById("pick-goals");
   if (goalsEl && state.currentComp && state.currentUser) {
     const compGoals = getCompGoals(state.currentComp);
+    const todayDate = getTodayDate();
+    const todayGoal = compGoals[`daily_${todayDate}`];
     let goalsHtml = "";
 
-    if (compGoals.daily?.value) {
-      const g = compGoals.daily;
-      const todaySph = getTodaySph(state.currentUser, state.currentComp);
-      const current = g.type === "sph" ? todaySph.sph : todaySph.total;
-      goalsHtml += `<div class="goal-block"><div class="goal-label">☀️ Daily Goal</div>${renderGoalBar(current, g.value, g.type)}</div>`;
+    if (todayGoal?.value) {
+      goalsHtml += `<div class="goal-block"><div class="goal-label">☀️ Goal for Today</div><div style="font-size:20px;font-weight:700;color:var(--accent);padding:8px 0;">$${todayGoal.value}/hr</div></div>`;
     }
 
     goalsEl.innerHTML = goalsHtml;
@@ -1056,7 +1064,6 @@ function renderAdminTabBar() {
     { id: "competitions", label: "🏆 Comps" },
     { id: "employees",    label: "👥 Team" },
     { id: "logs",         label: "📋 Logs" },
-    { id: "goals",        label: "🎯 Goals" },
   ];
   const bar = document.getElementById("admin-tab-bar");
   if (!bar) return;
@@ -1078,7 +1085,6 @@ function renderAdminTab() {
     case "competitions": renderAdminComps(content); break;
     case "employees":    renderAdminEmps(content); break;
     case "logs":         renderAdminLogs(content); break;
-    case "goals":        renderAdminGoals(content); break;
   }
 }
 
@@ -1207,6 +1213,47 @@ function renderCompEditPanel(compId, comp) {
   title.textContent = `EDIT: ${comp.name}`;
   content.appendChild(title);
 
+  // Track original values and changes
+  const originalValues = {
+    name: comp.name,
+    startDate: comp.startDate || "",
+    endDate: comp.endDate || "",
+    prize: comp.prize || "",
+    status: comp.status,
+    winner: comp.winner || "",
+    competitionGoal: getCompGoals(compId).competition?.value || "",
+  };
+
+  const changedFields = {};
+  const dailyGoalChanges = {};
+
+  const highlightField = (id) => {
+    const el = document.getElementById(id);
+    if (el && changedFields[id]) {
+      el.style.borderColor = "var(--accent)";
+      el.style.borderWidth = "2px";
+    } else if (el) {
+      el.style.borderColor = "";
+      el.style.borderWidth = "";
+    }
+  };
+
+  const addChangeListener = (id, originalValue) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const checkChange = () => {
+      const currentValue = el.value;
+      if (currentValue !== originalValue) {
+        changedFields[id] = true;
+      } else {
+        delete changedFields[id];
+      }
+      highlightField(id);
+    };
+    el.addEventListener("input", checkChange);
+    el.addEventListener("change", checkChange);
+  };
+
   [
     { label: "Competition Name", key: "name", type: "text", value: comp.name },
     { label: "Start Date", key: "startDate", type: "date", value: comp.startDate || "" },
@@ -1216,6 +1263,7 @@ function renderCompEditPanel(compId, comp) {
     wrap.style.marginBottom = "10px";
     wrap.innerHTML = `<label class="field-label">${f.label}</label><input type="${f.type}" id="comp-edit-${f.key}" class="log-input" value="${f.value}" placeholder="${f.label}" />`;
     content.appendChild(wrap);
+    addChangeListener(`comp-edit-${f.key}`, f.value);
   });
 
   // Prize field with formatting toolbar
@@ -1232,13 +1280,14 @@ function renderCompEditPanel(compId, comp) {
   `;
   content.appendChild(prizeWrap);
   setupPrizeFormatButtons("comp-edit-prize");
+  addChangeListener("comp-edit-prize", comp.prize || "");
 
   const statusWrap = document.createElement("div");
   statusWrap.style.marginBottom = "10px";
   statusWrap.innerHTML = `<label class="field-label">STATUS</label>`;
   const statusSel = document.createElement("select");
   statusSel.className = "log-input"; statusSel.id = "comp-edit-status";
-  ["active", "closed", "archived"].forEach(s => {
+  ["draft", "active", "closed"].forEach(s => {
     const opt = document.createElement("option");
     opt.value = s; opt.textContent = s.charAt(0).toUpperCase() + s.slice(1);
     if (comp.status === s) opt.selected = true;
@@ -1246,6 +1295,7 @@ function renderCompEditPanel(compId, comp) {
   });
   statusWrap.appendChild(statusSel);
   content.appendChild(statusWrap);
+  addChangeListener("comp-edit-status", comp.status);
 
   const winnerWrap = document.createElement("div");
   winnerWrap.style.marginBottom = "10px";
@@ -1265,8 +1315,115 @@ function renderCompEditPanel(compId, comp) {
     });
   winnerWrap.appendChild(winnerSel);
   content.appendChild(winnerWrap);
+  addChangeListener("comp-edit-winner", comp.winner || "");
 
-  const saveBtn = makeBtn("SAVE CHANGES", "log-btn", async () => {
+  // ═══ Goals Section ═══
+  const goalsTitle = document.createElement("div");
+  goalsTitle.className = "admin-section-title";
+  goalsTitle.style.margin = "20px 0 12px 0";
+  goalsTitle.textContent = "GOALS";
+  content.appendChild(goalsTitle);
+
+  const compGoals = getCompGoals(compId);
+
+  // Competition Total Goal
+  const compGoalSection = document.createElement("div");
+  compGoalSection.className = "goal-admin-block";
+  compGoalSection.innerHTML = `
+    <div class="goal-admin-label">🎯 Competition Total Goal</div>
+    <div class="goal-admin-hint">Overall total sales target</div>
+    <div style="display:flex;align-items:center;margin-top:8px;gap:8px;">
+      <label class="field-label" style="margin:0;min-width:60px;">TYPE</label>
+      <span style="color:var(--text2);font-weight:500;">Total Sales</span>
+    </div>
+    <div style="margin-top:8px;">
+      <label class="field-label">TARGET</label>
+      <input type="number" id="goal-val-competition" class="log-input" placeholder="e.g. 5000" value="${compGoals.competition?.value || ""}" min="0" step="1" />
+    </div>
+  `;
+  content.appendChild(compGoalSection);
+  addChangeListener("goal-val-competition", compGoals.competition?.value || "");
+
+  // Daily Goals by Week
+  const dailyGoalsSection = document.createElement("div");
+  dailyGoalsSection.className = "goal-admin-block";
+  dailyGoalsSection.style.marginTop = "16px";
+  dailyGoalsSection.innerHTML = `<div class="goal-admin-label" style="margin-bottom:8px;">☀️ Daily Goals by Week</div>`;
+  content.appendChild(dailyGoalsSection);
+
+  const weekPickerWrap = document.createElement("div");
+  weekPickerWrap.style.marginBottom = "12px";
+  weekPickerWrap.innerHTML = `
+    <label class="field-label">SELECT WEEK</label>
+    <input type="date" id="daily-goal-week-picker" class="log-input" value="${comp.startDate || ""}" />
+  `;
+  dailyGoalsSection.appendChild(weekPickerWrap);
+
+  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const dailyGoalsGrid = document.createElement("div");
+  dailyGoalsGrid.id = "daily-goals-grid";
+  dailyGoalsGrid.style.marginTop = "12px";
+  dailyGoalsSection.appendChild(dailyGoalsGrid);
+
+  const renderDailyGoalsForWeek = (dateStr) => {
+    const baseDate = new Date(dateStr + "T00:00:00");
+    const dayOfWeek = baseDate.getDay();
+    const startOfWeek = new Date(baseDate);
+    startOfWeek.setDate(baseDate.getDate() - dayOfWeek);
+
+    dailyGoalsGrid.innerHTML = "";
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(startOfWeek);
+      d.setDate(startOfWeek.getDate() + i);
+      const dateString = d.toISOString().split("T")[0];
+      const isInRange = dateString >= comp.startDate && dateString <= comp.endDate;
+
+      if (!isInRange) continue;
+
+      const dayGoal = compGoals[`daily_${dateString}`] || {};
+      const fieldId = `daily-goal-${dateString}`;
+
+      const dayCard = document.createElement("div");
+      dayCard.className = "goal-day-card";
+      dayCard.style.cssText = `
+        padding:8px;
+        border:2px solid var(--border);
+        border-radius:8px;
+      `;
+      dayCard.innerHTML = `
+        <div style="font-size:12px;color:var(--text2);margin-bottom:4px;font-weight:700;">${daysOfWeek[i]}</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;">${dateString}</div>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <input type="number" id="${fieldId}" data-date="${dateString}" class="daily-goal-input log-input" placeholder="0" value="${dayGoal.value || ""}" min="0" step="1" style="font-size:12px;padding:4px;width:40px;text-align:center;" />
+          <span style="font-size:11px;color:var(--text2);">$/hr</span>
+        </div>
+      `;
+      dailyGoalsGrid.appendChild(dayCard);
+
+      // Track daily goal changes
+      const input = document.getElementById(fieldId);
+      input.addEventListener("input", () => {
+        const value = input.value;
+        if (value !== (dayGoal.value || "")) {
+          dailyGoalChanges[dateString] = value ? parseFloat(value) : null;
+          input.style.borderColor = "var(--accent)";
+          input.style.borderWidth = "2px";
+        } else {
+          delete dailyGoalChanges[dateString];
+          input.style.borderColor = "";
+          input.style.borderWidth = "";
+        }
+      });
+    }
+  };
+
+  const weekPicker = document.getElementById("daily-goal-week-picker");
+  weekPicker.onchange = () => renderDailyGoalsForWeek(weekPicker.value);
+  renderDailyGoalsForWeek(comp.startDate || getTodayDate());
+
+  // ═══ Save All Button ═══
+  const saveAllBtn = makeBtn("SAVE ALL CHANGES", "log-btn", async () => {
+    // Save competition details
     await update(dbRef.comp(compId), {
       name: document.getElementById("comp-edit-name").value.trim() || comp.name,
       prize: document.getElementById("comp-edit-prize").value.trim(),
@@ -1275,11 +1432,29 @@ function renderCompEditPanel(compId, comp) {
       status: document.getElementById("comp-edit-status").value,
       winner: document.getElementById("comp-edit-winner").value || null,
     });
-    showToast("Competition updated ✅");
+
+    // Save competition goal
+    const compGoalValue = parseFloat(document.getElementById("goal-val-competition").value);
+    if (compGoalValue > 0) {
+      await set(ref(db, `goals/${compId}/competition`), { type: "total", value: compGoalValue });
+    } else {
+      await remove(ref(db, `goals/${compId}/competition`));
+    }
+
+    // Save daily goals
+    for (const [dateStr, value] of Object.entries(dailyGoalChanges)) {
+      if (value > 0) {
+        await set(ref(db, `goals/${compId}/daily_${dateStr}`), { type: "sph", value });
+      } else {
+        await remove(ref(db, `goals/${compId}/daily_${dateStr}`));
+      }
+    }
+
+    showToast("All changes saved ✅");
     state.admin.tab = "competitions"; renderAdminTabBar(); renderAdminTab();
   });
-  saveBtn.style.marginTop = "12px";
-  content.appendChild(saveBtn);
+  saveAllBtn.style.marginTop = "20px";
+  content.appendChild(saveAllBtn);
 
   const delBtn = makeBtn("🗑️ Delete Competition", "del-btn danger", async () => {
     if (confirm(`Delete "${comp.name}"? All logs will be removed.`)) {
@@ -1794,75 +1969,6 @@ function renderAdminLogEdit(empId, compId, date, log) {
     if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
   };
   document.getElementById("admin-cancel-edit-btn").onclick = () => renderAdminLogDetail(empId, compId, date, log);
-}
-
-// ══════════════════════════════════════════════════════
-// ADMIN — Goals
-// ══════════════════════════════════════════════════════
-function renderAdminGoals(container) {
-  container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">GOALS</div>`;
-
-  const compWrap = document.createElement("div");
-  compWrap.style.marginBottom = "14px";
-  compWrap.innerHTML = `<label class="field-label">COMPETITION</label>`;
-  const compSel = document.createElement("select");
-  compSel.className = "log-input";
-  compSel.innerHTML = `<option value="" disabled>— Select competition —</option>`;
-  Object.entries(state.competitions).forEach(([id, comp]) => {
-    const opt = document.createElement("option");
-    opt.value = id; opt.textContent = comp.name;
-    if (id === (state.admin.selectedComp || state.currentComp)) opt.selected = true;
-    compSel.appendChild(opt);
-  });
-  compSel.onchange = () => { state.admin.selectedComp = compSel.value; renderAdminTab(); };
-  compWrap.appendChild(compSel);
-  container.appendChild(compWrap);
-
-  const compId = state.admin.selectedComp || state.currentComp;
-  const compGoals = getCompGoals(compId);
-
-  [
-    { key: "competition", label: "🎯 Competition Total Goal", hint: "Overall target for the whole competition" },
-    { key: "daily",       label: "☀️ Daily Goal",             hint: "Target per shift/day" },
-  ].forEach(g => {
-    const existing = compGoals[g.key] || {};
-    const section = document.createElement("div");
-    section.className = "goal-admin-block";
-    section.innerHTML = `
-      <div class="goal-admin-label">${g.label}</div>
-      <div class="goal-admin-hint">${g.hint}</div>
-      <div class="log-fields" style="margin-top:8px;">
-        <div class="log-field-wrap">
-          <label class="field-label">TYPE</label>
-          <select id="goal-type-${g.key}" class="log-input">
-            <option value="sph"${existing.type === "sph" ? " selected" : ""}>$/hr</option>
-            <option value="total"${existing.type === "total" ? " selected" : ""}>Total $</option>
-          </select>
-        </div>
-        <div class="log-field-wrap">
-          <label class="field-label">TARGET</label>
-          <input type="number" id="goal-val-${g.key}" class="log-input" placeholder="e.g. 150" value="${existing.value || ""}" min="0" step="1" />
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:8px;">
-        <button class="mini-btn" id="goal-save-${g.key}">Save</button>
-        <button class="mini-btn" style="background:var(--bg);color:var(--text2);border:2px solid var(--border);" id="goal-clear-${g.key}">Clear</button>
-      </div>
-    `;
-    container.appendChild(section);
-    document.getElementById(`goal-save-${g.key}`).onclick = async () => {
-      const type = document.getElementById(`goal-type-${g.key}`).value;
-      const value = parseFloat(document.getElementById(`goal-val-${g.key}`).value);
-      if (isNaN(value) || value <= 0) { showToast("Enter a valid target"); return; }
-      await set(ref(db, `goals/${compId}/${g.key}`), { type, value });
-      showToast("Goal saved ✅");
-    };
-    document.getElementById(`goal-clear-${g.key}`).onclick = async () => {
-      await remove(ref(db, `goals/${compId}/${g.key}`));
-      document.getElementById(`goal-val-${g.key}`).value = "";
-      showToast("Goal cleared");
-    };
-  });
 }
 
 // ══════════════════════════════════════════════════════
