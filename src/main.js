@@ -604,10 +604,10 @@ function showSelectedEmployeeProfile(empId, emp) {
     </div>
   `;
 
-  // Make avatar clickable to edit
+  // Make avatar clickable to edit (employees can only edit avatar)
   document.getElementById("pick-emp-avatar-btn").onclick = (e) => {
     e.stopPropagation();
-    openEditEmpModal(empId, emp);
+    openEditAvatarModal(empId, emp);
   };
 }
 
@@ -1278,29 +1278,126 @@ function renderAdminEmps(container) {
 // ══════════════════════════════════════════════════════
 // ADMIN — Edit Employee Modal
 // ══════════════════════════════════════════════════════
+
+// Employees can only edit their own avatar
+function openEditAvatarModal(empId, emp) {
+  let modal = document.getElementById("edit-avatar-employee-modal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "edit-avatar-employee-modal";
+    modal.className = "admin-edit-emp-modal";
+    document.body.appendChild(modal);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeEditAvatarModal();
+    });
+  }
+
+  const isCustomAvatar = emp.avatar && emp.avatar.startsWith("data:");
+
+  modal.innerHTML = `
+    <div class="admin-edit-emp-modal-content">
+      <div class="admin-edit-emp-modal-header">
+        <div>Edit Your Avatar</div>
+        <button class="admin-edit-emp-modal-close">✕</button>
+      </div>
+
+      <div class="admin-edit-emp-avatar-section">
+        <label class="field-label">AVATAR</label>
+        <div id="edit-avatar-preview" class="admin-edit-emp-avatar-large">
+          ${getAvatarHtml(emp, "", empId)}
+        </div>
+        <div class="avatar-upload">
+          <input type="file" id="edit-avatar-file-input" accept="image/*" />
+          <button class="avatar-upload-btn">📸 Upload Photo</button>
+        </div>
+        ${isCustomAvatar ? `<button class="mini-btn del-btn danger">Remove Avatar</button>` : ""}
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <button class="log-btn" id="avatar-save-btn">SAVE AVATAR</button>
+        <button class="log-btn" id="avatar-cancel-btn" style="background:var(--bg);color:var(--text2);border:2px solid var(--border);box-shadow:none;">CANCEL</button>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add("active");
+
+  // Close button handler
+  modal.querySelector(".admin-edit-emp-modal-close").onclick = closeEditAvatarModal;
+
+  // Upload button
+  const uploadBtn = modal.querySelector(".avatar-upload-btn");
+  const fileInput = modal.querySelector("#edit-avatar-file-input");
+  uploadBtn.onclick = () => fileInput.click();
+
+  // File input change
+  fileInput.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 500000) { showToast("Image too large (max 500KB)"); return; }
+    const base64 = await fileToBase64(file);
+    const preview = modal.querySelector("#edit-avatar-preview");
+    preview.innerHTML = `<img class="avatar-img" src="${base64}" alt="preview" />`;
+    window.editAvatarData = base64;
+  };
+
+  // Remove avatar button
+  const removeBtn = modal.querySelector(".mini-btn.del-btn.danger");
+  if (removeBtn) {
+    removeBtn.onclick = () => {
+      if (confirm("Remove your avatar?")) {
+        window.editAvatarData = null;
+        const preview = modal.querySelector("#edit-avatar-preview");
+        if (preview) preview.innerHTML = getAvatarHtml(emp, "", empId);
+      }
+    };
+  }
+
+  // Save button
+  modal.querySelector("#avatar-save-btn").onclick = async () => {
+    if (window.editAvatarData === undefined) {
+      closeEditAvatarModal();
+      return;
+    }
+    await update(dbRef.emp(empId), { avatar: window.editAvatarData || null });
+    showToast("Avatar updated ✅");
+    closeEditAvatarModal();
+    const updatedEmp = state.employees[empId];
+    if (updatedEmp && state.currentUser === empId) {
+      showSelectedEmployeeProfile(empId, updatedEmp);
+    }
+  };
+
+  // Cancel button
+  modal.querySelector("#avatar-cancel-btn").onclick = closeEditAvatarModal;
+}
+
+function closeEditAvatarModal() {
+  const modal = document.getElementById("edit-avatar-employee-modal");
+  if (modal) modal.classList.remove("active");
+  window.editAvatarData = undefined;
+}
+
+// Managers can edit both name and avatar
 function openEditEmpModal(empId, emp) {
-  // Create modal if it doesn't exist
   let modal = document.getElementById("admin-edit-emp-modal");
   if (!modal) {
     modal = document.createElement("div");
     modal.id = "admin-edit-emp-modal";
     modal.className = "admin-edit-emp-modal";
     document.body.appendChild(modal);
-    // Close on background click
     modal.addEventListener("click", (e) => {
       if (e.target === modal) closeEditEmpModal();
     });
   }
 
-  const empIdForPlaceholder = empId;
-  const currentAvatar = emp.avatar || getAvatarPlaceholder(empId);
   const isCustomAvatar = emp.avatar && emp.avatar.startsWith("data:");
 
   modal.innerHTML = `
     <div class="admin-edit-emp-modal-content">
       <div class="admin-edit-emp-modal-header">
         <div>Edit Employee</div>
-        <button class="admin-edit-emp-modal-close" onclick="closeEditEmpModal()">✕</button>
+        <button class="admin-edit-emp-modal-close">✕</button>
       </div>
 
       <div class="admin-edit-emp-section">
@@ -1315,76 +1412,81 @@ function openEditEmpModal(empId, emp) {
         </div>
         <div class="avatar-upload">
           <input type="file" id="edit-emp-avatar-input" accept="image/*" />
-          <button class="avatar-upload-btn" onclick="document.getElementById('edit-emp-avatar-input').click()">📸 Upload Photo</button>
+          <button class="avatar-upload-btn">📸 Upload Photo</button>
         </div>
-        ${isCustomAvatar ? `<button class="mini-btn del-btn danger" onclick="deleteEmpAvatar('${empId}')">Remove Avatar</button>` : ""}
+        ${isCustomAvatar ? `<button class="mini-btn del-btn danger">Remove Avatar</button>` : ""}
       </div>
 
       <div style="display:flex;gap:8px;margin-top:16px;">
-        <button class="log-btn" onclick="saveEditEmp('${empId}')">SAVE CHANGES</button>
-        <button class="log-btn" style="background:var(--bg);color:var(--text2);border:2px solid var(--border);box-shadow:none;" onclick="closeEditEmpModal()">CANCEL</button>
+        <button class="log-btn" id="emp-save-btn">SAVE CHANGES</button>
+        <button class="log-btn" id="emp-cancel-btn" style="background:var(--bg);color:var(--text2);border:2px solid var(--border);box-shadow:none;">CANCEL</button>
       </div>
     </div>
   `;
 
   modal.classList.add("active");
 
-  // Handle avatar upload
-  const fileInput = document.getElementById("edit-emp-avatar-input");
+  // Close button handler
+  modal.querySelector(".admin-edit-emp-modal-close").onclick = closeEditEmpModal;
+
+  // Upload button
+  const uploadBtn = modal.querySelector(".avatar-upload-btn");
+  const fileInput = modal.querySelector("#edit-emp-avatar-input");
+  uploadBtn.onclick = () => fileInput.click();
+
+  // File input change
   fileInput.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    // Max 500KB
     if (file.size > 500000) { showToast("Image too large (max 500KB)"); return; }
-
     const base64 = await fileToBase64(file);
-    const preview = document.getElementById("edit-emp-avatar-preview");
+    const preview = modal.querySelector("#edit-emp-avatar-preview");
     preview.innerHTML = `<img class="avatar-img" src="${base64}" alt="preview" />`;
     window.editEmpAvatarData = base64;
   };
+
+  // Remove avatar button
+  const removeBtn = modal.querySelector(".mini-btn.del-btn.danger");
+  if (removeBtn) {
+    removeBtn.onclick = () => {
+      if (confirm("Remove avatar for this employee?")) {
+        window.editEmpAvatarData = null;
+        const preview = modal.querySelector("#edit-emp-avatar-preview");
+        if (preview) preview.innerHTML = getAvatarHtml(emp, "", empId);
+      }
+    };
+  }
+
+  // Save button
+  modal.querySelector("#emp-save-btn").onclick = async () => {
+    const newName = modal.querySelector("#edit-emp-name").value.trim();
+    if (!newName) { showToast("Enter a name"); return; }
+
+    const updates = { name: newName };
+    if (window.editEmpAvatarData !== undefined) {
+      updates.avatar = window.editEmpAvatarData || null;
+    }
+
+    await update(dbRef.emp(empId), updates);
+    showToast("Employee updated ✅");
+    closeEditEmpModal();
+
+    const updatedEmp = state.employees[empId];
+    if (updatedEmp && state.currentUser === empId) {
+      showSelectedEmployeeProfile(empId, updatedEmp);
+    }
+
+    renderAdminTab();
+  };
+
+  // Cancel button
+  modal.querySelector("#emp-cancel-btn").onclick = closeEditEmpModal;
 }
 
 function closeEditEmpModal() {
   const modal = document.getElementById("admin-edit-emp-modal");
   if (modal) modal.classList.remove("active");
-  window.editEmpAvatarData = null;
-}
-
-function deleteEmpAvatar(empId) {
-  if (confirm("Remove avatar for this employee?")) {
-    window.editEmpAvatarData = null;
-    const emp = state.employees[empId];
-    if (emp) {
-      emp.avatar = null;
-      const preview = document.getElementById("edit-emp-avatar-preview");
-      if (preview) preview.innerHTML = getAvatarHtml(emp, "", empId);
-    }
-  }
-}
-
-async function saveEditEmp(empId) {
-  const newName = document.getElementById("edit-emp-name").value.trim();
-  if (!newName) { showToast("Enter a name"); return; }
-
-  const updates = { name: newName };
-
-  // Only update avatar if it was changed
-  if (window.editEmpAvatarData !== undefined) {
-    updates.avatar = window.editEmpAvatarData || null;
-  }
-
-  await update(dbRef.emp(empId), updates);
-  showToast("Employee updated ✅");
-  closeEditEmpModal();
-
-  // Refresh profile card if visible
-  const emp = state.employees[empId];
-  if (emp && state.currentUser === empId) {
-    showSelectedEmployeeProfile(empId, emp);
-  }
-
-  renderAdminTab();
+  window.editEmpAvatarData = undefined;
 }
 
 function inlineRenameEmp(empId, currentName) {
