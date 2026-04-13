@@ -310,7 +310,8 @@ function renderPickDayRow() {
     const hasEntry = myLogs[dayInfo.date] && (myLogs[dayInfo.date].sales > 0 || myLogs[dayInfo.date].hours > 0);
     const btn = document.createElement("button");
     btn.className = `day-btn${state.selectedDate === dayInfo.date ? " active" : ""}${hasEntry ? " logged" : ""}`;
-    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark">✓</div>' : ''}`;
+    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark">📝</div>' : ''}`;
+
     btn.onclick = () => { state.selectedDate = dayInfo.date; renderPickDayRow(); updatePickLogBtnState(); };
     dayRow.appendChild(btn);
   });
@@ -693,7 +694,8 @@ function renderDash() {
     const hasEntry = myLogs[dayInfo.date] && (myLogs[dayInfo.date].sales > 0 || myLogs[dayInfo.date].hours > 0);
     const btn = document.createElement("button");
     btn.className = `day-btn${state.selectedDate === dayInfo.date ? " active" : ""}${hasEntry ? " logged" : ""}`;
-    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark">✓</div>' : ''}`;
+    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark">📝</div>' : ''}`;
+
     btn.onclick = () => { state.selectedDate = dayInfo.date; renderDash(); };
     dayRow.appendChild(btn);
   });
@@ -714,7 +716,8 @@ function renderDash() {
     salesInput.readOnly = true; hoursInput.readOnly = true;
     salesInput.classList.add("input-locked"); hoursInput.classList.add("input-locked");
     logBtn.disabled = true; logBtn.classList.add("btn-disabled");
-    logBtn.textContent = "✓ Logged! See a manager to Edit";
+    logBtn.textContent = "📝 Logged! See a manager to Edit";
+
   } else {
     salesInput.readOnly = false; hoursInput.readOnly = false;
     salesInput.classList.remove("input-locked"); hoursInput.classList.remove("input-locked");
@@ -1333,7 +1336,7 @@ function renderAdminLogDetail(empId, compId, date, log) {
         <div class="admin-log-header-name">${state.employees[empId]?.name || ""}</div>
         <div class="admin-log-header-sub">${dayName} ${date} · ${state.competitions[compId]?.name || ""}</div>
       </div>
-      <div class="admin-log-header-badge logged">✓ Logged</div>
+      <div class="admin-log-header-badge logged">📝 Logged</div>
     </div>
     <div class="admin-log-stats">
       <div class="admin-log-stat"><div class="admin-log-stat-label">SALES</div><div class="admin-log-stat-value">$${log.sales.toFixed(2)}</div></div>
