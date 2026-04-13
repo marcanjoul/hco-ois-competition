@@ -522,7 +522,7 @@ function renderDash() {
     salesInput.readOnly = true; hoursInput.readOnly = true;
     salesInput.classList.add("input-locked"); hoursInput.classList.add("input-locked");
     logBtn.disabled = true; logBtn.classList.add("btn-disabled");
-    logBtn.textContent = "✓ Already Logged — See Admin to Edit";
+    logBtn.textContent = "✓ Logged! See a manager to Edit";
   } else {
     salesInput.readOnly = false; hoursInput.readOnly = false;
     salesInput.classList.remove("input-locked"); hoursInput.classList.remove("input-locked");

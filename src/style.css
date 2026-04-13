@@ -583,13 +583,12 @@ html, body {
 /* ── Log Card ── */
 .log-card { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow); border: 2px solid var(--border); }
 .log-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px; color: var(--text); margin-bottom: 12px; }
-.day-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; justify-content: space-between; }
+.day-row { display: flex; gap: 6px; margin-bottom: 14px; align-items: center; }
 .week-nav-btn { padding: 6px 10px; border-radius: 99px; border: 2px solid var(--border); background: var(--bg); color: var(--text2); font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.12s; flex-shrink: 0; }
 .week-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
 .day-btn {
   flex: 1;
-  min-width: 48px;
-  padding: 8px 6px;
+  padding: 8px 4px;
   border-radius: var(--radius-sm);
   border: 2px solid var(--border);
   background: var(--bg);
