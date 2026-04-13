@@ -1509,8 +1509,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const empGrid = document.getElementById("pick-emp-grid");
   if (empSelectorBtn && empGrid) {
     empSelectorBtn.onclick = () => {
-      const isHidden = empGrid.style.display === "none";
-      empGrid.style.display = isHidden ? "block" : "none";
+      const isHidden = empGrid.classList.contains("hidden");
+      empGrid.classList.toggle("hidden");
       if (isHidden) {
         renderPickEmpGrid();
         document.getElementById("pick-emp-search").focus();
