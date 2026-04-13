@@ -892,6 +892,7 @@ function renderCompEditPanel(compId, comp) {
     if (confirm(`Delete "${comp.name}"? All logs will be removed.`)) {
       await remove(dbRef.comp(compId));
       await remove(ref(db, `logs/${compId}`));
+      renderAllTime();
       state.admin.tab = "competitions"; renderAdminTabBar(); renderAdminTab();
     }
   });
