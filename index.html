@@ -38,6 +38,8 @@
   <div id="screen-pick" class="screen active">
     <div class="pick-bg-stripe"></div>
     <div class="pick-inner">
+      <button class="pick-info-btn" id="btn-info" title="How it works">ℹ️</button>
+
       <!-- Competition Info Card -->
       <div id="pick-comp-info" class="pick-comp-info hidden">
         <div class="pick-comp-info-header">
@@ -184,6 +186,43 @@
 
   <div id="toast" class="toast hidden"></div>
   <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+
+  <!-- ── INFO MODAL ── -->
+  <div id="info-modal" class="info-modal">
+    <div class="info-modal-content">
+      <div class="info-modal-header">
+        <div class="info-modal-title">How It Works 🏆</div>
+        <button class="info-modal-close" id="btn-close-info">✕</button>
+      </div>
+      <div class="info-modal-body">
+        <div class="info-section">
+          <div class="info-section-title">🎯 The Competition</div>
+          <p>Compete with your team to log the most sales and earn the best sales-per-hour ratio. Track your progress in real-time on the leaderboard.</p>
+        </div>
+        <div class="info-section">
+          <div class="info-section-title">📋 Logging Orders</div>
+          <p>After each shift, log your sales amount and hours worked. You can edit your entry for today, or add entries for past days (managers only).</p>
+        </div>
+        <div class="info-section">
+          <div class="info-section-title">📊 The Metrics</div>
+          <ul class="info-list">
+            <li><strong>Total Sales:</strong> Sum of all orders logged</li>
+            <li><strong>Hours Worked:</strong> Total hours for the competition</li>
+            <li><strong>$/HR:</strong> Sales divided by hours (efficiency)</li>
+          </ul>
+        </div>
+        <div class="info-section">
+          <div class="info-section-title">🏅 Winning</div>
+          <p>The competition ends on the specified date. The employee with the highest $/hr ratio wins (or total sales, depending on competition settings).</p>
+        </div>
+        <div class="info-section">
+          <div class="info-section-title">⚙️ Your Profile</div>
+          <p>Click your avatar to edit your profile photo. Managers can access the admin panel for more controls.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

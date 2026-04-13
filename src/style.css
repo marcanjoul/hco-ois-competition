@@ -221,6 +221,32 @@ input, select, textarea {
   min-width: 0;
 }
 
+.app-header-info-btn {
+  flex-shrink: 0;
+  background: rgba(0, 217, 255, 0.1);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  border-radius: var(--radius-sm);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--color-accent);
+}
+
+.app-header-info-btn:hover {
+  background: rgba(0, 217, 255, 0.2);
+  border-color: rgba(0, 217, 255, 0.5);
+  box-shadow: 0 0 12px rgba(0, 217, 255, 0.2);
+}
+
+.app-header-info-btn:active {
+  transform: scale(0.95);
+}
+
 .dash-name {
   display: block;
   font-family: var(--type-title-family);
@@ -344,6 +370,36 @@ input, select, textarea {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+}
+
+.pick-info-btn {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  flex-shrink: 0;
+  background: rgba(0, 217, 255, 0.1);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  border-radius: var(--radius-sm);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--color-accent);
+  z-index: 2;
+}
+
+.pick-info-btn:hover {
+  background: rgba(0, 217, 255, 0.2);
+  border-color: rgba(0, 217, 255, 0.5);
+  box-shadow: 0 0 12px rgba(0, 217, 255, 0.2);
+}
+
+.pick-info-btn:active {
+  transform: scale(0.95);
 }
 
 .site-banner {
@@ -2239,4 +2295,133 @@ select.log-input:focus {
 .admin-edit-emp-avatar-large {
   width: 160px;
   height: 160px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   INFO MODAL STYLES
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.info-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg-overlay);
+  z-index: 100;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+.info-modal.active {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: var(--space-6);
+}
+
+.info-modal-content {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-default);
+  max-width: 500px;
+  width: 100%;
+  box-shadow: var(--shadow-elevation-3);
+  overflow-y: auto;
+  max-height: 80vh;
+}
+
+.info-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--color-border-default);
+  position: sticky;
+  top: 0;
+  background: var(--color-bg-surface);
+  z-index: 101;
+}
+
+.info-modal-title {
+  font-family: var(--type-title-family);
+  font-size: var(--type-title-size);
+  font-weight: var(--type-title-weight);
+  letter-spacing: var(--type-title-letter-spacing);
+  color: var(--color-text-primary);
+}
+
+.info-modal-close {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.info-modal-close:hover {
+  color: var(--color-text-primary);
+  transform: scale(1.1);
+}
+
+.info-modal-body {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.info-section-title {
+  font-family: var(--type-title-family);
+  font-size: 18px;
+  font-weight: var(--type-title-weight);
+  letter-spacing: 0.5px;
+  color: var(--color-accent);
+  margin-bottom: var(--space-1);
+}
+
+.info-section p {
+  font-family: var(--type-body-family);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.info-list li {
+  font-family: var(--type-body-family);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  padding-left: var(--space-4);
+  position: relative;
+}
+
+.info-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+  font-weight: 800;
 }

@@ -1828,8 +1828,17 @@ function launchConfetti() {
 }
 
 // ══════════════════════════════════════════════════════
-// Event wiring
+// Info Modal
 // ══════════════════════════════════════════════════════
+function openInfoModal() {
+  const modal = document.getElementById("info-modal");
+  if (modal) modal.classList.add("active");
+}
+
+function closeInfoModal() {
+  const modal = document.getElementById("info-modal");
+  if (modal) modal.classList.remove("active");
+}
 document.addEventListener("DOMContentLoaded", async () => {
   await bootstrap();
   startListeners();
@@ -1902,6 +1911,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Set home button as active on initial load
   document.getElementById("nav-home").classList.add("active");
+
+  // Info modal
+  const infoBtnBtn = document.getElementById("btn-info");
+  const closeInfoBtn = document.getElementById("btn-close-info");
+  const infoModal = document.getElementById("info-modal");
+
+  if (infoBtnBtn) {
+    infoBtnBtn.onclick = openInfoModal;
+  }
+  if (closeInfoBtn) {
+    closeInfoBtn.onclick = closeInfoModal;
+  }
+  if (infoModal) {
+    infoModal.addEventListener("click", (e) => {
+      if (e.target === infoModal) closeInfoModal();
+    });
+  }
 
   // PIN submit
   const pinInput = document.getElementById("input-pin");
