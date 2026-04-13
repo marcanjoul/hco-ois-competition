@@ -68,6 +68,11 @@ function slugify(str) {
   return str.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
 }
 
+function escapeHtml(str) {
+  const map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" };
+  return str.replace(/[&<>"']/g, c => map[c]);
+}
+
 // ══════════════════════════════════════════════════════
 // Avatar helpers
 // ══════════════════════════════════════════════════════
@@ -107,6 +112,40 @@ window.updateBtnState = function(inputId, btnId) {
   btn.disabled = !hasValue;
   btn.classList.toggle("btn-ghost", !hasValue);
 };
+
+function setupPrizeFormatButtons(textareaId) {
+  const textarea = document.getElementById(textareaId);
+  if (!textarea) return;
+
+  const toolbar = textarea.previousElementSibling;
+  if (!toolbar || !toolbar.classList.contains("prize-format-toolbar")) return;
+
+  const buttons = toolbar.querySelectorAll(".prize-format-btn");
+  buttons.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const action = btn.dataset.action;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selected = textarea.value.substring(start, end);
+      const before = textarea.value.substring(0, start);
+      const after = textarea.value.substring(end);
+
+      let inserted = "";
+      if (action === "bullet") {
+        inserted = selected ? `• ${selected}` : "• ";
+      } else if (action === "indent") {
+        inserted = selected ? `   - ${selected}` : "   - ";
+      } else if (action === "emphasis") {
+        inserted = selected ? `→ ${selected}` : "→ ";
+      }
+
+      textarea.value = before + inserted + after;
+      textarea.focus();
+      textarea.setSelectionRange(start + inserted.length, start + inserted.length);
+    });
+  });
+}
 
 // ══════════════════════════════════════════════════════
 // Competition helpers
@@ -398,15 +437,12 @@ function renderPickScreen(filterText = "") {
       const nameEl = document.getElementById("pick-comp-name");
       if (nameEl) nameEl.textContent = comp.name;
 
-      // Competition meta (dates + prize)
+      // Competition meta (dates)
       const metaEl = document.getElementById("pick-comp-meta");
       if (metaEl) {
         let metaHtml = "";
         if (comp.startDate && comp.endDate) {
           metaHtml += `<span>${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}</span>`;
-        }
-        if (comp.prize) {
-          metaHtml += `<span>${comp.prize}</span>`;
         }
         metaEl.innerHTML = metaHtml;
       }
@@ -438,6 +474,16 @@ function renderPickScreen(filterText = "") {
             <div class="comp-detail">
               <div class="detail-label">COMPETITION GOAL</div>
               ${renderGoalBar(current, g.value, g.type)}
+            </div>
+          `;
+        }
+
+        // Add prizes section if prize exists
+        if (comp.prize) {
+          detailsHtml += `
+            <div class="prizes-section">
+              <div class="prizes-title">🎁 PRIZES</div>
+              <div class="prizes-content">${escapeHtml(comp.prize)}</div>
             </div>
           `;
         }
@@ -673,9 +719,6 @@ function renderDash() {
     let metaHtml = "";
     if (comp.startDate && comp.endDate) {
       metaHtml += `<span>${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}</span>`;
-    }
-    if (comp.prize) {
-      metaHtml += `<span>${comp.prize}</span>`;
     }
 
     const compGoals = getCompGoals(state.currentComp);
@@ -1079,8 +1122,13 @@ function renderAdminComps(container) {
       <input type="text" id="input-new-comp" class="log-input" placeholder="e.g.OIS Competition" style="margin-bottom:8px;" />
     </div>
     <div style="margin-top:4px;">
-      <label class="field-label">REWARD (what the winner gets)</label>
-      <input type="text" id="input-new-comp-prize" class="log-input" placeholder="e.g. $50 gift card, more shifts..." style="margin-bottom:8px;" />
+      <label class="field-label">PRIZES</label>
+      <div class="prize-format-toolbar">
+        <button type="button" class="prize-format-btn" data-action="bullet">• Bullet</button>
+        <button type="button" class="prize-format-btn" data-action="indent">   - Sub-item</button>
+        <button type="button" class="prize-format-btn" data-action="emphasis">→ Emphasis</button>
+      </div>
+      <textarea id="input-new-comp-prize" class="prize-textarea" placeholder="e.g. • $50 gift card&#10;   - Redeemable anytime&#10;• Extra shifts"></textarea>
     </div>
     <div class="log-fields" style="margin-bottom:8px;">
       <div class="log-field-wrap">
@@ -1095,6 +1143,9 @@ function renderAdminComps(container) {
     <button class="log-btn btn-ghost" id="btn-add-comp" disabled>+ CREATE COMPETITION</button>
   `;
   container.appendChild(newCompSection);
+
+  // Setup formatting buttons for new competition
+  setupPrizeFormatButtons("input-new-comp-prize");
 
   const checkReady = () => {
     const name = document.getElementById("input-new-comp")?.value.trim();
@@ -1140,7 +1191,6 @@ function renderCompEditPanel(compId, comp) {
 
   [
     { label: "Competition Name", key: "name", type: "text", value: comp.name },
-    { label: "Reward (what winner gets)", key: "prize", type: "text", value: comp.prize || "" },
     { label: "Start Date", key: "startDate", type: "date", value: comp.startDate || "" },
     { label: "End Date", key: "endDate", type: "date", value: comp.endDate || "" },
   ].forEach(f => {
@@ -1149,6 +1199,21 @@ function renderCompEditPanel(compId, comp) {
     wrap.innerHTML = `<label class="field-label">${f.label}</label><input type="${f.type}" id="comp-edit-${f.key}" class="log-input" value="${f.value}" placeholder="${f.label}" />`;
     content.appendChild(wrap);
   });
+
+  // Prize field with formatting toolbar
+  const prizeWrap = document.createElement("div");
+  prizeWrap.style.marginBottom = "10px";
+  prizeWrap.innerHTML = `
+    <label class="field-label">PRIZES</label>
+    <div class="prize-format-toolbar">
+      <button type="button" class="prize-format-btn" data-action="bullet">• Bullet</button>
+      <button type="button" class="prize-format-btn" data-action="indent">   - Sub-item</button>
+      <button type="button" class="prize-format-btn" data-action="emphasis">→ Emphasis</button>
+    </div>
+    <textarea id="comp-edit-prize" class="prize-textarea">${escapeHtml(comp.prize || "")}</textarea>
+  `;
+  content.appendChild(prizeWrap);
+  setupPrizeFormatButtons("comp-edit-prize");
 
   const statusWrap = document.createElement("div");
   statusWrap.style.marginBottom = "10px";
