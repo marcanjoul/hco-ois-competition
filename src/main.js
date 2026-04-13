@@ -288,7 +288,8 @@ function renderPickScreen(filterText = "") {
   if (!grid) return;
   grid.innerHTML = "";
 
-  const ranked = getRankedPlayers(state.currentComp);
+  const hasLogs = hasLogsInComp(state.currentComp);
+  const players = hasLogs ? getRankedPlayers(state.currentComp) : getAlphabeticalPlayers(state.currentComp);
   const filtered = Object.entries(state.employees)
     .filter(([, emp]) => emp.active !== false && emp.name.toLowerCase().includes(filterText.toLowerCase()));
 
@@ -311,8 +312,8 @@ function renderPickScreen(filterText = "") {
   }
 
   filtered.forEach(([id, emp]) => {
-    const rank = ranked.findIndex(r => r.id === id);
-    const pip = rank === 0 ? "👑" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : "";
+    const rank = players.findIndex(p => p.id === id);
+    const pip = hasLogs && (rank === 0 ? "👑" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : "");
     const isWinner = state.competitions[state.currentComp]?.winner === id;
     const btn = document.createElement("button");
     btn.className = `name-btn${isWinner ? " name-btn-winner" : ""}`;
@@ -395,12 +396,20 @@ function renderDash() {
   const sph = totalHours > 0 ? totalSales / totalHours : 0;
   const hasLogs = Object.keys(myLogs).length > 0;
 
-  document.getElementById("stat-sph").textContent   = `$${sph.toFixed(0)}`;
-  document.getElementById("stat-total").textContent = `$${totalSales.toFixed(0)}`;
+  // Hide stat cards if no logs exist in the competition yet
+  const statRow = document.querySelector(".stat-row");
+  if (statRow) {
+    const compHasLogs = hasLogsInComp(state.currentComp);
+    statRow.style.display = compHasLogs ? "grid" : "none";
 
-  const ranked = getRankedPlayers(state.currentComp);
-  const myRank = ranked.findIndex(r => r.id === state.currentUser) + 1;
-  document.getElementById("stat-rank").textContent = myRank > 0 ? `#${myRank}` : "—";
+    if (compHasLogs) {
+      document.getElementById("stat-sph").textContent   = `$${sph.toFixed(0)}`;
+      document.getElementById("stat-total").textContent = `$${totalSales.toFixed(0)}`;
+      const ranked = getRankedPlayers(state.currentComp);
+      const myRank = ranked.findIndex(r => r.id === state.currentUser) + 1;
+      document.getElementById("stat-rank").textContent = myRank > 0 ? `#${myRank}` : "—";
+    }
+  }
 
   const vibe = getVibe(sph, totalSales, hasLogs);
   document.getElementById("vibe-emoji").textContent = vibe.emoji;
@@ -526,21 +535,28 @@ function renderBoardCompSelect() {
 function renderBoard() {
   const comp = state.competitions[state.boardComp || state.currentComp];
   const compId = state.boardComp || state.currentComp;
-  const ranked = getRankedPlayers(compId);
+  const hasLogs = hasLogsInComp(compId);
   const body = document.getElementById("board-body");
   if (!body) return;
   body.innerHTML = "";
 
-  if (ranked.length === 0) {
+  if (!hasLogs) {
     body.innerHTML = `<p style="color:var(--text3);text-align:center;padding:40px;font-size:0.85rem">No logs yet — be the first! 🔥</p>`;
     return;
   }
 
+  const players = getRankedPlayers(compId);
+  if (players.length === 0) {
+    body.innerHTML = `<p style="color:var(--text3);text-align:center;padding:40px;font-size:0.85rem">No logs yet — be the first! 🔥</p>`;
+    return;
+  }
+
+  // Has logs - show ranked list
   const metric = state.settings.rankingMetric || "sph";
-  const topVal = metric === "sph" ? (ranked[0]?.sph || 1) : (ranked[0]?.total || 1);
+  const topVal = metric === "sph" ? (players[0]?.sph || 1) : (players[0]?.total || 1);
   const winner = comp?.winner;
 
-  ranked.forEach((player, i) => {
+  players.forEach((player, i) => {
     const rankLabel = i === 0 ? "👑" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
     const val = metric === "sph" ? player.sph : player.total;
     const pct = topVal > 0 ? Math.max(4, (val / topVal) * 100) : 4;
@@ -621,6 +637,27 @@ function renderAllTime() {
 // ══════════════════════════════════════════════════════
 // Helper
 // ══════════════════════════════════════════════════════
+function hasLogsInComp(compId) {
+  const compLogs = state.logs[compId] || {};
+  return Object.keys(compLogs).some(empId => {
+    const empLogs = compLogs[empId];
+    return Object.keys(empLogs || {}).length > 0;
+  });
+}
+
+function getAlphabeticalPlayers(compId) {
+  const compLogs = state.logs[compId] || {};
+  return Object.entries(state.employees)
+    .filter(([, emp]) => emp.active !== false)
+    .map(([id, emp]) => {
+      const empLogs = compLogs[id] || {};
+      let total = 0, hours = 0;
+      Object.values(empLogs).forEach(log => { total += log.sales || 0; hours += log.hours || 0; });
+      return { id, name: emp.name, total, hours, sph: hours > 0 ? total / hours : 0 };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
 function getRankedPlayers(compId) {
   const compLogs = state.logs[compId] || {};
   const metric = state.settings.rankingMetric || "sph";
@@ -1363,7 +1400,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Bottom nav
   document.getElementById("nav-home").onclick = () => showScreen("pick");
-  document.getElementById("nav-dash").onclick = () => showScreen("dash");
   document.getElementById("nav-board").onclick = () => { renderBoard(); showScreen("board"); };
   document.getElementById("nav-alltime").onclick = () => { renderAllTime(); showScreen("alltime"); };
   document.getElementById("nav-admin").onclick = () => {
