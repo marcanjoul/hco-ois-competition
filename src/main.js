@@ -575,6 +575,60 @@ function renderDash() {
   const comp = state.competitions[state.currentComp];
   document.getElementById("dash-comp-name").textContent = comp ? comp.name : "";
 
+  // Render competition info card on dashboard
+  const dashCompInfoEl = document.getElementById("dash-comp-info");
+  if (dashCompInfoEl && comp) {
+    const ended = isCompEnded(comp);
+    const days = daysRemaining(comp);
+    const winner = comp.winner ? state.employees[comp.winner] : null;
+
+    let statusHtml = "";
+    if (ended && winner) {
+      statusHtml = `<div class="status-badge winner">🏆</div><div class="status-text">${winner.name} won!</div>`;
+    } else if (!ended && days !== null) {
+      const dayText = days <= 0 ? "Ends today" : `${days} day${days !== 1 ? "s" : ""} left`;
+      statusHtml = `<div class="status-badge active">⏱️</div><div class="status-text">${dayText}</div>`;
+    }
+
+    let metaHtml = "";
+    if (comp.startDate && comp.endDate) {
+      metaHtml += `<span>${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}</span>`;
+    }
+    if (comp.prize) {
+      metaHtml += `<span>${comp.prize}</span>`;
+    }
+
+    const compGoals = getCompGoals(state.currentComp);
+    let detailsHtml = "";
+    if (compGoals.competition?.value) {
+      const g = compGoals.competition;
+      const sph = getPlayerSph(state.currentUser, state.currentComp);
+      const current = g.type === "sph" ? sph.sph : sph.total;
+      detailsHtml = `
+        <div class="dash-comp-details">
+          <div class="comp-detail">
+            <div class="detail-label">COMPETITION GOAL</div>
+            ${renderGoalBar(current, g.value, g.type)}
+          </div>
+        </div>
+      `;
+    }
+
+    dashCompInfoEl.innerHTML = `
+      <div class="dash-comp-info-header">
+        <div>
+          <div class="dash-comp-name">${comp.name}</div>
+          <div class="dash-comp-meta">${metaHtml}</div>
+        </div>
+        <div class="dash-comp-status-badge">${statusHtml}</div>
+      </div>
+      ${detailsHtml}
+    `;
+    dashCompInfoEl.classList.remove("hidden");
+  } else if (dashCompInfoEl) {
+    dashCompInfoEl.classList.add("hidden");
+  }
+
   const myLogs = (state.logs[state.currentComp] || {})[state.currentUser] || {};
   let totalSales = 0, totalHours = 0;
   Object.values(myLogs).forEach(d => { totalSales += d.sales || 0; totalHours += d.hours || 0; });

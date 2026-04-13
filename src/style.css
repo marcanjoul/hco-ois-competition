@@ -619,6 +619,66 @@ input, select, textarea {
 
 /* ── STAT CARDS ── */
 
+.dash-comp-info {
+  background: rgba(25, 32, 56, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  box-shadow: var(--shadow-elevation-1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+}
+
+.dash-comp-info.hidden {
+  display: none;
+}
+
+.dash-comp-info-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.dash-comp-name {
+  font-family: var(--type-subheading-family);
+  font-size: var(--type-subheading-size);
+  font-weight: var(--type-subheading-weight);
+  letter-spacing: var(--type-subheading-letter-spacing);
+  color: var(--color-text-primary);
+  line-height: var(--type-subheading-line-height);
+  margin-bottom: var(--space-2);
+}
+
+.dash-comp-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.dash-comp-meta span {
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  color: var(--color-text-secondary);
+  line-height: var(--type-caption-line-height);
+}
+
+.dash-comp-status-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.dash-comp-details {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: var(--space-4);
+}
+
 .stat-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
