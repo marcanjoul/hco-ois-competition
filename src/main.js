@@ -23,6 +23,7 @@ let state = {
   selectedDate: getTodayDate(),
   currentScreen: "pick",
   adminUnlocked: false,
+  searchDebounceTimer: null,
   admin: {
     showAllComps: false,
     showAllEmps: false,
@@ -50,18 +51,13 @@ const dbRef = {
 // Bootstrap
 // ══════════════════════════════════════════════════════
 async function bootstrap() {
-  const [empSnap, compSnap, settingsSnap] = await Promise.all([
-    get(dbRef.emps()), get(dbRef.comps()), get(dbRef.settings()),
+  const [empSnap, settingsSnap] = await Promise.all([
+    get(dbRef.emps()), get(dbRef.settings()),
   ]);
   if (!empSnap.exists()) {
     const u = {};
     DEFAULT_EMPLOYEES.forEach(name => { u[slugify(name)] = { name, active: true }; });
     await update(dbRef.emps(), u);
-  }
-  if (!compSnap.exists()) {
-    const today = new Date().toISOString().split("T")[0];
-    const id = `comp_${Date.now()}`;
-    await set(dbRef.comp(id), { name: "Week 1", startDate: today, endDate: today, createdAt: Date.now(), status: "active" });
   }
   if (!settingsSnap.exists()) {
     await set(dbRef.settings(), { accentColor: "#FF4D1C", rankingMetric: "sph" });
@@ -178,9 +174,14 @@ function startListeners() {
     state.competitions = snap.val() || {};
     state.currentComp = getActiveComp();
     if (!state.boardComp) state.boardComp = state.currentComp;
+    // Reset boardComp if the competition was deleted
+    if (state.boardComp && !state.competitions[state.boardComp]) {
+      state.boardComp = state.currentComp;
+    }
     checkAndAutoCloseComps();
     renderPickScreen();
     renderBoardCompSelect();
+    if (state.currentScreen === "board") renderBoard();
     if (state.admin.tab === "competitions") renderAdminTab();
     if (state.admin.tab === "goals") renderAdminTab();
   });
@@ -271,8 +272,62 @@ function getBigOrderReaction(amount) {
   return null;
 }
 
-// ══════════════════════════════════════════════════════
-// Pick Screen
+async function logEntryFromPick() {
+  const sales = parseFloat(document.getElementById("pick-input-sales").value);
+  const hours = parseFloat(document.getElementById("pick-input-hours").value);
+  if (isNaN(sales) || sales < 0) { showToast("Enter a valid sales amount 💸"); return; }
+  if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked ⏱️"); return; }
+  if (!state.currentUser) { showToast("Select who you are first 👤"); return; }
+  if (state.competitions[state.currentComp]?.status === "closed") { showToast("This competition is closed 🔒"); return; }
+
+  const today = getTodayDate();
+  if (state.selectedDate > today) { showToast("Can't log orders in the future 🔮"); return; }
+
+  await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
+
+  const reaction = getBigOrderReaction(sales);
+  if (reaction) { showToast(reaction, 3500); launchConfetti(); }
+  else showToast("Logged! Keep grinding 💪");
+
+  // Show dashboard view for this employee
+  state.selectedDate = getTodayDate();
+  document.getElementById("app-header").classList.remove("hidden");
+  showScreen("dash");
+  renderDash();
+  renderBoard();
+  renderAllTime();
+}
+function renderPickDayRow() {
+  const dayRow = document.getElementById("pick-day-row");
+  if (!dayRow) return;
+  dayRow.innerHTML = `<button class="week-nav-btn" id="pick-prev-week-btn">←</button>`;
+
+  const week = getWeekForDate(state.selectedDate);
+  const myLogs = state.currentUser ? ((state.logs[state.currentComp] || {})[state.currentUser] || {}) : {};
+
+  week.days.forEach(dayInfo => {
+    const hasEntry = myLogs[dayInfo.date] && (myLogs[dayInfo.date].sales > 0 || myLogs[dayInfo.date].hours > 0);
+    const btn = document.createElement("button");
+    btn.className = `day-btn${state.selectedDate === dayInfo.date ? " active" : ""}${hasEntry ? " logged" : ""}`;
+    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark">✓</div>' : ''}`;
+    btn.onclick = () => { state.selectedDate = dayInfo.date; renderPickDayRow(); updatePickLogBtnState(); };
+    dayRow.appendChild(btn);
+  });
+
+  dayRow.appendChild(makeBtn("→", "week-nav-btn", () => { state.selectedDate = nextWeek(state.selectedDate); renderPickDayRow(); updatePickLogBtnState(); }));
+  document.getElementById("pick-prev-week-btn").onclick = () => { state.selectedDate = prevWeek(state.selectedDate); renderPickDayRow(); updatePickLogBtnState(); };
+}
+
+function updatePickLogBtnState() {
+  const sales = parseFloat(document.getElementById("pick-input-sales").value);
+  const hours = parseFloat(document.getElementById("pick-input-hours").value);
+  const btn = document.getElementById("pick-btn-log");
+  if (!btn) return;
+  const hasValues = !isNaN(sales) && sales >= 0 && !isNaN(hours) && hours > 0;
+  const hasEmployee = !!state.currentUser;
+  btn.disabled = !(hasEmployee && hasValues);
+  btn.classList.toggle("btn-ghost", !(hasEmployee && hasValues));
+}
 // ══════════════════════════════════════════════════════
 function renderPickScreen(filterText = "") {
   const searchInput = document.getElementById("input-search-employees");
@@ -283,10 +338,16 @@ function renderPickScreen(filterText = "") {
   const noCompsMsg = document.getElementById("no-comps-message");
 
   if (!state.currentComp) {
-    // No active competition
+    // No active competition - hide log form, show big message
     if (compHero) compHero.style.display = "none";
     if (noCompsMsg) noCompsMsg.style.display = "block";
+    const logCard = document.getElementById("pick-log-card");
+    if (logCard) logCard.style.display = "none";
+    return;
   } else if (compHero && state.currentComp) {
+    const logCard = document.getElementById("pick-log-card");
+    if (logCard) logCard.style.display = "block";
+    if (noCompsMsg) noCompsMsg.style.display = "none";
     const comp = state.competitions[state.currentComp];
     if (comp) {
       const ended = isCompEnded(comp);
@@ -322,7 +383,6 @@ function renderPickScreen(filterText = "") {
       compHero.innerHTML = html;
       compHero.classList.toggle("comp-ended", ended && winner);
       compHero.style.display = "block";
-      if (noCompsMsg) noCompsMsg.style.display = "none";
     }
   }
 
@@ -412,10 +472,53 @@ function showScreen(name) {
 
 function enterAsDashboard(empId) {
   state.currentUser = empId;
-  document.getElementById("input-search-employees").value = "";
-  document.getElementById("app-header").classList.remove("hidden");
-  showScreen("dash");
-  renderDash(); renderBoard(); renderAllTime();
+  state.selectedDate = getTodayDate();
+
+  // Update selector button
+  const emp = state.employees[empId];
+  const selectorBtn = document.getElementById("pick-emp-selector");
+  if (selectorBtn) {
+    selectorBtn.textContent = emp?.name || "";
+    selectorBtn.style.color = "var(--text)";
+  }
+
+  // Hide employee grid
+  const empGrid = document.getElementById("pick-emp-grid");
+  if (empGrid) empGrid.style.display = "none";
+
+  // Update day row
+  renderPickDayRow();
+  updatePickLogBtnState();
+}
+
+function renderPickEmpGrid(filterText = "") {
+  const list = document.getElementById("pick-emp-list");
+  const searchInfo = document.getElementById("pick-search-info");
+  if (!list) return;
+
+  const filtered = Object.entries(state.employees)
+    .filter(([, emp]) => emp.name.toLowerCase().includes(filterText.toLowerCase()))
+    .sort(([, a], [, b]) => a.name.localeCompare(b.name));
+
+  if (searchInfo) {
+    if (filterText) {
+      searchInfo.textContent = `${filtered.length} of ${Object.keys(state.employees).length} employees`;
+      searchInfo.classList.remove("hidden");
+    } else {
+      searchInfo.classList.add("hidden");
+    }
+  }
+
+  list.innerHTML = "";
+  filtered.forEach(([id, emp]) => {
+    const btn = document.createElement("button");
+    btn.style.cssText = "padding:10px;background:var(--bg);border:2px solid var(--border);border-radius:6px;cursor:pointer;font-weight:600;transition:all 0.2s;";
+    btn.textContent = emp.name;
+    btn.onmouseover = () => btn.style.background = "var(--accent)";
+    btn.onmouseout = () => btn.style.background = "var(--bg)";
+    btn.onclick = () => enterAsDashboard(id);
+    list.appendChild(btn);
+  });
 }
 
 // ══════════════════════════════════════════════════════
@@ -567,25 +670,43 @@ function renderBoardCompSelect() {
   const sel = document.getElementById("board-comp-select");
   if (!sel) return;
   sel.innerHTML = "";
-  Object.entries(state.competitions)
+
+  const nonArchivedComps = Object.entries(state.competitions)
     .filter(([, c]) => c.status !== "archived")
-    .sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0))
-    .forEach(([id, comp]) => {
-      const opt = document.createElement("option");
-      opt.value = id;
-      opt.textContent = comp.name;
-      if (id === state.boardComp) opt.selected = true;
-      sel.appendChild(opt);
-    });
+    .sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0));
+
+  if (nonArchivedComps.length === 0) {
+    sel.style.display = "none";
+    return;
+  }
+
+  sel.style.display = "block";
+  nonArchivedComps.forEach(([id, comp]) => {
+    const opt = document.createElement("option");
+    opt.value = id;
+    opt.textContent = comp.name;
+    if (id === state.boardComp) opt.selected = true;
+    sel.appendChild(opt);
+  });
   sel.onchange = () => { state.boardComp = sel.value; renderBoard(); };
 }
 
 function renderBoard() {
-  const comp = state.competitions[state.boardComp || state.currentComp];
   const compId = state.boardComp || state.currentComp;
-  const hasLogs = hasLogsInComp(compId);
   const body = document.getElementById("board-body");
+  const noCompsMsg = document.getElementById("board-no-comps");
   if (!body) return;
+
+  // If no competition, show message
+  if (!compId || !state.competitions[compId]) {
+    body.innerHTML = "";
+    if (noCompsMsg) noCompsMsg.style.display = "block";
+    return;
+  }
+
+  if (noCompsMsg) noCompsMsg.style.display = "none";
+  const comp = state.competitions[compId];
+  const hasLogs = hasLogsInComp(compId);
   body.innerHTML = "";
 
   if (!hasLogs) {
@@ -675,6 +796,7 @@ function getRankedPlayers(compId) {
       Object.values(empLogs).forEach(log => { total += log.sales || 0; hours += log.hours || 0; });
       return { id, name: emp.name, total, hours, sph: hours > 0 ? total / hours : 0 };
     })
+    .filter(player => player.total > 0 || player.hours > 0)
     .sort((a, b) => metric === "sph" ? b.sph - a.sph : b.total - a.total);
 }
 
@@ -687,8 +809,11 @@ async function logEntry() {
   if (isNaN(sales) || sales < 0) { showToast("Enter a valid sales amount 💸"); return; }
   if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked ⏱️"); return; }
   if (state.competitions[state.currentComp]?.status === "closed") { showToast("This competition is closed 🔒"); return; }
-  const today = new Date().toISOString().split("T")[0];
-  await set(dbRef.dateLog(state.currentComp, state.currentUser, today), { sales, hours });
+
+  const today = getTodayDate();
+  if (state.selectedDate > today) { showToast("Can't log orders in the future 🔮"); return; }
+
+  await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
   const reaction = getBigOrderReaction(sales);
   if (reaction) { showToast(reaction, 3500); launchConfetti(); }
   else showToast("Logged! Keep grinding 💪");
@@ -1021,6 +1146,7 @@ function renderAdminLogs(container) {
   compWrap.innerHTML = `<label class="field-label">COMPETITION</label>`;
   const compSel = document.createElement("select");
   compSel.className = "log-input"; compSel.id = "admin-logs-comp";
+  compSel.innerHTML = `<option value="" disabled>— Select competition —</option>`;
   Object.entries(state.competitions).forEach(([id, comp]) => {
     const opt = document.createElement("option");
     opt.value = id; opt.textContent = comp.name;
@@ -1222,6 +1348,7 @@ function renderAdminGoals(container) {
   compWrap.innerHTML = `<label class="field-label">COMPETITION</label>`;
   const compSel = document.createElement("select");
   compSel.className = "log-input";
+  compSel.innerHTML = `<option value="" disabled>— Select competition —</option>`;
   Object.entries(state.competitions).forEach(([id, comp]) => {
     const opt = document.createElement("option");
     opt.value = id; opt.textContent = comp.name;
@@ -1419,7 +1546,48 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("btn-log").onclick = logEntry;
 
   const searchInput = document.getElementById("input-search-employees");
-  if (searchInput) searchInput.oninput = () => renderPickScreen(searchInput.value);
+  if (searchInput) {
+    searchInput.oninput = () => {
+      clearTimeout(state.searchDebounceTimer);
+      state.searchDebounceTimer = setTimeout(() => {
+        renderPickScreen(searchInput.value);
+      }, 150);
+    };
+  }
+
+  // Pick screen employee selector
+  const empSelectorBtn = document.getElementById("pick-emp-selector");
+  const empGrid = document.getElementById("pick-emp-grid");
+  if (empSelectorBtn && empGrid) {
+    empSelectorBtn.onclick = () => {
+      const isHidden = empGrid.style.display === "none";
+      empGrid.style.display = isHidden ? "block" : "none";
+      if (isHidden) {
+        renderPickEmpGrid();
+        document.getElementById("pick-emp-search").focus();
+      }
+    };
+  }
+
+  // Pick screen employee search
+  const pickEmpSearch = document.getElementById("pick-emp-search");
+  if (pickEmpSearch) {
+    pickEmpSearch.oninput = () => {
+      clearTimeout(state.searchDebounceTimer);
+      state.searchDebounceTimer = setTimeout(() => {
+        renderPickEmpGrid(pickEmpSearch.value);
+      }, 150);
+    };
+  }
+
+  // Pick screen log form input listeners
+  const pickSalesInput = document.getElementById("pick-input-sales");
+  const pickHoursInput = document.getElementById("pick-input-hours");
+  if (pickSalesInput) pickSalesInput.oninput = updatePickLogBtnState;
+  if (pickHoursInput) pickHoursInput.oninput = updatePickLogBtnState;
+
+  // Pick screen log button
+  document.getElementById("pick-btn-log").onclick = logEntryFromPick;
 
   // Bottom nav
   document.getElementById("nav-home").onclick = () => showScreen("pick");
