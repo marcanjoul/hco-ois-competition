@@ -71,7 +71,7 @@ function slugify(str) {
 // ══════════════════════════════════════════════════════
 // Avatar helpers
 // ══════════════════════════════════════════════════════
-const CUTE_PLACEHOLDERS = ["😊", "🎉", "⭐", "🚀", "🔥", "💎", "🎯", "👑", "🌟", "💪"];
+const CUTE_PLACEHOLDERS = ["👤", "👤", "👤", "👤", "👤", "👤", "👤", "👤", "👤", "👤"];
 
 function getAvatarPlaceholder(empIdOrStr) {
   // Deterministic placeholder based on employee ID

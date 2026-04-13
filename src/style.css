@@ -363,7 +363,7 @@ input, select, textarea {
   position: relative;
   z-index: 1;
   flex: 1;
-  padding: var(--space-12) var(--space-4) calc(var(--nav-height) + var(--space-4));
+  padding: var(--space-16) var(--space-4) calc(var(--nav-height) + var(--space-4));
   max-width: var(--max-width);
   margin: 0 auto;
   width: 100%;
@@ -881,18 +881,29 @@ input, select, textarea {
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: var(--type-body-size);
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
   transition: all 0.2s ease;
   font-family: var(--type-body-family);
   font-weight: 600;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  padding-right: 36px;
+}
+
+.pick-emp-selector::after {
+  content: '▼';
+  position: absolute;
+  right: var(--space-4);
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  pointer-events: none;
 }
 
 .pick-emp-selector:hover {
   border-color: var(--color-accent);
   background: rgba(25, 32, 56, 0.5);
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
 }
 
 .pick-emp-selector:active {
@@ -2170,9 +2181,9 @@ select.log-input:focus {
 }
 
 .avatar-small {
-  width: 32px;
-  height: 32px;
-  font-size: 16px;
+  width: 56px;
+  height: 56px;
+  font-size: 24px;
 }
 
 .avatar-interactive {
