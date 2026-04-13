@@ -334,21 +334,21 @@ function renderPickScreen(filterText = "") {
   const searchInput = document.getElementById("input-search-employees");
   if (searchInput && searchInput.value !== filterText) searchInput.value = filterText;
 
-  // Competition hero section — show only active comp
-  const compHero = document.getElementById("pick-comp-hero");
+  // Competition info card — show only active comp
+  const compInfo = document.getElementById("pick-comp-info");
   const noCompsMsg = document.getElementById("no-comps-message");
 
   if (!state.currentComp) {
     // No active competition - hide log form, show big message
-    if (compHero) compHero.style.display = "none";
-    if (noCompsMsg) noCompsMsg.style.display = "block";
+    if (compInfo) compInfo.classList.add("hidden");
+    if (noCompsMsg) noCompsMsg.classList.remove("hidden");
     const logCard = document.getElementById("pick-log-card");
     if (logCard) logCard.style.display = "none";
     return;
-  } else if (compHero && state.currentComp) {
+  } else if (compInfo && state.currentComp) {
     const logCard = document.getElementById("pick-log-card");
     if (logCard) logCard.style.display = "block";
-    if (noCompsMsg) noCompsMsg.style.display = "none";
+    if (noCompsMsg) noCompsMsg.classList.add("hidden");
     const comp = state.competitions[state.currentComp];
     if (comp) {
       const ended = isCompEnded(comp);
@@ -357,55 +357,78 @@ function renderPickScreen(filterText = "") {
       const ranked = getRankedPlayers(state.currentComp);
       const winnerStats = winner ? ranked.find(r => r.id === comp.winner) : null;
 
-      let html = `<div class="pick-comp-hero-content">`;
-      html += `<div class="pick-comp-hero-title">${comp.name}</div>`;
+      // Competition name
+      const nameEl = document.getElementById("pick-comp-name");
+      if (nameEl) nameEl.textContent = comp.name;
 
-      if (comp.prize) {
-        html += `<div class="pick-comp-hero-reward">🎁 ${comp.prize}</div>`;
-      }
-
-      if (comp.startDate && comp.endDate) {
-        html += `<div class="pick-comp-hero-dates">${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}</div>`;
-      }
-
-      if (ended && winner) {
-        html += `<div class="pick-comp-hero-countdown">🏆 ${winner.name} won!`;
-        if (winnerStats) {
-          html += ` $${winnerStats.sph.toFixed(0)}/hr`;
+      // Competition meta (dates + prize)
+      const metaEl = document.getElementById("pick-comp-meta");
+      if (metaEl) {
+        let metaHtml = "";
+        if (comp.startDate && comp.endDate) {
+          metaHtml += `<span>${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}</span>`;
         }
-        html += `</div>`;
-      } else if (!ended && days !== null) {
-        const dayText = days <= 0 ? "⏰ Ends today!" : `⏱️ ${days} day${days !== 1 ? "s" : ""} left`;
-        html += `<div class="pick-comp-hero-countdown">${dayText}</div>`;
+        if (comp.prize) {
+          metaHtml += `<span>${comp.prize}</span>`;
+        }
+        metaEl.innerHTML = metaHtml;
       }
 
-      html += `</div>`;
+      // Status badge (countdown or winner)
+      const statusEl = document.getElementById("pick-comp-status");
+      if (statusEl) {
+        let statusHtml = "";
+        if (ended && winner) {
+          statusHtml = `<div class="status-badge winner">🏆</div><div class="status-text">${winner.name} won!</div>`;
+        } else if (!ended && days !== null) {
+          const dayText = days <= 0 ? "Ends today" : `${days} day${days !== 1 ? "s" : ""} left`;
+          statusHtml = `<div class="status-badge active">⏱️</div><div class="status-text">${dayText}</div>`;
+        }
+        statusEl.innerHTML = statusHtml;
+      }
 
-      compHero.innerHTML = html;
-      compHero.classList.toggle("comp-ended", ended && winner);
-      compHero.style.display = "block";
+      // Competition details (goals)
+      const detailsEl = document.getElementById("pick-comp-details");
+      if (detailsEl && state.currentUser) {
+        const compGoals = getCompGoals(state.currentComp);
+        let detailsHtml = "";
+
+        if (compGoals.competition?.value) {
+          const g = compGoals.competition;
+          const sph = getPlayerSph(state.currentUser, state.currentComp);
+          const current = g.type === "sph" ? sph.sph : sph.total;
+          detailsHtml += `
+            <div class="comp-detail">
+              <div class="detail-label">Competition Goal</div>
+              ${renderGoalBar(current, g.value, g.type)}
+            </div>
+          `;
+        }
+
+        detailsEl.innerHTML = detailsHtml;
+      }
+
+      compInfo.classList.remove("hidden");
     }
   }
 
-  // Display goals on pick screen if competition exists
+  // Display daily goals on pick screen if competition exists
   const goalsEl = document.getElementById("pick-goals");
   if (goalsEl && state.currentComp && state.currentUser) {
     const compGoals = getCompGoals(state.currentComp);
-    const sph = getPlayerSph(state.currentUser, state.currentComp);
-    const todaySph = getTodaySph(state.currentUser, state.currentComp);
     let goalsHtml = "";
-    if (compGoals.competition?.value) {
-      const g = compGoals.competition;
-      goalsHtml += `<div class="goal-block"><div class="goal-label">🎯 Competition Goal</div>${renderGoalBar(g.type === "sph" ? sph.sph : sph.total, g.value, g.type)}</div>`;
-    }
+
     if (compGoals.daily?.value) {
       const g = compGoals.daily;
-      goalsHtml += `<div class="goal-block"><div class="goal-label">☀️ Daily Goal</div>${renderGoalBar(g.type === "sph" ? todaySph.sph : todaySph.total, g.value, g.type)}</div>`;
+      const todaySph = getTodaySph(state.currentUser, state.currentComp);
+      const current = g.type === "sph" ? todaySph.sph : todaySph.total;
+      goalsHtml += `<div class="goal-block"><div class="goal-label">☀️ Daily Goal</div>${renderGoalBar(current, g.value, g.type)}</div>`;
     }
+
     goalsEl.innerHTML = goalsHtml;
-    goalsEl.style.display = goalsHtml ? "block" : "none";
+    goalsEl.classList.toggle("hidden", !goalsHtml);
   } else if (goalsEl) {
-    goalsEl.style.display = "none";
+    goalsEl.classList.add("hidden");
   }
 
   const grid = document.getElementById("name-grid");

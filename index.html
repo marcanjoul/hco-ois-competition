@@ -38,31 +38,41 @@
   <div id="screen-pick" class="screen active">
     <div class="pick-bg-stripe"></div>
     <div class="pick-inner">
-      <!-- Active competition hero section -->
-      <div id="pick-comp-hero" class="pick-comp-hero" style="display:none;"></div>
-      <div id="no-comps-message" class="pick-comp-hero" style="display:none;text-align:center;padding:100px 20px;color:var(--text3);font-size:2.5rem;font-weight:bold;line-height:1.4;">No competitions at the moment. Come back soon! 🏆</div>
+      <!-- Competition Info Card -->
+      <div id="pick-comp-info" class="pick-comp-info hidden">
+        <div class="pick-comp-info-header">
+          <div>
+            <div id="pick-comp-name" class="pick-comp-name"></div>
+            <div id="pick-comp-meta" class="pick-comp-meta"></div>
+          </div>
+          <div id="pick-comp-status" class="pick-comp-status-badge"></div>
+        </div>
+        <div id="pick-comp-details" class="pick-comp-details"></div>
+      </div>
 
-      <div id="pick-goals" class="pick-goals" style="display:none;"></div>
+      <div id="no-comps-message" class="no-comps-message hidden">No competitions at the moment. Come back soon! 🏆</div>
 
-      <div id="site-banner" class="site-banner" style="display:none;"></div>
+      <div id="pick-goals" class="pick-goals hidden"></div>
+
+      <div id="site-banner" class="site-banner hidden"></div>
 
       <!-- Log form (main landing screen) -->
-      <div class="log-card" id="pick-log-card" style="margin-top:16px;">
+      <div class="log-card" id="pick-log-card">
         <div class="log-card-title">LOG AN ORDER</div>
 
         <!-- Employee selector -->
-        <div style="margin-bottom:16px;">
+        <div class="pick-emp-selector-wrap">
           <label class="field-label">WHO ARE YOU?</label>
-          <button class="log-input" id="pick-emp-selector" style="width:100%;padding:12px;text-align:left;background:var(--bg);border:2px solid var(--border);border-radius:8px;cursor:pointer;font-size:0.95rem;color:var(--text2);transition:all 0.2s;">Select who you are...</button>
+          <button class="pick-emp-selector" id="pick-emp-selector">Select who you are...</button>
         </div>
 
         <!-- Employee grid (hidden by default, shown when selector clicked) -->
-        <div id="pick-emp-grid" style="display:none;margin-bottom:16px;padding:12px;background:var(--hover);border-radius:8px;max-height:200px;overflow-y:auto;">
-          <div class="search-wrap" style="margin-bottom:8px;">
+        <div id="pick-emp-grid" class="pick-emp-grid hidden">
+          <div class="search-wrap">
             <input type="text" id="pick-emp-search" class="log-input" placeholder="🔍 Search..." autocomplete="off" />
             <div id="pick-search-info" class="search-results-info hidden"></div>
           </div>
-          <div id="pick-emp-list" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"></div>
+          <div id="pick-emp-list"></div>
         </div>
 
         <div class="day-row" id="pick-day-row"></div>
@@ -80,19 +90,19 @@
       </div>
 
       <!-- Hidden element for search -->
-      <label class="field-label" style="margin-top:16px;display:none;">WHO ARE YOU?</label>
-      <div class="search-wrap" style="display:none;">
+      <label class="field-label hidden">WHO ARE YOU?</label>
+      <div class="search-wrap hidden">
         <input type="text" id="input-search-employees" class="log-input" placeholder="🔍 Search employees..." autocomplete="off" />
         <div id="search-results-info" class="search-results-info hidden"></div>
       </div>
-      <div id="name-grid" class="name-grid" style="display:none;"></div>
+      <div id="name-grid" class="name-grid hidden"></div>
     </div>
   </div>
 
   <!-- ── SCREEN: Player Dashboard ── -->
   <div id="screen-dash" class="screen">
     <div class="dash-body">
-      <div id="winner-banner" class="winner-banner" style="display:none;"></div>
+      <div id="winner-banner" class="winner-banner hidden"></div>
       <div class="stat-row">
         <div class="stat-card accent">
           <div class="stat-label">SALES / HR</div>
@@ -107,7 +117,7 @@
           <div class="stat-value" id="stat-rank">—</div>
         </div>
       </div>
-      <div id="dash-goals" class="dash-goals" style="display:none;"></div>
+      <div id="dash-goals" class="dash-goals hidden"></div>
       <div class="vibe-card" id="vibe-card">
         <span id="vibe-emoji">🔥</span>
         <span id="vibe-text">Log your first order to get started!</span>
@@ -143,7 +153,7 @@
           <option value="" disabled selected>Select competition...</option>
         </select>
       </div>
-      <div id="board-no-comps" style="display:none;text-align:center;padding:100px 20px;color:var(--text3);font-size:2.5rem;font-weight:bold;line-height:1.4;">No competitions at the moment. Come back soon! 🏆</div>
+      <div id="board-no-comps" class="no-comps-message hidden">No competitions at the moment. Come back soon! 🏆</div>
       <div class="board-body" id="board-body"></div>
     </div>
   </div>
@@ -154,9 +164,9 @@
       <div class="admin-gate-icon">🔐</div>
       <div class="admin-gate-title">ADMIN</div>
       <p class="admin-gate-sub">Enter your PIN to continue</p>
-      <label class="field-label" style="margin-bottom:8px;">PIN</label>
+      <label class="field-label">PIN</label>
       <input type="number" id="input-pin" class="log-input center" placeholder="••••" maxlength="4" inputmode="numeric" />
-      <button class="log-btn" id="btn-pin-submit" style="margin-top:12px;">UNLOCK</button>
+      <button class="log-btn" id="btn-pin-submit">UNLOCK</button>
       <p class="pin-error hidden" id="pin-error">Wrong PIN 😬</p>
     </div>
   </div>
