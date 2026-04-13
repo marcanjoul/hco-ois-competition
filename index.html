@@ -12,50 +12,44 @@
 
   <!-- ── PERSISTENT HEADER (shown after name picked) ── -->
   <header class="app-header hidden" id="app-header">
-    <button class="back-btn" id="btn-back">←</button>
     <div class="app-header-info">
       <span id="dash-name" class="dash-name"></span>
       <span id="dash-comp-name" class="dash-comp-badge"></span>
     </div>
-    <!-- Hamburger -->
-    <button class="hamburger-btn" id="btn-hamburger">☰</button>
-    <!-- Dropdown menu -->
-    <div class="hamburger-menu hidden" id="hamburger-menu">
-      <button class="hamburger-item" id="btn-admin-open">🔐 Admin</button>
-      <button class="hamburger-item" id="btn-switch-user">👤 Switch User</button>
-    </div>
   </header>
 
-  <!-- ── PERSISTENT BOTTOM NAV (shown after name picked) ── -->
+  <!-- ── PERSISTENT BOTTOM NAV ── -->
   <nav class="bottom-nav hidden" id="bottom-nav">
-    <button class="nav-btn" data-screen="dash" id="nav-dash">📊 My Stats</button>
-    <button class="nav-btn" data-screen="board" id="nav-board">🏆 Board</button>
-    <button class="nav-btn" data-screen="alltime" id="nav-alltime">⭐ All-Time</button>
+    <button class="nav-btn active" data-screen="dash" id="nav-dash">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">My Stats</span>
+    </button>
+    <button class="nav-btn" data-screen="board" id="nav-board">
+      <span class="nav-icon">🏆</span>
+      <span class="nav-label">Board</span>
+    </button>
+    <button class="nav-btn" data-screen="alltime" id="nav-alltime">
+      <span class="nav-icon">⭐</span>
+      <span class="nav-label">All-Time</span>
+    </button>
+    <button class="nav-btn" data-screen="admin-gate" id="nav-admin">
+      <span class="nav-icon">🔐</span>
+      <span class="nav-label">Admin</span>
+    </button>
   </nav>
 
   <!-- ── SCREEN: Name Picker ── -->
   <div id="screen-pick" class="screen active">
     <div class="pick-bg-stripe"></div>
     <div class="pick-inner">
-      <div class="pick-top-bar">
-        <div></div>
-        <button class="pick-admin-btn" id="btn-pick-admin">☰</button>
-        <!-- Pick screen dropdown -->
-        <div class="hamburger-menu hidden" id="pick-hamburger-menu">
-          <button class="hamburger-item" id="btn-pick-admin-open">🔐 Admin</button>
-        </div>
-      </div>
       <div class="logo-lockup">
         <div class="logo-icon">🏆</div>
         <h1 class="logo-title store-name">OIS Competition</h1>
       </div>
       <div id="site-banner" class="site-banner" style="display:none;"></div>
-      <div id="comp-selector-wrap" class="comp-selector-wrap">
-        <label class="field-label">COMPETITION</label>
-        <div id="comp-tabs" class="comp-tabs"></div>
-        <div id="comp-info-card" class="comp-info-card" style="display:none;"></div>
-      </div>
-      <label class="field-label">WHO ARE YOU?</label>
+      <!-- Active competition card -->
+      <div id="pick-comp-card" class="pick-comp-card" style="display:none;"></div>
+      <label class="field-label" style="margin-top:16px;">WHO ARE YOU?</label>
       <div class="search-wrap">
         <input type="text" id="input-search-employees" class="log-input" placeholder="🔍 Search employees..." autocomplete="off" />
         <div id="search-results-info" class="search-results-info hidden"></div>
@@ -111,29 +105,45 @@
 
   <!-- ── SCREEN: Leaderboard ── -->
   <div id="screen-board" class="screen">
-    <div class="board-body" id="board-body"></div>
+    <div class="screen-inner">
+      <div class="screen-top-bar">
+        <div class="screen-top-title">LEADERBOARD</div>
+        <select id="board-comp-select" class="comp-select"></select>
+      </div>
+      <div class="board-body" id="board-body"></div>
+    </div>
   </div>
 
   <!-- ── SCREEN: All-Time ── -->
   <div id="screen-alltime" class="screen">
-    <div class="board-body" id="alltime-body"></div>
+    <div class="screen-inner">
+      <div class="screen-top-bar">
+        <div class="screen-top-title">ALL-TIME</div>
+      </div>
+      <div class="board-body" id="alltime-body"></div>
+    </div>
   </div>
 
-  <!-- ── MODAL: Admin ── -->
-  <div id="modal-admin" class="modal-overlay hidden">
-    <div class="modal-box">
-      <div class="modal-title">🔐 ADMIN</div>
-      <div id="admin-pin-wrap">
-        <p class="modal-sub">Enter your PIN to continue</p>
-        <input type="number" id="input-pin" class="log-input center" placeholder="1234" maxlength="4" inputmode="numeric" />
-        <button class="log-btn" id="btn-pin-submit" style="margin-top:10px;">UNLOCK</button>
-        <p class="pin-error hidden" id="pin-error">Wrong PIN, bestie 😬</p>
+  <!-- ── SCREEN: Admin Gate (PIN) ── -->
+  <div id="screen-admin-gate" class="screen">
+    <div class="admin-gate-body">
+      <div class="admin-gate-icon">🔐</div>
+      <div class="admin-gate-title">ADMIN</div>
+      <p class="admin-gate-sub">Enter your PIN to continue</p>
+      <input type="number" id="input-pin" class="log-input center" placeholder="••••" maxlength="4" inputmode="numeric" />
+      <button class="log-btn" id="btn-pin-submit" style="margin-top:12px;">UNLOCK</button>
+      <p class="pin-error hidden" id="pin-error">Wrong PIN 😬</p>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: Admin Panel ── -->
+  <div id="screen-admin" class="screen">
+    <div class="screen-inner">
+      <div class="screen-top-bar">
+        <div class="screen-top-title">ADMIN</div>
       </div>
-      <div id="admin-panel" class="hidden">
-        <div id="admin-tab-bar" class="admin-tab-bar"></div>
-        <div id="admin-tab-content" class="admin-tab-content"></div>
-        <button class="close-btn" id="btn-admin-close">DONE</button>
-      </div>
+      <div id="admin-tab-bar" class="admin-tab-bar"></div>
+      <div id="admin-tab-content" class="admin-tab-content"></div>
     </div>
   </div>
 

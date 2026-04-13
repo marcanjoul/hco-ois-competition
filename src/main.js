@@ -2,13 +2,8 @@
 import { db } from "./firebase.js";
 import { ref, set, get, onValue, update, remove } from "firebase/database";
 
-const DEFAULT_EMPLOYEES = [
-  "adam",
-  "Ajla",
-];
-
+const DEFAULT_EMPLOYEES = ["adam", "Ajla"];
 const ADMIN_PIN = import.meta.env.VITE_ADMIN_PIN;
-
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const PREVIEW_COUNT = 5;
 
@@ -18,9 +13,12 @@ let state = {
   logs: {},
   settings: {},
   goals: {},
-  currentComp: null,
+  currentComp: null,      // active comp shown on pick screen
+  boardComp: null,        // comp selected on leaderboard
   currentUser: null,
   selectedDay: DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1],
+  currentScreen: "pick",
+  adminUnlocked: false,
   admin: {
     showAllComps: false,
     showAllEmps: false,
@@ -56,8 +54,9 @@ async function bootstrap() {
     await update(dbRef.emps(), u);
   }
   if (!compSnap.exists()) {
+    const today = new Date().toISOString().split("T")[0];
     const id = `comp_${Date.now()}`;
-    await set(dbRef.comp(id), { name: "Week 1", createdAt: Date.now(), status: "active" });
+    await set(dbRef.comp(id), { name: "Week 1", startDate: today, endDate: today, createdAt: Date.now(), status: "active" });
   }
   if (!settingsSnap.exists()) {
     await set(dbRef.settings(), { accentColor: "#FF4D1C", rankingMetric: "sph" });
@@ -68,9 +67,6 @@ function slugify(str) {
   return str.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
 }
 
-// ══════════════════════════════════════════════════════
-// Reactive button helper
-// ══════════════════════════════════════════════════════
 window.updateBtnState = function(inputId, btnId) {
   const input = document.getElementById(inputId);
   const btn = document.getElementById(btnId);
@@ -81,21 +77,63 @@ window.updateBtnState = function(inputId, btnId) {
 };
 
 // ══════════════════════════════════════════════════════
-// Apply site settings
+// Competition helpers
+// ══════════════════════════════════════════════════════
+function isCompEnded(comp) {
+  if (!comp?.endDate) return false;
+  const end = new Date(comp.endDate);
+  end.setHours(23, 59, 59, 999);
+  return new Date() > end;
+}
+
+function getActiveComp() {
+  // Find the most recent non-archived comp that is active or not yet ended
+  const entries = Object.entries(state.competitions)
+    .filter(([, c]) => c.status !== "archived")
+    .sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0));
+  // Prefer actually active ones
+  const active = entries.find(([, c]) => c.status === "active" && !isCompEnded(c));
+  return active ? active[0] : (entries[0]?.[0] || null);
+}
+
+async function checkAndAutoCloseComps() {
+  for (const [id, comp] of Object.entries(state.competitions)) {
+    if (comp.status === "active" && isCompEnded(comp)) {
+      const ranked = getRankedPlayers(id);
+      const winner = ranked.find(p => p.hours > 0);
+      await update(dbRef.comp(id), {
+        status: "closed",
+        winner: winner ? winner.id : null,
+        autoClosedAt: Date.now(),
+      });
+    }
+  }
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+function daysRemaining(comp) {
+  if (!comp?.endDate) return null;
+  const end = new Date(comp.endDate);
+  end.setHours(23, 59, 59, 999);
+  return Math.ceil((end - new Date()) / (1000 * 60 * 60 * 24));
+}
+
+// ══════════════════════════════════════════════════════
+// Apply settings
 // ══════════════════════════════════════════════════════
 function applySettings(s = {}) {
   const color = s.accentColor || "#FF4D1C";
-  const banner = s.bannerMessage || "";
-  // Only apply valid hex colors
   if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
     document.documentElement.style.setProperty("--accent", color);
-    // Don't touch accent2 — leave it as CSS default
   }
+  const banner = s.bannerMessage || "";
   const bannerEl = document.getElementById("site-banner");
-  if (bannerEl) {
-    bannerEl.textContent = banner;
-    bannerEl.style.display = banner ? "block" : "none";
-  }
+  if (bannerEl) { bannerEl.textContent = banner; bannerEl.style.display = banner ? "block" : "none"; }
 }
 
 // ══════════════════════════════════════════════════════
@@ -104,12 +142,11 @@ function applySettings(s = {}) {
 function startListeners() {
   onValue(dbRef.comps(), snap => {
     state.competitions = snap.val() || {};
-    if (!state.currentComp || !state.competitions[state.currentComp]) {
-      const ids = Object.keys(state.competitions);
-      if (ids.length) state.currentComp = ids[ids.length - 1];
-    }
-    renderPickScreen();
+    state.currentComp = getActiveComp();
+    if (!state.boardComp) state.boardComp = state.currentComp;
     checkAndAutoCloseComps();
+    renderPickScreen();
+    renderBoardCompSelect();
     if (state.admin.tab === "competitions") renderAdminTab();
     if (state.admin.tab === "goals") renderAdminTab();
   });
@@ -117,6 +154,7 @@ function startListeners() {
   onValue(dbRef.emps(), snap => {
     state.employees = snap.val() || {};
     renderPickScreen();
+    if (state.currentUser) { renderDash(); renderBoard(); renderAllTime(); }
     if (state.admin.tab === "employees") renderAdminTab();
     if (state.admin.tab === "logs") renderAdminTab();
     if (state.admin.tab === "goals") renderAdminTab();
@@ -202,24 +240,12 @@ function getBigOrderReaction(amount) {
 // Pick Screen
 // ══════════════════════════════════════════════════════
 function renderPickScreen(filterText = "") {
-  const tabsEl = document.getElementById("comp-tabs");
-  if (tabsEl) {
-    tabsEl.innerHTML = "";
-    Object.entries(state.competitions)
-      .filter(([, c]) => c.status !== "archived")
-      .forEach(([id, comp]) => {
-        const ended = isCompEnded(comp);
-        const btn = document.createElement("button");
-        btn.className = `comp-tab${state.currentComp === id ? " active" : ""}`;
-        btn.textContent = comp.name + (ended ? " 🏁" : comp.status === "closed" ? " 🔒" : "");
-        btn.onclick = () => { state.currentComp = id; renderPickScreen(filterText); };
-        tabsEl.appendChild(btn);
-      });
-  }
+  const searchInput = document.getElementById("input-search-employees");
+  if (searchInput && searchInput.value !== filterText) searchInput.value = filterText;
 
-  // Competition info card
-  const infoCard = document.getElementById("comp-info-card");
-  if (infoCard && state.currentComp) {
+  // Competition card — show only active comp
+  const compCard = document.getElementById("pick-comp-card");
+  if (compCard && state.currentComp) {
     const comp = state.competitions[state.currentComp];
     if (comp) {
       const ended = isCompEnded(comp);
@@ -227,11 +253,9 @@ function renderPickScreen(filterText = "") {
       const winner = comp.winner ? state.employees[comp.winner] : null;
       const ranked = getRankedPlayers(state.currentComp);
       const winnerStats = winner ? ranked.find(r => r.id === comp.winner) : null;
-
-      let html = "";
+      let html = `<div class="pick-comp-name">${comp.name}</div>`;
 
       if (ended && winner) {
-        // Ended — show winner prominently
         html += `
           <div class="comp-ended-banner">
             <div class="comp-ended-trophy">🏆</div>
@@ -240,34 +264,22 @@ function renderPickScreen(filterText = "") {
             ${winnerStats ? `<div class="comp-ended-stats">$${winnerStats.sph.toFixed(0)}/hr · $${winnerStats.total.toFixed(0)} total</div>` : ""}
           </div>
         `;
-      } else if (!ended) {
-        // Active — show countdown
-        if (days !== null && days > 0) {
-          html += `<div class="comp-countdown">${days} day${days !== 1 ? "s" : ""} left</div>`;
-        } else if (days === 0) {
-          html += `<div class="comp-countdown" style="color:var(--accent)">Ends today!</div>`;
-        }
+      } else if (!ended && days !== null) {
+        const dayText = days <= 0 ? "Ends today!" : `${days} day${days !== 1 ? "s" : ""} left`;
+        html += `<div class="comp-countdown">${dayText}</div>`;
       }
 
-      // Reward
       if (comp.prize) {
         html += `<div class="comp-reward"><span class="comp-reward-label">🎁 REWARD</span><span class="comp-reward-value">${comp.prize}</span></div>`;
       }
-
-      // Dates
       if (comp.startDate && comp.endDate) {
         html += `<div class="comp-dates">${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}</div>`;
       }
 
-      infoCard.innerHTML = html;
-      infoCard.style.display = html ? "block" : "none";
-    } else {
-      infoCard.style.display = "none";
+      compCard.innerHTML = html;
+      compCard.style.display = "block";
     }
   }
-
-  const searchInput = document.getElementById("input-search-employees");
-  if (searchInput && searchInput.value !== filterText) searchInput.value = filterText;
 
   const grid = document.getElementById("name-grid");
   if (!grid) return;
@@ -279,7 +291,7 @@ function renderPickScreen(filterText = "") {
 
   if (filtered.length === 0) {
     grid.classList.add("empty");
-    grid.innerHTML = filterText ? "No employees found 🔍" : "No employees loaded";
+    grid.innerHTML = filterText ? "No employees found 🔍" : "No employees yet — add them in Admin";
     document.getElementById("search-results-info")?.classList.add("hidden");
     return;
   }
@@ -298,8 +310,7 @@ function renderPickScreen(filterText = "") {
   filtered.forEach(([id, emp]) => {
     const rank = ranked.findIndex(r => r.id === id);
     const pip = rank === 0 ? "👑" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : "";
-    const winner = state.competitions[state.currentComp]?.winner;
-    const isWinner = winner === id;
+    const isWinner = state.competitions[state.currentComp]?.winner === id;
     const btn = document.createElement("button");
     btn.className = `name-btn${isWinner ? " name-btn-winner" : ""}`;
     btn.innerHTML = `${pip ? `<span class="rank-pip">${pip}</span>` : ""}${isWinner ? "🏆 " : ""}${emp.name}`;
@@ -309,8 +320,45 @@ function renderPickScreen(filterText = "") {
 }
 
 // ══════════════════════════════════════════════════════
-// Dashboard
+// Screen management
 // ══════════════════════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  const el = document.getElementById(`screen-${name}`);
+  if (el) el.classList.add("active");
+  state.currentScreen = name;
+  window.scrollTo(0, 0);
+
+  // Update nav active state
+  document.querySelectorAll(".nav-btn").forEach(b => {
+    const screen = b.dataset.screen;
+    b.classList.toggle("active", screen === name || (name === "admin" && screen === "admin-gate"));
+  });
+
+  // Update header
+  const headerName = document.getElementById("dash-name");
+  const headerComp = document.getElementById("dash-comp-name");
+  if (headerName && headerComp) {
+    if (name === "board") {
+      headerName.textContent = "LEADERBOARD";
+      headerComp.textContent = state.competitions[state.boardComp]?.name || "";
+    } else if (name === "alltime") {
+      headerName.textContent = "ALL-TIME";
+      headerComp.textContent = "All competitions";
+    } else if (name === "dash") {
+      const emp = state.employees[state.currentUser];
+      if (emp) headerName.textContent = emp.name.toUpperCase();
+      headerComp.textContent = state.competitions[state.currentComp]?.name || "";
+    } else if (name === "admin") {
+      headerName.textContent = "ADMIN";
+      headerComp.textContent = "";
+    } else if (name === "admin-gate") {
+      headerName.textContent = "ADMIN";
+      headerComp.textContent = "";
+    }
+  }
+}
+
 function enterAsDashboard(empId) {
   state.currentUser = empId;
   document.getElementById("input-search-employees").value = "";
@@ -320,6 +368,9 @@ function enterAsDashboard(empId) {
   renderDash(); renderBoard(); renderAllTime();
 }
 
+// ══════════════════════════════════════════════════════
+// Dashboard
+// ══════════════════════════════════════════════════════
 function renderDash() {
   const emp = state.employees[state.currentUser];
   if (!emp) return;
@@ -345,7 +396,6 @@ function renderDash() {
   document.getElementById("vibe-emoji").textContent = vibe.emoji;
   document.getElementById("vibe-text").textContent  = vibe.text;
 
-  // Winner banner
   const winner = comp?.winner;
   const winnerBanner = document.getElementById("winner-banner");
   if (winnerBanner) {
@@ -366,24 +416,20 @@ function renderDash() {
     let goalsHtml = "";
     if (compGoals.competition?.value) {
       const g = compGoals.competition;
-      const current = g.type === "sph" ? sph : totalSales;
-      goalsHtml += `<div class="goal-block"><div class="goal-label">🎯 Competition Goal</div>${renderGoalBar(current, g.value, g.type)}</div>`;
+      goalsHtml += `<div class="goal-block"><div class="goal-label">🎯 Competition Goal</div>${renderGoalBar(g.type === "sph" ? sph : totalSales, g.value, g.type)}</div>`;
     }
     if (compGoals.weekly?.value) {
       const g = compGoals.weekly;
       const w = getPlayerSph(state.currentUser, state.currentComp);
-      const current = g.type === "sph" ? w.sph : w.total;
-      goalsHtml += `<div class="goal-block"><div class="goal-label">📅 Weekly Goal</div>${renderGoalBar(current, g.value, g.type)}</div>`;
+      goalsHtml += `<div class="goal-block"><div class="goal-label">📅 Weekly Goal</div>${renderGoalBar(g.type === "sph" ? w.sph : w.total, g.value, g.type)}</div>`;
     }
     if (compGoals.daily?.value) {
       const g = compGoals.daily;
       const d = getTodaySph(state.currentUser, state.currentComp);
-      const current = g.type === "sph" ? d.sph : d.total;
-      goalsHtml += `<div class="goal-block"><div class="goal-label">☀️ Daily Goal</div>${renderGoalBar(current, g.value, g.type)}</div>`;
+      goalsHtml += `<div class="goal-block"><div class="goal-label">☀️ Daily Goal</div>${renderGoalBar(g.type === "sph" ? d.sph : d.total, g.value, g.type)}</div>`;
     }
     if (empGoal?.value) {
-      const current = empGoal.type === "sph" ? sph : totalSales;
-      goalsHtml += `<div class="goal-block"><div class="goal-label">👤 Your Personal Goal</div>${renderGoalBar(current, empGoal.value, empGoal.type)}</div>`;
+      goalsHtml += `<div class="goal-block"><div class="goal-label">👤 Your Personal Goal</div>${renderGoalBar(empGoal.type === "sph" ? sph : totalSales, empGoal.value, empGoal.type)}</div>`;
     }
     goalsEl.innerHTML = goalsHtml;
     goalsEl.style.display = goalsHtml ? "flex" : "none";
@@ -422,7 +468,6 @@ function renderDash() {
     logBtn.textContent = "+ LOG IT";
   }
 
-  // History
   const historyList = document.getElementById("history-list");
   historyList.innerHTML = "";
   const hasAnyLogs = DAYS.some(d => myLogs[d]);
@@ -451,10 +496,29 @@ function renderDash() {
 // ══════════════════════════════════════════════════════
 // Leaderboard
 // ══════════════════════════════════════════════════════
+function renderBoardCompSelect() {
+  const sel = document.getElementById("board-comp-select");
+  if (!sel) return;
+  sel.innerHTML = "";
+  Object.entries(state.competitions)
+    .filter(([, c]) => c.status !== "archived")
+    .sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0))
+    .forEach(([id, comp]) => {
+      const opt = document.createElement("option");
+      opt.value = id;
+      opt.textContent = comp.name;
+      if (id === state.boardComp) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  sel.onchange = () => { state.boardComp = sel.value; renderBoard(); };
+}
+
 function renderBoard() {
-  const comp = state.competitions[state.currentComp];
-  const ranked = getRankedPlayers(state.currentComp);
+  const comp = state.competitions[state.boardComp || state.currentComp];
+  const compId = state.boardComp || state.currentComp;
+  const ranked = getRankedPlayers(compId);
   const body = document.getElementById("board-body");
+  if (!body) return;
   body.innerHTML = "";
 
   if (ranked.length === 0) {
@@ -486,7 +550,13 @@ function renderBoard() {
         <div class="board-sph-label">/HR</div>
       </div>
     `;
-    card.onclick = () => { state.currentUser = player.id; showScreen("dash"); renderDash(); setActiveNav("dash"); };
+    card.onclick = () => {
+      if (state.currentUser !== player.id) {
+        state.currentUser = player.id;
+        renderDash();
+      }
+      showScreen("dash");
+    };
     body.appendChild(card);
   });
 }
@@ -496,6 +566,7 @@ function renderBoard() {
 // ══════════════════════════════════════════════════════
 function renderAllTime() {
   const body = document.getElementById("alltime-body");
+  if (!body) return;
   body.innerHTML = "";
   const totals = {};
   Object.entries(state.employees).forEach(([id, emp]) => { totals[id] = { id, name: emp.name, total: 0, hours: 0 }; });
@@ -555,54 +626,6 @@ function getRankedPlayers(compId) {
 }
 
 // ══════════════════════════════════════════════════════
-// Competition status helpers
-// ══════════════════════════════════════════════════════
-function isCompEnded(comp) {
-  if (!comp?.endDate) return false;
-  const end = new Date(comp.endDate);
-  end.setHours(23, 59, 59, 999);
-  return new Date() > end;
-}
-
-function isCompActive(comp) {
-  if (!comp?.startDate || !comp?.endDate) return comp?.status === "active";
-  const now = new Date();
-  const start = new Date(comp.startDate);
-  const end = new Date(comp.endDate);
-  end.setHours(23, 59, 59, 999);
-  return now >= start && now <= end && comp.status !== "closed" && comp.status !== "archived";
-}
-
-async function checkAndAutoCloseComps() {
-  for (const [id, comp] of Object.entries(state.competitions)) {
-    if (comp.status === "active" && isCompEnded(comp)) {
-      // Auto-close and pick winner
-      const ranked = getRankedPlayers(id);
-      const winner = ranked.find(p => p.hours > 0);
-      await update(dbRef.comp(id), {
-        status: "closed",
-        winner: winner ? winner.id : null,
-        autoClosedAt: Date.now(),
-      });
-    }
-  }
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return "";
-  const d = new Date(dateStr + "T00:00:00");
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
-
-function daysRemaining(comp) {
-  if (!comp?.endDate) return null;
-  const end = new Date(comp.endDate);
-  end.setHours(23, 59, 59, 999);
-  const diff = Math.ceil((end - new Date()) / (1000 * 60 * 60 * 24));
-  return diff;
-}
-
-// ══════════════════════════════════════════════════════
 // Log entry
 // ══════════════════════════════════════════════════════
 async function logEntry() {
@@ -624,14 +647,15 @@ function openAdminPanel() {
   state.admin.tab = "competitions";
   renderAdminTab();
   renderAdminTabBar();
+  showScreen("admin");
 }
 
 function renderAdminTabBar() {
   const tabs = [
     { id: "competitions", label: "🏆 Comps" },
-    { id: "employees",   label: "👥 Team" },
-    { id: "logs",        label: "📋 Logs" },
-    { id: "goals",       label: "🎯 Goals" },
+    { id: "employees",    label: "👥 Team" },
+    { id: "logs",         label: "📋 Logs" },
+    { id: "goals",        label: "🎯 Goals" },
   ];
   const bar = document.getElementById("admin-tab-bar");
   if (!bar) return;
@@ -658,7 +682,7 @@ function renderAdminTab() {
 }
 
 // ══════════════════════════════════════════════════════
-// ADMIN — Competitions tab
+// ADMIN — Competitions
 // ══════════════════════════════════════════════════════
 function renderAdminComps(container) {
   container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">COMPETITIONS</div>`;
@@ -671,7 +695,7 @@ function renderAdminComps(container) {
     const item = document.createElement("div");
     item.className = "admin-item";
     item.id = `admin-comp-item-${id}`;
-    const dot = comp.status === "closed" ? "🔒" : comp.status === "archived" ? "📦" : "🟢";
+    const dot = isCompEnded(comp) ? "🏁" : comp.status === "closed" ? "🔒" : comp.status === "archived" ? "📦" : "🟢";
     item.innerHTML = `<span class="admin-item-name">${dot} ${comp.name}</span>`;
     item.appendChild(makeBtn("✏️ Edit", "del-btn", () => renderCompEditPanel(id, comp)));
     list.appendChild(item);
@@ -698,7 +722,7 @@ function renderAdminComps(container) {
     </div>
     <div style="margin-top:4px;">
       <label class="field-label">REWARD (what the winner gets)</label>
-      <input type="text" id="input-new-comp-prize" class="log-input" placeholder="e.g. $50 gift card, early release Friday..." style="margin-bottom:8px;" />
+      <input type="text" id="input-new-comp-prize" class="log-input" placeholder="e.g. $50 gift card, early release..." style="margin-bottom:8px;" />
     </div>
     <div class="log-fields" style="margin-bottom:8px;">
       <div class="log-field-wrap">
@@ -714,8 +738,7 @@ function renderAdminComps(container) {
   `;
   container.appendChild(newCompSection);
 
-  // Reactive — enable button only when name + dates filled
-  const checkNewCompReady = () => {
+  const checkReady = () => {
     const name = document.getElementById("input-new-comp")?.value.trim();
     const start = document.getElementById("input-new-comp-start")?.value;
     const end = document.getElementById("input-new-comp-end")?.value;
@@ -725,9 +748,9 @@ function renderAdminComps(container) {
     btn.disabled = !ready;
     btn.classList.toggle("btn-ghost", !ready);
   };
-  document.getElementById("input-new-comp").oninput = checkNewCompReady;
-  document.getElementById("input-new-comp-start").onchange = checkNewCompReady;
-  document.getElementById("input-new-comp-end").onchange = checkNewCompReady;
+  document.getElementById("input-new-comp").oninput = checkReady;
+  document.getElementById("input-new-comp-start").onchange = checkReady;
+  document.getElementById("input-new-comp-end").onchange = checkReady;
 
   document.getElementById("btn-add-comp").onclick = async () => {
     const name = document.getElementById("input-new-comp").value.trim();
@@ -737,13 +760,12 @@ function renderAdminComps(container) {
     if (!name || !startDate || !endDate) return;
     const id = `comp_${Date.now()}`;
     await set(dbRef.comp(id), { name, prize, startDate, endDate, createdAt: Date.now(), status: "active" });
-    state.currentComp = id;
-    document.getElementById("input-new-comp").value = "";
-    document.getElementById("input-new-comp-prize").value = "";
-    document.getElementById("input-new-comp-start").value = "";
-    document.getElementById("input-new-comp-end").value = "";
-    checkNewCompReady();
     showToast(`"${name}" created! 🏆`);
+    ["input-new-comp","input-new-comp-prize","input-new-comp-start","input-new-comp-end"].forEach(i => {
+      const el = document.getElementById(i);
+      if (el) el.value = "";
+    });
+    checkReady();
   };
 }
 
@@ -760,7 +782,7 @@ function renderCompEditPanel(compId, comp) {
 
   [
     { label: "Competition Name", key: "name", type: "text", value: comp.name },
-    { label: "Prize / Reward", key: "prize", type: "text", value: comp.prize || "" },
+    { label: "Reward (what winner gets)", key: "prize", type: "text", value: comp.prize || "" },
     { label: "Start Date", key: "startDate", type: "date", value: comp.startDate || "" },
     { label: "End Date", key: "endDate", type: "date", value: comp.endDate || "" },
   ].forEach(f => {
@@ -786,11 +808,11 @@ function renderCompEditPanel(compId, comp) {
 
   const winnerWrap = document.createElement("div");
   winnerWrap.style.marginBottom = "10px";
-  winnerWrap.innerHTML = `<label class="field-label">WINNER (optional)</label>`;
+  winnerWrap.innerHTML = `<label class="field-label">WINNER (auto-set when ended, or override)</label>`;
   const winnerSel = document.createElement("select");
   winnerSel.className = "log-input"; winnerSel.id = "comp-edit-winner";
   const noWin = document.createElement("option");
-  noWin.value = ""; noWin.textContent = "— No winner set —";
+  noWin.value = ""; noWin.textContent = "— Auto / No winner set —";
   winnerSel.appendChild(noWin);
   Object.entries(state.employees)
     .filter(([, e]) => e.active !== false)
@@ -823,7 +845,6 @@ function renderCompEditPanel(compId, comp) {
     if (confirm(`Delete "${comp.name}"? All logs will be removed.`)) {
       await remove(dbRef.comp(compId));
       await remove(ref(db, `logs/${compId}`));
-      if (state.currentComp === compId) state.currentComp = null;
       state.admin.tab = "competitions"; renderAdminTabBar(); renderAdminTab();
     }
   });
@@ -832,7 +853,7 @@ function renderCompEditPanel(compId, comp) {
 }
 
 // ══════════════════════════════════════════════════════
-// ADMIN — Employees tab
+// ADMIN — Employees
 // ══════════════════════════════════════════════════════
 function renderAdminEmps(container) {
   container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">TEAM</div>`;
@@ -923,7 +944,7 @@ function inlineRenameEmp(empId, currentName) {
 }
 
 // ══════════════════════════════════════════════════════
-// ADMIN — Logs tab
+// ADMIN — Logs
 // ══════════════════════════════════════════════════════
 function renderAdminLogs(container) {
   container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">MANAGE LOGS</div>`;
@@ -1120,7 +1141,7 @@ function renderAdminLogEdit(empId, compId, day, log) {
 }
 
 // ══════════════════════════════════════════════════════
-// ADMIN — Goals tab
+// ADMIN — Goals
 // ══════════════════════════════════════════════════════
 function renderAdminGoals(container) {
   container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">GOALS</div>`;
@@ -1187,7 +1208,6 @@ function renderAdminGoals(container) {
     };
   });
 
-  // Global per-associate
   const perAssocExisting = compGoals.globalAssociate || {};
   const paSection = document.createElement("div");
   paSection.className = "goal-admin-block";
@@ -1226,7 +1246,6 @@ function renderAdminGoals(container) {
     showToast("Cleared");
   };
 
-  // Individual goals
   const indivTitle = document.createElement("div");
   indivTitle.style.cssText = "font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;color:var(--text2);margin:16px 0 10px;border-top:2px solid var(--border);padding-top:14px;";
   indivTitle.textContent = "INDIVIDUAL GOALS";
@@ -1284,32 +1303,6 @@ function makeBtn(label, className, onclick) {
   return btn;
 }
 
-function showScreen(name) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(`screen-${name}`).classList.add("active");
-  window.scrollTo(0, 0);
-  document.querySelectorAll(".nav-btn").forEach(b => {
-    b.classList.toggle("active", b.dataset.screen === name);
-  });
-  const headerName = document.getElementById("dash-name");
-  const headerComp = document.getElementById("dash-comp-name");
-  if (name === "board") {
-    headerName.textContent = "LEADERBOARD";
-    headerComp.textContent = state.competitions[state.currentComp]?.name || "";
-  } else if (name === "alltime") {
-    headerName.textContent = "ALL-TIME";
-    headerComp.textContent = "Across all competitions";
-  } else if (name === "dash") {
-    const emp = state.employees[state.currentUser];
-    if (emp) headerName.textContent = emp.name.toUpperCase();
-    headerComp.textContent = state.competitions[state.currentComp]?.name || "";
-  }
-}
-
-function setActiveNav(tab) {
-  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.screen === tab));
-}
-
 let toastTimer;
 function showToast(msg, duration = 2200) {
   const toast = document.getElementById("toast");
@@ -1353,65 +1346,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   await bootstrap();
   startListeners();
 
-  // Back → pick screen
-  document.getElementById("btn-back").onclick = () => {
-    document.getElementById("input-search-employees").value = "";
-    document.getElementById("app-header").classList.add("hidden");
-    document.getElementById("bottom-nav").classList.add("hidden");
-    state.currentUser = null;
-    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-    document.getElementById("screen-pick").classList.add("active");
-    window.scrollTo(0, 0);
-  };
-
   document.getElementById("btn-log").onclick = logEntry;
 
   const searchInput = document.getElementById("input-search-employees");
   if (searchInput) searchInput.oninput = () => renderPickScreen(searchInput.value);
 
-  // Persistent nav
-  document.getElementById("nav-dash").onclick    = () => showScreen("dash");
-  document.getElementById("nav-board").onclick   = () => showScreen("board");
-  document.getElementById("nav-alltime").onclick  = () => showScreen("alltime");
-
-  // Hamburger (in-app)
-  const hamburgerBtn  = document.getElementById("btn-hamburger");
-  const hamburgerMenu = document.getElementById("hamburger-menu");
-  hamburgerBtn.onclick = (e) => { e.stopPropagation(); hamburgerMenu.classList.toggle("hidden"); };
-  document.addEventListener("click", () => hamburgerMenu.classList.add("hidden"));
-
-  // Switch user
-  document.getElementById("btn-switch-user").onclick = () => {
-    hamburgerMenu.classList.add("hidden");
-    document.getElementById("app-header").classList.add("hidden");
-    document.getElementById("bottom-nav").classList.add("hidden");
-    state.currentUser = null;
-    document.getElementById("input-search-employees").value = "";
-    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-    document.getElementById("screen-pick").classList.add("active");
-    window.scrollTo(0, 0);
+  // Bottom nav
+  document.getElementById("nav-dash").onclick = () => showScreen("dash");
+  document.getElementById("nav-board").onclick = () => { renderBoard(); showScreen("board"); };
+  document.getElementById("nav-alltime").onclick = () => { renderAllTime(); showScreen("alltime"); };
+  document.getElementById("nav-admin").onclick = () => {
+    if (state.adminUnlocked) {
+      openAdminPanel();
+    } else {
+      document.getElementById("input-pin").value = "";
+      document.getElementById("pin-error").classList.add("hidden");
+      showScreen("admin-gate");
+    }
   };
 
-  // Pick screen hamburger
-  const pickAdminBtn = document.getElementById("btn-pick-admin");
-  const pickMenu     = document.getElementById("pick-hamburger-menu");
-  pickAdminBtn.onclick = (e) => { e.stopPropagation(); pickMenu.classList.toggle("hidden"); };
-
-  function openAdminModal() {
-    document.getElementById("modal-admin").classList.remove("hidden");
-    document.getElementById("admin-pin-wrap").classList.remove("hidden");
-    document.getElementById("admin-panel").classList.add("hidden");
-    document.getElementById("input-pin").value = "";
-    document.getElementById("pin-error").classList.add("hidden");
-  }
-
-  document.getElementById("btn-pick-admin-open").onclick = () => { pickMenu.classList.add("hidden"); openAdminModal(); };
-  document.getElementById("btn-admin-open").onclick      = () => { hamburgerMenu.classList.add("hidden"); openAdminModal(); };
-
+  // PIN submit
   document.getElementById("btn-pin-submit").onclick = () => {
     if (document.getElementById("input-pin").value.trim() === ADMIN_PIN) {
-      document.getElementById("admin-pin-wrap").classList.add("hidden");
-      document.getElementById("admin-panel").classList.remove("hidden");
+      state.adminUnlocked = true;
       state.admin.showAllComps = false;
       state.admin.showAllEmps = false;
       state.admin.selectedEmp = null;
@@ -1426,12 +1383,4 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("input-pin").addEventListener("keydown", e => {
     if (e.key === "Enter") document.getElementById("btn-pin-submit").click();
   });
-
-  document.getElementById("btn-admin-close").onclick = () =>
-    document.getElementById("modal-admin").classList.add("hidden");
-
-  document.getElementById("modal-admin").onclick = (e) => {
-    if (e.target === document.getElementById("modal-admin"))
-      document.getElementById("modal-admin").classList.add("hidden");
-  };
 });
