@@ -1555,8 +1555,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("nav-home").classList.add("active");
 
   // PIN submit
-  document.getElementById("btn-pin-submit").onclick = () => {
-    if (document.getElementById("input-pin").value.trim() === ADMIN_PIN) {
+  const pinInput = document.getElementById("input-pin");
+  const pinSubmitBtn = document.getElementById("btn-pin-submit");
+
+  pinSubmitBtn.disabled = true;
+  pinSubmitBtn.classList.add("btn-ghost");
+
+  pinSubmitBtn.onclick = () => {
+    if (pinInput.value.trim() === ADMIN_PIN) {
       state.adminUnlocked = true;
       state.admin.showAllComps = false;
       state.admin.showAllEmps = false;
@@ -1569,7 +1575,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   };
 
-  document.getElementById("input-pin").addEventListener("keydown", e => {
-    if (e.key === "Enter") document.getElementById("btn-pin-submit").click();
+  pinInput.addEventListener("input", () => {
+    const hasValue = pinInput.value.trim().length > 0;
+    pinSubmitBtn.disabled = !hasValue;
+    pinSubmitBtn.classList.toggle("btn-ghost", !hasValue);
+  });
+
+  pinInput.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !pinSubmitBtn.disabled) pinSubmitBtn.click();
   });
 });
