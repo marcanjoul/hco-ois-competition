@@ -13,7 +13,7 @@ const DEFAULT_EMPLOYEES = [
 // ─────────────────────────────────────────────────────
 // STEP 2 ▸ Set your admin PIN here
 // ─────────────────────────────────────────────────────
-const ADMIN_PIN = "1234";
+const ADMIN_PIN = import.meta.env.VITE_ADMIN_PIN;
 
 // ══════════════════════════════════════════════════════
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
