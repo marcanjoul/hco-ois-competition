@@ -557,10 +557,8 @@ function renderPickEmpGrid(filterText = "") {
   list.innerHTML = "";
   filtered.forEach(([id, emp]) => {
     const btn = document.createElement("button");
-    btn.style.cssText = "padding:10px;background:var(--bg);border:2px solid var(--border);border-radius:6px;cursor:pointer;font-weight:600;transition:all 0.2s;";
+    btn.className = "name-btn";
     btn.textContent = emp.name;
-    btn.onmouseover = () => btn.style.background = "var(--accent)";
-    btn.onmouseout = () => btn.style.background = "var(--bg)";
     btn.onclick = () => enterAsDashboard(id);
     list.appendChild(btn);
   });
