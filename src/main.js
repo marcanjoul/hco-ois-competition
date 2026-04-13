@@ -308,11 +308,16 @@ function renderPickDayRow() {
 
   week.days.forEach(dayInfo => {
     const hasEntry = myLogs[dayInfo.date] && (myLogs[dayInfo.date].sales > 0 || myLogs[dayInfo.date].hours > 0);
+    const isFutureDate = new Date(dayInfo.date) > new Date();
     const btn = document.createElement("button");
-    btn.className = `day-btn${state.selectedDate === dayInfo.date ? " active" : ""}${hasEntry ? " logged" : ""}`;
+    btn.className = `day-btn${state.selectedDate === dayInfo.date ? " active" : ""}${hasEntry ? " logged" : ""}${isFutureDate ? " disabled" : ""}`;
     btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark"></div>' : ''}`;
 
-    btn.onclick = () => { state.selectedDate = dayInfo.date; renderPickDayRow(); updatePickLogBtnState(); };
+    if (!isFutureDate) {
+      btn.onclick = () => { state.selectedDate = dayInfo.date; renderPickDayRow(); updatePickLogBtnState(); };
+    } else {
+      btn.disabled = true;
+    }
     dayRow.appendChild(btn);
   });
 
@@ -692,11 +697,16 @@ function renderDash() {
 
   week.days.forEach(dayInfo => {
     const hasEntry = myLogs[dayInfo.date] && (myLogs[dayInfo.date].sales > 0 || myLogs[dayInfo.date].hours > 0);
+    const isFutureDate = new Date(dayInfo.date) > new Date();
     const btn = document.createElement("button");
-    btn.className = `day-btn${state.selectedDate === dayInfo.date ? " active" : ""}${hasEntry ? " logged" : ""}`;
+    btn.className = `day-btn${state.selectedDate === dayInfo.date ? " active" : ""}${hasEntry ? " logged" : ""}${isFutureDate ? " disabled" : ""}`;
     btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark"></div>' : ''}`;
 
-    btn.onclick = () => { state.selectedDate = dayInfo.date; renderDash(); };
+    if (!isFutureDate) {
+      btn.onclick = () => { state.selectedDate = dayInfo.date; renderDash(); };
+    } else {
+      btn.disabled = true;
+    }
     dayRow.appendChild(btn);
   });
 
@@ -1128,7 +1138,7 @@ function renderCompEditPanel(compId, comp) {
 function renderAdminEmps(container) {
   container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">TEAM</div>`;
   const searchWrap = document.createElement("div");
-  searchWrap.innerHTML = `<input type="text" id="admin-emp-search" class="log-input" placeholder="🔍 Search employees..." style="margin-bottom:10px;" value="${state.admin.empSearch}" />`;
+  searchWrap.innerHTML = `<input type="text" id="admin-emp-search" class="log-input" placeholder="Search employees..." style="margin-bottom:10px;" value="${state.admin.empSearch}" />`;
   container.appendChild(searchWrap);
   document.getElementById("admin-emp-search").oninput = (e) => {
     state.admin.empSearch = e.target.value;

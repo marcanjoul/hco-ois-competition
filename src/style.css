@@ -981,6 +981,12 @@ input, select, textarea {
   color: var(--color-text-inverse);
 }
 
+.day-btn.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* ── SEARCH/FILTER ── */
 
 .search-wrap {
