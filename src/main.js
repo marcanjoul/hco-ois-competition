@@ -1092,8 +1092,17 @@ function renderAdminComps(container) {
     item.className = "admin-item";
     item.id = `admin-comp-item-${id}`;
     const dot = isCompEnded(comp) ? "🏁" : comp.status === "closed" ? "🔒" : comp.status === "archived" ? "📦" : "🟢";
-    item.innerHTML = `<span class="admin-item-name">${dot} ${comp.name}</span>`;
-    item.appendChild(makeBtn("✏️ Edit", "del-btn", () => renderCompEditPanel(id, comp)));
+    
+    const leftPart = document.createElement("div");
+    leftPart.className = "admin-item-left";
+    leftPart.innerHTML = `<span class="admin-item-name">${dot} ${comp.name}</span>`;
+    item.appendChild(leftPart);
+    
+    const rightPart = document.createElement("div");
+    rightPart.className = "admin-item-actions";
+    rightPart.appendChild(makeBtn("✏️ Edit", "del-btn", () => renderCompEditPanel(id, comp)));
+    item.appendChild(rightPart);
+    
     list.appendChild(item);
   });
   container.appendChild(list);
@@ -1481,11 +1490,20 @@ function renderAdminEmpsList() {
       const item = document.createElement("div");
       item.className = "admin-item";
       item.id = `admin-emp-item-${id}`;
-      item.innerHTML = `${getAvatarHtml(emp, "small", id)} <span class="admin-item-name">${emp.name}</span>`;
-      item.appendChild(makeBtn("✏️ Edit", "del-btn", () => openEditEmpModal(id, emp)));
-      item.appendChild(makeBtn("✕", "del-btn danger", async () => {
+      
+      const leftPart = document.createElement("div");
+      leftPart.className = "admin-item-left";
+      leftPart.innerHTML = `${getAvatarHtml(emp, "small", id)} <span class="admin-item-name">${emp.name}</span>`;
+      item.appendChild(leftPart);
+      
+      const rightPart = document.createElement("div");
+      rightPart.className = "admin-item-actions";
+      rightPart.appendChild(makeBtn("✏️ Edit", "del-btn", () => openEditEmpModal(id, emp)));
+      rightPart.appendChild(makeBtn("✕", "del-btn danger", async () => {
         if (confirm(`Remove "${emp.name}"?`)) await remove(dbRef.emp(id));
       }));
+      item.appendChild(rightPart);
+      
       list.appendChild(item);
     });
   }
