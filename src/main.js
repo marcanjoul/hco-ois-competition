@@ -479,10 +479,11 @@ function renderPickScreen(filterText = "") {
         }
 
         if (todayGoal?.value) {
+          const todaySales = state.currentUser ? getTodaySph(state.currentUser, state.currentComp).total : 0;
           detailsHtml += `
             <div class="comp-detail" style="margin-top:16px;">
               <div class="detail-label">GOAL FOR TODAY</div>
-              <div style="font-size:24px;font-weight:700;color:var(--accent);padding:8px 0;">$${todayGoal.value}/hr</div>
+              ${renderGoalBar(todaySales, todayGoal.value, "total")}
             </div>
           `;
         }
@@ -504,21 +505,9 @@ function renderPickScreen(filterText = "") {
     }
   }
 
-  // Display daily goals on pick screen if competition exists
+  // Daily goals are now shown in competition info card, hide this duplicate
   const goalsEl = document.getElementById("pick-goals");
-  if (goalsEl && state.currentComp && state.currentUser) {
-    const compGoals = getCompGoals(state.currentComp);
-    const todayDate = getTodayDate();
-    const todayGoal = compGoals[`daily_${todayDate}`];
-    let goalsHtml = "";
-
-    if (todayGoal?.value) {
-      goalsHtml += `<div class="goal-block"><div class="goal-label">☀️ Goal for Today</div><div style="font-size:20px;font-weight:700;color:var(--accent);padding:8px 0;">$${todayGoal.value}/hr</div></div>`;
-    }
-
-    goalsEl.innerHTML = goalsHtml;
-    goalsEl.classList.toggle("hidden", !goalsHtml);
-  } else if (goalsEl) {
+  if (goalsEl) {
     goalsEl.classList.add("hidden");
   }
 
@@ -809,7 +798,7 @@ function renderDash() {
     if (compGoals.daily?.value) {
       const g = compGoals.daily;
       const d = getTodaySph(state.currentUser, state.currentComp);
-      goalsHtml += `<div class="goal-block"><div class="goal-label">☀️ Daily Goal</div>${renderGoalBar(g.type === "sph" ? d.sph : d.total, g.value, g.type)}</div>`;
+      goalsHtml += `<div class="goal-block"><div class="goal-label">☀️ Daily Goal</div>${renderGoalBar(d.total, g.value, "total")}</div>`;
     }
     goalsEl.innerHTML = goalsHtml;
     goalsEl.style.display = goalsHtml ? "flex" : "none";
@@ -1471,21 +1460,17 @@ function renderCompEditPanel(compId, comp) {
 // ══════════════════════════════════════════════════════
 // ADMIN — Employees
 // ══════════════════════════════════════════════════════
-function renderAdminEmps(container) {
-  container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">TEAM</div>`;
-  const searchWrap = document.createElement("div");
-  searchWrap.innerHTML = `<input type="text" id="admin-emp-search" class="log-input" placeholder="Search employees..." style="margin-bottom:10px;" value="${state.admin.empSearch}" />`;
-  container.appendChild(searchWrap);
-  document.getElementById("admin-emp-search").oninput = (e) => {
-    state.admin.empSearch = e.target.value;
-    state.admin.showAllEmps = false;
-    renderAdminTab();
-  };
 
+function renderAdminEmpsList() {
+  const listContainer = document.getElementById("admin-emp-list-container");
+  if (!listContainer) return;
+  
   const search = state.admin.empSearch.toLowerCase();
   const allEntries = Object.entries(state.employees).sort(([, a], [, b]) => a.name.localeCompare(b.name));
   const filtered = search ? allEntries.filter(([, emp]) => emp.name.toLowerCase().includes(search)) : allEntries;
   const toShow = state.admin.showAllEmps ? filtered : filtered.slice(0, PREVIEW_COUNT);
+  
+  listContainer.innerHTML = "";
   const list = document.createElement("div");
   list.className = "admin-list";
 
@@ -1504,15 +1489,46 @@ function renderAdminEmps(container) {
       list.appendChild(item);
     });
   }
-  container.appendChild(list);
+  listContainer.appendChild(list);
 
   if (filtered.length > PREVIEW_COUNT) {
-    container.appendChild(makeBtn(
+    listContainer.appendChild(makeBtn(
       state.admin.showAllEmps ? "Show less ▲" : `View all ${filtered.length} employees ▼`,
       "view-all-btn",
-      () => { state.admin.showAllEmps = !state.admin.showAllEmps; renderAdminTab(); }
+      () => { state.admin.showAllEmps = !state.admin.showAllEmps; renderAdminEmpsList(); }
     ));
   }
+}
+
+function renderAdminEmps(container) {
+  container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">TEAM</div>`;
+  
+  // Check if search input already exists in DOM
+  let searchInput = document.getElementById("admin-emp-search");
+  if (!searchInput) {
+    const searchWrap = document.createElement("div");
+    searchWrap.innerHTML = `<input type="text" id="admin-emp-search" class="log-input" placeholder="Search employees..." style="margin-bottom:10px;" />`;
+    container.appendChild(searchWrap);
+    searchInput = document.getElementById("admin-emp-search");
+    // Only attach listener once, not on every render
+    searchInput.oninput = (e) => {
+      state.admin.empSearch = e.target.value;
+      state.admin.showAllEmps = false;
+      renderAdminEmpsList(); // Call list-only render, not full tab render
+    };
+  } else {
+    // Move existing search input to container
+    container.insertBefore(searchInput, container.firstChild.nextSibling);
+  }
+  searchInput.value = state.admin.empSearch;
+
+  // Create container for list (will be updated by renderAdminEmpsList)
+  const listContainer = document.createElement("div");
+  listContainer.id = "admin-emp-list-container";
+  container.appendChild(listContainer);
+  
+  // Render the list
+  renderAdminEmpsList();
 
   const addRow = document.createElement("div");
   addRow.className = "admin-new-row";
@@ -1830,16 +1846,22 @@ function refreshAdminDayView() {
 
   week.days.forEach(dayInfo => {
     const hasLog = !!empLogs[dayInfo.date];
+    const isFutureDate = new Date(dayInfo.date) > new Date();
     const btn = document.createElement("button");
-    btn.className = `admin-day-btn${hasLog ? " has-log" : ""}`;
+    btn.className = `admin-day-btn${hasLog ? " has-log" : ""}${isFutureDate ? " disabled" : ""}`;
     btn.innerHTML = `<div class="admin-day-btn-dayname">${dayInfo.dayName}</div><div class="admin-day-btn-date">${dayInfo.dayNum}</div>`;
     btn.title = hasLog ? `$${empLogs[dayInfo.date].sales} / ${empLogs[dayInfo.date].hours}hrs` : "No log yet";
-    btn.onclick = () => {
-      document.querySelectorAll("#admin-logs-days .admin-day-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      if (hasLog) renderAdminLogDetail(empId, compId, dayInfo.date, empLogs[dayInfo.date]);
-      else renderAdminLogCreate(empId, compId, dayInfo.date);
-    };
+    if (!isFutureDate) {
+      btn.onclick = () => {
+        document.querySelectorAll("#admin-logs-days .admin-day-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        if (hasLog) renderAdminLogDetail(empId, compId, dayInfo.date, empLogs[dayInfo.date]);
+        else renderAdminLogCreate(empId, compId, dayInfo.date);
+      };
+    } else {
+      btn.disabled = true;
+      btn.onclick = () => showToast("Can't log future dates 🔮");
+    }
     dayContainer.appendChild(btn);
   });
 
@@ -1932,6 +1954,7 @@ function renderAdminLogCreate(empId, compId, date) {
     const hours = parseFloat(h.value);
     if (isNaN(sales) || sales < 0) { showToast("Enter valid sales amount"); return; }
     if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked"); return; }
+    if (date > getTodayDate()) { showToast("Can't create logs for future dates 🔮"); return; }
     await set(dbRef.dateLog(compId, empId, date), { sales, hours });
     showToast("Log created ✅");
     if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
