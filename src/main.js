@@ -357,7 +357,6 @@ async function logEntryFromPick() {
   const today = getTodayDate();
   if (state.selectedDate > today) { showToast("Can't log orders in the future 🔮"); return; }
 
-  // Block overwriting an existing log
   const existingLog = (state.logs[state.currentComp] || {})[state.currentUser]?.[state.selectedDate];
   if (existingLog && (existingLog.sales > 0 || existingLog.hours > 0)) {
     showToast("Already logged for this day — see a manager to edit 🔒"); return;
@@ -366,16 +365,34 @@ async function logEntryFromPick() {
   await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
 
   const reaction = getBigOrderReaction(sales);
-  if (reaction) { showToast(reaction, 3500); launchConfetti(); }
-  else showToast("Logged! Keep grinding 💪");
+  if (reaction) { launchConfetti(); }
 
-  // Show dashboard view for this employee
-  state.selectedDate = getTodayDate();
-  document.getElementById("app-header").classList.remove("hidden");
-  showScreen("dash");
-  renderDash();
+  // Compute stats for success panel
+  const allMyLogs = { ...((state.logs[state.currentComp] || {})[state.currentUser] || {}), [state.selectedDate]: { sales, hours } };
+  let totalSales = 0, totalHours = 0;
+  Object.values(allMyLogs).forEach(l => { totalSales += l.sales || 0; totalHours += l.hours || 0; });
+  const sph = totalHours > 0 ? totalSales / totalHours : 0;
+  const allPlayers = getRankedPlayers(state.currentComp);
+  const rank = allPlayers.findIndex(p => p.id === state.currentUser) + 1;
+
+  // Show success state — flip the log card
+  const formSteps = document.getElementById("pick-form-steps");
+  const successState = document.getElementById("pick-success-state");
+  const successStats = document.getElementById("pick-success-stats");
+  if (formSteps) formSteps.style.display = "none";
+  if (successStats) {
+    const rankDisplay = rank > 0 ? `#${rank}` : "—";
+    successStats.innerHTML = `
+      <div class="pick-success-stat"><div class="pick-success-stat-label">SALES</div><div class="pick-success-stat-value">$${sales.toFixed(0)}</div></div>
+      <div class="pick-success-stat"><div class="pick-success-stat-label">$/HR</div><div class="pick-success-stat-value" style="color:var(--accent)">$${sph.toFixed(0)}</div></div>
+      <div class="pick-success-stat"><div class="pick-success-stat-label">RANK</div><div class="pick-success-stat-value" style="color:var(--gold)">${rankDisplay}</div></div>
+    `;
+  }
+  if (successState) successState.classList.add("visible");
+
+  // Flip the logged day chip to green immediately
+  renderPickDayRow();
   renderBoard();
-  renderAllTime();
 }
 function renderPickDayRow() {
   const dayRow = document.getElementById("pick-day-row");
@@ -385,12 +402,20 @@ function renderPickDayRow() {
   const week = getWeekForDate(state.selectedDate);
   const myLogs = state.currentUser ? ((state.logs[state.currentComp] || {})[state.currentUser] || {}) : {};
 
+  const today = getTodayDate();
   week.days.forEach(dayInfo => {
     const hasEntry = myLogs[dayInfo.date] && (myLogs[dayInfo.date].sales > 0 || myLogs[dayInfo.date].hours > 0);
-    const isFutureDate = dayInfo.date > getTodayDate();
+    const isFutureDate = dayInfo.date > today;
+    const isToday = dayInfo.date === today;
+    const isSelected = state.selectedDate === dayInfo.date;
+    const classes = ["day-btn"];
+    if (isToday && !isSelected) classes.push("today");
+    if (isSelected) classes.push("active");
+    if (hasEntry) classes.push("logged");
+    if (isFutureDate) classes.push("disabled");
     const btn = document.createElement("button");
-    btn.className = `day-btn${state.selectedDate === dayInfo.date ? " active" : ""}${hasEntry ? " logged" : ""}${isFutureDate ? " disabled" : ""}`;
-    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark"></div>' : ''}`;
+    btn.className = classes.join(" ");
+    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark">✓</div>' : ''}`;
 
     if (!isFutureDate) {
       btn.onclick = () => {
@@ -423,9 +448,10 @@ function updatePickLogBtnState() {
 
   if (isLocked) {
     btn.disabled = true;
-    btn.classList.add("btn-ghost");
+    btn.classList.remove("btn-ghost");
+    btn.classList.add("btn-locked");
     btn.textContent = "✓ Already Logged";
-    if (lockedMsg) lockedMsg.style.display = "block";
+    if (lockedMsg) lockedMsg.classList.add("visible");
     if (salesInput) {
       salesInput.readOnly = true;
       salesInput.value = existingLog.sales;
@@ -437,10 +463,11 @@ function updatePickLogBtnState() {
       hoursInput.classList.add("input-locked");
     }
   } else {
-    btn.disabled = true; // stays disabled until values filled
+    btn.disabled = true;
+    btn.classList.remove("btn-locked");
     btn.classList.add("btn-ghost");
     btn.textContent = "+ LOG IT";
-    if (lockedMsg) lockedMsg.style.display = "none";
+    if (lockedMsg) lockedMsg.classList.remove("visible");
     if (salesInput) {
       salesInput.readOnly = false;
       salesInput.value = "";
@@ -451,13 +478,13 @@ function updatePickLogBtnState() {
       hoursInput.value = "";
       hoursInput.classList.remove("input-locked");
     }
-    // Re-check if values are filled
     const sales = parseFloat(salesInput?.value);
     const hours = parseFloat(hoursInput?.value);
     const hasValues = !isNaN(sales) && sales >= 0 && !isNaN(hours) && hours > 0;
     const hasEmployee = !!state.currentUser;
-    btn.disabled = !(hasEmployee && hasValues);
-    btn.classList.toggle("btn-ghost", !(hasEmployee && hasValues));
+    const ready = hasEmployee && hasValues;
+    btn.disabled = !ready;
+    btn.classList.toggle("btn-ghost", !ready);
   }
 }
 // ══════════════════════════════════════════════════════
@@ -485,85 +512,78 @@ function renderPickScreen(filterText = "") {
       const ended = isCompEnded(comp);
       const days = daysRemaining(comp);
       const winner = comp.winner ? state.employees[comp.winner] : null;
-      const ranked = getRankedPlayers(state.currentComp);
-      const winnerStats = winner ? ranked.find(r => r.id === comp.winner) : null;
 
       // Competition name
       const nameEl = document.getElementById("pick-comp-name");
       if (nameEl) nameEl.textContent = comp.name;
 
-      // Competition meta (dates)
-      const metaEl = document.getElementById("pick-comp-meta");
-      if (metaEl) {
-        let metaHtml = "";
-        if (comp.startDate && comp.endDate) {
-          metaHtml += `<span>${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}</span>`;
+      // Countdown number — urgent color if < 3 days, ended state
+      const cntNum = document.getElementById("pick-countdown-num");
+      const cntLabel = document.getElementById("pick-countdown-label");
+      if (cntNum && cntLabel) {
+        if (ended) {
+          cntNum.textContent = "END";
+          cntNum.className = "pick-countdown-num ended";
+          cntLabel.textContent = "COMPETITION OVER";
+        } else if (days !== null) {
+          cntNum.textContent = days <= 0 ? "0" : days;
+          cntNum.className = "pick-countdown-num" + (days <= 3 ? " urgent" : "");
+          cntLabel.textContent = days === 1 ? "DAY LEFT" : "DAYS LEFT";
         }
-        metaEl.innerHTML = metaHtml;
       }
 
-      // Status badge (countdown or winner)
-      const statusEl = document.getElementById("pick-comp-status");
-      if (statusEl) {
-        let statusHtml = "";
+      // Prize pill
+      const prizePill = document.getElementById("pick-prize-pill");
+      const prizeText = document.getElementById("pick-prize-text");
+      if (prizePill && comp.prize) {
+        const firstLine = comp.prize.split("\n")[0].replace(/^[•→\-\s]+/, "").trim();
+        if (prizeText) prizeText.textContent = firstLine.substring(0, 40) + (firstLine.length > 40 ? "…" : "");
+        prizePill.style.display = "flex";
+      } else if (prizePill) {
+        prizePill.style.display = "none";
+      }
+
+      // Dates
+      const datesEl = document.getElementById("pick-comp-dates");
+      if (datesEl && comp.startDate && comp.endDate) {
+        datesEl.textContent = `${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}`;
+      }
+
+      // Winner row
+      const winnerRow = document.getElementById("pick-winner-row");
+      const winnerText = document.getElementById("pick-winner-text");
+      if (winnerRow) {
         if (ended && winner) {
-          statusHtml = `<div class="status-badge winner">🏆</div><div class="status-text">${winner.name} won!</div>`;
-        } else if (!ended && days !== null) {
-          const dayText = days <= 0 ? "Ends today" : `${days} day${days !== 1 ? "s" : ""} left`;
-          statusHtml = `<div class="status-badge active">⏱️</div><div class="status-text">${dayText}</div>`;
+          if (winnerText) winnerText.textContent = `${winner.name} won!`;
+          winnerRow.style.display = "flex";
+        } else {
+          winnerRow.style.display = "none";
         }
-        statusEl.innerHTML = statusHtml;
       }
 
-      // Competition details (goals)
-      const detailsEl = document.getElementById("pick-comp-details");
-      if (detailsEl) {
-        const compGoals = getCompGoals(state.currentComp);
-        const todayDate = getTodayDate();
-        const todayGoal = compGoals[`daily_${todayDate}`];
-        let detailsHtml = "";
-
-        // Store-wide totals (sum of ALL employees)
-        const compLogs = state.logs[state.currentComp] || {};
-        let storeTotalSales = 0, storeTodaySales = 0;
-        Object.values(compLogs).forEach(empLogs => {
-          Object.entries(empLogs || {}).forEach(([date, log]) => {
-            storeTotalSales += log.sales || 0;
-            if (date === todayDate) storeTodaySales += log.sales || 0;
-          });
+      // Goal bars (collapsible)
+      const goalsSection = document.getElementById("pick-comp-goals");
+      const goalsContent = document.getElementById("pick-goals-content");
+      const compGoals = getCompGoals(state.currentComp);
+      const todayDate = getTodayDate();
+      const todayGoal = compGoals[`daily_${todayDate}`];
+      const compLogs = state.logs[state.currentComp] || {};
+      let storeTotalSales = 0, storeTodaySales = 0;
+      Object.values(compLogs).forEach(empLogs => {
+        Object.entries(empLogs || {}).forEach(([date, log]) => {
+          storeTotalSales += log.sales || 0;
+          if (date === todayDate) storeTodaySales += log.sales || 0;
         });
-
-        if (compGoals.competition?.value) {
-          detailsHtml += `
-            <div class="comp-detail">
-              <div class="detail-label">COMPETITION GOAL</div>
-              ${renderGoalBar(storeTotalSales, compGoals.competition.value, "total")}
-            </div>
-          `;
-        }
-
-        // Daily goal — always treat as total $ regardless of stored type
-        if (todayGoal?.value) {
-          detailsHtml += `
-            <div class="comp-detail" style="margin-top:16px;">
-              <div class="detail-label">GOAL FOR TODAY</div>
-              ${renderGoalBar(storeTodaySales, todayGoal.value, "total")}
-            </div>
-          `;
-        }
-
-        // Add prizes section if prize exists
-        if (comp.prize) {
-          detailsHtml += `
-            <div class="prizes-section">
-              <div class="prizes-title">🎁 PRIZES</div>
-              <div class="prizes-content">${escapeHtml(comp.prize)}</div>
-            </div>
-          `;
-        }
-
-        detailsEl.innerHTML = detailsHtml;
+      });
+      let goalsHtml = "";
+      if (compGoals.competition?.value) {
+        goalsHtml += `<div class="comp-detail"><div class="detail-label">COMPETITION GOAL</div>${renderGoalBar(storeTotalSales, compGoals.competition.value, "total")}</div>`;
       }
+      if (todayGoal?.value) {
+        goalsHtml += `<div class="comp-detail" style="margin-top:12px"><div class="detail-label">TODAY'S GOAL</div>${renderGoalBar(storeTodaySales, todayGoal.value, "total")}</div>`;
+      }
+      if (goalsSection) goalsSection.style.display = goalsHtml ? "block" : "none";
+      if (goalsContent) goalsContent.innerHTML = goalsHtml;
 
       compInfo.classList.remove("hidden");
     }
@@ -668,22 +688,31 @@ function enterAsDashboard(empId) {
   state.currentUser = empId;
   state.selectedDate = getTodayDate();
 
-  // Update selector button
   const emp = state.employees[empId];
+
+  // Update selector button to show name (collapsed style)
   const selectorBtn = document.getElementById("pick-emp-selector");
   if (selectorBtn) {
-    selectorBtn.textContent = emp?.name || "";
-    selectorBtn.style.color = "var(--text)";
+    selectorBtn.textContent = "👤 " + (emp?.name || "");
+    selectorBtn.classList.add("has-selection");
   }
 
   // Hide employee grid
   const empGrid = document.getElementById("pick-emp-grid");
-  if (empGrid) empGrid.style.display = "none";
+  if (empGrid) empGrid.classList.add("hidden");
 
-  // Show selected employee profile card with editable avatar
+  // Hide success state if showing from a previous log
+  const successState = document.getElementById("pick-success-state");
+  if (successState) successState.classList.remove("visible");
+
+  // Reveal form steps with animation
+  const formSteps = document.getElementById("pick-form-steps");
+  if (formSteps) {
+    formSteps.style.display = "block";
+    formSteps.classList.add("revealed");
+  }
+
   showSelectedEmployeeProfile(empId, emp);
-
-  // Update day row
   renderPickDayRow();
   updatePickLogBtnState();
 }
@@ -693,20 +722,22 @@ function showSelectedEmployeeProfile(empId, emp) {
   if (!profileCard) {
     profileCard = document.createElement("div");
     profileCard.id = "pick-emp-profile";
-    const selector = document.getElementById("pick-emp-selector");
-    if (selector && selector.parentElement) {
-      selector.parentElement.parentElement.insertBefore(profileCard, selector.parentElement.nextSibling);
+    // Insert right after the selector wrap div
+    const selectorWrap = document.querySelector(".pick-emp-selector-wrap");
+    if (selectorWrap && selectorWrap.parentElement) {
+      selectorWrap.parentElement.insertBefore(profileCard, selectorWrap.nextSibling);
     }
   }
+  profileCard.style.display = "block";
 
   profileCard.innerHTML = `
-    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px;background:rgba(25,32,56,0.4);border-radius:12px;margin-bottom:12px;">
-      <div class="avatar avatar-large avatar-interactive" id="pick-emp-avatar-btn" style="cursor:pointer;opacity:0.9;width:100px;height:100px;" title="Click to edit avatar">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:12px;border:1px solid var(--border);">
+      <div class="avatar avatar-interactive" id="pick-emp-avatar-btn" style="width:48px;height:48px;" title="Tap to edit avatar">
         ${getAvatarHtml(emp, "", empId)}
       </div>
-      <div style="text-align:center;">
-        <div style="font-size:16px;font-weight:700;color:var(--text);">${emp.name}</div>
-        <div style="font-size:11px;color:var(--text2);margin-top:2px;">Click avatar to edit</div>
+      <div>
+        <div style="font-size:15px;font-weight:800;color:var(--text);">${emp.name}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px;font-weight:600;">Tap avatar to change photo</div>
       </div>
     </div>
   `;
@@ -742,11 +773,21 @@ function renderPickEmpGrid(filterText = "") {
   }
 
   list.innerHTML = "";
+  const hasLogs = hasLogsInComp(state.currentComp);
+  const players = hasLogs ? getRankedPlayers(state.currentComp) : [];
   filtered.forEach(([id, emp]) => {
+    const rankIdx = players.findIndex(p => p.id === id);
+    const pip = hasLogs && rankIdx >= 0 ? (rankIdx === 0 ? "👑" : rankIdx === 1 ? "🥈" : rankIdx === 2 ? "🥉" : "") : "";
+    const isWinner = state.competitions[state.currentComp]?.winner === id;
     const btn = document.createElement("button");
-    btn.className = "name-btn";
-    btn.innerHTML = `${getAvatarHtml(emp, "small", id)} <span>${emp.name}</span>`;
-    btn.onclick = () => enterAsDashboard(id);
+    btn.className = `name-btn${isWinner ? " name-btn-winner" : ""}`;
+    btn.innerHTML = `${getAvatarHtml(emp, "small", id)} <span>${pip ? `<span class="rank-pip">${pip}</span> ` : ""}${emp.name}</span>`;
+    btn.onclick = () => {
+      // Close the grid before entering dashboard
+      const grid = document.getElementById("pick-emp-grid");
+      if (grid) grid.classList.add("hidden");
+      enterAsDashboard(id);
+    };
     list.appendChild(btn);
   });
 }
@@ -835,8 +876,8 @@ function renderDash() {
   }
 
   const vibe = getVibe(sph, totalSales, hasLogs, emp.name);
-  document.getElementById("vibe-emoji").textContent = vibe.emoji;
-  document.getElementById("vibe-text").textContent  = vibe.text;
+  document.getElementById("vibe-emoji").textContent = "🔥";
+  document.getElementById("vibe-text").textContent  = vibe;
 
   const winner = comp?.winner;
   const winnerBanner = document.getElementById("winner-banner");
@@ -873,12 +914,20 @@ function renderDash() {
   const dayRow = document.getElementById("day-row");
   dayRow.innerHTML = `<button class="week-nav-btn" id="prev-week-btn">←</button>`;
 
+  const todayStr = getTodayDate();
   week.days.forEach(dayInfo => {
     const hasEntry = myLogs[dayInfo.date] && (myLogs[dayInfo.date].sales > 0 || myLogs[dayInfo.date].hours > 0);
-    const isFutureDate = dayInfo.date > getTodayDate();
+    const isFutureDate = dayInfo.date > todayStr;
+    const isToday = dayInfo.date === todayStr;
+    const isSelected = state.selectedDate === dayInfo.date;
+    const classes = ["day-btn"];
+    if (isToday && !isSelected) classes.push("today");
+    if (isSelected) classes.push("active");
+    if (hasEntry) classes.push("logged");
+    if (isFutureDate) classes.push("disabled");
     const btn = document.createElement("button");
-    btn.className = `day-btn${state.selectedDate === dayInfo.date ? " active" : ""}${hasEntry ? " logged" : ""}${isFutureDate ? " disabled" : ""}`;
-    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark"></div>' : ''}`;
+    btn.className = classes.join(" ");
+    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark">✓</div>' : ''}`;
 
     if (!isFutureDate) {
       btn.onclick = () => { state.selectedDate = dayInfo.date; renderDash(); };
@@ -903,13 +952,16 @@ function renderDash() {
   if (isLocked) {
     salesInput.readOnly = true; hoursInput.readOnly = true;
     salesInput.classList.add("input-locked"); hoursInput.classList.add("input-locked");
-    logBtn.disabled = true; logBtn.classList.add("btn-disabled");
-    logBtn.textContent = "Logged! See a manager to Edit";
-
+    logBtn.disabled = true;
+    logBtn.classList.remove("btn-disabled");
+    logBtn.classList.add("btn-locked");
+    logBtn.textContent = "✓ Logged — See Manager to Edit";
   } else {
     salesInput.readOnly = false; hoursInput.readOnly = false;
     salesInput.classList.remove("input-locked"); hoursInput.classList.remove("input-locked");
-    logBtn.disabled = false; logBtn.classList.remove("btn-disabled");
+    logBtn.disabled = false;
+    logBtn.classList.remove("btn-locked");
+    logBtn.classList.remove("btn-disabled");
     logBtn.textContent = "+ LOG IT";
   }
 
@@ -978,8 +1030,14 @@ function renderBoard() {
 
   // If no competition, show message
   if (!compId || !state.competitions[compId]) {
-    body.innerHTML = "";
-    if (noCompsMsg) noCompsMsg.style.display = "block";
+    body.innerHTML = `
+      <div class="board-empty-state">
+        <div class="board-empty-icon">🏆</div>
+        <div class="board-empty-title">NO COMPETITION YET</div>
+        <div class="board-empty-sub">Ask your manager to set up a competition.</div>
+      </div>
+    `;
+    if (noCompsMsg) noCompsMsg.style.display = "none";
     return;
   }
 
@@ -989,13 +1047,27 @@ function renderBoard() {
   body.innerHTML = "";
 
   if (!hasLogs) {
-    body.innerHTML = `<p style="color:var(--text3);text-align:center;padding:40px;font-size:0.85rem">No orders yet!</p>`;
+    body.innerHTML = `
+      <div class="board-empty-state">
+        <div class="board-empty-icon">🏁</div>
+        <div class="board-empty-title">COMPETITION STARTS NOW</div>
+        <div class="board-empty-sub">Be the first to log an order and claim the top spot!</div>
+        <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()">+ LOG AN ORDER</button>
+      </div>
+    `;
     return;
   }
 
   const players = getRankedPlayers(compId);
   if (players.length === 0) {
-    body.innerHTML = `<p style="color:var(--text3);text-align:center;padding:40px;font-size:0.85rem">No orders yet!</p>`;
+    body.innerHTML = `
+      <div class="board-empty-state">
+        <div class="board-empty-icon">🏁</div>
+        <div class="board-empty-title">NO ORDERS YET</div>
+        <div class="board-empty-sub">The scoreboard is empty. Log your first OIS and lead the pack!</div>
+        <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()">+ LOG AN ORDER</button>
+      </div>
+    `;
     return;
   }
 
@@ -1011,20 +1083,24 @@ function renderBoard() {
     const isWinner = winner === player.id;
     const emp = state.employees[player.id];
     const card = document.createElement("div");
-    card.className = `board-card${i < 3 ? ` rank-${i + 1}` : ""}${isWinner ? " winner-card" : ""}`;
-    card.style.animationDelay = `${i * 0.05}s`;
+    const isCurrentUser = state.currentUser === player.id;
+    const rankClasses = ["board-card"];
+    if (i < 3) rankClasses.push(`rank-${i + 1}`);
+    if (isWinner) rankClasses.push("winner-card");
+    if (isCurrentUser) rankClasses.push("is-you");
+    card.className = rankClasses.join(" ");
+    card.style.animationDelay = `${i * 0.06}s`;
     card.innerHTML = `
       <div class="board-rank">${isWinner ? "🏆" : rankLabel}</div>
       <div class="board-info">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-          ${getAvatarHtml(emp, "small", player.id)}
-          <div class="board-name">${player.name}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}</div>
+        <div class="board-name">
+          ${player.name}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}
         </div>
         <div class="board-meta">$${player.total.toFixed(2)} total · ${player.hours.toFixed(1)} hrs</div>
         <div class="board-bar-wrap"><div class="board-bar" style="width:${pct}%"></div></div>
       </div>
       <div>
-        <div class="board-sph" style="color:${i === 0 ? "var(--accent)" : "var(--text)"}">$${player.sph.toFixed(0)}</div>
+        <div class="board-sph">$${player.sph.toFixed(0)}</div>
         <div class="board-sph-label">/HR</div>
       </div>
     `;
@@ -1111,8 +1187,33 @@ async function logEntry() {
 // ══════════════════════════════════════════════════════
 // ADMIN — Tab system
 // ══════════════════════════════════════════════════════
+function renderAdminSummaryBar() {
+  const bar = document.getElementById("admin-summary-bar");
+  if (!bar) return;
+  const empCount = Object.keys(state.employees).length;
+  const today = getTodayDate();
+  const compId = state.currentComp;
+  let logsToday = 0;
+  if (compId && state.logs[compId]) {
+    Object.values(state.logs[compId]).forEach(empLogs => {
+      if (empLogs[today]) logsToday++;
+    });
+  }
+  const comp = compId ? state.competitions[compId] : null;
+  const days = comp ? daysRemaining(comp) : null;
+  const dayStr = days === null ? "" : days <= 0 ? "Ends today" : `${days}d left`;
+
+  bar.innerHTML = `
+    <div class="admin-summary-chip accent">${empCount} EMPLOYEES</div>
+    <div class="admin-summary-chip">${logsToday} LOGGED TODAY</div>
+    ${dayStr ? `<div class="admin-summary-chip">${dayStr}</div>` : ""}
+    ${comp ? `<div class="admin-summary-chip">${comp.name}</div>` : ""}
+  `;
+}
+
 function openAdminPanel() {
   state.admin.tab = "competitions";
+  renderAdminSummaryBar();
   renderAdminTab();
   renderAdminTabBar();
   showScreen("admin");
@@ -1556,14 +1657,18 @@ function renderAdminEmpsList() {
   if (toShow.length === 0) {
     list.innerHTML = `<div style="color:var(--text3);font-size:0.8rem;text-align:center;padding:16px;">No employees found</div>`;
   } else {
+    const today = getTodayDate();
+    const compId = state.currentComp;
     toShow.forEach(([id, emp]) => {
       const item = document.createElement("div");
       item.className = "admin-item";
       item.id = `admin-emp-item-${id}`;
+
+      const loggedToday = compId && !!(state.logs[compId]?.[id]?.[today]);
       
       const leftPart = document.createElement("div");
       leftPart.className = "admin-item-left";
-      leftPart.innerHTML = `${getAvatarHtml(emp, "small", id)} <span class="admin-item-name">${emp.name}</span>`;
+      leftPart.innerHTML = `${getAvatarHtml(emp, "small", id)} <span class="admin-item-name">${emp.name}</span><div class="admin-today-dot ${loggedToday ? "logged" : "not-logged"}" title="${loggedToday ? "Logged today" : "Not logged yet"}"></div>`;
       item.appendChild(leftPart);
       
       const rightPart = document.createElement("div");
@@ -1859,6 +1964,8 @@ function inlineRenameEmp(empId, currentName) {
 // ADMIN — Logs
 // ══════════════════════════════════════════════════════
 function renderAdminLogs(container) {
+  // Default selected date to today
+  if (!state.admin.selectedDate) state.admin.selectedDate = getTodayDate();
   container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">MANAGE LOGS</div>`;
 
   const empWrap = document.createElement("div");
@@ -1937,7 +2044,7 @@ function refreshAdminDayView() {
     const isFutureDate = dayInfo.date > getTodayDate();
     const btn = document.createElement("button");
     btn.className = `admin-day-btn${hasLog ? " has-log" : ""}${isFutureDate ? " disabled" : ""}`;
-    btn.innerHTML = `<div class="admin-day-btn-dayname">${dayInfo.dayName}</div><div class="admin-day-btn-date">${dayInfo.dayNum}</div>`;
+    btn.innerHTML = `<div class="admin-day-btn-dayname">${dayInfo.dayName}</div><div class="admin-day-btn-date">${dayInfo.dayNum}</div>${hasLog ? '<div style="font-size:8px;color:var(--green)">✓</div>' : ''}`;
     btn.title = hasLog ? `$${empLogs[dayInfo.date].sales} / ${empLogs[dayInfo.date].hours}hrs` : "No log yet";
     if (!isFutureDate) {
       btn.onclick = () => {
@@ -2155,6 +2262,53 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
   }
 
+  // Admin lock button
+  const adminLockBtn = document.getElementById("admin-lock-btn");
+  if (adminLockBtn) {
+    adminLockBtn.onclick = () => {
+      state.adminUnlocked = false;
+      document.getElementById("input-pin").value = "";
+      document.getElementById("pin-error").classList.add("hidden");
+      showScreen("admin-gate");
+    };
+  }
+
+  // Success state buttons
+  const successBoardBtn = document.getElementById("pick-success-board-btn");
+  if (successBoardBtn) {
+    successBoardBtn.onclick = () => { renderBoard(); showScreen("board"); };
+  }
+  const successResetBtn = document.getElementById("pick-success-reset-btn");
+  if (successResetBtn) {
+    successResetBtn.onclick = () => {
+      // Reset to fresh name selection
+      state.currentUser = null;
+      state.selectedDate = getTodayDate();
+      const selectorBtn = document.getElementById("pick-emp-selector");
+      if (selectorBtn) {
+        selectorBtn.textContent = "Tap to select your name...";
+        selectorBtn.classList.remove("has-selection");
+      }
+      const formSteps = document.getElementById("pick-form-steps");
+      if (formSteps) { formSteps.style.display = "none"; formSteps.classList.remove("revealed"); }
+      const successState = document.getElementById("pick-success-state");
+      if (successState) successState.classList.remove("visible");
+      const profileCard = document.getElementById("pick-emp-profile");
+      if (profileCard) profileCard.style.display = "none";
+    };
+  }
+
+  // Goals toggle
+  const goalsToggle = document.getElementById("pick-goals-toggle");
+  if (goalsToggle) {
+    goalsToggle.onclick = () => {
+      const content = document.getElementById("pick-goals-content");
+      const isOpen = content.classList.contains("open");
+      content.classList.toggle("open");
+      goalsToggle.classList.toggle("open");
+    };
+  }
+
   // Pick screen employee selector
   const empSelectorBtn = document.getElementById("pick-emp-selector");
   const empGrid = document.getElementById("pick-emp-grid");
@@ -2163,15 +2317,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       const isHidden = empGrid.classList.contains("hidden");
       empGrid.classList.toggle("hidden");
       if (isHidden) {
-        // Show grid and hide profile
         const profileCard = document.getElementById("pick-emp-profile");
         if (profileCard) profileCard.style.display = "none";
         renderPickEmpGrid();
-        document.getElementById("pick-emp-search").focus();
+        const searchEl = document.getElementById("pick-emp-search");
+        if (searchEl) searchEl.focus();
       } else {
-        // Hide grid and show profile
         const profileCard = document.getElementById("pick-emp-profile");
-        if (profileCard) profileCard.style.display = "block";
+        if (profileCard && state.currentUser) profileCard.style.display = "block";
       }
     };
   }
