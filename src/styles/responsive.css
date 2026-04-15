@@ -61,7 +61,7 @@
   }
 
   .board-meta {
-    font-size: 11px;
+    font-size: 9px;
     white-space: normal;
     overflow: visible;
     text-overflow: clip;
@@ -288,7 +288,7 @@
     padding-left: 14px;
     padding-right: 14px;
   }
-  .board-name { font-size: 16px; }
+  .board-name { font-size: 18px; }
   .board-card.rank-1 .board-name { font-size: 18px; }
   .avatar-board {
     width: 56px;
@@ -296,7 +296,7 @@
     font-size: 22px;
   }
   .board-meta {
-    font-size: 10px;
+    font-size: 8px;
     line-height: 1.15;
   }
   .board-score {
