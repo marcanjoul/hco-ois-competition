@@ -25,12 +25,7 @@ const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const PREVIEW_COUNT = 5;
 
 function getTodayDate() {
-  // Use local time, not UTC — avoids date being "tomorrow" in evening hours
-  const d = new Date();
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  return formatLocalDate(new Date());
 }
 
 // In-memory app state.
@@ -93,8 +88,29 @@ function slugify(str) {
 
 // Escapes text before it is inserted into HTML.
 function escapeHtml(str) {
+  const safeStr = String(str ?? "");
   const map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" };
-  return str.replace(/[&<>"']/g, c => map[c]);
+  return safeStr.replace(/[&<>"']/g, c => map[c]);
+}
+
+function formatLocalDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function shiftLocalDate(dateStr, daysToAdd) {
+  const date = new Date(dateStr + "T00:00:00");
+  date.setDate(date.getDate() + daysToAdd);
+  return formatLocalDate(date);
+}
+
+function upsertLocalLog(compId, empId, date, log) {
+  if (!compId || !empId || !date) return;
+  if (!state.logs[compId]) state.logs[compId] = {};
+  if (!state.logs[compId][empId]) state.logs[compId][empId] = {};
+  state.logs[compId][empId][date] = log;
 }
 
 // ══════════════════════════════════════════════════════
@@ -109,8 +125,9 @@ function getAvatarPlaceholder(empIdOrStr) {
 
 function getAvatarHtml(emp, size = "", empId = "") {
   const sizeClass = size ? ` avatar-${size}` : "";
-  if (emp.avatar && emp.avatar.startsWith("data:")) {
-    return `<div class="avatar${sizeClass}"><img class="avatar-img" src="${emp.avatar}" alt="${emp.name}" /></div>`;
+  const safeName = escapeHtml(emp?.name || empId || "Employee");
+  if (emp.avatar && emp.avatar.startsWith("data:image/")) {
+    return `<div class="avatar${sizeClass}"><img class="avatar-img" src="${emp.avatar}" alt="${safeName}" /></div>`;
   }
   const placeholder = getAvatarPlaceholder(emp.name || empId || emp.id);
   return `<div class="avatar${sizeClass}"><span class="avatar-placeholder">${placeholder}</span></div>`;
@@ -221,7 +238,7 @@ function getWeekForDate(dateStr) {
   for (let i = 0; i < 7; i++) {
     const d = new Date(startOfWeek);
     d.setDate(startOfWeek.getDate() + i);
-    const dateString = d.toISOString().split("T")[0];
+    const dateString = formatLocalDate(d);
     const dayName = DAYS[d.getDay()]; // 0=Sun, 1=Mon ... 6=Sat
     const dayNum = d.getDate();
     days.push({ date: dateString, dayName, dayNum });
@@ -230,15 +247,11 @@ function getWeekForDate(dateStr) {
 }
 
 function prevWeek(dateStr) {
-  const date = new Date(dateStr + "T00:00:00");
-  date.setDate(date.getDate() - 7);
-  return date.toISOString().split("T")[0];
+  return shiftLocalDate(dateStr, -7);
 }
 
 function nextWeek(dateStr) {
-  const date = new Date(dateStr + "T00:00:00");
-  date.setDate(date.getDate() + 7);
-  return date.toISOString().split("T")[0];
+  return shiftLocalDate(dateStr, 7);
 }
 
 function daysRemaining(comp) {
@@ -441,6 +454,7 @@ async function logEntryFromPick() {
   }
 
   await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
+  upsertLocalLog(state.currentComp, state.currentUser, state.selectedDate, { sales, hours });
 
   const reaction = getBigOrderReaction(sales);
   if (reaction) { launchConfetti(); }
@@ -707,12 +721,13 @@ function renderPickScreen(filterText = "") {
     const rank = players.findIndex(p => p.id === id);
     const pip = hasLogs && (rank === 0 ? "👑" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : "");
     const isWinner = state.competitions[state.currentComp]?.winner === id;
+    const safeName = escapeHtml(emp.name);
     const btn = document.createElement("button");
     btn.className = `name-btn${isWinner ? " name-btn-winner" : ""}`;
     btn.innerHTML = `
       ${getAvatarHtml(emp, "small", id)}
       <div>
-        ${pip ? `<span class="rank-pip">${pip}</span>` : ""}${isWinner ? "🏆 " : ""}${emp.name}
+        ${pip ? `<span class="rank-pip">${pip}</span>` : ""}${isWinner ? "🏆 " : ""}${safeName}
       </div>
     `;
     btn.onclick = () => enterAsDashboard(id);
@@ -880,7 +895,7 @@ function showSelectedEmployeeProfile(empId, emp) {
         <span class="pick-avatar-edit-pill">Edit photo</span>
       </button>
       <div class="pick-selected-emp-copy">
-        <div class="pick-selected-emp-name">${emp.name}</div>
+        <div class="pick-selected-emp-name">${escapeHtml(emp.name)}</div>
       </div>
       <button class="pick-selected-clear-btn" id="pick-clear-emp-btn" type="button" title="Choose a different employee" aria-label="Choose a different employee">✕</button>
     </div>
@@ -1031,9 +1046,10 @@ function renderPickEmpGrid(filterText = "") {
     const rankIdx = players.findIndex(p => p.id === id);
     const pip = hasLogs && rankIdx >= 0 ? (rankIdx === 0 ? "👑" : rankIdx === 1 ? "🥈" : rankIdx === 2 ? "🥉" : "") : "";
     const isWinner = state.competitions[state.currentComp]?.winner === id;
+    const safeName = escapeHtml(emp.name);
     const btn = document.createElement("button");
     btn.className = `name-btn${isWinner ? " name-btn-winner" : ""}`;
-    btn.innerHTML = `${getAvatarHtml(emp, "small", id)} <span>${pip ? `<span class="rank-pip">${pip}</span> ` : ""}${emp.name}</span>`;
+    btn.innerHTML = `${getAvatarHtml(emp, "small", id)} <span>${pip ? `<span class="rank-pip">${pip}</span> ` : ""}${safeName}</span>`;
     btn.onclick = () => {
       // Close the grid before entering dashboard
       const grid = document.getElementById("pick-emp-grid");
@@ -1094,7 +1110,7 @@ function renderDash() {
     dashCompInfoEl.innerHTML = `
       <div class="dash-comp-info-header">
         <div>
-          <div class="dash-comp-name">${comp.name}</div>
+          <div class="dash-comp-name">${escapeHtml(comp.name)}</div>
           <div class="dash-comp-meta">${metaHtml}</div>
         </div>
         <div class="dash-comp-status-badge">${statusHtml}</div>
@@ -1136,7 +1152,7 @@ function renderDash() {
   if (winnerBanner) {
     if (winner && state.employees[winner]) {
       const prize = comp?.prize || "";
-      winnerBanner.innerHTML = `🏆 <strong>${state.employees[winner].name}</strong> won${prize ? ` — ${prize}` : ""}!`;
+      winnerBanner.innerHTML = `🏆 <strong>${escapeHtml(state.employees[winner].name)}</strong> won${prize ? ` — ${escapeHtml(prize)}` : ""}!`;
       winnerBanner.style.display = "block";
     } else {
       winnerBanner.style.display = "none";
@@ -1152,8 +1168,9 @@ function renderDash() {
       const g = compGoals.competition;
       goalsHtml += `<div class="goal-block"><div class="goal-label">🎯 Competition Goal</div>${renderGoalBar(g.type === "sph" ? sph : totalSales, g.value, g.type)}</div>`;
     }
-    if (compGoals.daily?.value) {
-      const g = compGoals.daily;
+    const todayGoal = compGoals[`daily_${getTodayDate()}`];
+    if (todayGoal?.value) {
+      const g = todayGoal;
       const d = getTodaySph(state.currentUser, state.currentComp);
       goalsHtml += `<div class="goal-block"><div class="goal-label">☀️ Daily Goal</div>${renderGoalBar(d.total, g.value, "total")}</div>`;
     }
@@ -1396,13 +1413,14 @@ function renderBoard() {
     if (tieGroupSize > 1) rankClasses.push("tie-card");
     card.className = rankClasses.join(" ");
     card.style.animationDelay = `${index * 0.06}s`;
+    const safePlayerName = escapeHtml(player.name);
     card.innerHTML = `
       <div class="board-rank">${isWinner ? "🏆" : rankLabel}</div>
       <div class="board-info">
         <div class="board-name-row">
           ${getAvatarHtml(emp || { name: player.name }, "small", player.id)}
           <div class="board-name">
-            ${player.name}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}
+            ${safePlayerName}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}
           </div>
         </div>
         <div class="board-meta">$${player.total.toFixed(2)} total · ${player.hours.toFixed(1)} hrs</div>
@@ -1476,8 +1494,8 @@ function getAlphabeticalPlayers(compId) {
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
-function getRankedPlayers(compId) {
-  const compLogs = state.logs[compId] || {};
+function getRankedPlayers(compId, logsSource = state.logs) {
+  const compLogs = logsSource[compId] || {};
   const metric = state.settings.rankingMetric || "sph";
   return Object.entries(state.employees)
     .map(([id, emp]) => {
@@ -1510,9 +1528,12 @@ async function logEntry() {
   }
 
   await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
+  upsertLocalLog(state.currentComp, state.currentUser, state.selectedDate, { sales, hours });
   const reaction = getBigOrderReaction(sales);
   if (reaction) { showToast(reaction, 3500); launchConfetti(); }
   else showToast("Score captured.");
+  renderDash();
+  renderBoard();
 }
 
 // ══════════════════════════════════════════════════════
@@ -1590,7 +1611,7 @@ function renderAdminComps(container) {
     const leftPart = document.createElement("div");
     leftPart.className = "admin-item-left";
     leftPart.innerHTML = `
-      <span class="admin-item-name">${comp.name}</span>
+      <span class="admin-item-name">${escapeHtml(comp.name)}</span>
       <span class="comp-status-chip comp-status-${statusMeta.key}">Status: ${statusMeta.label}</span>
     `;
     item.appendChild(leftPart);
@@ -1756,7 +1777,7 @@ function renderCompEditPanel(compId, comp) {
   ].forEach(f => {
     const wrap = document.createElement("div");
     wrap.style.marginBottom = "10px";
-    wrap.innerHTML = `<label class="field-label">${f.label}</label><input type="${f.type}" id="comp-edit-${f.key}" class="log-input" value="${f.value}" placeholder="${f.label}" />`;
+    wrap.innerHTML = `<label class="field-label">${f.label}</label><input type="${f.type}" id="comp-edit-${f.key}" class="log-input" value="${escapeHtml(f.value)}" placeholder="${f.label}" />`;
     content.appendChild(wrap);
     addChangeListener(`comp-edit-${f.key}`, f.value);
   });
@@ -1870,7 +1891,7 @@ function renderCompEditPanel(compId, comp) {
     for (let i = 0; i < 7; i++) {
       const d = new Date(startOfWeek);
       d.setDate(startOfWeek.getDate() + i);
-      const dateString = d.toISOString().split("T")[0];
+      const dateString = formatLocalDate(d);
       const isInRange = dateString >= comp.startDate && dateString <= comp.endDate;
 
       if (!isInRange) continue;
@@ -1890,7 +1911,7 @@ function renderCompEditPanel(compId, comp) {
         <div style="font-size:11px;color:var(--text3);margin-bottom:6px;">${dateString}</div>
         <div style="display:flex;align-items:center;gap:4px;">
           <input type="number" id="${fieldId}" data-date="${dateString}" class="daily-goal-input log-input" placeholder="0" value="${dayGoal.value || ""}" min="0" step="1" style="font-size:12px;padding:4px;width:40px;text-align:center;" />
-          <span style="font-size:11px;color:var(--text2);">$/hr</span>
+          <span style="font-size:11px;color:var(--text2);">$ goal</span>
         </div>
       `;
       dailyGoalsGrid.appendChild(dayCard);
@@ -1939,7 +1960,7 @@ function renderCompEditPanel(compId, comp) {
     // Save daily goals
     for (const [dateStr, value] of Object.entries(dailyGoalChanges)) {
       if (value > 0) {
-        await set(ref(db, `goals/${compId}/daily_${dateStr}`), { type: "sph", value });
+        await set(ref(db, `goals/${compId}/daily_${dateStr}`), { type: "total", value });
       } else {
         await remove(ref(db, `goals/${compId}/daily_${dateStr}`));
       }
@@ -1994,7 +2015,7 @@ function renderAdminEmpsList() {
       
       const leftPart = document.createElement("div");
       leftPart.className = "admin-item-left";
-      leftPart.innerHTML = `${getAvatarHtml(emp, "small", id)} <span class="admin-item-name">${emp.name}</span><div class="admin-today-dot ${loggedToday ? "logged" : "not-logged"}" title="${loggedToday ? "Logged today" : "Not logged yet"}"></div>`;
+      leftPart.innerHTML = `${getAvatarHtml(emp, "small", id)} <span class="admin-item-name">${escapeHtml(emp.name)}</span><div class="admin-today-dot ${loggedToday ? "logged" : "not-logged"}" title="${loggedToday ? "Logged today" : "Not logged yet"}"></div>`;
       item.appendChild(leftPart);
       
       const rightPart = document.createElement("div");
@@ -2204,7 +2225,7 @@ function openEditEmpModal(empId, emp) {
 
       <div class="admin-edit-emp-section">
         <label class="field-label">NAME</label>
-        <input type="text" id="edit-emp-name" class="log-input" value="${emp.name}" placeholder="Employee name" />
+        <input type="text" id="edit-emp-name" class="log-input" value="${escapeHtml(emp.name)}" placeholder="Employee name" />
       </div>
 
       <div class="admin-edit-emp-avatar-section">
@@ -2427,8 +2448,8 @@ function renderAdminLogDetail(empId, compId, date, log) {
   detail.innerHTML = `
     <div class="admin-log-header">
       <div class="admin-log-header-info">
-        <div class="admin-log-header-name">${state.employees[empId]?.name || ""}</div>
-        <div class="admin-log-header-sub">${dayName} ${date} · ${state.competitions[compId]?.name || ""}</div>
+        <div class="admin-log-header-name">${escapeHtml(state.employees[empId]?.name || "")}</div>
+        <div class="admin-log-header-sub">${escapeHtml(`${dayName} ${date} · ${state.competitions[compId]?.name || ""}`)}</div>
       </div>
       <div class="admin-log-header-badge logged">Logged</div>
     </div>
@@ -2459,8 +2480,8 @@ function renderAdminLogCreate(empId, compId, date) {
   detail.innerHTML = `
     <div class="admin-log-header">
       <div class="admin-log-header-info">
-        <div class="admin-log-header-name">${state.employees[empId]?.name || ""}</div>
-        <div class="admin-log-header-sub">${dayName} ${date} · ${state.competitions[compId]?.name || ""}</div>
+        <div class="admin-log-header-name">${escapeHtml(state.employees[empId]?.name || "")}</div>
+        <div class="admin-log-header-sub">${escapeHtml(`${dayName} ${date} · ${state.competitions[compId]?.name || ""}`)}</div>
       </div>
       <div class="admin-log-header-badge not-logged">✗ No Log Yet</div>
     </div>
@@ -2485,6 +2506,7 @@ function renderAdminLogCreate(empId, compId, date) {
     if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked"); return; }
     if (date > getTodayDate()) { showToast("Can't create logs for future dates 🔮"); return; }
     await set(dbRef.dateLog(compId, empId, date), { sales, hours });
+    upsertLocalLog(compId, empId, date, { sales, hours });
     showToast("Log created ✅");
     if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
   };
@@ -2498,8 +2520,8 @@ function renderAdminLogEdit(empId, compId, date, log) {
   detail.innerHTML = `
     <div class="admin-log-header">
       <div class="admin-log-header-info">
-        <div class="admin-log-header-name">${state.employees[empId]?.name || ""}</div>
-        <div class="admin-log-header-sub">Editing ${dayName} ${date} · ${state.competitions[compId]?.name || ""}</div>
+        <div class="admin-log-header-name">${escapeHtml(state.employees[empId]?.name || "")}</div>
+        <div class="admin-log-header-sub">${escapeHtml(`Editing ${dayName} ${date} · ${state.competitions[compId]?.name || ""}`)}</div>
       </div>
     </div>
     <div class="log-fields" style="margin-top:14px;">
@@ -2517,6 +2539,7 @@ function renderAdminLogEdit(empId, compId, date, log) {
     if (isNaN(sales) || sales < 0) { showToast("Enter valid sales amount"); return; }
     if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked"); return; }
     await set(dbRef.dateLog(compId, empId, date), { sales, hours });
+    upsertLocalLog(compId, empId, date, { sales, hours });
     showToast("Log updated ✅");
     if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
   };
@@ -2581,8 +2604,14 @@ function closeInfoModal() {
   if (modal) modal.classList.remove("active");
 }
 document.addEventListener("DOMContentLoaded", async () => {
-  await bootstrap();
-  startListeners();
+  try {
+    await bootstrap();
+  } catch (error) {
+    console.error("Bootstrap failed", error);
+    setTimeout(() => showToast("Live data is reconnecting. Some info may load a moment late."), 0);
+  } finally {
+    startListeners();
+  }
 
   const welcomeStartBtn = document.getElementById("welcome-start-btn");
   if (welcomeStartBtn) {
@@ -2714,6 +2743,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // PIN submit
   const pinInput = document.getElementById("input-pin");
   const pinSubmitBtn = document.getElementById("btn-pin-submit");
+  if (!pinInput || !pinSubmitBtn) return;
 
   pinSubmitBtn.disabled = true;
   pinSubmitBtn.classList.add("btn-ghost");

@@ -188,6 +188,15 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 .screen.active { display: flex; }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 .scroll-y {
   overflow-y: auto;
   overflow-x: hidden;

@@ -40,6 +40,11 @@
   background-repeat: no-repeat;
 }
 .comp-select:focus { border-color: var(--accent); }
+.comp-select:focus-visible,
+.board-comp-option:focus-visible {
+  outline: 2px solid var(--accent2);
+  outline-offset: 2px;
+}
 
 .board-comp-picker {
   position: relative;
