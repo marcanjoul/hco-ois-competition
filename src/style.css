@@ -3769,16 +3769,112 @@ body::after {
     --type-caption-size: 20px;
   }
 
+  .pick-inner {
+    gap: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
   .app-header {
     height: 70px;
   }
 
+  .pick-info-btn {
+    width: 44px;
+    height: 44px;
+    top: -6px;
+    right: 2px;
+    font-size: 20px;
+  }
+
+  .pick-comp-info {
+    padding: 14px 14px 0;
+  }
+
   .pick-comp-name {
-    font-size: 28px;
+    font-size: 24px;
+    line-height: 1.08;
+    margin-bottom: 6px;
+  }
+
+  .pick-comp-hero-row {
+    gap: 10px;
+  }
+
+  .pick-countdown {
+    padding: 8px 10px;
+    gap: 8px;
   }
 
   .pick-countdown-num {
-    font-size: 48px;
+    font-size: 40px;
+    line-height: 0.9;
+  }
+
+  .pick-countdown-label {
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+
+  .pick-comp-dates {
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    font-size: 18px;
+  }
+
+  .pick-goals-toggle {
+    min-height: 0;
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .pick-goals-content {
+    padding: 10px 12px 12px;
+  }
+
+  .comp-detail {
+    padding: 10px;
+  }
+
+  .goal-progress {
+    gap: 6px;
+  }
+
+  .goal-current {
+    font-size: 34px;
+  }
+
+  .goal-percent {
+    min-width: 54px;
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+
+  .goal-hype {
+    font-size: 16px !important;
+  }
+
+  .goal-bar-bg {
+    height: 10px;
+  }
+
+  .log-card {
+    padding: 14px;
+  }
+
+  .log-card-title {
+    margin-bottom: 14px;
+    font-size: 16px;
+  }
+
+  .pick-step-header {
+    margin-bottom: 10px !important;
+  }
+
+  .pick-emp-selector {
+    min-height: 56px;
+    padding: 12px 14px;
+    font-size: 24px;
   }
 
   .log-input,
