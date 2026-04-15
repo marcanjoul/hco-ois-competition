@@ -1976,7 +1976,7 @@ function renderAdminEmpsList() {
       
       const rightPart = document.createElement("div");
       rightPart.className = "admin-item-actions";
-      rightPart.appendChild(makeBtn("✏️ Edit", "del-btn", () => openEditEmpModal(id, emp)));
+      rightPart.appendChild(makeBtn("Edit", "del-btn", () => openEditEmpModal(id, emp)));
       rightPart.appendChild(makeBtn("✕", "del-btn danger", async () => {
         if (confirm(`Remove "${emp.name}"?`)) await remove(dbRef.emp(id));
       }));
@@ -2015,7 +2015,7 @@ function renderAdminEmps(container) {
         <span class="admin-team-field-label">Search players</span>
         <div class="admin-team-input-shell">
           <span class="admin-team-search-icon">⌕</span>
-          <input type="text" id="admin-emp-search" class="log-input admin-team-input" placeholder="Search players..." />
+          <input type="text" id="admin-emp-search" class="log-input admin-team-input" placeholder="Search..." />
         </div>
       </label>
       <label class="admin-team-field admin-team-add-wrap">
@@ -2277,14 +2277,14 @@ function inlineRenameEmp(empId, currentName) {
 function renderAdminLogs(container) {
   // Default selected date to today
   if (!state.admin.selectedDate) state.admin.selectedDate = getTodayDate();
-  container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">MANAGE LOGS</div>`;
+  container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">MANAGE ORDERS</div>`;
 
   const empWrap = document.createElement("div");
   empWrap.style.marginBottom = "10px";
-  empWrap.innerHTML = `<label class="field-label">EMPLOYEE</label>`;
+  empWrap.innerHTML = `<label class="field-label">PLAYER</label>`;
   const empSel = document.createElement("select");
   empSel.className = "log-input"; empSel.id = "admin-logs-emp";
-  empSel.innerHTML = `<option value="">— Select employee —</option>`;
+  empSel.innerHTML = `<option value="">— Select player —</option>`;
   Object.entries(state.employees)
     .sort(([, a], [, b]) => a.name.localeCompare(b.name))
     .forEach(([id, emp]) => {
