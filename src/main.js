@@ -470,12 +470,10 @@ function updatePickLogBtnState() {
     if (lockedMsg) lockedMsg.classList.remove("visible");
     if (salesInput) {
       salesInput.readOnly = false;
-      salesInput.value = "";
       salesInput.classList.remove("input-locked");
     }
     if (hoursInput) {
       hoursInput.readOnly = false;
-      hoursInput.value = "";
       hoursInput.classList.remove("input-locked");
     }
     const sales = parseFloat(salesInput?.value);
@@ -1075,9 +1073,22 @@ function renderBoard() {
   const metric = state.settings.rankingMetric || "sph";
   const topVal = metric === "sph" ? (players[0]?.sph || 1) : (players[0]?.total || 1);
   const winner = comp?.winner;
+  const tiedByMetric = (a, b) => {
+    if (!a || !b) return false;
+    const aVal = metric === "sph" ? a.sph : a.total;
+    const bVal = metric === "sph" ? b.sph : b.total;
+    return Math.abs(aVal - bVal) < 0.001;
+  };
+  const getDisplayRank = (index) => {
+    if (index <= 0) return 1;
+    return tiedByMetric(players[index], players[index - 1]) ? getDisplayRank(index - 1) : index + 1;
+  };
 
-  players.forEach((player, i) => {
-    const rankLabel = i === 0 ? "👑" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
+  function makeBoardCard(player, index, tieGroupSize = 1) {
+    const displayRank = getDisplayRank(index);
+    const rankLabel = index === 0 ? "👑" : displayRank <= 3
+      ? (displayRank === 2 ? "🥈" : "🥉")
+      : `#${displayRank}`;
     const val = metric === "sph" ? player.sph : player.total;
     const pct = topVal > 0 ? Math.max(4, (val / topVal) * 100) : 4;
     const isWinner = winner === player.id;
@@ -1085,16 +1096,20 @@ function renderBoard() {
     const card = document.createElement("div");
     const isCurrentUser = state.currentUser === player.id;
     const rankClasses = ["board-card"];
-    if (i < 3) rankClasses.push(`rank-${i + 1}`);
+    if (displayRank <= 3) rankClasses.push(`rank-${displayRank}`);
     if (isWinner) rankClasses.push("winner-card");
     if (isCurrentUser) rankClasses.push("is-you");
+    if (tieGroupSize > 1) rankClasses.push("tie-card");
     card.className = rankClasses.join(" ");
-    card.style.animationDelay = `${i * 0.06}s`;
+    card.style.animationDelay = `${index * 0.06}s`;
     card.innerHTML = `
       <div class="board-rank">${isWinner ? "🏆" : rankLabel}</div>
       <div class="board-info">
-        <div class="board-name">
-          ${player.name}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}
+        <div class="board-name-row">
+          ${getAvatarHtml(emp || { name: player.name }, "small", player.id)}
+          <div class="board-name">
+            ${player.name}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}
+          </div>
         </div>
         <div class="board-meta">$${player.total.toFixed(2)} total · ${player.hours.toFixed(1)} hrs</div>
         <div class="board-bar-wrap"><div class="board-bar" style="width:${pct}%"></div></div>
@@ -1111,8 +1126,31 @@ function renderBoard() {
       }
       showScreen("dash");
     };
-    body.appendChild(card);
-  });
+    return card;
+  }
+
+  for (let i = 0; i < players.length; i++) {
+    const tieGroup = [players[i]];
+    let j = i + 1;
+    while (j < players.length && tiedByMetric(players[j - 1], players[j])) {
+      tieGroup.push(players[j]);
+      j++;
+    }
+
+    if (tieGroup.length > 1) {
+      const wrap = document.createElement("div");
+      wrap.className = "board-tie-group";
+      wrap.innerHTML = `<div class="board-tie-group-label">Shared rank #${getDisplayRank(i)}</div>`;
+      tieGroup.forEach((tiedPlayer, offset) => {
+        wrap.appendChild(makeBoardCard(tiedPlayer, i + offset, tieGroup.length));
+      });
+      body.appendChild(wrap);
+      i = j - 1;
+      continue;
+    }
+
+    body.appendChild(makeBoardCard(players[i], i));
+  }
 }
 
 // ══════════════════════════════════════════════════════
