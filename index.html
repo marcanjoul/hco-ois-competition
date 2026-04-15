@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>OIS Competition 🏆</title>
+  <title>OIS Pixel Arcade</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
@@ -21,16 +22,13 @@
   <!-- ── PERSISTENT BOTTOM NAV ── -->
   <nav class="bottom-nav" id="bottom-nav">
     <button class="nav-btn" data-screen="pick" id="nav-home">
-      <span class="nav-icon">🏠</span>
-      <span class="nav-label">Home</span>
+      <span class="nav-label">Maze</span>
     </button>
     <button class="nav-btn" data-screen="board" id="nav-board">
-      <span class="nav-icon">🏆</span>
-      <span class="nav-label">Leaderboard</span>
+      <span class="nav-label">High Scores</span>
     </button>
     <button class="nav-btn" data-screen="admin-gate" id="nav-admin">
-      <span class="nav-icon">🔐</span>
-      <span class="nav-label">Manager</span>
+      <span class="nav-label">WIREGRASS HQ</span>
     </button>
   </nav>
 
@@ -39,7 +37,7 @@
     <div class="pick-bg-stripe"></div>
     <div class="pick-inner">
 
-      <button class="pick-info-btn" id="btn-info" title="Rules">ℹ️</button>
+      <button class="pick-info-btn" id="btn-info" title="Rules">?</button>
 
       <!-- Competition Info Card -->
       <div id="pick-comp-info" class="pick-comp-info hidden">
@@ -68,7 +66,7 @@
 
       <!-- No competition -->
       <div id="no-comps-message" class="no-comps-message hidden">
-        No active competition right now.<br>Check back soon! 🏆
+        No active maze right now.<br>Check back soon for the next round.
       </div>
 
       <!-- Legacy elements for JS compatibility -->
@@ -80,7 +78,7 @@
 
       <!-- LOG CARD -->
       <div class="log-card" id="pick-log-card">
-        <div class="log-card-title">LOG AN ORDER</div>
+        <div class="log-card-title">INSERT SCORE</div>
 
         <!-- Step 1: Name -->
         <div class="pick-step-header" style="margin-bottom:var(--space-3)">
@@ -88,11 +86,11 @@
           <div class="pick-step-label">Who are you?</div>
         </div>
         <div class="pick-emp-selector-wrap">
-          <button class="pick-emp-selector" id="pick-emp-selector">Tap to select your name...</button>
+          <button class="pick-emp-selector" id="pick-emp-selector">Choose your player...</button>
         </div>
         <div id="pick-emp-grid" class="pick-emp-grid hidden">
           <div class="search-wrap">
-            <input type="text" id="pick-emp-search" class="log-input" placeholder="Search..." autocomplete="off" />
+            <input type="text" id="pick-emp-search" class="log-input" placeholder="Find player..." autocomplete="off" />
             <div id="pick-search-info" class="search-results-info hidden"></div>
           </div>
           <div id="pick-emp-list"></div>
@@ -120,8 +118,8 @@
               <input type="number" id="pick-input-hours" class="log-input" placeholder="0.0" min="0" step="0.5" inputmode="decimal" />
             </div>
           </div>
-          <button class="log-btn btn-ghost" id="pick-btn-log" disabled>+ LOG IT</button>
-          <div id="pick-log-locked-msg" class="log-locked-note">✓ Logged — see a manager to edit</div>
+          <button class="log-btn btn-ghost" id="pick-btn-log" disabled>CHOMP SCORE</button>
+          <div id="pick-log-locked-msg" class="log-locked-note">STAGE CLEARED - ghost admin can edit</div>
         </div>
 
         <!-- Success state -->
@@ -129,14 +127,14 @@
           <div class="pick-success-checkmark">✅</div>
           <div class="pick-success-title">LOGGED! See a manager to edit if needed</div>
           <div id="pick-success-stats" class="pick-success-stats"></div>
-          <button class="pick-success-cta" id="pick-success-board-btn">VIEW LEADERBOARD →</button>
+          <button class="pick-success-cta" id="pick-success-board-btn">VIEW HIGH SCORES →</button>
         </div>
 
       </div>
 
       <!-- Legacy hidden elements -->
       <div class="search-wrap hidden">
-        <input type="text" id="input-search-employees" class="log-input" placeholder="Search..." autocomplete="off" />
+        <input type="text" id="input-search-employees" class="log-input" placeholder="Find player..." autocomplete="off" />
         <div id="search-results-info" class="search-results-info hidden"></div>
       </div>
       <div id="name-grid" class="hidden"></div>
@@ -166,10 +164,10 @@
       <div id="dash-goals" class="dash-goals hidden"></div>
       <div class="vibe-card">
         <span id="vibe-emoji">🔥</span>
-        <span id="vibe-text">Log your first order to get started!</span>
+        <span id="vibe-text">Chomp your first score to get started!</span>
       </div>
       <div class="log-card">
-        <div class="log-card-title">LOG AN ORDER</div>
+        <div class="log-card-title">INSERT SCORE</div>
         <div class="day-row" id="day-row"></div>
         <div class="log-fields">
           <div class="log-field-wrap">
@@ -181,7 +179,7 @@
             <input type="number" id="input-hours" class="log-input" placeholder="0.0" min="0" step="0.5" inputmode="decimal" />
           </div>
         </div>
-        <button class="log-btn" id="btn-log">+ LOG IT</button>
+        <button class="log-btn" id="btn-log">CHOMP SCORE</button>
       </div>
       <div class="history-wrap">
         <div class="history-title">MY LOGS</div>
@@ -208,11 +206,11 @@
   <div id="screen-admin-gate" class="screen">
     <div class="admin-gate-body">
       <div class="admin-gate-icon">🔐</div>
-      <div class="admin-gate-title">MANAGER LOGIN</div>
+      <div class="admin-gate-title">GHOST GATE</div>
       <p class="admin-gate-sub">Enter PIN to continue</p>
       <input type="text" id="input-pin" class="log-input" placeholder="••••" maxlength="4" inputmode="numeric" style="text-align:center;font-size:32px;letter-spacing:12px;color:var(--accent);background:var(--surface2);border:2px solid rgba(255,77,28,0.4);width:100%;" />
-      <button class="log-btn" id="btn-pin-submit" disabled>UNLOCK</button>
-      <p class="pin-error hidden" id="pin-error">Wrong PIN — try again</p>
+      <button class="log-btn" id="btn-pin-submit" disabled>OPEN GATE</button>
+      <p class="pin-error hidden" id="pin-error">Wrong code - try again</p>
     </div>
   </div>
 
@@ -220,7 +218,7 @@
   <div id="screen-admin" class="screen">
     <div class="screen-inner">
       <div class="admin-top-row">
-        <div class="screen-top-title">MANAGER</div>
+        <div class="screen-top-title">GHOST HQ</div>
       </div>
       <div class="admin-summary-bar" id="admin-summary-bar"></div>
       <div id="admin-tab-bar" class="admin-tab-bar"></div>
@@ -235,7 +233,7 @@
   <div id="info-modal" class="info-modal">
     <div class="info-modal-content">
       <div class="info-modal-header">
-        <div class="info-modal-title">Rules 🏆</div>
+        <div class="info-modal-title">Maze Rules</div>
         <button class="info-modal-close" id="btn-close-info">✕</button>
       </div>
       <div class="info-modal-body">

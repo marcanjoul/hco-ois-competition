@@ -65,7 +65,7 @@ async function bootstrap() {
     await update(dbRef.emps(), u);
   }
   if (!settingsSnap.exists()) {
-    await set(dbRef.settings(), { accentColor: "#FF4D1C", rankingMetric: "sph" });
+    await set(dbRef.settings(), { accentColor: "#ff4fa3", rankingMetric: "sph" });
   }
 }
 
@@ -81,14 +81,10 @@ function escapeHtml(str) {
 // ══════════════════════════════════════════════════════
 // Avatar helpers
 // ══════════════════════════════════════════════════════
-const CUTE_PLACEHOLDERS = ["👤", "👤", "👤", "👤", "👤", "👤", "👤", "👤", "👤", "👤"];
-
 function getAvatarPlaceholder(empIdOrStr) {
-  // Deterministic placeholder based on employee ID
-  const str = (empIdOrStr || "").toString();
-  if (!str) return CUTE_PLACEHOLDERS[0];
-  const index = str.charCodeAt(0) % CUTE_PLACEHOLDERS.length;
-  return CUTE_PLACEHOLDERS[index];
+  const str = (empIdOrStr || "").toString().trim();
+  if (!str) return "?";
+  return str.charAt(0).toUpperCase();
 }
 
 function getAvatarHtml(emp, size = "", empId = "") {
@@ -96,7 +92,7 @@ function getAvatarHtml(emp, size = "", empId = "") {
   if (emp.avatar && emp.avatar.startsWith("data:")) {
     return `<div class="avatar${sizeClass}"><img class="avatar-img" src="${emp.avatar}" alt="${emp.name}" /></div>`;
   }
-  const placeholder = getAvatarPlaceholder(empId || emp.id || emp.name);
+  const placeholder = getAvatarPlaceholder(emp.name || empId || emp.id);
   return `<div class="avatar${sizeClass}"><span class="avatar-placeholder">${placeholder}</span></div>`;
 }
 
@@ -232,10 +228,11 @@ function daysRemaining(comp) {
 // Apply settings
 // ══════════════════════════════════════════════════════
 function applySettings(s = {}) {
-  const color = s.accentColor || "#1A6FF4";
+  const color = s.accentColor || "#ff4fa3";
   if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
-    document.documentElement.style.setProperty("--accent", color);
+    document.documentElement.style.setProperty("--accent-alt", color);
   }
+  document.documentElement.style.setProperty("--accent", "#ffd84d");
   const banner = s.bannerMessage || "";
   const bannerEl = document.getElementById("site-banner");
   if (bannerEl) { bannerEl.textContent = banner; bannerEl.style.display = banner ? "block" : "none"; }
@@ -406,7 +403,7 @@ async function logEntryFromPick() {
 
   const existingLog = (state.logs[state.currentComp] || {})[state.currentUser]?.[state.selectedDate];
   if (existingLog && (existingLog.sales > 0 || existingLog.hours > 0)) {
-    showToast("Already logged for this day — see a manager to edit 🔒"); return;
+    showToast("Stage already cleared for this day - ghost admin can edit"); return;
   }
 
   await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
@@ -497,7 +494,7 @@ function updatePickLogBtnState() {
     btn.disabled = true;
     btn.classList.remove("btn-ghost");
     btn.classList.add("btn-locked");
-    btn.textContent = "✓ Already Logged";
+    btn.textContent = "STAGE CLEARED";
     if (lockedMsg) lockedMsg.classList.add("visible");
     if (salesInput) {
       salesInput.readOnly = true;
@@ -516,7 +513,7 @@ function updatePickLogBtnState() {
     btn.disabled = true;
     btn.classList.remove("btn-locked");
     btn.classList.add("btn-ghost");
-    btn.textContent = "+ LOG IT";
+    btn.textContent = "CHOMP SCORE";
     if (lockedMsg) lockedMsg.classList.remove("visible");
     if (salesInput) {
       salesInput.readOnly = false;
@@ -656,7 +653,7 @@ function renderPickScreen(filterText = "") {
 
   if (filtered.length === 0) {
     grid.classList.add("empty");
-    grid.innerHTML = filterText ? "No employees found" : "No employees yet — add them in Manager";
+    grid.innerHTML = filterText ? "No players found" : "No players yet - add them in Wiregrass HQ";
     document.getElementById("search-results-info")?.classList.add("hidden");
     return;
   }
@@ -785,7 +782,7 @@ function resetPickEmployeeSelection({ openGrid = false } = {}) {
 
   const selectorBtn = document.getElementById("pick-emp-selector");
   if (selectorBtn) {
-    selectorBtn.textContent = "Tap to select your name...";
+    selectorBtn.textContent = "Choose your player...";
     selectorBtn.classList.remove("has-selection");
   }
 
@@ -1158,14 +1155,14 @@ function renderDash() {
     logBtn.disabled = true;
     logBtn.classList.remove("btn-disabled");
     logBtn.classList.add("btn-locked");
-    logBtn.textContent = "✓ Logged — See Manager to Edit";
+    logBtn.textContent = "STAGE CLEARED";
   } else {
     salesInput.readOnly = false; hoursInput.readOnly = false;
     salesInput.classList.remove("input-locked"); hoursInput.classList.remove("input-locked");
     logBtn.disabled = false;
     logBtn.classList.remove("btn-locked");
     logBtn.classList.remove("btn-disabled");
-    logBtn.textContent = "+ LOG IT";
+    logBtn.textContent = "CHOMP SCORE";
   }
 
   const historyList = document.getElementById("history-list");
@@ -1418,13 +1415,13 @@ async function logEntry() {
   // Block overwriting an existing log
   const existingLog = (state.logs[state.currentComp] || {})[state.currentUser]?.[state.selectedDate];
   if (existingLog && (existingLog.sales > 0 || existingLog.hours > 0)) {
-    showToast("Already logged for this day — see a manager to edit 🔒"); return;
+    showToast("Stage already cleared for this day - ghost admin can edit"); return;
   }
 
   await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
   const reaction = getBigOrderReaction(sales);
   if (reaction) { showToast(reaction, 3500); launchConfetti(); }
-  else showToast("Logged! Keep grinding 💪");
+  else showToast("Score captured. Keep chomping.");
 }
 
 // ══════════════════════════════════════════════════════
