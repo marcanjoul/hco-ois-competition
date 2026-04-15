@@ -318,10 +318,10 @@ function pickGoalHype(current, target, pct, isHit) {
   const roundedRemaining = `$${remaining.toFixed(0)}`;
   const pools = isHit
     ? [
-        "Goal cleared. Y'all are actually cooking.",
+        "Goal CLEARED. Y'all are cooking!",
         "Okayyyy this goal got smoked.",
-        "Ate that goal up. Keep going.",
-        "Mission complete. Still room to flex."
+        "Ate that goal UP.",
+        "Goal abolished."
       ]
     : pct >= 85
       ? [
@@ -2006,24 +2006,22 @@ function renderAdminEmps(container) {
     <div class="admin-team-tools-header">
       <div>
         <div class="admin-team-tools-title-row">
-          <div class="admin-team-tools-title">Search, edit, and add people fast.</div>
-          <div class="admin-team-tools-count">${employeeCount} ${employeeCount === 1 ? "employee" : "employees"}</div>
+          <div class="admin-team-tools-title">Search, edit, and add players fast.</div>
         </div>
-        <div class="admin-team-tools-sub">Everything you need is right here.</div>
       </div>
     </div>
     <div class="admin-team-controls">
       <label class="admin-team-field admin-team-search-wrap">
-        <span class="admin-team-field-label">Search team</span>
+        <span class="admin-team-field-label">Search players</span>
         <div class="admin-team-input-shell">
           <span class="admin-team-search-icon">⌕</span>
-          <input type="text" id="admin-emp-search" class="log-input admin-team-input" placeholder="Search employees..." />
+          <input type="text" id="admin-emp-search" class="log-input admin-team-input" placeholder="Search players..." />
         </div>
       </label>
       <label class="admin-team-field admin-team-add-wrap">
         <span class="admin-team-field-label">Quick add</span>
         <div class="admin-new-row admin-new-row-top">
-          <input type="text" id="input-new-emp" class="log-input admin-team-input" placeholder="Add a new employee..." oninput="updateBtnState('input-new-emp','btn-add-emp')" />
+          <input type="text" id="input-new-emp" class="log-input admin-team-input" placeholder="Add a new player..." oninput="updateBtnState('input-new-emp','btn-add-emp')" />
           <button class="mini-btn btn-ghost" id="btn-add-emp" disabled>Add</button>
         </div>
       </label>
