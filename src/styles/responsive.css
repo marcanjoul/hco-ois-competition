@@ -28,6 +28,14 @@
    ──────────────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {
+  .board-meta {
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1;
+  }
+
   .pick-info-btn {
     top: -12px;
     right: 10px;
@@ -250,7 +258,11 @@
   }
   .board-name { font-size: 16px; }
   .board-card.rank-1 .board-name { font-size: 18px; }
-  .board-meta { font-size: 18px; }
+  .board-meta {
+    font-size: 14px;
+    white-space: nowrap;
+    line-height: 1;
+  }
   .board-sph { font-size: 20px; }
   .board-card.rank-1 .board-sph { font-size: 24px; }
 }

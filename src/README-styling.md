@@ -265,7 +265,7 @@ Website example:
 
 Website examples:
 
-- `GHOST GATE`
+- `MANAGER GATE`
 - `OPEN GATE`
 
 ### Change admin tabs and admin rows

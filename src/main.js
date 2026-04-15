@@ -416,6 +416,90 @@ function renderGoalBar(current, target, type) {
   `;
 }
 
+function getCompetitionGoalMarkup(compId) {
+  const compGoals = getCompGoals(compId);
+  const todayDate = getTodayDate();
+  const todayGoal = compGoals[`daily_${todayDate}`];
+  const compLogs = state.logs[compId] || {};
+  let storeTotalSales = 0;
+  let storeTodaySales = 0;
+
+  Object.values(compLogs).forEach(empLogs => {
+    Object.entries(empLogs || {}).forEach(([date, log]) => {
+      storeTotalSales += log.sales || 0;
+      if (date === todayDate) storeTodaySales += log.sales || 0;
+    });
+  });
+
+  let goalsHtml = "";
+  if (compGoals.competition?.value) {
+    goalsHtml += `<div class="comp-detail"><div class="detail-label">Competition Goal: <span class="detail-label-goal">$${compGoals.competition.value}</span></div>${renderGoalBar(storeTotalSales, compGoals.competition.value, "total")}</div>`;
+  }
+  if (todayGoal?.value) {
+    goalsHtml += `<div class="comp-detail" style="margin-top:12px"><div class="detail-label">Today's Goal: <span class="detail-label-goal">$${todayGoal.value}</span></div>${renderGoalBar(storeTodaySales, todayGoal.value, "total")}</div>`;
+  }
+  return goalsHtml;
+}
+
+function renderCompetitionCard(container, compId, { collapsibleGoals = true } = {}) {
+  if (!container) return;
+  const comp = state.competitions[compId];
+  if (!comp) {
+    container.classList.add("hidden");
+    container.innerHTML = "";
+    return;
+  }
+
+  const ended = isCompEnded(comp);
+  const days = daysRemaining(comp);
+  const winner = comp.winner ? state.employees[comp.winner] : null;
+  const firstPrizeLine = (comp.prize || "").split("\n")[0].replace(/^[•→\-\s]+/, "").trim();
+  const goalsHtml = getCompetitionGoalMarkup(compId);
+  const hasGoals = !!goalsHtml;
+  const countdownNum = ended ? "END" : (days !== null ? (days <= 0 ? "0" : String(days)) : "—");
+  const countdownLabel = ended ? "COMPETITION OVER" : (days === 1 ? "DAY LEFT" : "DAYS LEFT");
+  const countdownClass = `pick-countdown-num${ended ? " ended" : days !== null && days <= 3 ? " urgent" : ""}`;
+
+  container.classList.add("pick-comp-info");
+  container.classList.remove("hidden");
+  container.innerHTML = `
+    <div class="pick-comp-name">${escapeHtml(comp.name)}</div>
+    <div class="pick-comp-dates">${comp.startDate && comp.endDate ? escapeHtml(`${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}`) : ""}</div>
+    <div class="pick-comp-hero-row">
+      <div class="pick-countdown">
+        <span class="${countdownClass}">${countdownNum}</span>
+        <span class="pick-countdown-label">${countdownLabel}</span>
+      </div>
+      ${firstPrizeLine ? `<div class="pick-prize-pill">🎁 <span>${escapeHtml(firstPrizeLine.substring(0, 40) + (firstPrizeLine.length > 40 ? "…" : ""))}</span></div>` : ""}
+    </div>
+    ${hasGoals ? `
+      <div class="pick-comp-goals" style="display:block">
+        ${collapsibleGoals ? `
+          <button class="pick-goals-toggle">
+            <span>PROGRESS</span>
+            <span class="pick-goals-toggle-arrow">▼</span>
+          </button>
+          <div class="pick-goals-content">${goalsHtml}</div>
+        ` : `
+          <div class="pick-goals-content open">${goalsHtml}</div>
+        `}
+      </div>
+    ` : ""}
+    ${ended && winner ? `<div class="pick-winner-row" style="display:flex">🏆 <span>${escapeHtml(`${winner.name} won!`)}</span></div>` : ""}
+  `;
+
+  if (collapsibleGoals && hasGoals) {
+    const toggle = container.querySelector(".pick-goals-toggle");
+    const content = container.querySelector(".pick-goals-content");
+    if (toggle && content) {
+      toggle.onclick = () => {
+        content.classList.toggle("open");
+        toggle.classList.toggle("open");
+      };
+    }
+  }
+}
+
 // ══════════════════════════════════════════════════════
 // Vibe phrases
 // ══════════════════════════════════════════════════════
@@ -603,86 +687,7 @@ function renderPickScreen(filterText = "") {
     const logCard = document.getElementById("pick-log-card");
     if (logCard) logCard.style.display = "block";
     if (noCompsMsg) noCompsMsg.classList.add("hidden");
-    const comp = state.competitions[state.currentComp];
-    if (comp) {
-      const ended = isCompEnded(comp);
-      const days = daysRemaining(comp);
-      const winner = comp.winner ? state.employees[comp.winner] : null;
-
-      // Competition name
-      const nameEl = document.getElementById("pick-comp-name");
-      if (nameEl) nameEl.textContent = comp.name;
-
-      // Countdown number — urgent color if < 3 days, ended state
-      const cntNum = document.getElementById("pick-countdown-num");
-      const cntLabel = document.getElementById("pick-countdown-label");
-      if (cntNum && cntLabel) {
-        if (ended) {
-          cntNum.textContent = "END";
-          cntNum.className = "pick-countdown-num ended";
-          cntLabel.textContent = "COMPETITION OVER";
-        } else if (days !== null) {
-          cntNum.textContent = days <= 0 ? "0" : days;
-          cntNum.className = "pick-countdown-num" + (days <= 3 ? " urgent" : "");
-          cntLabel.textContent = days === 1 ? "DAY LEFT" : "DAYS LEFT";
-        }
-      }
-
-      // Prize pill
-      const prizePill = document.getElementById("pick-prize-pill");
-      const prizeText = document.getElementById("pick-prize-text");
-      if (prizePill && comp.prize) {
-        const firstLine = comp.prize.split("\n")[0].replace(/^[•→\-\s]+/, "").trim();
-        if (prizeText) prizeText.textContent = firstLine.substring(0, 40) + (firstLine.length > 40 ? "…" : "");
-        prizePill.style.display = "flex";
-      } else if (prizePill) {
-        prizePill.style.display = "none";
-      }
-
-      // Dates
-      const datesEl = document.getElementById("pick-comp-dates");
-      if (datesEl && comp.startDate && comp.endDate) {
-        datesEl.textContent = `${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}`;
-      }
-
-      // Winner row
-      const winnerRow = document.getElementById("pick-winner-row");
-      const winnerText = document.getElementById("pick-winner-text");
-      if (winnerRow) {
-        if (ended && winner) {
-          if (winnerText) winnerText.textContent = `${winner.name} won!`;
-          winnerRow.style.display = "flex";
-        } else {
-          winnerRow.style.display = "none";
-        }
-      }
-
-      // Goal bars (collapsible)
-      const goalsSection = document.getElementById("pick-comp-goals");
-      const goalsContent = document.getElementById("pick-goals-content");
-      const compGoals = getCompGoals(state.currentComp);
-      const todayDate = getTodayDate();
-      const todayGoal = compGoals[`daily_${todayDate}`];
-      const compLogs = state.logs[state.currentComp] || {};
-      let storeTotalSales = 0, storeTodaySales = 0;
-      Object.values(compLogs).forEach(empLogs => {
-        Object.entries(empLogs || {}).forEach(([date, log]) => {
-          storeTotalSales += log.sales || 0;
-          if (date === todayDate) storeTodaySales += log.sales || 0;
-        });
-      });
-      let goalsHtml = "";
-      if (compGoals.competition?.value) {
-        goalsHtml += `<div class="comp-detail"><div class="detail-label">Competition Goal: <span class="detail-label-goal">$${compGoals.competition.value}</span></div>${renderGoalBar(storeTotalSales, compGoals.competition.value, "total")}</div>`;
-      }
-      if (todayGoal?.value) {
-        goalsHtml += `<div class="comp-detail" style="margin-top:12px"><div class="detail-label">Today's Goal: <span class="detail-label-goal">$${todayGoal.value}</span></div>${renderGoalBar(storeTodaySales, todayGoal.value, "total")}</div>`;
-      }
-      if (goalsSection) goalsSection.style.display = goalsHtml ? "block" : "none";
-      if (goalsContent) goalsContent.innerHTML = goalsHtml;
-
-      compInfo.classList.remove("hidden");
-    }
+    renderCompetitionCard(compInfo, state.currentComp, { collapsibleGoals: true });
   }
 
   // Daily goals are now shown in competition info card, hide this duplicate
@@ -1077,50 +1082,7 @@ function renderDash() {
   // Render competition info card on dashboard
   const dashCompInfoEl = document.getElementById("dash-comp-info");
   if (dashCompInfoEl && comp) {
-    const ended = isCompEnded(comp);
-    const days = daysRemaining(comp);
-    const winner = comp.winner ? state.employees[comp.winner] : null;
-
-    let statusHtml = "";
-    if (ended && winner) {
-      statusHtml = `<div class="status-badge winner">🏆</div><div class="status-text">${winner.name} won!</div>`;
-    } else if (!ended && days !== null) {
-      const dayText = days <= 0 ? "Ends today" : `${days} day${days !== 1 ? "s" : ""} left`;
-      statusHtml = `<div class="status-badge active">⏱️</div><div class="status-text">${dayText}</div>`;
-    }
-
-    let metaHtml = "";
-    if (comp.startDate && comp.endDate) {
-      metaHtml += `<span>${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}</span>`;
-    }
-
-    const compGoals = getCompGoals(state.currentComp);
-    let detailsHtml = "";
-    if (compGoals.competition?.value) {
-      const g = compGoals.competition;
-      const sph = getPlayerSph(state.currentUser, state.currentComp);
-      const current = g.type === "sph" ? sph.sph : sph.total;
-      detailsHtml = `
-        <div class="dash-comp-details">
-          <div class="comp-detail">
-            <div class="detail-label">COMPETITION GOAL</div>
-            ${renderGoalBar(current, g.value, g.type)}
-          </div>
-        </div>
-      `;
-    }
-
-    dashCompInfoEl.innerHTML = `
-      <div class="dash-comp-info-header">
-        <div>
-          <div class="dash-comp-name">${escapeHtml(comp.name)}</div>
-          <div class="dash-comp-meta">${metaHtml}</div>
-        </div>
-        <div class="dash-comp-status-badge">${statusHtml}</div>
-      </div>
-      ${detailsHtml}
-    `;
-    dashCompInfoEl.classList.remove("hidden");
+    renderCompetitionCard(dashCompInfoEl, state.currentComp, { collapsibleGoals: true });
   } else if (dashCompInfoEl) {
     dashCompInfoEl.classList.add("hidden");
   }
@@ -2006,7 +1968,7 @@ function renderAdminEmpsList() {
   
   listContainer.innerHTML = "";
   const list = document.createElement("div");
-  list.className = "admin-list";
+  list.className = "admin-list admin-emp-list";
 
   if (toShow.length === 0) {
     list.innerHTML = `<div style="color:var(--text3);font-size:0.8rem;text-align:center;padding:16px;">No employees found</div>`;
@@ -2015,14 +1977,12 @@ function renderAdminEmpsList() {
     const compId = state.currentComp;
     toShow.forEach(([id, emp]) => {
       const item = document.createElement("div");
-      item.className = "admin-item";
+      item.className = "admin-item admin-emp-item";
       item.id = `admin-emp-item-${id}`;
 
-      const loggedToday = compId && !!(state.logs[compId]?.[id]?.[today]);
-      
       const leftPart = document.createElement("div");
       leftPart.className = "admin-item-left";
-      leftPart.innerHTML = `${getAvatarHtml(emp, "small", id)} <span class="admin-item-name">${escapeHtml(emp.name)}</span><div class="admin-today-dot ${loggedToday ? "logged" : "not-logged"}" title="${loggedToday ? "Logged today" : "Not logged yet"}"></div>`;
+      leftPart.innerHTML = `${getAvatarHtml(emp, "small", id)} <span class="admin-item-name">${escapeHtml(emp.name)}</span>`;
       item.appendChild(leftPart);
       
       const rightPart = document.createElement("div");

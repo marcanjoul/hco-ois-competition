@@ -46,7 +46,7 @@
 /* Comp info on dash
    Example on the website: the competition info card shown above the stat boxes.
 */
-.dash-comp-info {
+.dash-comp-info:not(.pick-comp-info) {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -54,26 +54,6 @@
   box-shadow: var(--shadow);
 }
 .dash-comp-info.hidden { display: none; }
-.dash-comp-info-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-3); }
-.dash-comp-name { font-family: var(--type-subheading-family); font-size: var(--type-subheading-size); letter-spacing: var(--type-subheading-letter-spacing); color: var(--text); }
-.dash-comp-meta { display: flex; flex-direction: column; gap: var(--space-1); }
-.dash-comp-meta span { font-family: var(--type-caption-family); font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); color: var(--text2); }
-.dash-comp-status-badge { display: flex; flex-direction: column; align-items: center; gap: var(--space-1); flex-shrink: 0; }
-.dash-comp-details { border-top: 1px solid var(--border); padding-top: var(--space-3); }
-
-/* Status badge
-   Example on the website: the small square badge inside the competition info card.
-*/
-.status-badge {
-  width: 44px; height: 44px;
-  border-radius: var(--radius-sm);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-  border: 1.5px solid;
-}
-.status-badge.active { background: rgba(26,111,244,0.1); border-color: var(--accent); }
-.status-badge.winner { background: rgba(245,166,35,0.1); border-color: var(--gold); }
-.status-text { font-family: var(--type-label-family); font-size: 10px; font-weight: var(--type-label-weight); color: var(--text2); text-align: center; white-space: nowrap; }
 
 /* Stat row
    Example on the website: the 3 stat boxes for Sales/HR, Total Sales, and Rank.

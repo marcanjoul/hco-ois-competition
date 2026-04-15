@@ -3,7 +3,7 @@
   This file controls the admin side of the website.
 
   Website examples:
-  - The PIN screen with "GHOST GATE"
+  - The PIN screen with "MANAGER GATE"
   - The admin tab buttons and admin list items
   - Team tools, goal editing, and log detail panels
 */
@@ -177,6 +177,27 @@
   background: transparent;
 }
 
+@media (max-width: 640px) {
+  .admin-tab-bar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    padding: 12px 12px 12px;
+    overflow-x: visible;
+    align-items: stretch;
+  }
+
+  .admin-tab-btn {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+    padding: 12px 8px;
+    font-size: 9px;
+    line-height: 1.15;
+    text-align: center;
+  }
+}
+
 .admin-tab-content {
   flex: 1;
   padding: var(--space-4);
@@ -202,21 +223,33 @@
   margin-bottom: var(--space-3);
 }
 
+.admin-emp-list {
+  gap: 14px;
+  width: calc(100% - 12px);
+  margin: 0 auto var(--space-4);
+}
+
 .admin-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
-  padding: var(--space-3) 0;
+  padding: 12px;
   border-bottom: 1px solid var(--border);
-  min-height: 52px;
+  min-height: 64px;
   background: transparent;
+}
+
+.admin-emp-item {
+  padding: 10px 14px;
+  min-height: 70px;
+  border-bottom: none;
 }
 
 .admin-item-left {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 12px;
   flex: 1;
   min-width: 0;
 }
@@ -224,8 +257,10 @@
 .admin-item-actions {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  justify-content: flex-end;
+  gap: 10px;
   flex-shrink: 0;
+  min-width: fit-content;
 }
 
 .admin-item-name {
@@ -236,6 +271,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.admin-emp-item .admin-item-name {
+  font-size: calc(var(--type-body-size) - 1px);
 }
 
 .comp-status-chip {
@@ -301,17 +340,6 @@
   letter-spacing: 0.4px;
 }
 
-/* Logged today dot
-   Example on the website: the tiny colored dot showing whether someone logged today.
-*/
-.admin-today-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.admin-today-dot.logged { background: var(--green); box-shadow: 0 0 6px rgba(63,185,80,0.5); }
-.admin-today-dot.not-logged { background: var(--surface2); border: 1px solid var(--border); }
-
 /* Buttons
    Example on the website: small edit/delete buttons inside admin rows.
 */
@@ -335,6 +363,32 @@
 .del-btn:hover { border-color: var(--accent); color: var(--accent); }
 .del-btn.danger { border-color: var(--red); color: var(--red); }
 .del-btn.danger:hover { background: rgba(248,81,73,0.1); }
+
+@media (max-width: 640px) {
+  .admin-emp-list {
+    gap: 12px;
+    width: calc(100% - 8px);
+  }
+
+  .admin-item {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .admin-emp-item {
+    padding: 10px 12px;
+    min-height: 64px;
+  }
+
+  .admin-item-actions {
+    width: 100%;
+  }
+
+  .admin-item-actions .del-btn {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
 
 .mini-btn {
   background: rgba(26,111,244,0.1);

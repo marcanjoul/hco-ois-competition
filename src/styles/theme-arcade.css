@@ -722,6 +722,12 @@ body::after {
   border: 3px solid #2b6dff !important;
 }
 
+.admin-emp-list {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
 .admin-team-tools-title,
 .admin-item-name,
 .comp-status-chip,
@@ -783,6 +789,23 @@ body::after {
   box-shadow: 4px 4px 0 #09153a !important;
 }
 
+@media (max-width: 640px) {
+  .admin-tab-bar {
+    gap: 10px !important;
+    padding: 12px !important;
+    justify-content: stretch;
+  }
+
+  .admin-tab-btn {
+    min-width: 0 !important;
+    width: 100%;
+    padding: 12px 8px !important;
+    font-size: 9px !important;
+    line-height: 1.15 !important;
+    text-align: center;
+  }
+}
+
 .admin-team-search-icon {
   color: var(--accent);
 }
@@ -792,7 +815,7 @@ body::after {
 .log-locked-note,
 .admin-team-tools-sub,
 .admin-gate-sub {
-  font-size: 24px;
+  font-size: 22px;
 }
 
 .search-results-info,
@@ -1042,7 +1065,7 @@ body::after {
   .log-locked-note,
   .admin-team-tools-sub,
   .admin-gate-sub {
-    font-size: 21px;
+    font-size: 19px;
   }
 
   .comp-status-chip {
