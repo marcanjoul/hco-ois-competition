@@ -26,7 +26,7 @@ let state = {
   boardComp: null,        // comp selected on leaderboard
   currentUser: null,
   selectedDate: getTodayDate(),
-  currentScreen: "pick",
+  currentScreen: "welcome",
   adminUnlocked: false,
   searchDebounceTimer: null,
   admin: {
@@ -523,7 +523,7 @@ function updatePickLogBtnState() {
     btn.disabled = true;
     btn.classList.remove("btn-locked");
     btn.classList.add("btn-ghost");
-    btn.textContent = "CHOMP SCORE";
+    btn.textContent = "ADD ORDER";
     if (lockedMsg) lockedMsg.classList.remove("visible");
     if (salesInput) {
       salesInput.readOnly = false;
@@ -712,6 +712,11 @@ function showScreen(name) {
     header.classList.add("hidden");
   } else {
     header.classList.remove("hidden");
+  }
+
+  const bottomNav = document.getElementById("bottom-nav");
+  if (bottomNav) {
+    bottomNav.classList.toggle("hidden", name === "welcome");
   }
 
   // Update nav active state
@@ -1172,7 +1177,7 @@ function renderDash() {
     logBtn.disabled = false;
     logBtn.classList.remove("btn-locked");
     logBtn.classList.remove("btn-disabled");
-    logBtn.textContent = "CHOMP SCORE";
+    logBtn.textContent = "ADD ORDER";
   }
 
   const historyList = document.getElementById("history-list");
@@ -1444,7 +1449,7 @@ async function logEntry() {
   await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
   const reaction = getBigOrderReaction(sales);
   if (reaction) { showToast(reaction, 3500); launchConfetti(); }
-  else showToast("Score captured. Keep chomping.");
+  else showToast("Score captured.");
 }
 
 // ══════════════════════════════════════════════════════
@@ -2519,6 +2524,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   await bootstrap();
   startListeners();
 
+  const welcomeStartBtn = document.getElementById("welcome-start-btn");
+  if (welcomeStartBtn) {
+    welcomeStartBtn.onclick = () => showScreen("pick");
+  }
+
   document.getElementById("btn-log").onclick = logEntry;
 
   const searchInput = document.getElementById("input-search-employees");
@@ -2613,8 +2623,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   };
 
-  // Set home button as active on initial load
-  document.getElementById("nav-home").classList.add("active");
+  // Match the initial screen state on load.
+  showScreen(state.currentScreen);
 
   // Info modal
   const infoBtnBtn = document.getElementById("btn-info");

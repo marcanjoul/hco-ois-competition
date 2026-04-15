@@ -32,16 +32,34 @@
     </button>
   </nav>
 
+  <!-- SCREEN: Welcome -->
+  <div id="screen-welcome" class="screen active">
+    <div class="welcome-screen">
+      <div class="welcome-orb welcome-orb-left"></div>
+      <div class="welcome-orb welcome-orb-right"></div>
+      <div class="welcome-inner">
+        <div class="welcome-copy-group">
+          <h1 class="welcome-title">Wiregrass OIS Competition.</h1>
+          <p class="welcome-copy">
+            Track your numbers, watch the rankings move, and jump into the current competition.
+          </p>
+          <button class="welcome-start-btn" id="welcome-start-btn">Get Started</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- SCREEN: Home / Pick -->
-  <div id="screen-pick" class="screen active">
+  <div id="screen-pick" class="screen">
     <div class="pick-bg-stripe"></div>
     <div class="pick-inner">
 
-      <button class="pick-info-btn" id="btn-info" title="Rules">?</button>
+      <button class="pick-info-btn" id="btn-info" title="Rules">i</button>
 
       <!-- Competition Info Card -->
       <div id="pick-comp-info" class="pick-comp-info hidden">
         <div id="pick-comp-name" class="pick-comp-name"></div>
+        <div id="pick-comp-dates" class="pick-comp-dates"></div>
         <div class="pick-comp-hero-row">
           <div class="pick-countdown">
             <span id="pick-countdown-num" class="pick-countdown-num">—</span>
@@ -51,7 +69,6 @@
             🎁 <span id="pick-prize-text"></span>
           </div>
         </div>
-        <div id="pick-comp-dates" class="pick-comp-dates"></div>
         <div id="pick-comp-goals" class="pick-comp-goals" style="display:none">
           <button class="pick-goals-toggle" id="pick-goals-toggle">
             <span>PROGRESS</span>
@@ -118,7 +135,7 @@
               <input type="number" id="pick-input-hours" class="log-input" placeholder="0.0" min="0" step="0.5" inputmode="decimal" />
             </div>
           </div>
-          <button class="log-btn btn-ghost" id="pick-btn-log" disabled>CHOMP SCORE</button>
+          <button class="log-btn btn-ghost" id="pick-btn-log" disabled>ADD ORDER</button>
           <div id="pick-log-locked-msg" class="log-locked-note">STAGE CLEARED - ghost admin can edit</div>
         </div>
 
@@ -164,7 +181,7 @@
       <div id="dash-goals" class="dash-goals hidden"></div>
       <div class="vibe-card">
         <span id="vibe-emoji">🔥</span>
-        <span id="vibe-text">Chomp your first score to get started!</span>
+        <span id="vibe-text">Add your first OIS to get started!</span>
       </div>
       <div class="log-card">
         <div class="log-card-title">INSERT SCORE</div>
@@ -179,7 +196,7 @@
             <input type="number" id="input-hours" class="log-input" placeholder="0.0" min="0" step="0.5" inputmode="decimal" />
           </div>
         </div>
-        <button class="log-btn" id="btn-log">CHOMP SCORE</button>
+        <button class="log-btn" id="btn-log">ADD ORDER</button>
       </div>
       <div class="history-wrap">
         <div class="history-title">MY LOGS</div>
