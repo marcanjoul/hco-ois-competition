@@ -370,31 +370,31 @@ function pickGoalHype(current, target, pct, isHit) {
         "Goal CLEARED. Y'all are cooking!",
         "Okayyyy this goal got smoked.",
         "Ate that goal UP.",
-        "Goal abolished."
+        "Started from the bottom now WE HERE."
       ]
     : pct >= 85
       ? [
-          `So close. ${roundedRemaining} more and it's yours.`,
+          `So close. ${roundedRemaining} more and it's OURS.`,
           `${roundedRemaining} left. Finish the job.`,
-          `Locked in. Just ${roundedRemaining} to go.`,
-          `${roundedRemaining} more and this goal is done done.`
+          `Locked in guys! Just ${roundedRemaining} to go!`,
+          `${roundedRemaining} more and this goal is DONE.`
         ]
       : pct >= 50
         ? [
             "Halfway there. Momentum is looking real nice.",
             "You're in your bag now. Keep stacking.",
             "This is a strong run. Don't let up.",
-            "Mid-game heat. A few more orders changes everything."
+            "Mid-game heat. A few more orders and we got this!"
           ]
         : pct > 0
           ? [
               "Let's go guys!",
               "Let's get these orders IN.",
               "Keep the pressure ON guys.",
-              "We're... getting there"
+              "We're... getting there..."
             ]
           : [
-              "No pressure, but first order could go crazy.",
+              "No pressure, but lets get an order in.",
               "Fresh slate. Time to start a run.",
               "First order energy starts NOW.",
               "Lock in and let's get this bar moving."
@@ -736,15 +736,15 @@ function renderPickScreen(filterText = "") {
 
   filtered.forEach(([id, emp]) => {
     const rank = players.findIndex(p => p.id === id);
-    const pip = hasLogs && (rank === 0 ? "👑" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : "");
+    const isTopThree = hasLogs && rank >= 0 && rank < 3;
     const isWinner = state.competitions[state.currentComp]?.winner === id;
     const safeName = escapeHtml(emp.name);
     const btn = document.createElement("button");
     btn.className = `name-btn${isWinner ? " name-btn-winner" : ""}`;
     btn.innerHTML = `
-      ${getAvatarHtml(emp, "small", id)}
+      ${isTopThree ? getBoardAvatarHtml(emp, id, rank + 1) : getAvatarHtml(emp, "small", id)}
       <div>
-        ${pip ? `<span class="rank-pip">${pip}</span>` : ""}${isWinner ? "🏆 " : ""}${safeName}
+        ${isWinner ? "🏆 " : ""}${safeName}
       </div>
     `;
     btn.onclick = () => enterAsDashboard(id);
@@ -1062,12 +1062,12 @@ function renderPickEmpGrid(filterText = "") {
   const players = hasLogs ? getRankedPlayers(state.currentComp) : [];
   filtered.forEach(([id, emp]) => {
     const rankIdx = players.findIndex(p => p.id === id);
-    const pip = hasLogs && rankIdx >= 0 ? (rankIdx === 0 ? "👑" : rankIdx === 1 ? "🥈" : rankIdx === 2 ? "🥉" : "") : "";
+    const isTopThree = hasLogs && rankIdx >= 0 && rankIdx < 3;
     const isWinner = state.competitions[state.currentComp]?.winner === id;
     const safeName = escapeHtml(emp.name);
     const btn = document.createElement("button");
     btn.className = `name-btn${isWinner ? " name-btn-winner" : ""}`;
-    btn.innerHTML = `${getAvatarHtml(emp, "small", id)} <span>${pip ? `<span class="rank-pip">${pip}</span> ` : ""}${safeName}</span>`;
+    btn.innerHTML = `${isTopThree ? getBoardAvatarHtml(emp, id, rankIdx + 1) : getAvatarHtml(emp, "small", id)} <span>${isWinner ? "🏆 " : ""}${safeName}</span>`;
     btn.onclick = () => {
       // Close the grid before entering dashboard
       const grid = document.getElementById("pick-emp-grid");

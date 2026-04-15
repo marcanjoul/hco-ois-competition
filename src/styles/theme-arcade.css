@@ -516,6 +516,39 @@ body::after {
   height: 56px;
 }
 
+#pick-emp-list .board-avatar-stack,
+#name-grid .board-avatar-stack {
+  width: 64px;
+  min-width: 64px;
+  padding-top: 10px;
+  padding-bottom: 12px;
+}
+
+#pick-emp-list .board-avatar-stack.rank-1,
+#name-grid .board-avatar-stack.rank-1 {
+  padding-top: 16px;
+}
+
+#pick-emp-list .avatar-board,
+#name-grid .avatar-board {
+  width: 52px;
+  height: 52px;
+  font-size: 22px;
+}
+
+#pick-emp-list .board-avatar-crown,
+#name-grid .board-avatar-crown {
+  top: 4px;
+  right: 0;
+  font-size: 26px;
+}
+
+#pick-emp-list .board-avatar-medal,
+#name-grid .board-avatar-medal {
+  bottom: 4px;
+  font-size: 22px;
+}
+
 #pick-emp-list .avatar-small .avatar-placeholder,
 #name-grid .avatar-small .avatar-placeholder {
   font-size: 24px;
@@ -1070,6 +1103,39 @@ body::after {
   #name-grid .avatar-small {
     width: 50px;
     height: 50px;
+  }
+
+  #pick-emp-list .board-avatar-stack,
+  #name-grid .board-avatar-stack {
+    width: 58px;
+    min-width: 58px;
+    padding-top: 8px;
+    padding-bottom: 10px;
+  }
+
+  #pick-emp-list .board-avatar-stack.rank-1,
+  #name-grid .board-avatar-stack.rank-1 {
+    padding-top: 13px;
+  }
+
+  #pick-emp-list .avatar-board,
+  #name-grid .avatar-board {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  #pick-emp-list .board-avatar-crown,
+  #name-grid .board-avatar-crown {
+    top: 4px;
+    right: 0;
+    font-size: 22px;
+  }
+
+  #pick-emp-list .board-avatar-medal,
+  #name-grid .board-avatar-medal {
+    bottom: 3px;
+    font-size: 19px;
   }
 
   .admin-item-name,
