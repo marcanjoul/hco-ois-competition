@@ -232,7 +232,7 @@ function daysRemaining(comp) {
 // Apply settings
 // ══════════════════════════════════════════════════════
 function applySettings(s = {}) {
-  const color = s.accentColor || "#FF4D1C";
+  const color = s.accentColor || "#1A6FF4";
   if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
     document.documentElement.style.setProperty("--accent", color);
   }
@@ -1202,13 +1202,6 @@ function renderAdminSummaryBar() {
   const comp = compId ? state.competitions[compId] : null;
   const days = comp ? daysRemaining(comp) : null;
   const dayStr = days === null ? "" : days <= 0 ? "Ends today" : `${days}d left`;
-
-  bar.innerHTML = `
-    <div class="admin-summary-chip accent">${empCount} EMPLOYEES</div>
-    <div class="admin-summary-chip">${logsToday} LOGGED TODAY</div>
-    ${dayStr ? `<div class="admin-summary-chip">${dayStr}</div>` : ""}
-    ${comp ? `<div class="admin-summary-chip">${comp.name}</div>` : ""}
-  `;
 }
 
 function openAdminPanel() {
@@ -2213,7 +2206,7 @@ function launchConfetti() {
   canvas.width = window.innerWidth; canvas.height = window.innerHeight;
   const pieces = Array.from({ length: 80 }, () => ({
     x: Math.random() * canvas.width, y: -20, r: Math.random() * 8 + 4,
-    color: ["#FF4D1C","#FF8C00","#F5A623","#1DB954","#0096FF"][Math.floor(Math.random()*5)],
+    color: ["#1A6FF4","#4D9EFA","#60B5FF","#3FB950","#F5A623"][Math.floor(Math.random()*5)],
     vx: (Math.random() - 0.5) * 4, vy: Math.random() * 4 + 3,
     spin: Math.random() * 0.2 - 0.1, angle: 0, life: 1,
   }));
