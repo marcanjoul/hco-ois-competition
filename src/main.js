@@ -832,7 +832,6 @@ function resetPickEmployeeSelection({ openGrid = false } = {}) {
   if (searchEl) searchEl.value = "";
   if (openGrid) {
     renderPickEmpGrid();
-    if (searchEl) searchEl.focus();
   }
 
   const salesInput = document.getElementById("pick-input-sales");
@@ -2645,8 +2644,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       empGrid.classList.toggle("hidden");
       if (isOpening) {
         renderPickEmpGrid();
-        const searchEl = document.getElementById("pick-emp-search");
-        if (searchEl) searchEl.focus();
       }
     };
   }
