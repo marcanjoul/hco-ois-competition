@@ -40,6 +40,7 @@ let state = {
   currentComp: null,      // active comp shown on pick screen
   boardComp: null,        // comp selected on leaderboard
   currentUser: null,
+  dashView: "logging",
   selectedDate: getTodayDate(),
   currentScreen: "welcome",
   adminUnlocked: false,
@@ -787,6 +788,7 @@ function showScreen(name) {
 
 function enterAsDashboard(empId) {
   state.currentUser = empId;
+  state.dashView = "logging";
   state.selectedDate = getTodayDate();
 
   // Always start fresh when switching employees.
@@ -1066,6 +1068,7 @@ function renderPickEmpGrid(filterText = "") {
 function renderDash() {
   const emp = state.employees[state.currentUser];
   if (!emp) return;
+  const isProfileView = state.dashView === "profile";
 
   document.getElementById("dash-name").textContent = emp.name.toUpperCase();
   const comp = state.competitions[state.currentComp];
@@ -1150,7 +1153,7 @@ function renderDash() {
   const winner = comp?.winner;
   const winnerBanner = document.getElementById("winner-banner");
   if (winnerBanner) {
-    if (winner && state.employees[winner]) {
+    if (!isProfileView && winner && state.employees[winner]) {
       const prize = comp?.prize || "";
       winnerBanner.innerHTML = `🏆 <strong>${escapeHtml(state.employees[winner].name)}</strong> won${prize ? ` — ${escapeHtml(prize)}` : ""}!`;
       winnerBanner.style.display = "block";
@@ -1176,6 +1179,11 @@ function renderDash() {
     }
     goalsEl.innerHTML = goalsHtml;
     goalsEl.style.display = goalsHtml ? "flex" : "none";
+  }
+
+  const dashLogCard = document.getElementById("dash-log-card");
+  if (dashLogCard) {
+    dashLogCard.classList.toggle("hidden", isProfileView);
   }
 
   // Week view with dates
@@ -1431,10 +1439,9 @@ function renderBoard() {
       </div>
     `;
     card.onclick = () => {
-      if (state.currentUser !== player.id) {
-        state.currentUser = player.id;
-        renderDash();
-      }
+      state.currentUser = player.id;
+      state.dashView = "profile";
+      renderDash();
       showScreen("dash");
     };
     return card;
