@@ -1,0 +1,156 @@
+/* ────────────────────────────────────────────────────────────────────────────
+   10. AVATAR
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  font-size: 22px;
+  position: relative;
+}
+.avatar-img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-placeholder { font-size: 22px; line-height: 1; }
+.avatar-large { width: 120px; height: 120px; font-size: 48px; margin: 0 auto; }
+.avatar-small { width: 40px; height: 40px; font-size: 18px; }
+
+.avatar-interactive { cursor: pointer; transition: all 0.2s; border-color: var(--border); }
+.avatar-interactive:hover { transform: scale(1.05); border-color: var(--accent); box-shadow: var(--glow-accent); }
+.avatar-interactive:active { transform: scale(0.95); }
+
+@media (max-width: 480px) {
+  .pick-selected-emp-card {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .pick-selected-avatar-btn {
+    gap: 4px;
+  }
+
+  .pick-selected-clear-btn {
+    grid-column: 2;
+    justify-self: end;
+    margin-top: 0;
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+  }
+
+  .pick-selected-emp-name {
+    font-size: 26px;
+    line-height: 1;
+  }
+
+  .avatar-pick-large {
+    width: 72px;
+    height: 72px;
+    font-size: 30px;
+  }
+
+  .avatar-pick-large .avatar-placeholder {
+    font-size: 30px;
+  }
+
+  .pick-avatar-edit-pill {
+    min-width: 72px;
+    padding: 2px 6px;
+    font-size: 8px;
+  }
+}
+
+.avatar-upload { position: relative; overflow: hidden; }
+.avatar-upload input[type="file"] { position: absolute; left: -9999px; }
+.avatar-upload-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer; border-radius: var(--radius-sm);
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text2); font-size: 12px; font-family: var(--type-body-family); font-weight: 700;
+  transition: all 0.2s;
+}
+.avatar-upload-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ────────────────────────────────────────────────────────────────────────────
+   11. TOAST
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.toast {
+  position: fixed;
+  bottom: calc(var(--nav-height) + var(--space-3));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: var(--space-2) var(--space-5);
+  color: #FFFFFF;
+  font-family: var(--type-body-family);
+  font-size: var(--type-body-size);
+  font-weight: 700;
+  box-shadow: var(--shadow-lg);
+  z-index: 200;
+  white-space: nowrap;
+  max-width: 90vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: toast-in 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.toast.hidden { display: none; }
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   12. CONFETTI
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.confetti-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 300;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   13. UTILITIES
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.hidden { display: none !important; }
+
+/* Search input */
+.search-wrap { display: flex; flex-direction: column; gap: var(--space-1); margin-bottom: var(--space-2); }
+.search-results-info { font-family: var(--type-small-family); font-size: var(--type-small-size); font-weight: var(--type-small-weight); color: var(--text3); text-align: center; }
+.search-results-info.hidden { display: none; }
+
+/* Pick screen employee search */
+#pick-search-info { font-family: var(--type-small-family); font-size: var(--type-small-size); color: var(--text3); text-align: center; }
+#pick-search-info.hidden { display: none; }
+
+/* Pick emp list grid */
+#pick-emp-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-1);
+  max-height: 280px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* pick-emp-grid legacy ID styles */
+#pick-emp-grid {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+

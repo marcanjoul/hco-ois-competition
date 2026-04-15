@@ -1,0 +1,246 @@
+/* ────────────────────────────────────────────────────────────────────────────
+   14. ANIMATIONS
+   ──────────────────────────────────────────────────────────────────────────── */
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroSlideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   15. RESPONSIVE
+   ──────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .pick-info-btn {
+    top: -12px;
+    right: 10px;
+    width: 52px;
+    height: 52px;
+    font-size: 24px;
+  }
+
+  .pick-comp-info {
+    border-radius: 22px;
+    padding: 12px 12px 0;
+  }
+
+  .pick-comp-info::after {
+    top: 10px;
+    right: 12px;
+    width: 72px;
+    height: 72px;
+    opacity: 0.12;
+  }
+
+  .pick-comp-name {
+    font-size: clamp(1.75rem, 7.8vw, 2.2rem);
+    letter-spacing: 1.2px;
+    max-width: calc(100% - 58px);
+    padding: 0 0 6px;
+  }
+
+  .pick-comp-hero-row {
+    gap: 8px;
+    padding: 0 0 10px;
+  }
+
+  .pick-countdown {
+    gap: 7px;
+    padding: 7px 10px 8px;
+    border-radius: 18px;
+  }
+
+  .pick-countdown-num {
+    font-size: clamp(2.85rem, 12vw, 3.45rem);
+  }
+
+  .pick-countdown-label {
+    font-size: 10px;
+    letter-spacing: 1.4px;
+    margin-bottom: 6px;
+  }
+
+  .pick-prize-pill {
+    padding: 7px 10px;
+    font-size: 10px;
+    max-width: 132px;
+  }
+
+  .pick-comp-dates {
+    font-size: 12px;
+    padding: 7px 10px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+  }
+
+  .pick-comp-goals,
+  .pick-winner-row {
+    margin: 0 -12px;
+  }
+
+  .pick-goals-toggle,
+  .pick-goals-content,
+  .pick-winner-row {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .pick-goals-toggle {
+    padding-top: 11px;
+    padding-bottom: 11px;
+    font-size: 11px;
+    letter-spacing: 1.7px;
+  }
+
+  .pick-goals-content {
+    gap: 10px;
+    padding-bottom: 12px;
+  }
+
+  .comp-detail {
+    gap: 7px;
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  .detail-label {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .detail-label-goal {
+    font-size: 14px;
+  }
+
+  .goal-progress {
+    gap: 6px;
+  }
+
+  .goal-progress-top {
+    gap: 8px;
+    align-items: center;
+  }
+
+  .goal-current {
+    font-size: clamp(2rem, 8.8vw, 2.65rem);
+    line-height: 0.92;
+  }
+
+  .goal-percent {
+    min-width: 56px;
+    padding: 6px 8px;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+  }
+
+  .goal-hype {
+    font-size: 10px;
+    line-height: 1.3;
+  }
+
+  .goal-bar-bg {
+    height: 8px;
+  }
+}
+
+@media (max-width: 380px) {
+  .pick-info-btn {
+    width: 46px;
+    height: 46px;
+    font-size: 21px;
+  }
+
+  .pick-comp-info {
+    padding: 16px 14px 0;
+  }
+
+  .pick-comp-name {
+    font-size: 30px;
+    max-width: calc(100% - 64px);
+  }
+
+  .pick-comp-hero-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pick-countdown {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 10px 12px;
+  }
+
+  .pick-countdown-num {
+    font-size: 52px;
+  }
+
+  .pick-countdown-label {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+
+  .pick-prize-pill {
+    max-width: none;
+    width: fit-content;
+  }
+
+  .pick-comp-dates {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .comp-detail {
+    padding: 12px;
+  }
+
+  .goal-progress-top {
+    align-items: center;
+  }
+
+  .goal-current {
+    font-size: 34px;
+  }
+
+  .goal-hype {
+    font-size: 12px;
+  }
+
+  .detail-label {
+    font-size: 13px;
+    letter-spacing: 1.3px;
+  }
+
+  .detail-label-goal {
+    font-size: 16px;
+  }
+
+  .goal-percent {
+    min-width: 56px;
+    padding: 7px 8px;
+    font-size: 11px;
+  }
+
+  .pick-comp-goals,
+  .pick-winner-row {
+    margin: 0 -14px;
+  }
+
+  .pick-goals-toggle,
+  .pick-goals-content,
+  .pick-winner-row {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .board-name { font-size: 16px; }
+  .board-card.rank-1 .board-name { font-size: 18px; }
+  .board-meta { font-size: 18px; }
+  .board-sph { font-size: 20px; }
+  .board-card.rank-1 .board-sph { font-size: 24px; }
+}
+
