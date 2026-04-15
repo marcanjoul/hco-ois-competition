@@ -523,7 +523,7 @@ function updatePickLogBtnState() {
     btn.disabled = true;
     btn.classList.remove("btn-locked");
     btn.classList.add("btn-ghost");
-    btn.textContent = "ADD ORDER";
+    btn.textContent = "ADD OIS";
     if (lockedMsg) lockedMsg.classList.remove("visible");
     if (salesInput) {
       salesInput.readOnly = false;
@@ -880,7 +880,21 @@ function hideSelectedEmployeeProfile() {
   if (profileCard) profileCard.style.display = "none";
 }
 
+function isIOSDevice() {
+  const ua = navigator.userAgent || "";
+  const platform = navigator.platform || "";
+  const touchPoints = navigator.maxTouchPoints || 0;
+  return /iPhone|iPad|iPod/i.test(ua) || (platform === "MacIntel" && touchPoints > 1);
+}
+
 function promptPickAvatarUpload(empId) {
+  // On iOS, opening the native file picker directly gives the system sheet
+  // with camera/photos/files options, which is smoother than our custom menu.
+  if (isIOSDevice()) {
+    triggerAvatarFileInput(empId, { accept: "image/*,.heic,.heif,.png,.jpg,.jpeg,.webp" });
+    return;
+  }
+
   let modal = document.getElementById("pick-avatar-upload-modal");
   if (!modal) {
     modal = document.createElement("div");
@@ -1177,7 +1191,7 @@ function renderDash() {
     logBtn.disabled = false;
     logBtn.classList.remove("btn-locked");
     logBtn.classList.remove("btn-disabled");
-    logBtn.textContent = "ADD ORDER";
+    logBtn.textContent = "ADD OIS";
   }
 
   const historyList = document.getElementById("history-list");
@@ -1213,41 +1227,70 @@ function renderDash() {
 // Leaderboard
 // ══════════════════════════════════════════════════════
 function renderBoardCompSelect() {
-  const sel = document.getElementById("board-comp-select");
+  const picker = document.getElementById("board-comp-picker");
+  const trigger = document.getElementById("board-comp-trigger");
+  const menu = document.getElementById("board-comp-menu");
   const title = document.getElementById("board-screen-title");
-  if (!sel) return;
-  sel.innerHTML = "";
+  if (!picker || !trigger || !menu) return;
+  menu.innerHTML = "";
 
   const nonArchivedComps = Object.entries(state.competitions)
     .filter(([, c]) => c.status !== "archived")
     .sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0));
 
   if (nonArchivedComps.length === 0) {
-    sel.style.display = "none";
+    picker.style.display = "none";
     if (title) title.textContent = "LEADERBOARD";
     return;
   }
 
-  sel.style.display = "block";
+  picker.style.display = "block";
   nonArchivedComps.forEach(([id, comp]) => {
-    const opt = document.createElement("option");
-    opt.value = id;
+    const opt = document.createElement("button");
+    opt.type = "button";
+    opt.className = "board-comp-option";
+    opt.dataset.compId = id;
+    opt.setAttribute("role", "option");
+    opt.setAttribute("aria-selected", id === state.boardComp ? "true" : "false");
     opt.textContent = comp.name;
-    if (id === state.boardComp) opt.selected = true;
-    sel.appendChild(opt);
+    if (id === state.boardComp) opt.classList.add("active");
+    opt.onclick = () => {
+      state.boardComp = id;
+      closeBoardCompMenu();
+      renderBoardCompSelect();
+      renderBoard();
+    };
+    menu.appendChild(opt);
   });
   const activeComp = state.competitions[state.boardComp];
+  trigger.textContent = activeComp?.name || nonArchivedComps[0]?.[1]?.name || "Select...";
   if (title) {
     title.textContent = activeComp ? `LEADERBOARD` : "LEADERBOARD";
   }
-  sel.onchange = () => {
-    state.boardComp = sel.value;
-    const nextComp = state.competitions[state.boardComp];
-    if (title) {
-      title.textContent = nextComp ? `LEADERBOARD` : "LEADERBOARD";
-    }
-    renderBoard();
+  trigger.onclick = () => {
+    if (picker.classList.contains("open")) closeBoardCompMenu();
+    else openBoardCompMenu();
   };
+}
+
+function openBoardCompMenu() {
+  const picker = document.getElementById("board-comp-picker");
+  const trigger = document.getElementById("board-comp-trigger");
+  const menu = document.getElementById("board-comp-menu");
+  if (!picker || !trigger || !menu) return;
+  picker.classList.add("open");
+  menu.classList.remove("hidden");
+  trigger.setAttribute("aria-expanded", "true");
+}
+
+function closeBoardCompMenu() {
+  const picker = document.getElementById("board-comp-picker");
+  const trigger = document.getElementById("board-comp-trigger");
+  const menu = document.getElementById("board-comp-menu");
+  if (!picker || !trigger || !menu) return;
+  picker.classList.remove("open");
+  menu.classList.add("hidden");
+  trigger.setAttribute("aria-expanded", "false");
 }
 
 function renderBoard() {
@@ -1319,8 +1362,6 @@ function renderBoard() {
     const rankLabel = index === 0 ? "👑" : displayRank <= 3
       ? (displayRank === 2 ? "🥈" : "🥉")
       : `#${displayRank}`;
-    const val = metric === "sph" ? player.sph : player.total;
-    const pct = topVal > 0 ? Math.max(4, (val / topVal) * 100) : 4;
     const isWinner = winner === player.id;
     const emp = state.employees[player.id];
     const card = document.createElement("div");
@@ -1342,7 +1383,6 @@ function renderBoard() {
           </div>
         </div>
         <div class="board-meta">$${player.total.toFixed(2)} total · ${player.hours.toFixed(1)} hrs</div>
-        <div class="board-bar-wrap"><div class="board-bar" style="width:${pct}%"></div></div>
       </div>
       <div>
         <div class="board-sph">$${player.sph.toFixed(0)}</div>
@@ -1965,7 +2005,6 @@ function renderAdminEmps(container) {
   toolsWrap.innerHTML = `
     <div class="admin-team-tools-header">
       <div>
-        <div class="admin-team-tools-eyebrow">Team Manager</div>
         <div class="admin-team-tools-title-row">
           <div class="admin-team-tools-title">Search, edit, and add people fast.</div>
           <div class="admin-team-tools-count">${employeeCount} ${employeeCount === 1 ? "employee" : "employees"}</div>
@@ -2642,6 +2681,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (e.target === infoModal) closeInfoModal();
     });
   }
+
+  document.addEventListener("click", (e) => {
+    const picker = document.getElementById("board-comp-picker");
+    if (!picker || picker.contains(e.target)) return;
+    closeBoardCompMenu();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeBoardCompMenu();
+  });
 
   // PIN submit
   const pinInput = document.getElementById("input-pin");

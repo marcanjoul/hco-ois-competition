@@ -95,7 +95,7 @@
 
       <!-- LOG CARD -->
       <div class="log-card" id="pick-log-card">
-        <div class="log-card-title">INSERT SCORE</div>
+        <div class="log-card-title">INSERT OIS</div>
 
         <!-- Step 1: Name -->
         <div class="pick-step-header" style="margin-bottom:var(--space-3)">
@@ -123,11 +123,11 @@
 
           <div class="pick-step-header" style="margin:var(--space-2) 0 var(--space-2)">
             <div class="pick-step-num">3</div>
-            <div class="pick-step-label">Enter your numbers</div>
+            <div class="pick-step-label">Enter Sales & Hours</div>
           </div>
           <div class="log-fields">
             <div class="log-field-wrap">
-              <label class="field-label">SALES ($)</label>
+              <label class="field-label">SALES($)</label>
               <input type="number" id="pick-input-sales" class="log-input" placeholder="0.00" min="0" step="0.01" inputmode="decimal" />
             </div>
             <div class="log-field-wrap">
@@ -135,7 +135,7 @@
               <input type="number" id="pick-input-hours" class="log-input" placeholder="0.0" min="0" step="0.5" inputmode="decimal" />
             </div>
           </div>
-          <button class="log-btn btn-ghost" id="pick-btn-log" disabled>ADD ORDER</button>
+          <button class="log-btn btn-ghost" id="pick-btn-log" disabled>ADD OIS</button>
           <div id="pick-log-locked-msg" class="log-locked-note">STAGE CLEARED - ghost admin can edit</div>
         </div>
 
@@ -184,7 +184,7 @@
         <span id="vibe-text">Add your first OIS to get started!</span>
       </div>
       <div class="log-card">
-        <div class="log-card-title">INSERT SCORE</div>
+        <div class="log-card-title">INSERT OIS</div>
         <div class="day-row" id="day-row"></div>
         <div class="log-fields">
           <div class="log-field-wrap">
@@ -196,7 +196,7 @@
             <input type="number" id="input-hours" class="log-input" placeholder="0.0" min="0" step="0.5" inputmode="decimal" />
           </div>
         </div>
-        <button class="log-btn" id="btn-log">ADD ORDER</button>
+        <button class="log-btn" id="btn-log">ADD OIS</button>
       </div>
       <div class="history-wrap">
         <div class="history-title">MY LOGS</div>
@@ -210,9 +210,12 @@
     <div class="screen-inner">
       <div class="screen-top-bar">
         <div class="screen-top-title" id="board-screen-title">LEADERBOARD</div>
-        <select id="board-comp-select" class="comp-select">
-          <option value="" disabled selected>Select...</option>
-        </select>
+        <div class="board-comp-picker" id="board-comp-picker">
+          <button class="comp-select board-comp-trigger" id="board-comp-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+            Select...
+          </button>
+          <div class="board-comp-menu hidden" id="board-comp-menu" role="listbox" aria-label="Competition selector"></div>
+        </div>
       </div>
       <div id="board-no-comps" style="display:none"></div>
       <div class="board-body" id="board-body"></div>
