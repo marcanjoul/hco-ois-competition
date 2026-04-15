@@ -4,11 +4,16 @@ import { ref, set, get, onValue, update, remove } from "firebase/database";
 
 const DEFAULT_EMPLOYEES = ["adam", "Ajla"];
 const ADMIN_PIN = import.meta.env.VITE_ADMIN_PIN;
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const PREVIEW_COUNT = 5;
 
 function getTodayDate() {
-  return new Date().toISOString().split("T")[0];
+  // Use local time, not UTC — avoids date being "tomorrow" in evening hours
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 let state = {
@@ -190,14 +195,14 @@ function getWeekForDate(dateStr) {
   const date = new Date(dateStr + "T00:00:00");
   const dayOfWeek = date.getDay();
   const startOfWeek = new Date(date);
-  startOfWeek.setDate(date.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1)); // Monday
+  startOfWeek.setDate(date.getDate() - dayOfWeek); // Sunday
 
   const days = [];
   for (let i = 0; i < 7; i++) {
     const d = new Date(startOfWeek);
     d.setDate(startOfWeek.getDate() + i);
     const dateString = d.toISOString().split("T")[0];
-    const dayName = DAYS[d.getDay() === 0 ? 6 : d.getDay() - 1];
+    const dayName = DAYS[d.getDay()]; // 0=Sun, 1=Mon ... 6=Sat
     const dayNum = d.getDate();
     days.push({ date: dateString, dayName, dayNum });
   }
@@ -296,7 +301,7 @@ function getPlayerSph(empId, compId) {
 }
 
 function getTodaySph(empId, compId) {
-  const log = (state.logs[compId] || {})[empId]?.[state.selectedDate];
+  const log = (state.logs[compId] || {})[empId]?.[getTodayDate()];
   if (!log) return { total: 0, hours: 0, sph: 0 };
   return { total: log.sales || 0, hours: log.hours || 0, sph: log.hours > 0 ? (log.sales / log.hours) : 0 };
 }
@@ -352,6 +357,12 @@ async function logEntryFromPick() {
   const today = getTodayDate();
   if (state.selectedDate > today) { showToast("Can't log orders in the future 🔮"); return; }
 
+  // Block overwriting an existing log
+  const existingLog = (state.logs[state.currentComp] || {})[state.currentUser]?.[state.selectedDate];
+  if (existingLog && (existingLog.sales > 0 || existingLog.hours > 0)) {
+    showToast("Already logged for this day — see a manager to edit 🔒"); return;
+  }
+
   await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
 
   const reaction = getBigOrderReaction(sales);
@@ -376,13 +387,17 @@ function renderPickDayRow() {
 
   week.days.forEach(dayInfo => {
     const hasEntry = myLogs[dayInfo.date] && (myLogs[dayInfo.date].sales > 0 || myLogs[dayInfo.date].hours > 0);
-    const isFutureDate = new Date(dayInfo.date) > new Date();
+    const isFutureDate = dayInfo.date > getTodayDate();
     const btn = document.createElement("button");
     btn.className = `day-btn${state.selectedDate === dayInfo.date ? " active" : ""}${hasEntry ? " logged" : ""}${isFutureDate ? " disabled" : ""}`;
     btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark"></div>' : ''}`;
 
     if (!isFutureDate) {
-      btn.onclick = () => { state.selectedDate = dayInfo.date; renderPickDayRow(); updatePickLogBtnState(); };
+      btn.onclick = () => {
+        state.selectedDate = dayInfo.date;
+        renderPickDayRow();
+        updatePickLogBtnState();
+      };
     } else {
       btn.disabled = true;
     }
@@ -394,14 +409,56 @@ function renderPickDayRow() {
 }
 
 function updatePickLogBtnState() {
-  const sales = parseFloat(document.getElementById("pick-input-sales").value);
-  const hours = parseFloat(document.getElementById("pick-input-hours").value);
   const btn = document.getElementById("pick-btn-log");
+  const lockedMsg = document.getElementById("pick-log-locked-msg");
+  const salesInput = document.getElementById("pick-input-sales");
+  const hoursInput = document.getElementById("pick-input-hours");
   if (!btn) return;
-  const hasValues = !isNaN(sales) && sales >= 0 && !isNaN(hours) && hours > 0;
-  const hasEmployee = !!state.currentUser;
-  btn.disabled = !(hasEmployee && hasValues);
-  btn.classList.toggle("btn-ghost", !(hasEmployee && hasValues));
+
+  // Check if the selected date already has a log for this employee
+  const existingLog = state.currentUser
+    ? (state.logs[state.currentComp] || {})[state.currentUser]?.[state.selectedDate]
+    : null;
+  const isLocked = !!(existingLog && (existingLog.sales > 0 || existingLog.hours > 0));
+
+  if (isLocked) {
+    btn.disabled = true;
+    btn.classList.add("btn-ghost");
+    btn.textContent = "✓ Already Logged";
+    if (lockedMsg) lockedMsg.style.display = "block";
+    if (salesInput) {
+      salesInput.readOnly = true;
+      salesInput.value = existingLog.sales;
+      salesInput.classList.add("input-locked");
+    }
+    if (hoursInput) {
+      hoursInput.readOnly = true;
+      hoursInput.value = existingLog.hours;
+      hoursInput.classList.add("input-locked");
+    }
+  } else {
+    btn.disabled = true; // stays disabled until values filled
+    btn.classList.add("btn-ghost");
+    btn.textContent = "+ LOG IT";
+    if (lockedMsg) lockedMsg.style.display = "none";
+    if (salesInput) {
+      salesInput.readOnly = false;
+      salesInput.value = "";
+      salesInput.classList.remove("input-locked");
+    }
+    if (hoursInput) {
+      hoursInput.readOnly = false;
+      hoursInput.value = "";
+      hoursInput.classList.remove("input-locked");
+    }
+    // Re-check if values are filled
+    const sales = parseFloat(salesInput?.value);
+    const hours = parseFloat(hoursInput?.value);
+    const hasValues = !isNaN(sales) && sales >= 0 && !isNaN(hours) && hours > 0;
+    const hasEmployee = !!state.currentUser;
+    btn.disabled = !(hasEmployee && hasValues);
+    btn.classList.toggle("btn-ghost", !(hasEmployee && hasValues));
+  }
 }
 // ══════════════════════════════════════════════════════
 function renderPickScreen(filterText = "") {
@@ -466,24 +523,31 @@ function renderPickScreen(filterText = "") {
         const todayGoal = compGoals[`daily_${todayDate}`];
         let detailsHtml = "";
 
+        // Store-wide totals (sum of ALL employees)
+        const compLogs = state.logs[state.currentComp] || {};
+        let storeTotalSales = 0, storeTodaySales = 0;
+        Object.values(compLogs).forEach(empLogs => {
+          Object.entries(empLogs || {}).forEach(([date, log]) => {
+            storeTotalSales += log.sales || 0;
+            if (date === todayDate) storeTodaySales += log.sales || 0;
+          });
+        });
+
         if (compGoals.competition?.value) {
-          const g = compGoals.competition;
-          const sph = state.currentUser ? getPlayerSph(state.currentUser, state.currentComp) : { sph: 0, total: 0 };
-          const current = g.type === "sph" ? sph.sph : sph.total;
           detailsHtml += `
             <div class="comp-detail">
               <div class="detail-label">COMPETITION GOAL</div>
-              ${renderGoalBar(current, g.value, g.type)}
+              ${renderGoalBar(storeTotalSales, compGoals.competition.value, "total")}
             </div>
           `;
         }
 
+        // Daily goal — always treat as total $ regardless of stored type
         if (todayGoal?.value) {
-          const todaySales = state.currentUser ? getTodaySph(state.currentUser, state.currentComp).total : 0;
           detailsHtml += `
             <div class="comp-detail" style="margin-top:16px;">
               <div class="detail-label">GOAL FOR TODAY</div>
-              ${renderGoalBar(todaySales, todayGoal.value, "total")}
+              ${renderGoalBar(storeTodaySales, todayGoal.value, "total")}
             </div>
           `;
         }
@@ -811,7 +875,7 @@ function renderDash() {
 
   week.days.forEach(dayInfo => {
     const hasEntry = myLogs[dayInfo.date] && (myLogs[dayInfo.date].sales > 0 || myLogs[dayInfo.date].hours > 0);
-    const isFutureDate = new Date(dayInfo.date) > new Date();
+    const isFutureDate = dayInfo.date > getTodayDate();
     const btn = document.createElement("button");
     btn.className = `day-btn${state.selectedDate === dayInfo.date ? " active" : ""}${hasEntry ? " logged" : ""}${isFutureDate ? " disabled" : ""}`;
     btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark"></div>' : ''}`;
@@ -861,7 +925,7 @@ function renderDash() {
       if (!log) return;
       const daySph = log.hours > 0 ? (log.sales / log.hours) : 0;
       const d = new Date(date + "T00:00:00");
-      const dayName = DAYS[d.getDay() === 0 ? 6 : d.getDay() - 1];
+      const dayName = DAYS[d.getDay()]; // 0=Sun, 1=Mon ... 6=Sat
       const dayNum = d.getDate();
       const item = document.createElement("div");
       item.className = "history-item";
@@ -1031,6 +1095,12 @@ async function logEntry() {
 
   const today = getTodayDate();
   if (state.selectedDate > today) { showToast("Can't log orders in the future 🔮"); return; }
+
+  // Block overwriting an existing log
+  const existingLog = (state.logs[state.currentComp] || {})[state.currentUser]?.[state.selectedDate];
+  if (existingLog && (existingLog.sales > 0 || existingLog.hours > 0)) {
+    showToast("Already logged for this day — see a manager to edit 🔒"); return;
+  }
 
   await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
   const reaction = getBigOrderReaction(sales);
@@ -1864,7 +1934,7 @@ function refreshAdminDayView() {
 
   week.days.forEach(dayInfo => {
     const hasLog = !!empLogs[dayInfo.date];
-    const isFutureDate = new Date(dayInfo.date) > new Date();
+    const isFutureDate = dayInfo.date > getTodayDate();
     const btn = document.createElement("button");
     btn.className = `admin-day-btn${hasLog ? " has-log" : ""}${isFutureDate ? " disabled" : ""}`;
     btn.innerHTML = `<div class="admin-day-btn-dayname">${dayInfo.dayName}</div><div class="admin-day-btn-date">${dayInfo.dayNum}</div>`;
@@ -1912,7 +1982,7 @@ function renderAdminLogDetail(empId, compId, date, log) {
   if (!detail) return;
   const sph = log.hours > 0 ? (log.sales / log.hours).toFixed(0) : "—";
   const d = new Date(date + "T00:00:00");
-  const dayName = DAYS[d.getDay() === 0 ? 6 : d.getDay() - 1];
+  const dayName = DAYS[d.getDay()];
   detail.innerHTML = `
     <div class="admin-log-header">
       <div class="admin-log-header-info">
@@ -1944,7 +2014,7 @@ function renderAdminLogCreate(empId, compId, date) {
   const detail = document.getElementById("admin-logs-detail");
   if (!detail) return;
   const d = new Date(date + "T00:00:00");
-  const dayName = DAYS[d.getDay() === 0 ? 6 : d.getDay() - 1];
+  const dayName = DAYS[d.getDay()];
   detail.innerHTML = `
     <div class="admin-log-header">
       <div class="admin-log-header-info">
@@ -1983,7 +2053,7 @@ function renderAdminLogEdit(empId, compId, date, log) {
   const detail = document.getElementById("admin-logs-detail");
   if (!detail) return;
   const d = new Date(date + "T00:00:00");
-  const dayName = DAYS[d.getDay() === 0 ? 6 : d.getDay() - 1];
+  const dayName = DAYS[d.getDay()];
   detail.innerHTML = `
     <div class="admin-log-header">
       <div class="admin-log-header-info">
