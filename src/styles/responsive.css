@@ -61,7 +61,7 @@
   }
 
   .board-meta {
-    font-size: 15px;
+    font-size: 13px;
     white-space: normal;
     overflow: visible;
     text-overflow: clip;
@@ -296,7 +296,7 @@
     font-size: 22px;
   }
   .board-meta {
-    font-size: 14px;
+    font-size: 12px;
     line-height: 1.15;
   }
   .board-score {
