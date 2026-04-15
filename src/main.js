@@ -306,17 +306,64 @@ function getTodaySph(empId, compId) {
   return { total: log.sales || 0, hours: log.hours || 0, sph: log.hours > 0 ? (log.sales / log.hours) : 0 };
 }
 
+function pickGoalHype(current, target, pct, isHit) {
+  const remaining = Math.max(0, target - current);
+  const roundedRemaining = `$${remaining.toFixed(0)}`;
+  const pools = isHit
+    ? [
+        "Goal cleared. Y'all are actually cooking.",
+        "Okayyyy this goal got smoked.",
+        "Ate that goal up. Keep going.",
+        "Mission complete. Still room to flex."
+      ]
+    : pct >= 85
+      ? [
+          `So close. ${roundedRemaining} more and it's yours.`,
+          `${roundedRemaining} left. Finish the job.`,
+          `Locked in. Just ${roundedRemaining} to go.`,
+          `${roundedRemaining} more and this goal is done done.`
+        ]
+      : pct >= 50
+        ? [
+            "Halfway there. Momentum is looking real nice.",
+            "You're in your bag now. Keep stacking.",
+            "This is a strong run. Don't let up.",
+            "Mid-game heat. A few more orders changes everything."
+          ]
+        : pct > 0
+          ? [
+              "Solid start. Let's build on it.",
+              "On the board. Now start stacking.",
+              "Good first push. Keep the pressure on.",
+              "We're moving. One more order can change the vibe."
+            ]
+          : [
+              "No pressure, but first order could go crazy.",
+              "Fresh slate. Time to start a run.",
+              "First order energy starts now.",
+              "Lock in and get this bar moving."
+            ];
+
+  const seed = `${target}|${current.toFixed(2)}|${Math.round(pct)}|${isHit}`;
+  const hash = Array.from(seed).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  return pools[hash % pools.length];
+}
+
 function renderGoalBar(current, target, type) {
   const pct = Math.min(100, target > 0 ? (current / target) * 100 : 0);
   const isHit = current >= target;
   const label = type === "sph" ? `$${current.toFixed(0)}/hr` : `$${current.toFixed(0)}`;
-  const targetLabel = type === "sph" ? `$${target}/hr` : `$${target}`;
+  const percentLabel = `${Math.round(pct)}%`;
+  const hype = pickGoalHype(current, target, pct, isHit);
   return `
     <div class="goal-progress">
       <div class="goal-progress-top">
-        <span class="goal-current${isHit ? " goal-hit" : ""}">${label}</span>
-        <span class="goal-target">Goal: ${targetLabel}</span>
+        <div class="goal-progress-copy">
+          <span class="goal-current${isHit ? " goal-hit" : ""}">${label}</span>
+        </div>
+        <span class="goal-percent${isHit ? " goal-percent-hit" : ""}">${percentLabel}</span>
       </div>
+      <div class="goal-hype${isHit ? " goal-hype-hit" : ""}">${hype}</div>
       <div class="goal-bar-bg">
         <div class="goal-bar-fill${isHit ? " goal-hit-bar" : ""}" style="width:${pct}%"></div>
       </div>
@@ -463,6 +510,9 @@ function updatePickLogBtnState() {
       hoursInput.classList.add("input-locked");
     }
   } else {
+    const wasSalesLocked = !!salesInput?.readOnly;
+    const wasHoursLocked = !!hoursInput?.readOnly;
+
     btn.disabled = true;
     btn.classList.remove("btn-locked");
     btn.classList.add("btn-ghost");
@@ -471,10 +521,12 @@ function updatePickLogBtnState() {
     if (salesInput) {
       salesInput.readOnly = false;
       salesInput.classList.remove("input-locked");
+      if (wasSalesLocked) salesInput.value = "";
     }
     if (hoursInput) {
       hoursInput.readOnly = false;
       hoursInput.classList.remove("input-locked");
+      if (wasHoursLocked) hoursInput.value = "";
     }
     const sales = parseFloat(salesInput?.value);
     const hours = parseFloat(hoursInput?.value);
@@ -575,10 +627,10 @@ function renderPickScreen(filterText = "") {
       });
       let goalsHtml = "";
       if (compGoals.competition?.value) {
-        goalsHtml += `<div class="comp-detail"><div class="detail-label">COMPETITION GOAL</div>${renderGoalBar(storeTotalSales, compGoals.competition.value, "total")}</div>`;
+        goalsHtml += `<div class="comp-detail"><div class="detail-label">Competition Goal: <span class="detail-label-goal">$${compGoals.competition.value}</span></div>${renderGoalBar(storeTotalSales, compGoals.competition.value, "total")}</div>`;
       }
       if (todayGoal?.value) {
-        goalsHtml += `<div class="comp-detail" style="margin-top:12px"><div class="detail-label">TODAY'S GOAL</div>${renderGoalBar(storeTodaySales, todayGoal.value, "total")}</div>`;
+        goalsHtml += `<div class="comp-detail" style="margin-top:12px"><div class="detail-label">Today's Goal: <span class="detail-label-goal">$${todayGoal.value}</span></div>${renderGoalBar(storeTodaySales, todayGoal.value, "total")}</div>`;
       }
       if (goalsSection) goalsSection.style.display = goalsHtml ? "block" : "none";
       if (goalsContent) goalsContent.innerHTML = goalsHtml;
@@ -686,10 +738,19 @@ function enterAsDashboard(empId) {
   state.currentUser = empId;
   state.selectedDate = getTodayDate();
 
+  // Always start fresh when switching employees.
+  // (If the selected day already has a log, updatePickLogBtnState will refill and lock these.)
+  const salesInput = document.getElementById("pick-input-sales");
+  const hoursInput = document.getElementById("pick-input-hours");
+  if (salesInput) salesInput.value = "";
+  if (hoursInput) hoursInput.value = "";
+
   const emp = state.employees[empId];
 
   // Update selector button to show name (collapsed style)
+  const selectorWrap = document.querySelector(".pick-emp-selector-wrap");
   const selectorBtn = document.getElementById("pick-emp-selector");
+  if (selectorWrap) selectorWrap.classList.add("hidden");
   if (selectorBtn) {
     selectorBtn.textContent = "👤 " + (emp?.name || "");
     selectorBtn.classList.add("has-selection");
@@ -715,6 +776,55 @@ function enterAsDashboard(empId) {
   updatePickLogBtnState();
 }
 
+function resetPickEmployeeSelection({ openGrid = false } = {}) {
+  state.currentUser = null;
+  state.selectedDate = getTodayDate();
+
+  const selectorWrap = document.querySelector(".pick-emp-selector-wrap");
+  if (selectorWrap) selectorWrap.classList.remove("hidden");
+
+  const selectorBtn = document.getElementById("pick-emp-selector");
+  if (selectorBtn) {
+    selectorBtn.textContent = "Tap to select your name...";
+    selectorBtn.classList.remove("has-selection");
+  }
+
+  const empGrid = document.getElementById("pick-emp-grid");
+  if (empGrid) empGrid.classList.toggle("hidden", !openGrid);
+
+  const searchEl = document.getElementById("pick-emp-search");
+  if (searchEl) searchEl.value = "";
+  if (openGrid) {
+    renderPickEmpGrid();
+    if (searchEl) searchEl.focus();
+  }
+
+  const salesInput = document.getElementById("pick-input-sales");
+  const hoursInput = document.getElementById("pick-input-hours");
+  if (salesInput) {
+    salesInput.value = "";
+    salesInput.readOnly = false;
+    salesInput.classList.remove("input-locked");
+  }
+  if (hoursInput) {
+    hoursInput.value = "";
+    hoursInput.readOnly = false;
+    hoursInput.classList.remove("input-locked");
+  }
+
+  const formSteps = document.getElementById("pick-form-steps");
+  if (formSteps) {
+    formSteps.style.display = "none";
+    formSteps.classList.remove("revealed");
+  }
+
+  const successState = document.getElementById("pick-success-state");
+  if (successState) successState.classList.remove("visible");
+
+  hideSelectedEmployeeProfile();
+  updatePickLogBtnState();
+}
+
 function showSelectedEmployeeProfile(empId, emp) {
   let profileCard = document.getElementById("pick-emp-profile");
   if (!profileCard) {
@@ -729,27 +839,122 @@ function showSelectedEmployeeProfile(empId, emp) {
   profileCard.style.display = "block";
 
   profileCard.innerHTML = `
-    <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:12px;border:1px solid var(--border);">
-      <div class="avatar avatar-interactive" id="pick-emp-avatar-btn" style="width:48px;height:48px;" title="Tap to edit avatar">
-        ${getAvatarHtml(emp, "", empId)}
+    <div class="pick-selected-emp-card">
+      <button class="pick-selected-avatar-btn" id="pick-emp-avatar-btn" type="button" title="Tap to edit avatar">
+        ${getAvatarHtml(emp, "pick-large avatar-interactive", empId)}
+        <span class="pick-avatar-edit-pill">Edit photo</span>
+      </button>
+      <div class="pick-selected-emp-copy">
+        <div class="pick-selected-emp-name">${emp.name}</div>
       </div>
-      <div>
-        <div style="font-size:15px;font-weight:800;color:var(--text);">${emp.name}</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px;font-weight:600;">Tap avatar to change photo</div>
-      </div>
+      <button class="pick-selected-clear-btn" id="pick-clear-emp-btn" type="button" title="Choose a different employee" aria-label="Choose a different employee">✕</button>
     </div>
   `;
 
   // Make avatar clickable to edit (employees can only edit avatar)
   document.getElementById("pick-emp-avatar-btn").onclick = (e) => {
     e.stopPropagation();
-    openEditAvatarModal(empId, emp);
+    promptPickAvatarUpload(empId);
+  };
+
+  document.getElementById("pick-clear-emp-btn").onclick = (e) => {
+    e.stopPropagation();
+    resetPickEmployeeSelection({ openGrid: true });
   };
 }
 
 function hideSelectedEmployeeProfile() {
   const profileCard = document.getElementById("pick-emp-profile");
   if (profileCard) profileCard.style.display = "none";
+}
+
+function promptPickAvatarUpload(empId) {
+  let modal = document.getElementById("pick-avatar-upload-modal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "pick-avatar-upload-modal";
+    modal.className = "pick-avatar-upload-modal";
+    document.body.appendChild(modal);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closePickAvatarUploadModal();
+    });
+  }
+
+  modal.innerHTML = `
+    <div class="pick-avatar-upload-sheet">
+      <div class="pick-avatar-upload-header">
+        <div class="pick-avatar-upload-title">Update Photo</div>
+        <button class="pick-avatar-upload-close" id="pick-avatar-upload-close" type="button" aria-label="Close upload options">✕</button>
+      </div>
+      <div class="pick-avatar-upload-subtitle">Choose how you want to upload your avatar.</div>
+      <div class="pick-avatar-upload-actions">
+        <button class="pick-avatar-upload-option" id="pick-avatar-take-photo" type="button">
+          <span class="pick-avatar-upload-option-icon">📸</span>
+          <span class="pick-avatar-upload-option-copy">
+            <strong>Take photo</strong>
+            <span>Open the camera</span>
+          </span>
+        </button>
+        <button class="pick-avatar-upload-option" id="pick-avatar-choose-photo" type="button">
+          <span class="pick-avatar-upload-option-icon">🖼️</span>
+          <span class="pick-avatar-upload-option-copy">
+            <strong>Choose photo</strong>
+            <span>Pick from your photos</span>
+          </span>
+        </button>
+        <button class="pick-avatar-upload-option" id="pick-avatar-choose-file" type="button">
+          <span class="pick-avatar-upload-option-icon">📁</span>
+          <span class="pick-avatar-upload-option-copy">
+            <strong>Choose from files</strong>
+            <span>Browse files on this device</span>
+          </span>
+        </button>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add("active");
+  modal.querySelector("#pick-avatar-upload-close").onclick = closePickAvatarUploadModal;
+  modal.querySelector("#pick-avatar-take-photo").onclick = () => triggerAvatarFileInput(empId, { accept: "image/*", capture: "environment" });
+  modal.querySelector("#pick-avatar-choose-photo").onclick = () => triggerAvatarFileInput(empId, { accept: "image/*" });
+  modal.querySelector("#pick-avatar-choose-file").onclick = () => triggerAvatarFileInput(empId, { accept: "image/*,.heic,.heif,.png,.jpg,.jpeg,.webp" });
+}
+
+function closePickAvatarUploadModal() {
+  const modal = document.getElementById("pick-avatar-upload-modal");
+  if (modal) modal.classList.remove("active");
+}
+
+function triggerAvatarFileInput(empId, { accept = "image/*", capture } = {}) {
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = accept;
+  if (capture) fileInput.capture = capture;
+  fileInput.style.position = "absolute";
+  fileInput.style.left = "-9999px";
+  document.body.appendChild(fileInput);
+
+  fileInput.onchange = async (e) => {
+    const file = e.target.files?.[0];
+    fileInput.remove();
+    if (!file) return;
+    closePickAvatarUploadModal();
+    if (file.size > 5000000) {
+      showToast("Image too large (max 5MB)");
+      return;
+    }
+
+    const base64 = await fileToBase64(file);
+    await update(dbRef.emp(empId), { avatar: base64 });
+    showToast("Photo updated ✅");
+
+    const updatedEmp = state.employees[empId];
+    if (updatedEmp && state.currentUser === empId) {
+      showSelectedEmployeeProfile(empId, updatedEmp);
+    }
+  };
+
+  fileInput.click();
 }
 
 function renderPickEmpGrid(filterText = "") {
@@ -1800,7 +2005,6 @@ function openEditAvatarModal(empId, emp) {
       </div>
 
       <div class="admin-edit-emp-avatar-section">
-        <label class="field-label">AVATAR</label>
         <div id="edit-avatar-preview" class="admin-edit-emp-avatar-large">
           ${getAvatarHtml(emp, "large", empId)}
         </div>
@@ -1904,7 +2108,6 @@ function openEditEmpModal(empId, emp) {
       </div>
 
       <div class="admin-edit-emp-avatar-section">
-        <label class="field-label">AVATAR</label>
         <div id="edit-emp-avatar-preview" class="admin-edit-emp-avatar-large">
           ${getAvatarHtml(emp, "large", empId)}
         </div>
@@ -2312,20 +2515,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const successResetBtn = document.getElementById("pick-success-reset-btn");
   if (successResetBtn) {
     successResetBtn.onclick = () => {
-      // Reset to fresh name selection
-      state.currentUser = null;
-      state.selectedDate = getTodayDate();
-      const selectorBtn = document.getElementById("pick-emp-selector");
-      if (selectorBtn) {
-        selectorBtn.textContent = "Tap to select your name...";
-        selectorBtn.classList.remove("has-selection");
-      }
-      const formSteps = document.getElementById("pick-form-steps");
-      if (formSteps) { formSteps.style.display = "none"; formSteps.classList.remove("revealed"); }
-      const successState = document.getElementById("pick-success-state");
-      if (successState) successState.classList.remove("visible");
-      const profileCard = document.getElementById("pick-emp-profile");
-      if (profileCard) profileCard.style.display = "none";
+      resetPickEmployeeSelection();
     };
   }
 
@@ -2345,17 +2535,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   const empGrid = document.getElementById("pick-emp-grid");
   if (empSelectorBtn && empGrid) {
     empSelectorBtn.onclick = () => {
-      const isHidden = empGrid.classList.contains("hidden");
+      const isOpening = empGrid.classList.contains("hidden");
       empGrid.classList.toggle("hidden");
-      if (isHidden) {
-        const profileCard = document.getElementById("pick-emp-profile");
-        if (profileCard) profileCard.style.display = "none";
+      if (isOpening) {
         renderPickEmpGrid();
         const searchEl = document.getElementById("pick-emp-search");
         if (searchEl) searchEl.focus();
-      } else {
-        const profileCard = document.getElementById("pick-emp-profile");
-        if (profileCard && state.currentUser) profileCard.style.display = "block";
       }
     };
   }
