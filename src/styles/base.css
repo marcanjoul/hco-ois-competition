@@ -3,7 +3,7 @@
   This file controls the shared foundation of the site.
 
   Website examples:
-  - The welcome screen with "Wiregrass OIS Competition." and "Get Started"
+  - The welcome screen with "Wiregrass OIS Competition" and "Get Started"
   - The top header that later shows the player name
   - The bottom navigation buttons: "Maze", "Leaderboard", and "WIREGRASS HQ"
   - Global colors, fonts, spacing, and shadows
@@ -205,7 +205,7 @@ input[type="number"] { -moz-appearance: textfield; }
 
 /* ────────────────────────────────────────────────────────────────────────────
    3A. WELCOME SCREEN
-   Example on the website: the first page with "Wiregrass OIS Competition."
+   Example on the website: the first page with "Wiregrass OIS Competition"
    and the yellow/blue "Get Started" button.
    ──────────────────────────────────────────────────────────────────────────── */
 

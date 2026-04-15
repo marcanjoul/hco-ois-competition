@@ -76,7 +76,7 @@ Important:
 
 Website examples:
 
-- Big titles like `Wiregrass OIS Competition.`
+- Big titles like `Wiregrass OIS Competition`
 - Body text like helper copy and labels
 
 ### Change the welcome screen
@@ -91,7 +91,7 @@ Website examples:
 
 Website examples:
 
-- `Wiregrass OIS Competition.`
+- `Wiregrass OIS Competition`
 - `Get Started`
 
 ### Change the top header

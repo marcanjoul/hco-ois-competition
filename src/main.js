@@ -1705,7 +1705,6 @@ function renderCompEditPanel(compId, comp) {
     endDate: comp.endDate || "",
     prize: comp.prize || "",
     status: comp.status,
-    winner: comp.winner || "",
     competitionGoal: getCompGoals(compId).competition?.value || "",
   };
 
@@ -1772,7 +1771,7 @@ function renderCompEditPanel(compId, comp) {
   statusWrap.innerHTML = `<label class="field-label">STATUS</label>`;
   const statusSel = document.createElement("select");
   statusSel.className = "log-input"; statusSel.id = "comp-edit-status";
-  ["active", "closed", "archived"].forEach(s => {
+  ["active", "closed"].forEach(s => {
     const opt = document.createElement("option");
     opt.value = s; opt.textContent = s.charAt(0).toUpperCase() + s.slice(1);
     if (getCompetitionStatusMeta(comp).key === s) opt.selected = true;
@@ -1782,25 +1781,19 @@ function renderCompEditPanel(compId, comp) {
   content.appendChild(statusWrap);
   addChangeListener("comp-edit-status", comp.status);
 
+  const winnerDisplayText = !isCompEnded(comp)
+    ? "Winner TBA"
+    : (comp.winner && state.employees[comp.winner]?.name)
+      ? state.employees[comp.winner].name
+      : "No winner set";
+
   const winnerWrap = document.createElement("div");
   winnerWrap.style.marginBottom = "10px";
-  winnerWrap.innerHTML = `<label class="field-label">WINNER (auto-set when ended, or override)</label>`;
-  const winnerSel = document.createElement("select");
-  winnerSel.className = "log-input"; winnerSel.id = "comp-edit-winner";
-  const noWin = document.createElement("option");
-  noWin.value = ""; noWin.textContent = "— Auto / No winner set —";
-  winnerSel.appendChild(noWin);
-  Object.entries(state.employees)
-    .sort(([, a], [, b]) => a.name.localeCompare(b.name))
-    .forEach(([id, emp]) => {
-      const opt = document.createElement("option");
-      opt.value = id; opt.textContent = emp.name;
-      if (comp.winner === id) opt.selected = true;
-      winnerSel.appendChild(opt);
-    });
-  winnerWrap.appendChild(winnerSel);
+  winnerWrap.innerHTML = `
+    <label class="field-label">WINNER</label>
+    <div class="admin-readonly-field">${escapeHtml(winnerDisplayText)}</div>
+  `;
   content.appendChild(winnerWrap);
-  addChangeListener("comp-edit-winner", comp.winner || "");
 
   // ═══ Goals Section ═══
   const goalsTitle = document.createElement("div");
@@ -1915,7 +1908,6 @@ function renderCompEditPanel(compId, comp) {
       startDate: document.getElementById("comp-edit-startDate").value,
       endDate: document.getElementById("comp-edit-endDate").value,
       status: document.getElementById("comp-edit-status").value,
-      winner: document.getElementById("comp-edit-winner").value || null,
     });
 
     // Save competition goal

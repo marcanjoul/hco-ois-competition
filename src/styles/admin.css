@@ -216,6 +216,19 @@
   text-transform: uppercase;
 }
 
+.admin-readonly-field {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+  font-family: var(--type-body-family);
+  font-size: var(--type-body-size);
+  font-weight: 700;
+}
+
 .admin-list {
   display: flex;
   flex-direction: column;

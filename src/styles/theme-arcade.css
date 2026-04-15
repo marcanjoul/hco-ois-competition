@@ -763,11 +763,19 @@ body::after {
 
 .admin-tab-bar {
   gap: 12px !important;
-  padding: 14px 16px 0 !important;
+  padding: 10px 16px !important;
+  margin-bottom: 16px;
   justify-content: center;
+  align-items: center;
+}
+
+.admin-tab-content {
+  margin-top: 16px;
 }
 
 .admin-tab-btn {
+  font-size: 10px !important;
+  letter-spacing: 1px !important;
   padding: 14px 22px !important;
   transition: transform 0.12s steps(2), box-shadow 0.12s steps(2), background-color 0.12s steps(2), color 0.12s steps(2) !important;
 }
@@ -792,15 +800,20 @@ body::after {
 @media (max-width: 640px) {
   .admin-tab-bar {
     gap: 10px !important;
-    padding: 12px !important;
+    padding: 10px 12px !important;
+    margin-bottom: 12px;
     justify-content: stretch;
+  }
+
+  .admin-tab-content {
+    margin-top: 12px;
   }
 
   .admin-tab-btn {
     min-width: 0 !important;
     width: 100%;
     padding: 12px 8px !important;
-    font-size: 9px !important;
+    font-size: 8px !important;
     line-height: 1.15 !important;
     text-align: center;
   }
