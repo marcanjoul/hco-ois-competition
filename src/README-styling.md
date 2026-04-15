@@ -216,7 +216,7 @@ Website example:
 
 - The row with the flame emoji and message text
 
-### Change the My Logs list
+### Change the Orders list
 
 - Edit file: `src/styles/dashboard.css`
 - Search for:
@@ -226,7 +226,7 @@ Website example:
 
 Website example:
 
-- `MY LOGS`
+- `ORDERS`
 
 ### Change the leaderboard cards
 

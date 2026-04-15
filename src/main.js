@@ -1232,7 +1232,10 @@ function renderDash() {
       const item = document.createElement("div");
       item.className = "history-item";
       item.innerHTML = `
-        <div class="history-day">${dayName} ${dayNum}</div>
+        <div class="history-day">
+          <div class="history-day-name">${dayName}</div>
+          <div class="history-day-num">${dayNum}</div>
+        </div>
         <div class="history-info">
           <div class="history-sales">$${(log.sales || 0).toFixed(2)}</div>
           <div class="history-meta">${log.hours || 0} hrs worked</div>

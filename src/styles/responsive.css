@@ -28,6 +28,33 @@
    ──────────────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {
+  .history-item {
+    grid-template-columns: 58px minmax(0, 1fr) auto;
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
+  .history-day-name {
+    font-size: 10px;
+  }
+
+  .history-day-num {
+    font-size: 22px;
+  }
+
+  .history-sales {
+    font-size: 22px;
+  }
+
+  .history-meta {
+    font-size: 16px;
+    margin-top: 2px;
+  }
+
+  .history-sph {
+    font-size: 14px;
+  }
+
   .board-card {
     align-items: flex-start;
     gap: 10px;
@@ -201,6 +228,32 @@
 }
 
 @media (max-width: 380px) {
+  .history-item {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .history-day-name {
+    font-size: 9px;
+  }
+
+  .history-day-num {
+    font-size: 18px;
+  }
+
+  .history-sales {
+    font-size: 18px;
+  }
+
+  .history-meta {
+    font-size: 13px;
+  }
+
+  .history-sph {
+    font-size: 11px;
+  }
+
   .pick-info-btn {
     width: 46px;
     height: 46px;
