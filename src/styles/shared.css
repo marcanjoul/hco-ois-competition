@@ -29,6 +29,7 @@
 .avatar-placeholder { font-size: 22px; line-height: 1; }
 .avatar-large { width: 120px; height: 120px; font-size: 48px; margin: 0 auto; }
 .avatar-small { width: 40px; height: 40px; font-size: 18px; }
+.avatar-board { width: 64px; height: 64px; font-size: 26px; }
 
 .avatar-interactive { cursor: pointer; transition: all 0.2s; border-color: var(--border); }
 .avatar-interactive:hover { transform: scale(1.05); border-color: var(--accent); box-shadow: var(--glow-accent); }

@@ -134,6 +134,17 @@ function getAvatarHtml(emp, size = "", empId = "") {
   return `<div class="avatar${sizeClass}"><span class="avatar-placeholder">${placeholder}</span></div>`;
 }
 
+function getBoardAvatarHtml(emp, playerId, displayRank) {
+  const medal = displayRank === 1 ? "🥇" : displayRank === 2 ? "🥈" : displayRank === 3 ? "🥉" : "";
+  return `
+    <div class="board-avatar-stack${displayRank === 1 ? " rank-1" : ""}">
+      ${displayRank === 1 ? '<div class="board-avatar-crown">👑</div>' : ""}
+      ${getAvatarHtml(emp || { name: playerId }, "board", playerId)}
+      ${medal ? `<div class="board-avatar-medal">${medal}</div>` : ""}
+    </div>
+  `;
+}
+
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -1385,17 +1396,16 @@ function renderBoard() {
     card.style.animationDelay = `${index * 0.06}s`;
     const safePlayerName = escapeHtml(player.name);
     card.innerHTML = `
-      <div class="board-rank">${isWinner ? "🏆" : rankLabel}</div>
+      ${getBoardAvatarHtml(emp || { name: player.name }, player.id, displayRank)}
       <div class="board-info">
         <div class="board-name-row">
-          ${getAvatarHtml(emp || { name: player.name }, "small", player.id)}
           <div class="board-name">
-            ${safePlayerName}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}
+            ${safePlayerName}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}${displayRank > 3 ? ` <span class='board-rank-inline'>#${displayRank}</span>` : ""}
           </div>
         </div>
         <div class="board-meta">$${player.total.toFixed(2)} total · ${player.hours.toFixed(1)} hrs</div>
       </div>
-      <div>
+      <div class="board-score">
         <div class="board-sph">$${player.sph.toFixed(0)}</div>
         <div class="board-sph-label">/HR</div>
       </div>
