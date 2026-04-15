@@ -1,3 +1,12 @@
+/*
+  BEGINNER GUIDE
+  This file changes the layout for smaller screens like phones/tablets.
+
+  Website examples:
+  - Buttons shrinking on mobile
+  - Leaderboard rows resizing on narrow screens
+  - Competition card stacking differently on small screens
+*/
 /* ────────────────────────────────────────────────────────────────────────────
    14. ANIMATIONS
    ──────────────────────────────────────────────────────────────────────────── */
@@ -14,6 +23,8 @@
 
 /* ────────────────────────────────────────────────────────────────────────────
    15. RESPONSIVE
+   These rules only apply at smaller screen widths.
+   Example on the website: the phone version of the home card and leaderboard.
    ──────────────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {
@@ -243,4 +254,3 @@
   .board-sph { font-size: 20px; }
   .board-card.rank-1 .board-sph { font-size: 24px; }
 }
-

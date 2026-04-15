@@ -1,7 +1,19 @@
+/*
+  BEGINNER GUIDE
+  This file controls the admin side of the website.
+
+  Website examples:
+  - The PIN screen with "GHOST GATE"
+  - The admin tab buttons and admin list items
+  - Team tools, goal editing, and log detail panels
+*/
 /* ────────────────────────────────────────────────────────────────────────────
    7. ADMIN — PIN GATE
    ──────────────────────────────────────────────────────────────────────────── */
 
+/* PIN gate screen
+   Example on the website: the page with the lock emoji and "OPEN GATE" button.
+*/
 .admin-gate-body {
   flex: 1;
   display: flex;
@@ -71,7 +83,9 @@
    8. ADMIN PANEL
    ──────────────────────────────────────────────────────────────────────────── */
 
-/* Admin top bar with lock button */
+/* Admin top bar with lock button
+   Example on the website: the top bar inside admin after you unlock it.
+*/
 .admin-top-row {
   display: flex;
   align-items: center;
@@ -100,7 +114,9 @@
 }
 .admin-lock-btn:hover { border-color: var(--red); color: var(--red); }
 
-/* Admin summary bar */
+/* Admin summary bar
+   Example on the website: the row of little summary chips in admin.
+*/
 .admin-summary-bar {
   display: flex;
   gap: var(--space-2);
@@ -124,7 +140,9 @@
 }
 .admin-summary-chip.accent { color: var(--accent); border-color: rgba(26,111,244,0.3); background: rgba(26,111,244,0.08); }
 
-/* Admin tab bar */
+/* Admin tab bar
+   Example on the website: the buttons that switch admin sections.
+*/
 .admin-tab-bar {
   display: flex;
   padding: var(--space-3) var(--space-4) 0;
@@ -165,7 +183,9 @@
   overflow-y: auto;
 }
 
-/* Admin section */
+/* Admin section
+   Example on the website: section titles and section content inside admin.
+*/
 .admin-section-title {
   font-family: var(--type-title-family);
   font-size: var(--type-title-size);
@@ -281,7 +301,9 @@
   letter-spacing: 0.4px;
 }
 
-/* Logged today dot */
+/* Logged today dot
+   Example on the website: the tiny colored dot showing whether someone logged today.
+*/
 .admin-today-dot {
   width: 8px; height: 8px;
   border-radius: 50%;
@@ -290,7 +312,9 @@
 .admin-today-dot.logged { background: var(--green); box-shadow: 0 0 6px rgba(63,185,80,0.5); }
 .admin-today-dot.not-logged { background: var(--surface2); border: 1px solid var(--border); }
 
-/* Buttons */
+/* Buttons
+   Example on the website: small edit/delete buttons inside admin rows.
+*/
 .del-btn {
   background: none;
   border: 1px solid var(--border);
@@ -536,7 +560,9 @@
   }
 }
 
-/* Admin log detail */
+/* Admin log detail
+   Example on the website: the panel showing one employee's numbers for a day.
+*/
 .admin-log-detail-wrap {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -578,7 +604,9 @@
 .admin-action-edit:hover { border-color: var(--accent); color: var(--accent); }
 .admin-action-delete:hover { border-color: var(--red); color: var(--red); }
 
-/* Admin day buttons */
+/* Admin day buttons
+   Example on the website: the small row of days inside admin detail view.
+*/
 .admin-day-buttons {
   display: flex;
   gap: var(--space-1);
@@ -619,7 +647,9 @@
 .admin-day-btn.has-log.active { background: var(--green); border-color: var(--green); color: white; }
 .admin-day-btn.disabled { opacity: 0.25; cursor: not-allowed; pointer-events: none; }
 
-/* Goal admin blocks */
+/* Goal admin blocks
+   Example on the website: cards used to edit competition goals in admin.
+*/
 .goal-admin-block {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -630,7 +660,9 @@
 .goal-admin-label { font-family: var(--type-title-family); font-size: var(--type-title-size); letter-spacing: 1px; color: var(--text); margin-bottom: 4px; }
 .goal-admin-hint { font-family: var(--type-caption-family); font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); color: var(--text2); margin-bottom: var(--space-3); }
 
-/* Collapsible */
+/* Collapsible
+   Example on the website: a button that opens/closes an admin section.
+*/
 .collapsible-toggle {
   width: 100%;
   display: flex;
@@ -653,7 +685,9 @@
 .collapsible-toggle:hover { border-color: var(--accent); color: var(--accent); }
 .collapsible-toggle.expanded { border-radius: var(--radius-sm) var(--radius-sm) 0 0; border-bottom-color: transparent; }
 
-/* Prize textarea */
+/* Prize textarea
+   Example on the website: the bigger text area used for prize descriptions.
+*/
 .prize-textarea {
   width: 100%;
   min-height: 80px;
@@ -689,4 +723,3 @@
   transition: all 0.15s;
 }
 .prize-format-btn:hover { border-color: var(--accent); color: var(--accent); }
-

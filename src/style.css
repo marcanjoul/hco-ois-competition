@@ -1,3 +1,19 @@
+/*
+  BEGINNER GUIDE
+  This file is only the CSS table of contents.
+  It imports the real style files below.
+
+  Use this map to find what to edit:
+  - `base.css` = whole-app colors, fonts, welcome screen, header, bottom nav
+  - `pick.css` = main "INSERT OIS" screen
+  - `dashboard.css` = personal stats screen
+  - `board.css` = leaderboard screen
+  - `admin.css` = PIN gate and admin area
+  - `modals.css` = popup windows like "Competition Rules"
+  - `shared.css` = avatars, toast, utility helpers
+  - `responsive.css` = phone/tablet sizing changes
+  - `theme-arcade.css` = retro arcade look overrides
+*/
 @import "./styles/base.css";
 @import "./styles/pick.css";
 @import "./styles/dashboard.css";

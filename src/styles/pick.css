@@ -1,8 +1,19 @@
+/*
+  BEGINNER GUIDE
+  This file controls the main home/logging screen.
+
+  Website examples:
+  - The competition card with the title, countdown, prize, and progress
+  - The "INSERT OIS" card
+  - The player picker, day picker, Sales/Hours inputs, and "ADD OIS" button
+*/
 /* ────────────────────────────────────────────────────────────────────────────
    4. PICK SCREEN — HOME
    ──────────────────────────────────────────────────────────────────────────── */
 
-/* Background accent stripe */
+/* Background accent stripe
+   Example on the website: the glow/stripe behind the top of the main screen.
+*/
 .pick-bg-stripe {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -56,7 +67,9 @@
   box-shadow: 1px 1px 0 #09153a !important;
 }
 
-/* ── COMPETITION CARD ── */
+/* ── COMPETITION CARD ──
+   Example on the website: the card showing the current competition details.
+*/
 .pick-comp-info {
   background:
     radial-gradient(circle at top right, rgba(77,158,250,0.22) 0%, rgba(77,158,250,0.08) 18%, transparent 42%),
@@ -283,7 +296,9 @@
 }
 .site-banner:empty { display: none; }
 
-/* ── NAME SELECTION — STEP FLOW ── */
+/* ── NAME SELECTION — STEP FLOW ──
+   Example on the website: Step 1 "Who are you?" and the player chooser.
+*/
 /* Step indicator */
 .pick-step-header {
   display: flex;
@@ -652,7 +667,9 @@
   flex-shrink: 0;
 }
 
-/* ── LOG CARD ── */
+/* ── LOG CARD ──
+   Example on the website: the large "INSERT OIS" card.
+*/
 .log-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -700,7 +717,9 @@
   text-transform: uppercase;
 }
 
-/* ── WEEK VIEW — DAY CHIPS ── */
+/* ── WEEK VIEW — DAY CHIPS ──
+   Example on the website: the date buttons you tap before logging hours/sales.
+*/
 .day-row {
   display: flex;
   gap: var(--space-1);
@@ -818,7 +837,9 @@
   background: rgba(26,111,244,0.06);
 }
 
-/* ── INPUTS ── */
+/* ── INPUTS ──
+   Example on the website: the "SALES($)" and "HOURS WORKED" boxes.
+*/
 .log-input {
   width: 100%;
   background: var(--surface);
@@ -875,7 +896,9 @@ select.log-input:focus { background-color: var(--surface); }
 
 .log-field-wrap { display: flex; flex-direction: column; gap: var(--space-2); }
 
-/* ── LOG BUTTON ── */
+/* ── LOG BUTTON ──
+   Example on the website: the main "ADD OIS" button.
+*/
 .log-btn {
   width: 100%;
   background: var(--accent);
@@ -959,7 +982,9 @@ select.log-input:focus { background-color: var(--surface); }
 }
 .log-locked-note.visible { display: block; }
 
-/* ── SUCCESS STATE ── */
+/* ── SUCCESS STATE ──
+   Example on the website: the "LOGGED!" confirmation area after submitting.
+*/
 .pick-success-state {
   display: none;
   flex-direction: column;
@@ -1047,7 +1072,9 @@ select.log-input:focus { background-color: var(--surface); }
   text-decoration: underline;
 }
 
-/* ── GOAL BARS ── */
+/* ── GOAL BARS ──
+   Example on the website: the progress bars inside the competition card.
+*/
 .pick-goals, .dash-goals {
   display: flex;
   flex-direction: column;
@@ -1256,4 +1283,3 @@ select.log-input:focus { background-color: var(--surface); }
   line-height: 1.6;
   white-space: pre-line;
 }
-

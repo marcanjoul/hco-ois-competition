@@ -1,7 +1,21 @@
+/*
+  BEGINNER GUIDE
+  This file is the arcade theme override layer.
+  The normal styles are defined in the other CSS files first.
+  This file comes last and re-styles those same elements into the retro arcade look.
+
+  Website examples:
+  - Pixel fonts
+  - Dark blue arcade background
+  - Bright yellow/blue chunky buttons and panels
+*/
 /* ════════════════════════════════════════════════════════════════════════════
    PAC-MAN ARCADE THEME OVERRIDES
    ════════════════════════════════════════════════════════════════════════════ */
 
+/* Global arcade theme variables
+   Example on the website: nearly every retro color/font choice begins here.
+*/
 :root {
   --bg: #050816;
   --surface: #081235;

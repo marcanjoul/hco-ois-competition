@@ -1,7 +1,19 @@
+/*
+  BEGINNER GUIDE
+  This file controls the personal dashboard screen.
+
+  Website examples:
+  - The stat boxes for "SALES / HR", "TOTAL SALES", and "RANK"
+  - The status message row with the emoji
+  - The "MY LOGS" history list
+*/
 /* ────────────────────────────────────────────────────────────────────────────
    5. DASHBOARD (screen-dash)
    ──────────────────────────────────────────────────────────────────────────── */
 
+/* Main dashboard wrapper
+   Example on the website: the whole screen that holds a player's stats and history.
+*/
 .dash-body {
   flex: 1;
   padding: calc(var(--header-height) + var(--space-4)) var(--space-4) calc(var(--nav-height) + var(--space-4));
@@ -14,7 +26,9 @@
   gap: var(--space-4);
 }
 
-/* Winner banner */
+/* Winner banner
+   Example on the website: a highlighted winner message at the top of the screen.
+*/
 .winner-banner {
   background: rgba(245,166,35,0.1);
   border: 1px solid rgba(245,166,35,0.4);
@@ -29,7 +43,9 @@
 }
 .winner-banner.hidden { display: none; }
 
-/* Comp info on dash */
+/* Comp info on dash
+   Example on the website: the competition info card shown above the stat boxes.
+*/
 .dash-comp-info {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -45,7 +61,9 @@
 .dash-comp-status-badge { display: flex; flex-direction: column; align-items: center; gap: var(--space-1); flex-shrink: 0; }
 .dash-comp-details { border-top: 1px solid var(--border); padding-top: var(--space-3); }
 
-/* Status badge */
+/* Status badge
+   Example on the website: the small square badge inside the competition info card.
+*/
 .status-badge {
   width: 44px; height: 44px;
   border-radius: var(--radius-sm);
@@ -57,7 +75,9 @@
 .status-badge.winner { background: rgba(245,166,35,0.1); border-color: var(--gold); }
 .status-text { font-family: var(--type-label-family); font-size: 10px; font-weight: var(--type-label-weight); color: var(--text2); text-align: center; white-space: nowrap; }
 
-/* Stat row */
+/* Stat row
+   Example on the website: the 3 stat boxes for Sales/HR, Total Sales, and Rank.
+*/
 .stat-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -99,7 +119,9 @@
 }
 .stat-card.accent .stat-value { color: var(--accent); }
 
-/* Vibe card */
+/* Vibe card
+   Example on the website: the message card with the emoji and helper text.
+*/
 .vibe-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -116,7 +138,9 @@
 }
 #vibe-emoji { font-size: 22px; flex-shrink: 0; }
 
-/* History */
+/* History
+   Example on the website: the "MY LOGS" list of saved entries.
+*/
 .history-wrap { margin-top: var(--space-2); }
 .history-title {
   font-family: var(--type-title-family);
@@ -141,4 +165,3 @@
 .history-sales { font-weight: 800; font-size: var(--type-body-size); }
 .history-meta { font-family: var(--type-caption-family); font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); color: var(--text2); }
 .history-sph { font-family: var(--type-subheading-family); font-size: 18px; letter-spacing: 1px; color: var(--green); }
-

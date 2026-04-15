@@ -1,14 +1,21 @@
-/* ════════════════════════════════════════════════════════════════════════════
-   OIS COMPETITION — PREMIUM SPORTS APP CSS
-   Dark, warm, energetic — like a sports scoreboard at night
-   ════════════════════════════════════════════════════════════════════════════ */
+/*
+  BEGINNER GUIDE
+  This file controls the shared foundation of the site.
 
+  Website examples:
+  - The welcome screen with "Wiregrass OIS Competition." and "Get Started"
+  - The top header that later shows the player name
+  - The bottom navigation buttons: "Maze", "Leaderboard", and "WIREGRASS HQ"
+  - Global colors, fonts, spacing, and shadows
+*/
 /* ────────────────────────────────────────────────────────────────────────────
    1. DESIGN TOKENS
+   Edit these when you want to change the whole app's colors, fonts, spacing,
+   or sizes. Example on the website: blue/yellow colors and default text styles.
    ──────────────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* ── Core Palette (Hollister Brand) ── */
+  /* ── Core Palette ── */
   --bg:          #F0F4FA;
   --surface:     #FFFFFF;
   --surface2:    #E8EEF6;
@@ -112,6 +119,8 @@
 
 /* ────────────────────────────────────────────────────────────────────────────
    2. RESET & BASE
+   These are the default rules every screen starts from.
+   Example on the website: page background, text color, button defaults.
    ──────────────────────────────────────────────────────────────────────────── */
 
 *, *::before, *::after {
@@ -168,6 +177,8 @@ input[type="number"] { -moz-appearance: textfield; }
 
 /* ────────────────────────────────────────────────────────────────────────────
    3. LAYOUT PRIMITIVES
+   Shared layout helpers used by multiple screens.
+   Example on the website: `.screen` means one full page view like welcome/board/admin.
    ──────────────────────────────────────────────────────────────────────────── */
 
 .screen {
@@ -185,6 +196,8 @@ input[type="number"] { -moz-appearance: textfield; }
 
 /* ────────────────────────────────────────────────────────────────────────────
    3A. WELCOME SCREEN
+   Example on the website: the first page with "Wiregrass OIS Competition."
+   and the yellow/blue "Get Started" button.
    ──────────────────────────────────────────────────────────────────────────── */
 
 .welcome-screen {
@@ -404,7 +417,9 @@ input[type="number"] { -moz-appearance: textfield; }
   }
 }
 
-/* ── APP HEADER ── */
+/* ── APP HEADER ──
+   Example on the website: the thin top bar that shows player/competition info.
+*/
 .app-header {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -462,7 +477,9 @@ input[type="number"] { -moz-appearance: textfield; }
   box-shadow: var(--glow-accent);
 }
 
-/* ── BOTTOM NAV ── */
+/* ── BOTTOM NAV ──
+   Example on the website: the bottom buttons "Maze", "Leaderboard", "WIREGRASS HQ".
+*/
 .bottom-nav {
   position: fixed;
   bottom: 0; left: 0; right: 0;
@@ -524,7 +541,9 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 .nav-btn.active .nav-label { color: var(--accent); }
 
-/* ── SCREEN INNER ── */
+/* ── SCREEN INNER ──
+   Example on the website: the centered page container used on leaderboard/admin screens.
+*/
 .screen-inner {
   flex: 1;
   display: flex;
@@ -552,4 +571,3 @@ input[type="number"] { -moz-appearance: textfield; }
   color: var(--text);
   flex-shrink: 0;
 }
-

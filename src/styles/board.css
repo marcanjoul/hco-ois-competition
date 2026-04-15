@@ -1,7 +1,19 @@
+/*
+  BEGINNER GUIDE
+  This file controls the leaderboard screen.
+
+  Website examples:
+  - The "LEADERBOARD" screen title
+  - The competition selector dropdown
+  - Each ranked player card
+*/
 /* ────────────────────────────────────────────────────────────────────────────
    6. LEADERBOARD — BOARD SCREEN
    ──────────────────────────────────────────────────────────────────────────── */
 
+/* Competition selector control
+   Example on the website: the "Select..." dropdown at the top of leaderboard.
+*/
 .comp-select {
   background: var(--bg);
   border: 1px solid var(--border);
@@ -89,7 +101,9 @@
   gap: var(--space-3);
 }
 
-/* Rank 1 card — championship banner treatment */
+/* Rank 1 card — championship banner treatment
+   Example on the website: the first-place player card.
+*/
 .board-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -250,7 +264,9 @@
   margin-top: 2px;
 }
 
-/* Empty state for leaderboard */
+/* Empty state for leaderboard
+   Example on the website: the message shown when there is no leaderboard data.
+*/
 .board-empty-state {
   display: flex;
   flex-direction: column;
@@ -303,4 +319,3 @@
   font-size: var(--type-body-size);
   text-align: center;
 }
-

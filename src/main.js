@@ -1,8 +1,25 @@
+/*
+  BEGINNER GUIDE
+  This file controls app behavior.
+  It decides what happens when someone clicks, types, loads data, or changes screens.
+
+  Quick mental model:
+  - `index.html` = what exists
+  - `src/styles/*.css` = how it looks
+  - `src/main.js` = what it does
+
+  Helpful examples:
+  - `welcome-start-btn` = the "Get Started" button
+  - `pick-btn-log` = the "ADD OIS" button
+  - `board-body` = the leaderboard results area
+  - `info-modal` = the "Competition Rules" popup
+*/
 // src/main.js
 import { db } from "./firebase.js";
 import { ref, set, get, onValue, update, remove } from "firebase/database";
 
-const DEFAULT_EMPLOYEES = ["adam", "Ajla"];
+// App-wide constants.
+// Example on the website: weekday labels and preview limits.
 const ADMIN_PIN = import.meta.env.VITE_ADMIN_PIN;
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const PREVIEW_COUNT = 5;
@@ -16,6 +33,9 @@ function getTodayDate() {
   return `${year}-${month}-${day}`;
 }
 
+// In-memory app state.
+// Think of this as "everything the app currently remembers".
+// Example on the website: which screen is open, who is selected, and which comp is active.
 let state = {
   competitions: {},
   employees: {},
@@ -40,6 +60,8 @@ let state = {
   },
 };
 
+// Firebase database shortcuts.
+// Example: `dbRef.emps()` points to the employees collection in the database.
 const dbRef = {
   comps:    ()              => ref(db, "competitions"),
   comp:     (id)            => ref(db, `competitions/${id}`),
@@ -54,25 +76,22 @@ const dbRef = {
 
 // ══════════════════════════════════════════════════════
 // Bootstrap
+// Runs on startup and makes sure required settings data exists.
 // ══════════════════════════════════════════════════════
 async function bootstrap() {
-  const [empSnap, settingsSnap] = await Promise.all([
-    get(dbRef.emps()), get(dbRef.settings()),
-  ]);
-  if (!empSnap.exists()) {
-    const u = {};
-    DEFAULT_EMPLOYEES.forEach(name => { u[slugify(name)] = { name, active: true }; });
-    await update(dbRef.emps(), u);
-  }
+  const settingsSnap = await get(dbRef.settings());
   if (!settingsSnap.exists()) {
     await set(dbRef.settings(), { accentColor: "#ff4fa3", rankingMetric: "sph" });
   }
 }
 
+// Turns a human name into a safe ID for storage.
+// Example: "Adam Smith" becomes "adam_smith".
 function slugify(str) {
   return str.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
 }
 
+// Escapes text before it is inserted into HTML.
 function escapeHtml(str) {
   const map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" };
   return str.replace(/[&<>"']/g, c => map[c]);
@@ -80,6 +99,7 @@ function escapeHtml(str) {
 
 // ══════════════════════════════════════════════════════
 // Avatar helpers
+// Example on the website: the player photo or letter icon shown beside names.
 // ══════════════════════════════════════════════════════
 function getAvatarPlaceholder(empIdOrStr) {
   const str = (empIdOrStr || "").toString().trim();
@@ -105,6 +125,8 @@ function fileToBase64(file) {
   });
 }
 
+// Turns buttons on/off depending on whether an input has text.
+// Example on the website: buttons that stay dim until the field has a value.
 window.updateBtnState = function(inputId, btnId) {
   const input = document.getElementById(inputId);
   const btn = document.getElementById(btnId);
@@ -114,6 +136,7 @@ window.updateBtnState = function(inputId, btnId) {
   btn.classList.toggle("btn-ghost", !hasValue);
 };
 
+// Adds the formatting toolbar behavior for the admin prize textarea.
 function setupPrizeFormatButtons(textareaId) {
   const textarea = document.getElementById(textareaId);
   if (!textarea) return;
@@ -150,6 +173,7 @@ function setupPrizeFormatButtons(textareaId) {
 
 // ══════════════════════════════════════════════════════
 // Competition helpers
+// Example on the website: deciding which competition is active and whether it has ended.
 // ══════════════════════════════════════════════════════
 function isCompEnded(comp) {
   if (!comp?.endDate) return false;

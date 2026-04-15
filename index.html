@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!--
+    BEGINNER GUIDE
+    HTML is the page structure: what exists on the site.
+    CSS changes how those things look.
+    JavaScript changes how those things behave.
+
+    Easy workflow:
+    1. Find visible text you recognize on the website
+    2. Find that text in this file
+    3. Look at the nearby `class` or `id`
+    4. Search that class/id in CSS or JS
+
+    Example:
+    - Website text: "Get Started"
+    - HTML element: `welcome-start-btn`
+    - CSS selector to edit: `.welcome-start-btn`
+  -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>OIS Pixel Arcade</title>
@@ -11,7 +28,9 @@
 </head>
 <body>
 
-  <!-- ── PERSISTENT HEADER ── -->
+  <!-- ── PERSISTENT HEADER ──
+       Example on the website: the top bar that later shows player/competition info.
+  -->
   <header class="app-header hidden" id="app-header">
     <div class="app-header-info">
       <span id="dash-name" class="dash-name"></span>
@@ -19,7 +38,9 @@
     </div>
   </header>
 
-  <!-- ── PERSISTENT BOTTOM NAV ── -->
+  <!-- ── PERSISTENT BOTTOM NAV ──
+       Example on the website: the bottom buttons "Maze", "Leaderboard", "WIREGRASS HQ".
+  -->
   <nav class="bottom-nav" id="bottom-nav">
     <button class="nav-btn" data-screen="pick" id="nav-home">
       <span class="nav-label">Maze</span>
@@ -32,7 +53,10 @@
     </button>
   </nav>
 
-  <!-- SCREEN: Welcome -->
+  <!-- SCREEN: Welcome
+       Example on the website: the first screen with "Wiregrass OIS Competition."
+       and the "Get Started" button.
+  -->
   <div id="screen-welcome" class="screen active">
     <div class="welcome-screen">
       <div class="welcome-orb welcome-orb-left"></div>
@@ -49,14 +73,18 @@
     </div>
   </div>
 
-  <!-- SCREEN: Home / Pick -->
+  <!-- SCREEN: Home / Pick
+       Example on the website: the main logging page with "INSERT OIS".
+  -->
   <div id="screen-pick" class="screen">
     <div class="pick-bg-stripe"></div>
     <div class="pick-inner">
 
       <button class="pick-info-btn" id="btn-info" title="Rules">i</button>
 
-      <!-- Competition Info Card -->
+      <!-- Competition Info Card
+           Example on the website: the card with competition name, days left, prize, and progress.
+      -->
       <div id="pick-comp-info" class="pick-comp-info hidden">
         <div id="pick-comp-name" class="pick-comp-name"></div>
         <div id="pick-comp-dates" class="pick-comp-dates"></div>
@@ -93,7 +121,9 @@
       <div id="pick-comp-status" style="display:none"></div>
       <div id="pick-comp-details" style="display:none"></div>
 
-      <!-- LOG CARD -->
+      <!-- LOG CARD
+           Example on the website: the large "INSERT OIS" card.
+      -->
       <div class="log-card" id="pick-log-card">
         <div class="log-card-title">INSERT OIS</div>
 
@@ -113,7 +143,9 @@
           <div id="pick-emp-list"></div>
         </div>
 
-        <!-- Steps 2-4: revealed after name selection -->
+      <!-- Steps 2-4: revealed after name selection
+           Example on the website: day picker, Sales field, Hours field, and "ADD OIS".
+      -->
         <div id="pick-form-steps">
           <div class="pick-step-header" style="margin:var(--space-4) 0 var(--space-2)">
             <div class="pick-step-num">2</div>
@@ -139,7 +171,9 @@
           <div id="pick-log-locked-msg" class="log-locked-note">STAGE CLEARED - ghost admin can edit</div>
         </div>
 
-        <!-- Success state -->
+      <!-- Success state
+           Example on the website: the "LOGGED!" confirmation area.
+      -->
         <div id="pick-success-state" class="pick-success-state">
           <div class="pick-success-checkmark">✅</div>
           <div class="pick-success-title">LOGGED! See a manager to edit if needed</div>
@@ -159,7 +193,9 @@
     </div>
   </div>
 
-  <!-- SCREEN: Dashboard -->
+  <!-- SCREEN: Dashboard
+       Example on the website: the personal stats page with "SALES / HR", "TOTAL SALES", and "RANK".
+  -->
   <div id="screen-dash" class="screen">
     <div class="dash-body">
       <div id="winner-banner" class="winner-banner hidden"></div>
@@ -205,7 +241,9 @@
     </div>
   </div>
 
-  <!-- SCREEN: Leaderboard -->
+  <!-- SCREEN: Leaderboard
+       Example on the website: the ranked list of players.
+  -->
   <div id="screen-board" class="screen">
     <div class="screen-inner">
       <div class="screen-top-bar">
@@ -222,7 +260,9 @@
     </div>
   </div>
 
-  <!-- SCREEN: Admin Gate -->
+  <!-- SCREEN: Admin Gate
+       Example on the website: the PIN page with "GHOST GATE".
+  -->
   <div id="screen-admin-gate" class="screen">
     <div class="admin-gate-body">
       <div class="admin-gate-icon">🔐</div>
@@ -234,7 +274,9 @@
     </div>
   </div>
 
-  <!-- SCREEN: Admin Panel -->
+  <!-- SCREEN: Admin Panel
+       Example on the website: the management area after entering the correct PIN.
+  -->
   <div id="screen-admin" class="screen">
     <div class="screen-inner">
       <div id="admin-tab-bar" class="admin-tab-bar"></div>
@@ -245,7 +287,9 @@
   <div id="toast" class="toast hidden"></div>
   <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
 
-  <!-- Info Modal -->
+  <!-- Info Modal
+       Example on the website: the popup titled "Competition Rules".
+  -->
   <div id="info-modal" class="info-modal">
     <div class="info-modal-content">
       <div class="info-modal-header">

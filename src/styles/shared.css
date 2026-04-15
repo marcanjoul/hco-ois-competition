@@ -1,7 +1,19 @@
+/*
+  BEGINNER GUIDE
+  This file holds shared pieces used in multiple screens.
+
+  Website examples:
+  - Player avatars
+  - Toast messages near the bottom
+  - Utility classes like `.hidden`
+*/
 /* ────────────────────────────────────────────────────────────────────────────
    10. AVATAR
    ──────────────────────────────────────────────────────────────────────────── */
 
+/* Avatar styles
+   Example on the website: the player photo or first-letter icon beside a name.
+*/
 .avatar {
   width: 48px; height: 48px;
   border-radius: 50%;
@@ -79,6 +91,7 @@
 
 /* ────────────────────────────────────────────────────────────────────────────
    11. TOAST
+   Example on the website: the small floating message that appears near the bottom.
    ──────────────────────────────────────────────────────────────────────────── */
 
 .toast {
@@ -111,6 +124,7 @@
 
 /* ────────────────────────────────────────────────────────────────────────────
    12. CONFETTI
+   Example on the website: the celebration effect over the whole screen.
    ──────────────────────────────────────────────────────────────────────────── */
 
 .confetti-canvas {
@@ -122,6 +136,8 @@
 
 /* ────────────────────────────────────────────────────────────────────────────
    13. UTILITIES
+   Small reusable helpers.
+   Example on the website: `.hidden` completely hides an element.
    ──────────────────────────────────────────────────────────────────────────── */
 
 .hidden { display: none !important; }
@@ -153,4 +169,3 @@
   padding: var(--space-3);
   margin-bottom: var(--space-2);
 }
-
