@@ -377,16 +377,16 @@ function pickGoalHype(current, target, pct, isHit) {
           ]
         : pct > 0
           ? [
-              "Solid start. Let's build on it.",
-              "On the board. Now start stacking.",
-              "Good first push. Keep the pressure on.",
-              "We're moving. One more order can change the vibe."
+              "Let's go guys!",
+              "Let's get these orders IN.",
+              "Keep the pressure ON guys.",
+              "We're... getting there"
             ]
           : [
               "No pressure, but first order could go crazy.",
               "Fresh slate. Time to start a run.",
-              "First order energy starts now.",
-              "Lock in and get this bar moving."
+              "First order energy starts NOW.",
+              "Lock in and let's get this bar moving."
             ];
 
   const seed = `${target}|${current.toFixed(2)}|${Math.round(pct)}|${isHit}`;
