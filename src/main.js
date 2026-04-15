@@ -224,6 +224,16 @@ function daysRemaining(comp) {
   return Math.ceil((end - new Date()) / (1000 * 60 * 60 * 24));
 }
 
+function getCompetitionStatusMeta(comp) {
+  if (comp?.status === "closed") {
+    return { key: "closed", label: "Closed" };
+  }
+  if (comp?.status === "archived") {
+    return { key: "archived", label: "Archived" };
+  }
+  return { key: "active", label: "Active" };
+}
+
 // ══════════════════════════════════════════════════════
 // Apply settings
 // ══════════════════════════════════════════════════════
@@ -696,9 +706,9 @@ function showScreen(name) {
   state.currentScreen = name;
   window.scrollTo(0, 0);
 
-  // Hide header on home page
+  // Only show the persistent header on screens that need it.
   const header = document.getElementById("app-header");
-  if (name === "pick") {
+  if (name === "pick" || name === "board" || name === "admin" || name === "admin-gate") {
     header.classList.add("hidden");
   } else {
     header.classList.remove("hidden");
@@ -782,7 +792,7 @@ function resetPickEmployeeSelection({ openGrid = false } = {}) {
 
   const selectorBtn = document.getElementById("pick-emp-selector");
   if (selectorBtn) {
-    selectorBtn.textContent = "Choose your player...";
+    selectorBtn.textContent = "Choose player...";
     selectorBtn.classList.remove("has-selection");
   }
 
@@ -1199,6 +1209,7 @@ function renderDash() {
 // ══════════════════════════════════════════════════════
 function renderBoardCompSelect() {
   const sel = document.getElementById("board-comp-select");
+  const title = document.getElementById("board-screen-title");
   if (!sel) return;
   sel.innerHTML = "";
 
@@ -1208,6 +1219,7 @@ function renderBoardCompSelect() {
 
   if (nonArchivedComps.length === 0) {
     sel.style.display = "none";
+    if (title) title.textContent = "LEADERBOARD";
     return;
   }
 
@@ -1219,7 +1231,18 @@ function renderBoardCompSelect() {
     if (id === state.boardComp) opt.selected = true;
     sel.appendChild(opt);
   });
-  sel.onchange = () => { state.boardComp = sel.value; renderBoard(); };
+  const activeComp = state.competitions[state.boardComp];
+  if (title) {
+    title.textContent = activeComp ? `LEADERBOARD` : "LEADERBOARD";
+  }
+  sel.onchange = () => {
+    state.boardComp = sel.value;
+    const nextComp = state.competitions[state.boardComp];
+    if (title) {
+      title.textContent = nextComp ? `LEADERBOARD` : "LEADERBOARD";
+    }
+    renderBoard();
+  };
 }
 
 function renderBoard() {
@@ -1446,7 +1469,6 @@ function renderAdminSummaryBar() {
 
 function openAdminPanel() {
   state.admin.tab = "competitions";
-  renderAdminSummaryBar();
   renderAdminTab();
   renderAdminTabBar();
   showScreen("admin");
@@ -1454,9 +1476,9 @@ function openAdminPanel() {
 
 function renderAdminTabBar() {
   const tabs = [
-    { id: "competitions", label: "🏆 Competitions" },
-    { id: "employees",    label: "👥 Brand Reps" },
-    { id: "logs",         label: "📋 Orders" },
+    { id: "competitions", label: "Competitions" },
+    { id: "employees",    label: "Brand Reps" },
+    { id: "logs",         label: "Orders" },
   ];
   const bar = document.getElementById("admin-tab-bar");
   if (!bar) return;
@@ -1493,18 +1515,21 @@ function renderAdminComps(container) {
 
   toShow.forEach(([id, comp]) => {
     const item = document.createElement("div");
-    item.className = "admin-item";
+    item.className = "admin-item admin-comp-item";
     item.id = `admin-comp-item-${id}`;
-    const dot = isCompEnded(comp) ? "🏁" : comp.status === "closed" ? "🔒" : comp.status === "archived" ? "📦" : "🟢";
+    const statusMeta = getCompetitionStatusMeta(comp);
     
     const leftPart = document.createElement("div");
     leftPart.className = "admin-item-left";
-    leftPart.innerHTML = `<span class="admin-item-name">${dot} ${comp.name}</span>`;
+    leftPart.innerHTML = `
+      <span class="admin-item-name">${comp.name}</span>
+      <span class="comp-status-chip comp-status-${statusMeta.key}">Status: ${statusMeta.label}</span>
+    `;
     item.appendChild(leftPart);
     
     const rightPart = document.createElement("div");
     rightPart.className = "admin-item-actions";
-    rightPart.appendChild(makeBtn("✏️ Edit", "del-btn", () => renderCompEditPanel(id, comp)));
+    rightPart.appendChild(makeBtn("Edit", "del-btn", () => renderCompEditPanel(id, comp)));
     item.appendChild(rightPart);
     
     list.appendChild(item);
@@ -1689,10 +1714,10 @@ function renderCompEditPanel(compId, comp) {
   statusWrap.innerHTML = `<label class="field-label">STATUS</label>`;
   const statusSel = document.createElement("select");
   statusSel.className = "log-input"; statusSel.id = "comp-edit-status";
-  ["draft", "active", "closed"].forEach(s => {
+  ["active", "closed", "archived"].forEach(s => {
     const opt = document.createElement("option");
     opt.value = s; opt.textContent = s.charAt(0).toUpperCase() + s.slice(1);
-    if (comp.status === s) opt.selected = true;
+    if (getCompetitionStatusMeta(comp).key === s) opt.selected = true;
     statusSel.appendChild(opt);
   });
   statusWrap.appendChild(statusSel);
@@ -2348,7 +2373,7 @@ function renderAdminLogDetail(empId, compId, date, log) {
       <div class="admin-log-stat accent"><div class="admin-log-stat-label">$/HR</div><div class="admin-log-stat-value">$${sph}</div></div>
     </div>
     <div class="admin-log-actions-row">
-      <button class="admin-action-edit" id="admin-edit-log-btn">✏️ Edit</button>
+      <button class="admin-action-edit" id="admin-edit-log-btn">Edit</button>
       <button class="admin-action-delete" id="admin-delete-log-btn">🗑️ Delete</button>
     </div>
   `;

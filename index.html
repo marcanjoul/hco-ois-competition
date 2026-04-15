@@ -25,7 +25,7 @@
       <span class="nav-label">Maze</span>
     </button>
     <button class="nav-btn" data-screen="board" id="nav-board">
-      <span class="nav-label">High Scores</span>
+      <span class="nav-label">Leaderboard</span>
     </button>
     <button class="nav-btn" data-screen="admin-gate" id="nav-admin">
       <span class="nav-label">WIREGRASS HQ</span>
@@ -86,7 +86,7 @@
           <div class="pick-step-label">Who are you?</div>
         </div>
         <div class="pick-emp-selector-wrap">
-          <button class="pick-emp-selector" id="pick-emp-selector">Choose your player...</button>
+          <button class="pick-emp-selector" id="pick-emp-selector">Choose player...</button>
         </div>
         <div id="pick-emp-grid" class="pick-emp-grid hidden">
           <div class="search-wrap">
@@ -127,7 +127,7 @@
           <div class="pick-success-checkmark">✅</div>
           <div class="pick-success-title">LOGGED! See a manager to edit if needed</div>
           <div id="pick-success-stats" class="pick-success-stats"></div>
-          <button class="pick-success-cta" id="pick-success-board-btn">VIEW HIGH SCORES →</button>
+          <button class="pick-success-cta" id="pick-success-board-btn">VIEW LEADERBOARD →</button>
         </div>
 
       </div>
@@ -192,7 +192,7 @@
   <div id="screen-board" class="screen">
     <div class="screen-inner">
       <div class="screen-top-bar">
-        <div class="screen-top-title">LEADERBOARD</div>
+        <div class="screen-top-title" id="board-screen-title">LEADERBOARD</div>
         <select id="board-comp-select" class="comp-select">
           <option value="" disabled selected>Select...</option>
         </select>
@@ -217,10 +217,6 @@
   <!-- SCREEN: Admin Panel -->
   <div id="screen-admin" class="screen">
     <div class="screen-inner">
-      <div class="admin-top-row">
-        <div class="screen-top-title">GHOST HQ</div>
-      </div>
-      <div class="admin-summary-bar" id="admin-summary-bar"></div>
       <div id="admin-tab-bar" class="admin-tab-bar"></div>
       <div id="admin-tab-content" class="admin-tab-content"></div>
     </div>
