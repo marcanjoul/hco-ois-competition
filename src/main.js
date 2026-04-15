@@ -1457,9 +1457,9 @@ function openAdminPanel() {
 
 function renderAdminTabBar() {
   const tabs = [
-    { id: "competitions", label: "🏆 Comps" },
-    { id: "employees",    label: "👥 Team" },
-    { id: "logs",         label: "📋 Logs" },
+    { id: "competitions", label: "🏆 Competitions" },
+    { id: "employees",    label: "👥 Brand Reps" },
+    { id: "logs",         label: "📋 Orders" },
   ];
   const bar = document.getElementById("admin-tab-bar");
   if (!bar) return;
@@ -1931,25 +1931,47 @@ function renderAdminEmpsList() {
 
 function renderAdminEmps(container) {
   container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">TEAM</div>`;
-  
-  // Check if search input already exists in DOM
-  let searchInput = document.getElementById("admin-emp-search");
-  if (!searchInput) {
-    const searchWrap = document.createElement("div");
-    searchWrap.innerHTML = `<input type="text" id="admin-emp-search" class="log-input" placeholder="Search employees..." style="margin-bottom:10px;" />`;
-    container.appendChild(searchWrap);
-    searchInput = document.getElementById("admin-emp-search");
-    // Only attach listener once, not on every render
-    searchInput.oninput = (e) => {
-      state.admin.empSearch = e.target.value;
-      state.admin.showAllEmps = false;
-      renderAdminEmpsList(); // Call list-only render, not full tab render
-    };
-  } else {
-    // Move existing search input to container
-    container.insertBefore(searchInput, container.firstChild.nextSibling);
-  }
+  const employeeCount = Object.keys(state.employees || {}).length;
+
+  const toolsWrap = document.createElement("div");
+  toolsWrap.className = "admin-team-tools";
+  toolsWrap.innerHTML = `
+    <div class="admin-team-tools-header">
+      <div>
+        <div class="admin-team-tools-eyebrow">Team Manager</div>
+        <div class="admin-team-tools-title-row">
+          <div class="admin-team-tools-title">Search, edit, and add people fast.</div>
+          <div class="admin-team-tools-count">${employeeCount} ${employeeCount === 1 ? "employee" : "employees"}</div>
+        </div>
+        <div class="admin-team-tools-sub">Everything you need is right here.</div>
+      </div>
+    </div>
+    <div class="admin-team-controls">
+      <label class="admin-team-field admin-team-search-wrap">
+        <span class="admin-team-field-label">Search team</span>
+        <div class="admin-team-input-shell">
+          <span class="admin-team-search-icon">⌕</span>
+          <input type="text" id="admin-emp-search" class="log-input admin-team-input" placeholder="Search employees..." />
+        </div>
+      </label>
+      <label class="admin-team-field admin-team-add-wrap">
+        <span class="admin-team-field-label">Quick add</span>
+        <div class="admin-new-row admin-new-row-top">
+          <input type="text" id="input-new-emp" class="log-input admin-team-input" placeholder="Add a new employee..." oninput="updateBtnState('input-new-emp','btn-add-emp')" />
+          <button class="mini-btn btn-ghost" id="btn-add-emp" disabled>Add</button>
+        </div>
+      </label>
+    </div>
+  `;
+  container.appendChild(toolsWrap);
+
+  const searchInput = document.getElementById("admin-emp-search");
   searchInput.value = state.admin.empSearch;
+  searchInput.oninput = (e) => {
+    state.admin.empSearch = e.target.value;
+    state.admin.showAllEmps = false;
+    renderAdminEmpsList();
+  };
 
   // Create container for list (will be updated by renderAdminEmpsList)
   const listContainer = document.createElement("div");
@@ -1958,15 +1980,6 @@ function renderAdminEmps(container) {
   
   // Render the list
   renderAdminEmpsList();
-
-  const addRow = document.createElement("div");
-  addRow.className = "admin-new-row";
-  addRow.style.marginTop = "12px";
-  addRow.innerHTML = `
-    <input type="text" id="input-new-emp" class="log-input" placeholder="New employee name" oninput="updateBtnState('input-new-emp','btn-add-emp')" />
-    <button class="mini-btn btn-ghost" id="btn-add-emp" disabled>+ Add</button>
-  `;
-  container.appendChild(addRow);
   document.getElementById("btn-add-emp").onclick = async () => {
     const name = document.getElementById("input-new-emp").value.trim();
     if (!name) return;
