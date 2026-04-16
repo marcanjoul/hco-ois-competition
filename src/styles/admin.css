@@ -292,6 +292,10 @@
   padding-top: 6px;
 }
 
+.admin-field-changed {
+  border-color: var(--accent) !important;
+}
+
 .admin-readonly-field {
   min-height: 48px;
   display: flex;

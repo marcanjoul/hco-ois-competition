@@ -1829,24 +1829,48 @@ function renderCompEditPanel(compId, comp) {
 
   const changedFields = {};
   const dailyGoalChanges = {};
+  let saveAllBtn = null;
+
+  const normalizeStringValue = (value) => String(value ?? "");
+  const normalizeNumericGoalValue = (value) => {
+    const num = Number.parseFloat(String(value ?? "").trim());
+    if (!Number.isFinite(num) || num <= 0) return "";
+    return String(num);
+  };
+
+  const getHighlightTarget = (el) => (
+    el?.closest(".goal-day-input-shell") ||
+    el?.closest(".admin-edit-field-stack") ||
+    el
+  );
+
+  const updateSaveButtonState = () => {
+    if (!saveAllBtn) return;
+    const isDirty = Object.keys(changedFields).length > 0 || Object.keys(dailyGoalChanges).length > 0;
+    saveAllBtn.disabled = !isDirty;
+    saveAllBtn.classList.toggle("btn-ghost", !isDirty);
+  };
 
   const highlightField = (id) => {
     const el = document.getElementById(id);
-    if (el && changedFields[id]) {
-      el.style.borderColor = "var(--accent)";
-      el.style.borderWidth = "2px";
-    } else if (el) {
-      el.style.borderColor = "";
-      el.style.borderWidth = "";
-    }
+    const target = getHighlightTarget(el);
+    target?.classList.toggle("admin-field-changed", !!changedFields[id]);
+    updateSaveButtonState();
   };
 
-  const addChangeListener = (id, originalValue) => {
+  const addChangeListener = (id, originalValue, compare = "string") => {
     const el = document.getElementById(id);
     if (!el) return;
     const checkChange = () => {
       const currentValue = el.value;
-      if (currentValue !== originalValue) {
+      const normalizedCurrent = compare === "numeric-goal"
+        ? normalizeNumericGoalValue(currentValue)
+        : normalizeStringValue(currentValue);
+      const normalizedOriginal = compare === "numeric-goal"
+        ? normalizeNumericGoalValue(originalValue)
+        : normalizeStringValue(originalValue);
+
+      if (normalizedCurrent !== normalizedOriginal) {
         changedFields[id] = true;
       } else {
         delete changedFields[id];
@@ -1974,7 +1998,7 @@ function renderCompEditPanel(compId, comp) {
     </div>
   `;
   goalsGroup.appendChild(compGoalSection);
-  addChangeListener("goal-val-competition", compGoals.competition?.value || "");
+  addChangeListener("goal-val-competition", compGoals.competition?.value || "", "numeric-goal");
 
   // Daily Goals by Week
   const dailyGoalsSection = document.createElement("div");
@@ -2031,6 +2055,9 @@ function renderCompEditPanel(compId, comp) {
       if (!isInRange) continue;
 
       const dayGoal = compGoals[`daily_${dateString}`] || {};
+      const pendingValue = Object.prototype.hasOwnProperty.call(dailyGoalChanges, dateString)
+        ? dailyGoalChanges[dateString]
+        : undefined;
       const fieldId = `daily-goal-${dateString}`;
 
       const dayCard = document.createElement("div");
@@ -2042,26 +2069,27 @@ function renderCompEditPanel(compId, comp) {
         </div>
         <label class="goal-day-input-shell" for="${fieldId}">
           <span class="goal-day-currency">$</span>
-          <input type="number" id="${fieldId}" data-date="${dateString}" class="daily-goal-input log-input goal-day-input" placeholder="0" value="${dayGoal.value || ""}" min="0" step="1" />
+          <input type="number" id="${fieldId}" data-date="${dateString}" class="daily-goal-input log-input goal-day-input" placeholder="0" value="${pendingValue ?? dayGoal.value ?? ""}" min="0" step="1" />
         </label>
       `;
       dailyGoalsGrid.appendChild(dayCard);
 
       // Track daily goal changes
       const input = document.getElementById(fieldId);
+      getHighlightTarget(input)?.classList.toggle("admin-field-changed", Object.prototype.hasOwnProperty.call(dailyGoalChanges, dateString));
       input.addEventListener("input", () => {
-        const value = input.value;
-        if (value !== (dayGoal.value || "")) {
-          dailyGoalChanges[dateString] = value ? parseFloat(value) : null;
-          input.style.borderColor = "var(--accent)";
-          input.style.borderWidth = "2px";
+        const normalizedCurrent = normalizeNumericGoalValue(input.value);
+        const normalizedOriginal = normalizeNumericGoalValue(dayGoal.value || "");
+        if (normalizedCurrent !== normalizedOriginal) {
+          dailyGoalChanges[dateString] = normalizedCurrent ? Number.parseFloat(normalizedCurrent) : null;
         } else {
           delete dailyGoalChanges[dateString];
-          input.style.borderColor = "";
-          input.style.borderWidth = "";
         }
+        getHighlightTarget(input)?.classList.toggle("admin-field-changed", dateString in dailyGoalChanges);
+        updateSaveButtonState();
       });
     }
+    updateSaveButtonState();
   };
 
   const weekPicker = document.getElementById("daily-goal-week-picker");
@@ -2069,7 +2097,7 @@ function renderCompEditPanel(compId, comp) {
   renderDailyGoalsForWeek(clampCompetitionDate(comp.startDate || getTodayDate()));
 
   // ═══ Save All Button ═══
-  const saveAllBtn = makeBtn("SAVE ALL CHANGES", "log-btn", async () => {
+  saveAllBtn = makeBtn("SAVE ALL CHANGES", "log-btn btn-ghost", async () => {
     // Save competition details
     await update(dbRef.comp(compId), {
       name: document.getElementById("comp-edit-name").value.trim() || comp.name,
@@ -2104,15 +2132,21 @@ function renderCompEditPanel(compId, comp) {
   editShell.appendChild(actionsWrap);
   actionsWrap.appendChild(saveAllBtn);
 
-  const delBtn = makeBtn("🗑️ Delete Competition", "del-btn danger", async () => {
-    if (confirm(`Delete "${comp.name}"? All logs will be removed.`)) {
-      await remove(dbRef.comp(compId));
-      await remove(ref(db, `logs/${compId}`));
-      delete state.logs[compId];
-      state.admin.tab = "competitions"; renderAdminTabBar(); renderAdminTab();
-    }
+  const delBtn = makeBtn("🗑️ DELETE COMPETITION", "log-btn admin-danger-btn", async () => {
+    const confirmed = await showAppConfirm({
+      title: "Delete Competition",
+      message: `Delete "${comp.name}"? All logs for this competition will be removed.`,
+      confirmLabel: "Delete Competition",
+      confirmClassName: "log-btn admin-danger-btn",
+    });
+    if (!confirmed) return;
+    await remove(dbRef.comp(compId));
+    await remove(ref(db, `logs/${compId}`));
+    delete state.logs[compId];
+    state.admin.tab = "competitions"; renderAdminTabBar(); renderAdminTab();
   });
   actionsWrap.appendChild(delBtn);
+  updateSaveButtonState();
 }
 
 // ══════════════════════════════════════════════════════
@@ -2789,6 +2823,53 @@ function showToast(msg, duration = 2200) {
   toast.classList.remove("hidden");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.add("hidden"), duration);
+}
+
+function showAppConfirm({
+  title = "Confirm",
+  message = "Are you sure?",
+  confirmLabel = "Confirm",
+  cancelLabel = "Cancel",
+  confirmClassName = "log-btn",
+} = {}) {
+  return new Promise((resolve) => {
+    let modal = document.getElementById("app-confirm-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "app-confirm-modal";
+      modal.className = "info-modal app-confirm-modal";
+      document.body.appendChild(modal);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) close(false);
+      });
+    }
+
+    const close = (result) => {
+      modal.classList.remove("active");
+      resolve(result);
+    };
+
+    modal.innerHTML = `
+      <div class="info-modal-content app-confirm-content">
+        <div class="info-modal-header app-confirm-header">
+          <div class="info-modal-title app-confirm-title">${escapeHtml(title)}</div>
+          <button class="info-modal-close app-confirm-close" type="button" aria-label="Close">✕</button>
+        </div>
+        <div class="info-modal-body app-confirm-body">
+          <p class="app-confirm-message">${escapeHtml(message)}</p>
+          <div class="app-confirm-actions">
+            <button class="log-btn btn-ghost app-confirm-cancel" type="button">${escapeHtml(cancelLabel)}</button>
+            <button class="${escapeHtml(confirmClassName)} app-confirm-confirm" type="button">${escapeHtml(confirmLabel)}</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    modal.querySelector(".app-confirm-close")?.addEventListener("click", () => close(false));
+    modal.querySelector(".app-confirm-cancel")?.addEventListener("click", () => close(false));
+    modal.querySelector(".app-confirm-confirm")?.addEventListener("click", () => close(true));
+    modal.classList.add("active");
+  });
 }
 
 function launchConfetti() {
