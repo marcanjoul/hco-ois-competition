@@ -204,6 +204,13 @@
   overflow-y: auto;
 }
 
+.admin-tab-content.admin-tab-content-compact {
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 100%;
+  overflow: visible;
+}
+
 /* Admin section
    Example on the website: section titles and section content inside admin.
 */
@@ -348,7 +355,7 @@
 .admin-comp-item .del-btn {
   padding: 10px 14px;
   min-height: 44px;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 900;
   letter-spacing: 0.4px;
 }
@@ -671,6 +678,233 @@
 .admin-action-edit:hover { border-color: var(--accent); color: var(--accent); }
 .admin-action-delete:hover { border-color: var(--red); color: var(--red); }
 
+.admin-log-week-wrap {
+  margin-bottom: 10px;
+}
+
+.admin-log-week-controls {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-log-week-controls .week-nav-btn,
+.admin-day-buttons .week-nav-btn {
+  min-width: 52px;
+  min-height: 52px;
+  padding: 0;
+}
+
+.admin-log-week-input-wrap {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.admin-log-week-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface2);
+  color: var(--text);
+  font-family: var(--type-subheading-family);
+  font-size: 16px;
+  letter-spacing: 0.4px;
+  text-align: center;
+}
+
+.admin-log-week-picker-native {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.admin-log-player-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.admin-log-player-header {
+  margin-bottom: 12px;
+}
+
+.admin-log-player-title {
+  font-family: var(--type-title-family);
+  font-size: var(--type-title-size);
+  letter-spacing: 1px;
+  color: var(--text);
+}
+
+.admin-log-player-status {
+  margin-top: -4px;
+  margin-bottom: 12px;
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  color: var(--text2);
+}
+
+.admin-log-player-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-log-player-section + .admin-log-player-section {
+  margin-top: 12px;
+}
+
+.admin-log-player-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.admin-log-player-section-title {
+  font-family: var(--type-title-family);
+  font-size: var(--type-title-size);
+  letter-spacing: 1px;
+  color: var(--text);
+}
+
+.admin-log-player-section-count,
+.admin-log-player-toggle-meta {
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  color: var(--text2);
+}
+
+.admin-log-player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-log-player-list.hidden {
+  display: none;
+}
+
+.admin-log-player-toggle {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface2);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.admin-log-player-toggle:hover {
+  border-color: var(--accent);
+}
+
+.admin-log-player-toggle-icon {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.admin-log-player-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface2);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+
+.admin-log-player-card:hover {
+  border-color: var(--accent);
+}
+
+.admin-log-player-card.active {
+  border-color: var(--accent);
+  background: rgba(26,111,244,0.1);
+}
+
+.admin-log-player-card.has-log {
+  border-color: rgba(63,185,80,0.45);
+  background: rgba(63,185,80,0.08);
+}
+
+.admin-log-player-card.has-log.active {
+  border-color: var(--green);
+  background: rgba(63,185,80,0.16);
+}
+
+.admin-log-player-main {
+  min-width: 0;
+}
+
+.admin-log-player-name {
+  font-weight: 900;
+  font-size: var(--type-body-size);
+  color: var(--text);
+}
+
+.admin-log-player-meta {
+  margin-top: 4px;
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  color: var(--text2);
+}
+
+.admin-log-player-badge {
+  padding: 6px 10px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-xs);
+  font-family: var(--type-label-family);
+  font-size: 9px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.admin-log-player-badge.logged {
+  color: var(--green);
+}
+
+.admin-log-player-badge.open {
+  color: var(--accent2);
+}
+
+.admin-log-empty-state {
+  padding: 18px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text3);
+  text-align: center;
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  font-weight: 700;
+}
+
 /* Admin day buttons
    Example on the website: the small row of days inside admin detail view.
 */
@@ -702,16 +936,26 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  min-height: 48px;
+  min-height: 56px;
+  transform-origin: center;
 }
 
-.admin-day-btn-dayname { font-size: 8px; font-weight: 800; text-transform: uppercase; }
-.admin-day-btn-date { font-size: 13px; font-weight: 900; line-height: 1; }
+.admin-day-btn-dayname {
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.admin-day-btn-date { font-size: 18px; font-weight: 900; line-height: 1; }
 
 .admin-day-btn:hover { border-color: var(--accent); color: var(--text); }
-.admin-day-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
-.admin-day-btn.has-log { border-color: var(--green); color: var(--green); background: rgba(63,185,80,0.08); }
-.admin-day-btn.has-log.active { background: var(--green); border-color: var(--green); color: white; }
+.admin-day-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  transform: scale(1.08);
+}
 .admin-day-btn.disabled { opacity: 0.25; cursor: not-allowed; pointer-events: none; }
 
 /* Goal admin blocks
@@ -726,6 +970,165 @@
 }
 .goal-admin-label { font-family: var(--type-title-family); font-size: var(--type-title-size); letter-spacing: 1px; color: var(--text); margin-bottom: 4px; }
 .goal-admin-hint { font-family: var(--type-caption-family); font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); color: var(--text2); margin-bottom: var(--space-3); }
+.admin-date-range {
+  margin-bottom: 12px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.admin-date-range-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.admin-date-range-summary {
+  display: none;
+}
+.admin-date-range-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: end;
+  gap: 12px;
+}
+.admin-date-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.admin-date-input {
+  width: 100%;
+}
+.admin-date-range-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  min-height: 52px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--type-title-family);
+  font-size: 22px;
+  line-height: 1;
+}
+.daily-goal-week-picker-wrap {
+  margin-bottom: 12px;
+}
+.daily-goal-week-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.daily-goal-week-heading-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.daily-goal-week-caption {
+  font-family: var(--type-label-family);
+  font-size: 10px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.daily-goal-week-input-wrap {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+.daily-goal-week-display {
+  display: flex;
+  align-items: center;
+  min-height: 72px;
+  padding: 12px 18px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface2);
+  color: var(--text);
+  font-family: var(--type-title-family);
+  font-size: 18px;
+  line-height: 1.2;
+}
+.daily-goal-week-picker-native {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+#daily-goals-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.goal-day-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.goal-day-meta {
+  min-width: 0;
+}
+.goal-day-name {
+  font-family: var(--type-title-family);
+  font-size: 18px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.goal-day-date {
+  font-family: var(--type-caption-family);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text3);
+}
+.goal-day-input-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 144px;
+  padding-left: 42px;
+  cursor: text;
+}
+.goal-day-currency {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border);
+  border-right: 0;
+  border-radius: 10px 0 0 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.14));
+  color: var(--text2);
+  font-family: var(--type-title-family);
+  font-size: 20px;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.1), 0 -1px 0 rgba(0,0,0,0.35);
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.06), inset -1px -1px 0 rgba(0,0,0,0.22);
+}
+.goal-day-input {
+  width: 100%;
+  min-width: 0;
+  text-align: center;
+  font-size: 24px;
+  padding: 8px 12px 8px 14px;
+  border-radius: 0 10px 10px 0 !important;
+  border-left-width: 0 !important;
+}
 
 /* Collapsible
    Example on the website: a button that opens/closes an admin section.

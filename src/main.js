@@ -48,6 +48,7 @@ let state = {
   admin: {
     showAllComps: false,
     showAllEmps: false,
+    showUnloggedPlayers: false,
     selectedEmp: null,
     selectedComp: null,
     selectedDate: getTodayDate(),
@@ -273,6 +274,25 @@ function daysRemaining(comp) {
   return Math.ceil((end - new Date()) / (1000 * 60 * 60 * 24));
 }
 
+function getCompetitionCountdownStyle(comp) {
+  if (!comp?.startDate || !comp?.endDate) return "";
+
+  const start = new Date(comp.startDate + "T00:00:00").getTime();
+  const end = new Date(comp.endDate + "T00:00:00").getTime();
+  const today = new Date(getTodayDate() + "T00:00:00").getTime();
+
+  if (!Number.isFinite(start) || !Number.isFinite(end)) return "";
+  if (end <= start) {
+    return "color:hsl(0 90% 60%);text-shadow:4px 4px 0 hsl(0 80% 28%);";
+  }
+
+  const progress = Math.min(1, Math.max(0, (today - start) / (end - start)));
+  const hue = 120 * (1 - progress);
+  const color = `hsl(${hue} 90% 62%)`;
+  const shadow = `hsl(${hue} 80% 28%)`;
+  return `color:${color};text-shadow:4px 4px 0 ${shadow};`;
+}
+
 function getCompetitionStatusMeta(comp) {
   if (comp?.status === "closed") {
     return { key: "closed", label: "Closed" };
@@ -469,7 +489,8 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
   const hasGoals = !!goalsHtml;
   const countdownNum = ended ? "END" : (days !== null ? (days <= 0 ? "0" : String(days)) : "—");
   const countdownLabel = ended ? "COMPETITION OVER" : (days === 1 ? "DAY LEFT" : "DAYS LEFT");
-  const countdownClass = `pick-countdown-num${ended ? " ended" : days !== null && days <= 3 ? " urgent" : ""}`;
+  const countdownClass = `pick-countdown-num${ended ? " ended" : ""}`;
+  const countdownStyle = ended ? "" : getCompetitionCountdownStyle(comp);
 
   container.classList.add("pick-comp-info");
   container.classList.remove("hidden");
@@ -478,7 +499,7 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
     <div class="pick-comp-dates">${comp.startDate && comp.endDate ? escapeHtml(`${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}`) : ""}</div>
     <div class="pick-comp-hero-row">
       <div class="pick-countdown">
-        <span class="${countdownClass}">${countdownNum}</span>
+        <span class="${countdownClass}" style="${countdownStyle}">${countdownNum}</span>
         <span class="pick-countdown-label">${countdownLabel}</span>
       </div>
       ${firstPrizeLine ? `<div class="pick-prize-pill">🎁 <span>${escapeHtml(firstPrizeLine.substring(0, 40) + (firstPrizeLine.length > 40 ? "…" : ""))}</span></div>` : ""}
@@ -698,7 +719,7 @@ function renderPickScreen(filterText = "") {
     const logCard = document.getElementById("pick-log-card");
     if (logCard) logCard.style.display = "block";
     if (noCompsMsg) noCompsMsg.classList.add("hidden");
-    renderCompetitionCard(compInfo, state.currentComp, { collapsibleGoals: true });
+    renderCompetitionCard(compInfo, state.currentComp, { collapsibleGoals: false });
   }
 
   // Daily goals are now shown in competition info card, hide this duplicate
@@ -1548,7 +1569,7 @@ function openAdminPanel() {
 function renderAdminTabBar() {
   const tabs = [
     { id: "competitions", label: "Competitions" },
-    { id: "employees",    label: "Brand Reps" },
+    { id: "employees",    label: "Players" },
     { id: "logs",         label: "Orders" },
   ];
   const bar = document.getElementById("admin-tab-bar");
@@ -1567,6 +1588,7 @@ function renderAdminTab() {
   const content = document.getElementById("admin-tab-content");
   if (!content) return;
   content.innerHTML = "";
+  content.classList.toggle("admin-tab-content-compact", state.admin.tab === "competitions");
   switch (state.admin.tab) {
     case "competitions": renderAdminComps(content); break;
     case "employees":    renderAdminEmps(content); break;
@@ -1578,7 +1600,7 @@ function renderAdminTab() {
 // ADMIN — Competitions
 // ══════════════════════════════════════════════════════
 function renderAdminComps(container) {
-  container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">COMPETITIONS</div>`;
+  container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">MANAGE COMPETITIONS</div>`;
   const entries = Object.entries(state.competitions);
   const toShow = state.admin.showAllComps ? entries : entries.slice(0, PREVIEW_COUNT);
   const list = document.createElement("div");
@@ -1708,7 +1730,7 @@ function renderCompEditPanel(compId, comp) {
   const title = document.createElement("div");
   title.className = "admin-section-title";
   title.style.margin = "12px 0";
-  title.textContent = `EDIT: ${comp.name}`;
+  title.textContent = `EDITING: ${comp.name}`;
   content.appendChild(title);
 
   // Track original values and changes
@@ -1751,17 +1773,57 @@ function renderCompEditPanel(compId, comp) {
     el.addEventListener("change", checkChange);
   };
 
-  [
-    { label: "Competition Name", key: "name", type: "text", value: comp.name },
-    { label: "Start Date", key: "startDate", type: "date", value: comp.startDate || "" },
-    { label: "End Date", key: "endDate", type: "date", value: comp.endDate || "" },
-  ].forEach(f => {
-    const wrap = document.createElement("div");
-    wrap.style.marginBottom = "10px";
-    wrap.innerHTML = `<label class="field-label">${f.label}</label><input type="${f.type}" id="comp-edit-${f.key}" class="log-input" value="${escapeHtml(f.value)}" placeholder="${f.label}" />`;
-    content.appendChild(wrap);
-    addChangeListener(`comp-edit-${f.key}`, f.value);
-  });
+  const nameWrap = document.createElement("div");
+  nameWrap.style.marginBottom = "10px";
+  nameWrap.innerHTML = `<label class="field-label">Competition Name</label><input type="text" id="comp-edit-name" class="log-input" value="${escapeHtml(comp.name)}" placeholder="Competition Name" />`;
+  content.appendChild(nameWrap);
+  addChangeListener("comp-edit-name", comp.name);
+
+  const dateRangeWrap = document.createElement("div");
+  dateRangeWrap.className = "admin-date-range";
+  dateRangeWrap.innerHTML = ` <label class="field-label">Competition Window</label>
+    <div class="admin-date-range-grid">
+      <div class="admin-date-field">
+        <label class="field-label" for="comp-edit-startDate">Start Date</label>
+        <input type="date" id="comp-edit-startDate" class="log-input admin-date-input" value="${escapeHtml(comp.startDate || "")}" />
+      </div>
+      <div class="admin-date-range-connector" aria-hidden="true">→</div>
+      <div class="admin-date-field">
+        <label class="field-label" for="comp-edit-endDate">End Date</label>
+        <input type="date" id="comp-edit-endDate" class="log-input admin-date-input" value="${escapeHtml(comp.endDate || "")}" />
+      </div>
+    </div>
+  `;
+  content.appendChild(dateRangeWrap);
+  addChangeListener("comp-edit-startDate", comp.startDate || "");
+  addChangeListener("comp-edit-endDate", comp.endDate || "");
+
+  const startDateInput = document.getElementById("comp-edit-startDate");
+  const endDateInput = document.getElementById("comp-edit-endDate");
+  const dateSummary = document.getElementById("comp-edit-date-summary");
+  const updateDateRangeUI = () => {
+    const startValue = startDateInput?.value || "";
+    const endValue = endDateInput?.value || "";
+    if (startDateInput) startDateInput.max = endValue || "";
+    if (endDateInput) endDateInput.min = startValue || "";
+
+    if (!dateSummary) return;
+    if (startValue && endValue) {
+      const dayCount = Math.round((new Date(endValue + "T00:00:00") - new Date(startValue + "T00:00:00")) / 86400000) + 1;
+      if (dayCount > 0) {
+        dateSummary.textContent = `${formatDate(startValue)} -> ${formatDate(endValue)}  |  ${dayCount} day${dayCount === 1 ? "" : "s"}`;
+        return;
+      }
+      dateSummary.textContent = "End date must be after start date";
+      return;
+    }
+    dateSummary.textContent = "Choose the start and end of the competition";
+  };
+  startDateInput?.addEventListener("change", updateDateRangeUI);
+  endDateInput?.addEventListener("change", updateDateRangeUI);
+  startDateInput?.addEventListener("input", updateDateRangeUI);
+  endDateInput?.addEventListener("input", updateDateRangeUI);
+  updateDateRangeUI();
 
   // Prize field with formatting toolbar
   const prizeWrap = document.createElement("div");
@@ -1822,7 +1884,6 @@ function renderCompEditPanel(compId, comp) {
   compGoalSection.className = "goal-admin-block";
   compGoalSection.innerHTML = `
     <div class="goal-admin-label">🎯 Competition Total Goal</div>
-    <div class="goal-admin-hint">Overall total sales target</div>
     <div style="display:flex;align-items:center;margin-top:8px;gap:8px;">
       <label class="field-label" style="margin:0;min-width:60px;">TYPE</label>
       <span style="color:var(--text2);font-weight:500;">Total Sales</span>
@@ -1839,14 +1900,22 @@ function renderCompEditPanel(compId, comp) {
   const dailyGoalsSection = document.createElement("div");
   dailyGoalsSection.className = "goal-admin-block";
   dailyGoalsSection.style.marginTop = "16px";
-  dailyGoalsSection.innerHTML = `<div class="goal-admin-label" style="margin-bottom:8px;">☀️ Daily Goals by Week</div>`;
+  dailyGoalsSection.innerHTML = `<div class="goal-admin-label" style="margin-bottom:8px;">Daily Goals by Week</div>`;
   content.appendChild(dailyGoalsSection);
 
   const weekPickerWrap = document.createElement("div");
-  weekPickerWrap.style.marginBottom = "12px";
+  weekPickerWrap.className = "daily-goal-week-picker-wrap";
   weekPickerWrap.innerHTML = `
     <label class="field-label">SELECT WEEK</label>
-    <input type="date" id="daily-goal-week-picker" class="log-input" value="${comp.startDate || ""}" />
+    <div class="daily-goal-week-shell">
+      <div class="daily-goal-week-heading-row">
+        <span class="daily-goal-week-caption">Week Of</span>
+      </div>
+      <label class="daily-goal-week-input-wrap" for="daily-goal-week-picker">
+        <div class="daily-goal-week-display" id="daily-goal-week-display"></div>
+        <input type="date" id="daily-goal-week-picker" class="daily-goal-week-picker-native" value="${comp.startDate || ""}" min="${comp.startDate || ""}" max="${comp.endDate || ""}" />
+      </label>
+    </div>
   `;
   dailyGoalsSection.appendChild(weekPickerWrap);
 
@@ -1856,17 +1925,28 @@ function renderCompEditPanel(compId, comp) {
   dailyGoalsGrid.style.marginTop = "12px";
   dailyGoalsSection.appendChild(dailyGoalsGrid);
 
+  const clampCompetitionDate = (dateStr) => {
+    if (!dateStr) return comp.startDate || comp.endDate || getTodayDate();
+    if (comp.startDate && dateStr < comp.startDate) return comp.startDate;
+    if (comp.endDate && dateStr > comp.endDate) return comp.endDate;
+    return dateStr;
+  };
+
   const renderDailyGoalsForWeek = (dateStr) => {
-    const baseDate = new Date(dateStr + "T00:00:00");
-    const dayOfWeek = baseDate.getDay();
-    const startOfWeek = new Date(baseDate);
-    startOfWeek.setDate(baseDate.getDate() - dayOfWeek);
+    const safeDateStr = clampCompetitionDate(dateStr);
+    const weekInfo = getWeekForDate(safeDateStr);
+    const weekDisplay = document.getElementById("daily-goal-week-display");
+    const weekPicker = document.getElementById("daily-goal-week-picker");
+    if (weekPicker && weekPicker.value !== safeDateStr) {
+      weekPicker.value = safeDateStr;
+    }
+    if (weekDisplay) {
+      weekDisplay.textContent = `${formatDate(weekInfo.startDate)} -> ${formatDate(weekInfo.endDate)}`;
+    }
 
     dailyGoalsGrid.innerHTML = "";
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(startOfWeek);
-      d.setDate(startOfWeek.getDate() + i);
-      const dateString = formatLocalDate(d);
+    for (let i = 0; i < weekInfo.days.length; i++) {
+      const { date: dateString } = weekInfo.days[i];
       const isInRange = dateString >= comp.startDate && dateString <= comp.endDate;
 
       if (!isInRange) continue;
@@ -1876,18 +1956,15 @@ function renderCompEditPanel(compId, comp) {
 
       const dayCard = document.createElement("div");
       dayCard.className = "goal-day-card";
-      dayCard.style.cssText = `
-        padding:8px;
-        border:2px solid var(--border);
-        border-radius:8px;
-      `;
       dayCard.innerHTML = `
-        <div style="font-size:12px;color:var(--text2);margin-bottom:4px;font-weight:700;">${daysOfWeek[i]}</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;">${dateString}</div>
-        <div style="display:flex;align-items:center;gap:4px;">
-          <input type="number" id="${fieldId}" data-date="${dateString}" class="daily-goal-input log-input" placeholder="0" value="${dayGoal.value || ""}" min="0" step="1" style="font-size:12px;padding:4px;width:40px;text-align:center;" />
-          <span style="font-size:11px;color:var(--text2);">$ goal</span>
+        <div class="goal-day-meta">
+          <div class="goal-day-name">${daysOfWeek[i]}</div>
+          <div class="goal-day-date">${dateString}</div>
         </div>
+        <label class="goal-day-input-shell" for="${fieldId}">
+          <span class="goal-day-currency">$</span>
+          <input type="number" id="${fieldId}" data-date="${dateString}" class="daily-goal-input log-input goal-day-input" placeholder="0" value="${dayGoal.value || ""}" min="0" step="1" />
+        </label>
       `;
       dailyGoalsGrid.appendChild(dayCard);
 
@@ -1910,7 +1987,7 @@ function renderCompEditPanel(compId, comp) {
 
   const weekPicker = document.getElementById("daily-goal-week-picker");
   weekPicker.onchange = () => renderDailyGoalsForWeek(weekPicker.value);
-  renderDailyGoalsForWeek(comp.startDate || getTodayDate());
+  renderDailyGoalsForWeek(clampCompetitionDate(comp.startDate || getTodayDate()));
 
   // ═══ Save All Button ═══
   const saveAllBtn = makeBtn("SAVE ALL CHANGES", "log-btn", async () => {
@@ -2013,7 +2090,7 @@ function renderAdminEmpsList() {
 }
 
 function renderAdminEmps(container) {
-  container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">TEAM</div>`;
+  container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">MANAGE PLAYERS</div>`;
   const employeeCount = Object.keys(state.employees || {}).length;
 
   const toolsWrap = document.createElement("div");
@@ -2030,7 +2107,6 @@ function renderAdminEmps(container) {
       <label class="admin-team-field admin-team-search-wrap">
         <span class="admin-team-field-label">Search players</span>
         <div class="admin-team-input-shell">
-          <span class="admin-team-search-icon">⌕</span>
           <input type="text" id="admin-emp-search" class="log-input admin-team-input" placeholder="Search..." />
         </div>
       </label>
@@ -2072,7 +2148,7 @@ function renderAdminEmps(container) {
 }
 
 // ══════════════════════════════════════════════════════
-// ADMIN — Edit Employee Modal
+// ADMIN — Edit Players Modal
 // ══════════════════════════════════════════════════════
 
 // Employees can only edit their own avatar
@@ -2288,30 +2364,13 @@ function inlineRenameEmp(empId, currentName) {
 }
 
 // ══════════════════════════════════════════════════════
-// ADMIN — Logs
+// ADMIN — Orders
 // ══════════════════════════════════════════════════════
 function renderAdminLogs(container) {
   // Default selected date to today
   if (!state.admin.selectedDate) state.admin.selectedDate = getTodayDate();
+  if (!state.admin.selectedComp) state.admin.selectedComp = state.currentComp || Object.keys(state.competitions)[0] || null;
   container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">MANAGE ORDERS</div>`;
-
-  const empWrap = document.createElement("div");
-  empWrap.style.marginBottom = "10px";
-  empWrap.innerHTML = `<label class="field-label">PLAYER</label>`;
-  const empSel = document.createElement("select");
-  empSel.className = "log-input"; empSel.id = "admin-logs-emp";
-  empSel.innerHTML = `<option value="">— Select player —</option>`;
-  Object.entries(state.employees)
-    .sort(([, a], [, b]) => a.name.localeCompare(b.name))
-    .forEach(([id, emp]) => {
-      const opt = document.createElement("option");
-      opt.value = id; opt.textContent = emp.name;
-      if (state.admin.selectedEmp === id) opt.selected = true;
-      empSel.appendChild(opt);
-    });
-  empSel.onchange = () => { state.admin.selectedEmp = empSel.value || null; refreshAdminDayView(); };
-  empWrap.appendChild(empSel);
-  container.appendChild(empWrap);
 
   const compWrap = document.createElement("div");
   compWrap.style.marginBottom = "10px";
@@ -2325,89 +2384,205 @@ function renderAdminLogs(container) {
     if (id === (state.admin.selectedComp || state.currentComp)) opt.selected = true;
     compSel.appendChild(opt);
   });
-  compSel.onchange = () => { state.admin.selectedComp = compSel.value; refreshAdminDayView(); };
+  compSel.onchange = () => {
+    state.admin.selectedComp = compSel.value;
+    state.admin.selectedEmp = null;
+    refreshAdminDayView();
+  };
   compWrap.appendChild(compSel);
   container.appendChild(compWrap);
 
   const dayLabel = document.createElement("label");
-  dayLabel.className = "field-label"; dayLabel.style.marginBottom = "8px"; dayLabel.textContent = "DAY";
+  dayLabel.className = "field-label"; dayLabel.style.marginBottom = "8px"; dayLabel.textContent = "WEEK";
   container.appendChild(dayLabel);
   const daysContainer = document.createElement("div");
   daysContainer.className = "admin-day-buttons"; daysContainer.id = "admin-logs-days";
   container.appendChild(daysContainer);
 
+  const playerDayWrap = document.createElement("div");
+  playerDayWrap.className = "admin-log-player-wrap";
+  playerDayWrap.innerHTML = `
+    <div class="admin-log-player-header">
+      <div class="admin-log-player-title">PLAYERS FOR DAY</div>
+    </div>
+    <div class="admin-log-player-status" id="admin-logs-player-status"></div>
+    <div class="admin-log-player-list" id="admin-logs-player-list"></div>
+  `;
+  container.appendChild(playerDayWrap);
+
   const detail = document.createElement("div");
   detail.className = "admin-log-detail-wrap"; detail.id = "admin-logs-detail";
   detail.style.marginTop = "14px";
-  detail.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">Select an employee to view & manage their logs</p>`;
+  detail.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">Choose a day, then pick a player to manage their log</p>`;
   container.appendChild(detail);
 
-  if (state.admin.selectedEmp && state.employees[state.admin.selectedEmp]) {
-    if (!state.admin.selectedComp) state.admin.selectedComp = state.currentComp;
-    refreshAdminDayView();
-  }
+  refreshAdminDayView();
 }
 
 function refreshAdminDayView() {
-  const empId = state.admin.selectedEmp;
   const compId = state.admin.selectedComp || state.currentComp;
   const dayContainer = document.getElementById("admin-logs-days");
   const dayDetail = document.getElementById("admin-logs-detail");
-  if (!dayContainer || !dayDetail) return;
+  const playerList = document.getElementById("admin-logs-player-list");
+  const playerStatus = document.getElementById("admin-logs-player-status");
+  if (!dayContainer || !dayDetail || !playerList || !playerStatus) return;
 
-  if (!empId || !state.employees[empId]) {
+  const comp = state.competitions[compId];
+  if (!comp) {
     dayContainer.innerHTML = "";
-    dayDetail.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">Select an employee above</p>`;
+    playerList.innerHTML = `<div class="admin-log-empty-state">Select a competition to manage its logs</div>`;
+    playerStatus.textContent = "";
+    dayDetail.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">Select a competition first</p>`;
     return;
   }
 
-  const empLogs = (state.logs[compId] || {})[empId] || {};
+  const clampCompetitionDate = (dateStr) => {
+    if (!dateStr) return comp.startDate || comp.endDate || getTodayDate();
+    if (comp.startDate && dateStr < comp.startDate) return comp.startDate;
+    if (comp.endDate && dateStr > comp.endDate) return comp.endDate;
+    return dateStr;
+  };
+  state.admin.selectedDate = clampCompetitionDate(state.admin.selectedDate);
   const week = getWeekForDate(state.admin.selectedDate);
 
   dayContainer.innerHTML = `<button class="week-nav-btn" id="admin-prev-week-btn">←</button>`;
 
   week.days.forEach(dayInfo => {
-    const hasLog = !!empLogs[dayInfo.date];
+    const logsForDay = Object.values((state.logs[compId] || {})).filter(empLogs => !!empLogs?.[dayInfo.date]);
+    const hasLog = logsForDay.length > 0;
     const isFutureDate = dayInfo.date > getTodayDate();
+    const isOutOfComp = (comp.startDate && dayInfo.date < comp.startDate) || (comp.endDate && dayInfo.date > comp.endDate);
     const btn = document.createElement("button");
-    btn.className = `admin-day-btn${hasLog ? " has-log" : ""}${isFutureDate ? " disabled" : ""}`;
-    btn.innerHTML = `<div class="admin-day-btn-dayname">${dayInfo.dayName}</div><div class="admin-day-btn-date">${dayInfo.dayNum}</div>${hasLog ? '<div style="font-size:8px;color:var(--green)">✓</div>' : ''}`;
-    btn.title = hasLog ? `$${empLogs[dayInfo.date].sales} / ${empLogs[dayInfo.date].hours}hrs` : "No log yet";
-    if (!isFutureDate) {
+    const isSelected = state.admin.selectedDate === dayInfo.date;
+    const classes = ["day-btn"];
+    if (isSelected) classes.push("active");
+    if (hasLog) classes.push("logged");
+    if (isFutureDate || isOutOfComp) classes.push("disabled");
+    btn.className = classes.join(" ");
+    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasLog ? '<div class="day-btn-checkmark">✓</div>' : ''}`;
+    btn.title = hasLog ? `${logsForDay.length} order${logsForDay.length === 1 ? "" : "s"} on this day` : "No orders on this day";
+    if (!isFutureDate && !isOutOfComp) {
       btn.onclick = () => {
-        document.querySelectorAll("#admin-logs-days .admin-day-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        if (hasLog) renderAdminLogDetail(empId, compId, dayInfo.date, empLogs[dayInfo.date]);
-        else renderAdminLogCreate(empId, compId, dayInfo.date);
+        state.admin.selectedDate = dayInfo.date;
+        state.admin.selectedEmp = null;
+        refreshAdminDayView();
       };
     } else {
       btn.disabled = true;
-      btn.onclick = () => showToast("Can't log future dates 🔮");
+      btn.onclick = () => showToast(isOutOfComp ? "That day is outside this competition" : "Can't log future dates 🔮");
     }
     dayContainer.appendChild(btn);
   });
 
-  const nextBtn = makeBtn("→", "week-nav-btn", () => {
-    state.admin.selectedDate = nextWeek(state.admin.selectedDate);
+  dayContainer.appendChild(makeBtn("→", "week-nav-btn", () => {
+    state.admin.selectedDate = clampCompetitionDate(nextWeek(state.admin.selectedDate));
+    state.admin.selectedEmp = null;
     refreshAdminDayView();
-  });
-  nextBtn.id = "admin-next-week-btn";
-  dayContainer.appendChild(nextBtn);
-
+  }));
   document.getElementById("admin-prev-week-btn").onclick = () => {
-    state.admin.selectedDate = prevWeek(state.admin.selectedDate);
+    state.admin.selectedDate = clampCompetitionDate(prevWeek(state.admin.selectedDate));
+    state.admin.selectedEmp = null;
     refreshAdminDayView();
   };
 
-  // Auto-select the first logged date or the current selected date
-  const autoDate = empLogs[state.admin.selectedDate] ? state.admin.selectedDate : (Object.keys(empLogs)[0] || week.days[0]?.date);
-  const autoBtnIndex = week.days.findIndex(d => d.date === autoDate) + 1; // +1 for prev button
+  const autoBtnIndex = week.days.findIndex(d => d.date === state.admin.selectedDate) + 1;
   const autoBtn = dayContainer.children[autoBtnIndex];
-  if (autoBtn) {
-    autoBtn.classList.add("active");
-    const autoLog = empLogs[autoDate];
-    if (autoLog) renderAdminLogDetail(empId, compId, autoDate, autoLog);
-    else renderAdminLogCreate(empId, compId, autoDate);
+  if (autoBtn) autoBtn.classList.add("active");
+
+  const selectedDate = state.admin.selectedDate;
+  const playersForDay = Object.entries(state.employees)
+    .sort(([, a], [, b]) => a.name.localeCompare(b.name))
+    .map(([id, emp]) => {
+      const log = (state.logs[compId] || {})[id]?.[selectedDate] || null;
+      return { id, emp, log };
+    });
+  const loggedCount = playersForDay.filter(p => p.log).length;
+  playerStatus.textContent = loggedCount === 0 ? "No players logged" : "";
+
+  if (!playersForDay.length) {
+    playerList.innerHTML = `<div class="admin-log-empty-state">No players found for this day</div>`;
+    playerStatus.textContent = "";
+    dayDetail.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">No players are available yet</p>`;
+    return;
+  }
+
+  if (!playersForDay.some(p => p.id === state.admin.selectedEmp)) {
+    state.admin.selectedEmp = null;
+  }
+
+  const loggedPlayers = playersForDay.filter(p => p.log);
+  const unloggedPlayers = playersForDay.filter(p => !p.log);
+  playerList.innerHTML = "";
+  const renderPlayerCard = ({ id, emp, log }) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `admin-log-player-card${log ? " has-log" : ""}${state.admin.selectedEmp === id ? " active" : ""}`;
+    btn.innerHTML = `
+      <div class="admin-log-player-main">
+        <div class="admin-log-player-name">${escapeHtml(emp.name)}</div>
+        <div class="admin-log-player-meta">${log ? `$${log.sales.toFixed(0)} · ${log.hours.toFixed(1)} hrs` : "No log yet"}</div>
+      </div>
+      ${log ? '<div class="admin-log-player-badge logged">Logged</div>' : ""}
+    `;
+    btn.onclick = () => {
+      state.admin.selectedEmp = id;
+      document.querySelectorAll("#admin-logs-player-list .admin-log-player-card").forEach(card => card.classList.remove("active"));
+      btn.classList.add("active");
+      if (log) renderAdminLogDetail(id, compId, selectedDate, log);
+      else renderAdminLogCreate(id, compId, selectedDate);
+      document.getElementById("admin-logs-detail")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+    return btn;
+  };
+
+  if (loggedPlayers.length) {
+    const loggedSection = document.createElement("div");
+    loggedSection.className = "admin-log-player-section";
+    loggedSection.innerHTML = `
+      <div class="admin-log-player-section-header">
+        <div class="admin-log-player-section-title">Logged Today</div>
+        <div class="admin-log-player-section-count">${loggedPlayers.length}</div>
+      </div>
+    `;
+    const loggedList = document.createElement("div");
+    loggedList.className = "admin-log-player-list";
+    loggedPlayers.forEach(player => loggedList.appendChild(renderPlayerCard(player)));
+    loggedSection.appendChild(loggedList);
+    playerList.appendChild(loggedSection);
+  }
+
+  if (unloggedPlayers.length) {
+    const openSection = document.createElement("div");
+    openSection.className = "admin-log-player-section";
+    const openHeader = document.createElement("button");
+    openHeader.type = "button";
+    openHeader.className = `admin-log-player-toggle${state.admin.showUnloggedPlayers ? " expanded" : ""}`;
+    openHeader.innerHTML = `
+      <span class="admin-log-player-section-title">Other Players</span>
+      <span class="admin-log-player-toggle-meta">${unloggedPlayers.length} more</span>
+      <span class="admin-log-player-toggle-icon">${state.admin.showUnloggedPlayers ? "▲" : "▼"}</span>
+    `;
+    const openList = document.createElement("div");
+    openList.className = `admin-log-player-list${state.admin.showUnloggedPlayers ? "" : " hidden"}`;
+    unloggedPlayers.forEach(player => openList.appendChild(renderPlayerCard(player)));
+    openHeader.onclick = () => {
+      state.admin.showUnloggedPlayers = !state.admin.showUnloggedPlayers;
+      refreshAdminDayView();
+    };
+    openSection.appendChild(openHeader);
+    openSection.appendChild(openList);
+    playerList.appendChild(openSection);
+  }
+
+  const selectedPlayer = playersForDay.find(p => p.id === state.admin.selectedEmp);
+  if (!selectedPlayer) {
+    dayDetail.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">Choose a player if you want to review or add an OIS</p>`;
+    return;
+  }
+  if (selectedPlayer.log) {
+    renderAdminLogDetail(selectedPlayer.id, compId, selectedDate, selectedPlayer.log);
+  } else {
+    renderAdminLogCreate(selectedPlayer.id, compId, selectedDate);
   }
 }
 

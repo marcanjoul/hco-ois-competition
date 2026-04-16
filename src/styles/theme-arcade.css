@@ -238,13 +238,13 @@ body::after {
 
 .pick-comp-name {
   max-width: 100%;
-  font-size: 34px;
-  line-height: 1.15;
+  font-size: 30px;
+  line-height: 1.05;
   text-shadow: 4px 4px 0 #0b1540;
 }
 
 .pick-comp-hero-row {
-  gap: 16px;
+  gap: 10px;
 }
 
 .pick-countdown,
@@ -267,7 +267,7 @@ body::after {
 
 .pick-countdown-num {
   color: var(--accent);
-  font-size: 56px;
+  font-size: 46px;
   text-shadow: 4px 4px 0 #8e5f00;
 }
 
@@ -287,14 +287,14 @@ body::after {
 
 .pick-comp-dates {
   display: block;
-  margin: -2px 0 18px;
+  margin: -2px 0 10px;
   padding: 0;
   background: transparent;
   color: #47d7ff;
   border: 0 !important;
   box-shadow: none !important;
   font-family: "VT323", monospace;
-  font-size: 24px;
+  font-size: 18px;
   letter-spacing: 0.8px;
   text-transform: none;
 }
@@ -302,6 +302,12 @@ body::after {
 .pick-goals-toggle,
 .comp-detail {
   background: #111e4d;
+}
+
+.pick-comp-goals {
+  border-top-color: #ffd84d !important;
+  background:
+    linear-gradient(180deg, rgba(225, 255, 77, 0.858), rgba(245, 192, 31, 0.825)) !important;
 }
 
 .goal-current {
@@ -457,8 +463,7 @@ body::after {
 }
 
 .btn-locked,
-.day-btn.logged,
-.admin-day-btn.has-log {
+.day-btn.logged {
   background: #153f29 !important;
   border-color: #52ff98 !important;
   color: #c6ffe0 !important;
@@ -471,6 +476,107 @@ body::after {
   background: #2c184d !important;
   border-color: var(--accent-alt) !important;
   color: #ffd6ef !important;
+  transform: scale(1.08);
+}
+
+.admin-log-week-display,
+.admin-log-player-wrap,
+.admin-log-player-card,
+.admin-log-empty-state {
+  border-radius: 0 !important;
+}
+
+.admin-log-week-display,
+.admin-log-player-wrap,
+.admin-log-player-card {
+  border: 3px solid #2b6dff !important;
+  background: #101e55 !important;
+  box-shadow: 4px 4px 0 #09153a !important;
+}
+
+.admin-log-week-display {
+  color: #ffd84d;
+  font-family: "VT323", monospace;
+  font-size: 24px;
+  letter-spacing: 0.5px;
+  text-shadow: 2px 2px 0 #8e5f00;
+}
+
+.admin-log-week-input-wrap:hover .admin-log-week-display,
+.admin-log-week-input-wrap:focus-within .admin-log-week-display {
+  border-color: #47d7ff !important;
+  background: #13266c !important;
+}
+
+.admin-log-player-title {
+  color: var(--accent);
+  text-shadow: 2px 2px 0 #09153a;
+}
+
+.admin-log-player-section-title {
+  color: #fff2a8;
+  text-shadow: 2px 2px 0 #09153a;
+}
+
+.admin-log-player-status,
+.admin-log-player-meta,
+.admin-log-player-section-count,
+.admin-log-player-toggle-meta {
+  color: #8ad7ff;
+}
+
+.admin-log-player-toggle {
+  border-radius: 0 !important;
+  border: 3px solid #2348b3 !important;
+  background: #0f1f56 !important;
+  box-shadow: 4px 4px 0 #09153a !important;
+}
+
+.admin-log-player-toggle.expanded {
+  border-color: #47d7ff !important;
+}
+
+.admin-log-player-toggle-icon {
+  color: #fff2a8;
+}
+
+.admin-log-player-card.has-log {
+  border-color: #52ff98 !important;
+  background: #153f29 !important;
+}
+
+.admin-log-player-card.active {
+  border-color: var(--accent-alt) !important;
+  background: #2c184d !important;
+  color: #ffd6ef !important;
+}
+
+.admin-log-player-card.active .admin-log-player-name,
+.admin-log-player-card.active .admin-log-player-meta {
+  color: #ffd6ef !important;
+}
+
+.admin-log-player-name {
+  font-size: 24px;
+}
+
+.admin-log-player-badge {
+  border-radius: 0;
+  background: #0b1540;
+}
+
+.admin-log-player-badge.logged {
+  color: #52ff98;
+}
+
+.admin-log-player-badge.open {
+  color: #47d7ff;
+}
+
+.admin-log-empty-state {
+  border: 3px dashed #2348b3 !important;
+  background: rgba(11, 21, 64, 0.55) !important;
+  color: #8ad7ff;
 }
 
 .day-btn.today {
@@ -776,6 +882,122 @@ body::after {
   color: var(--text) !important;
 }
 
+.daily-goal-week-shell {
+  background:
+    linear-gradient(180deg, rgba(14, 28, 78, 0.98), rgba(6, 13, 36, 0.98));
+  border: 3px solid #2b6dff;
+  box-shadow: 4px 4px 0 #09153a;
+  padding: 10px;
+}
+
+.admin-date-range {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.admin-date-range-summary {
+  display: none;
+}
+
+.admin-date-range-connector {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #fff2a8;
+  text-shadow: 2px 2px 0 #8e5f00;
+}
+
+.admin-date-input {
+  min-height: 74px;
+}
+
+.daily-goal-week-caption {
+  color: #8ad7ff;
+}
+
+.daily-goal-week-display {
+  border: 3px solid #2b6dff;
+  border-radius: 0;
+  background: #050d27;
+  box-shadow: inset 0 0 0 2px #0b1540;
+  color: #ffd84d;
+  font-family: "VT323", monospace;
+  font-size: 38px;
+  letter-spacing: 0.8px;
+  text-shadow: 2px 2px 0 #8e5f00;
+}
+
+.daily-goal-week-input-wrap:hover .daily-goal-week-display,
+.daily-goal-week-input-wrap:focus-within .daily-goal-week-display {
+  border-color: #47d7ff;
+  background: #0a1741;
+}
+
+.goal-day-card {
+  border: 3px solid #2b6dff;
+  border-radius: 0;
+  background:
+    linear-gradient(180deg, rgba(14, 28, 78, 0.98), rgba(8, 16, 46, 0.98));
+  box-shadow: 4px 4px 0 #09153a;
+}
+
+.goal-day-name {
+  color: #8ad7ff;
+  text-shadow: 2px 2px 0 #09153a;
+}
+
+.goal-day-date {
+  color: #6e95ff;
+  font-family: "VT323", monospace;
+  font-size: 22px;
+  letter-spacing: 0.6px;
+}
+
+.goal-day-input-shell {
+  min-width: 170px;
+}
+
+.goal-day-currency {
+  border: 3px solid #2348b3;
+  border-right: 0;
+  border-radius: 0;
+  background:
+    linear-gradient(180deg, rgba(6, 14, 40, 0.96), rgba(3, 8, 24, 0.96));
+  color: #5f86f3;
+  text-shadow:
+    1px 1px 0 #02102d,
+    -1px -1px 0 rgba(255,255,255,0.05);
+  box-shadow:
+    inset 2px 2px 0 rgba(255,255,255,0.04),
+    inset -2px -2px 0 rgba(0,0,0,0.35);
+}
+
+.goal-day-input {
+  min-height: 58px;
+  border-radius: 0 !important;
+  border-left-width: 0 !important;
+  color: #ffd84d !important;
+  text-shadow: 2px 2px 0 #8e5f00;
+}
+
+.goal-day-input:focus {
+  border-color: #47d7ff !important;
+}
+
+.comp-status-chip.comp-status-active {
+  color: var(--green) !important;
+}
+
+.comp-status-chip.comp-status-closed {
+  color: var(--red) !important;
+}
+
+.comp-status-chip.comp-status-archived {
+  color: var(--accent2) !important;
+}
+
 .admin-team-tools-count,
 .admin-summary-chip,
 .admin-tab-btn,
@@ -846,7 +1068,8 @@ body::after {
     min-width: 0 !important;
     width: 100%;
     padding: 12px 8px !important;
-    font-size: 8px !important;
+    font-size: 7px !important;
+    letter-spacing: 0.6px !important;
     line-height: 1.15 !important;
     text-align: center;
   }
