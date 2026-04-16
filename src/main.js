@@ -2132,7 +2132,7 @@ function renderCompEditPanel(compId, comp) {
   editShell.appendChild(actionsWrap);
   actionsWrap.appendChild(saveAllBtn);
 
-  const delBtn = makeBtn("🗑️ DELETE COMPETITION", "log-btn admin-danger-btn", async () => {
+  const delBtn = makeBtn("DELETE COMPETITION", "log-btn admin-danger-btn", async () => {
     const confirmed = await showAppConfirm({
       title: "Delete Competition",
       message: `Delete "${comp.name}"? All logs for this competition will be removed.`,
