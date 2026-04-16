@@ -17,6 +17,10 @@
 // src/main.js
 import { db } from "./firebase.js";
 import { ref, set, get, onValue, update, remove } from "firebase/database";
+import { inject } from '@vercel/analytics';
+
+// Initialize Vercel Web Analytics
+inject();
 
 // App-wide constants.
 // Example on the website: weekday labels and preview limits.
