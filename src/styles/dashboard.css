@@ -26,6 +26,10 @@
   gap: var(--space-4);
 }
 
+.dash-body.dash-body-profile {
+  padding-top: var(--space-4);
+}
+
 /* Winner banner
    Example on the website: a highlighted winner message at the top of the screen.
 */
@@ -54,6 +58,136 @@
   box-shadow: var(--shadow);
 }
 .dash-comp-info.hidden { display: none; }
+
+.dash-profile-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  box-shadow: var(--shadow);
+}
+.dash-profile-card.hidden { display: none; }
+
+.app-back-btn {
+  width: fit-content;
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface2);
+  color: var(--text);
+  font-family: var(--type-title-family);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  cursor: pointer;
+}
+
+.dash-profile-back-top {
+  margin-bottom: var(--space-2);
+}
+.dash-profile-back-top.hidden { display: none; }
+
+.dash-profile-hero {
+  display: grid;
+  grid-template-columns: 176px minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.dash-profile-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-profile-avatar-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.dash-profile-avatar .board-avatar-stack {
+  width: 144px;
+  min-width: 144px;
+  padding-top: 24px;
+  padding-bottom: 30px;
+}
+
+.dash-profile-avatar .board-avatar-stack.rank-1 {
+  padding-top: 32px;
+}
+
+.dash-profile-avatar .avatar-board {
+  width: 116px;
+  height: 116px;
+  font-size: 46px;
+}
+
+.dash-profile-avatar .board-avatar-crown {
+  top: 0;
+  right: -8px;
+  font-size: 50px;
+}
+
+.dash-profile-avatar .board-avatar-medal {
+  bottom: 0;
+  font-size: 40px;
+}
+
+.dash-profile-copy {
+  min-width: 0;
+}
+
+.dash-profile-kicker {
+  font-family: var(--type-label-family);
+  font-size: 9px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+
+.dash-profile-name {
+  font-family: var(--type-display-family);
+  font-size: 30px;
+  line-height: 0.95;
+  color: var(--text);
+  margin-bottom: 12px;
+  word-break: break-word;
+}
+
+.dash-profile-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.dash-profile-stat {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  box-shadow: var(--shadow-elevation-1);
+}
+
+.dash-profile-stat-label {
+  font-family: var(--type-label-family);
+  font-size: 8px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+
+.dash-profile-stat-value {
+  font-family: var(--type-display-family);
+  font-size: 24px;
+  line-height: 1;
+  color: var(--text);
+}
 
 /* Stat row
    Example on the website: the 3 stat boxes for Sales/HR, Total Sales, and Rank.
@@ -180,4 +314,20 @@
   color: var(--green);
   white-space: nowrap;
   text-align: right;
+}
+
+@media (max-width: 640px) {
+  .dash-profile-hero {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .dash-profile-copy {
+    width: 100%;
+  }
+
+  .dash-profile-name {
+    font-size: 24px;
+  }
 }

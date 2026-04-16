@@ -28,6 +28,20 @@
    ──────────────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {
+  .admin-edit-group {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .admin-edit-group-body {
+    gap: 12px;
+  }
+
+  .admin-edit-two-col {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
   .history-item {
     grid-template-columns: 58px minmax(0, 1fr) auto;
     padding: 12px 14px;
@@ -88,11 +102,12 @@
   }
 
   .board-meta {
-    font-size: 9px;
-    white-space: normal;
-    overflow: visible;
-    text-overflow: clip;
-    line-height: 1.15;
+    font-size: 7px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.1;
+    letter-spacing: 0.2px;
   }
 
   .pick-info-btn {
@@ -426,15 +441,16 @@
     font-size: 22px;
   }
   .board-meta {
-    font-size: 8px;
-    line-height: 1.15;
+    font-size: 6px;
+    line-height: 1.1;
+    letter-spacing: 0.1px;
   }
   .board-score {
-    min-width: 64px;
+    min-width: 58px;
   }
-  .board-sph { font-size: 18px; }
-  .board-card.rank-1 .board-sph { font-size: 22px; }
-  .board-sph-label { font-size: 8px; }
+  .board-sph { font-size: 16px; }
+  .board-card.rank-1 .board-sph { font-size: 20px; }
+  .board-sph-label { font-size: 7px; }
 }
 
 @media (max-width: 380px) {

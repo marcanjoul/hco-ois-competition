@@ -785,7 +785,14 @@ function showScreen(name) {
 
   // Only show the persistent header on screens that need it.
   const header = document.getElementById("app-header");
-  if (name === "pick" || name === "board" || name === "admin" || name === "admin-gate") {
+  const hideHeader = (
+    name === "pick" ||
+    name === "board" ||
+    name === "admin" ||
+    name === "admin-gate" ||
+    (name === "dash" && state.dashView === "profile")
+  );
+  if (hideHeader) {
     header.classList.add("hidden");
   } else {
     header.classList.remove("hidden");
@@ -965,62 +972,7 @@ function isIOSDevice() {
 }
 
 function promptPickAvatarUpload(empId) {
-  // On iOS, opening the native file picker directly gives the system sheet
-  // with camera/photos/files options, which is smoother than our custom menu.
-  if (isIOSDevice()) {
-    triggerAvatarFileInput(empId, { accept: "image/*,.heic,.heif,.png,.jpg,.jpeg,.webp" });
-    return;
-  }
-
-  let modal = document.getElementById("pick-avatar-upload-modal");
-  if (!modal) {
-    modal = document.createElement("div");
-    modal.id = "pick-avatar-upload-modal";
-    modal.className = "pick-avatar-upload-modal";
-    document.body.appendChild(modal);
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) closePickAvatarUploadModal();
-    });
-  }
-
-  modal.innerHTML = `
-    <div class="pick-avatar-upload-sheet">
-      <div class="pick-avatar-upload-header">
-        <div class="pick-avatar-upload-title">Update Photo</div>
-        <button class="pick-avatar-upload-close" id="pick-avatar-upload-close" type="button" aria-label="Close upload options">✕</button>
-      </div>
-      <div class="pick-avatar-upload-subtitle">Choose how you want to upload your avatar.</div>
-      <div class="pick-avatar-upload-actions">
-        <button class="pick-avatar-upload-option" id="pick-avatar-take-photo" type="button">
-          <span class="pick-avatar-upload-option-icon">📸</span>
-          <span class="pick-avatar-upload-option-copy">
-            <strong>Take photo</strong>
-            <span>Open the camera</span>
-          </span>
-        </button>
-        <button class="pick-avatar-upload-option" id="pick-avatar-choose-photo" type="button">
-          <span class="pick-avatar-upload-option-icon">🖼️</span>
-          <span class="pick-avatar-upload-option-copy">
-            <strong>Choose photo</strong>
-            <span>Pick from your photos</span>
-          </span>
-        </button>
-        <button class="pick-avatar-upload-option" id="pick-avatar-choose-file" type="button">
-          <span class="pick-avatar-upload-option-icon">📁</span>
-          <span class="pick-avatar-upload-option-copy">
-            <strong>Choose from files</strong>
-            <span>Browse files on this device</span>
-          </span>
-        </button>
-      </div>
-    </div>
-  `;
-
-  modal.classList.add("active");
-  modal.querySelector("#pick-avatar-upload-close").onclick = closePickAvatarUploadModal;
-  modal.querySelector("#pick-avatar-take-photo").onclick = () => triggerAvatarFileInput(empId, { accept: "image/*", capture: "environment" });
-  modal.querySelector("#pick-avatar-choose-photo").onclick = () => triggerAvatarFileInput(empId, { accept: "image/*" });
-  modal.querySelector("#pick-avatar-choose-file").onclick = () => triggerAvatarFileInput(empId, { accept: "image/*,.heic,.heif,.png,.jpg,.jpeg,.webp" });
+  triggerAvatarFileInput(empId, { accept: "image/*,.heic,.heif,.png,.jpg,.jpeg,.webp" });
 }
 
 function closePickAvatarUploadModal() {
@@ -1106,36 +1058,118 @@ function renderDash() {
   const emp = state.employees[state.currentUser];
   if (!emp) return;
   const isProfileView = state.dashView === "profile";
+  const header = document.getElementById("app-header");
+  const dashBody = document.querySelector("#screen-dash .dash-body");
+
+  if (header) {
+    header.classList.toggle("hidden", isProfileView);
+  }
+  if (dashBody) {
+    dashBody.classList.toggle("dash-body-profile", isProfileView);
+  }
 
   document.getElementById("dash-name").textContent = emp.name.toUpperCase();
   const comp = state.competitions[state.currentComp];
   document.getElementById("dash-comp-name").textContent = comp ? comp.name : "";
-
-  // Render competition info card on dashboard
-  const dashCompInfoEl = document.getElementById("dash-comp-info");
-  if (dashCompInfoEl && comp) {
-    renderCompetitionCard(dashCompInfoEl, state.currentComp, { collapsibleGoals: true });
-  } else if (dashCompInfoEl) {
-    dashCompInfoEl.classList.add("hidden");
-  }
 
   const myLogs = (state.logs[state.currentComp] || {})[state.currentUser] || {};
   let totalSales = 0, totalHours = 0;
   Object.values(myLogs).forEach(d => { totalSales += d.sales || 0; totalHours += d.hours || 0; });
   const sph = totalHours > 0 ? totalSales / totalHours : 0;
   const hasLogs = Object.keys(myLogs).length > 0;
+  const ranked = getRankedPlayers(state.currentComp);
+  const myRank = ranked.findIndex(r => r.id === state.currentUser) + 1;
+  const ordersCount = Object.keys(myLogs).length;
+
+  const dashCompInfoEl = document.getElementById("dash-comp-info");
+  let profileCard = document.getElementById("dash-profile-card");
+  let profileBackBtn = document.getElementById("dash-profile-back-top");
+  if (!profileBackBtn && dashCompInfoEl?.parentElement) {
+    profileBackBtn = document.createElement("button");
+    profileBackBtn.id = "dash-profile-back-top";
+    profileBackBtn.className = "app-back-btn dash-profile-back-top hidden";
+    profileBackBtn.type = "button";
+    profileBackBtn.textContent = "← Back to Leaderboard";
+    dashCompInfoEl.parentElement.insertBefore(profileBackBtn, dashCompInfoEl);
+  }
+  if (!profileCard && dashCompInfoEl?.parentElement) {
+    profileCard = document.createElement("div");
+    profileCard.id = "dash-profile-card";
+    profileCard.className = "dash-profile-card hidden";
+    dashCompInfoEl.parentElement.insertBefore(profileCard, dashCompInfoEl);
+  }
+
+  // Render competition info card on dashboard
+  if (dashCompInfoEl && comp) {
+    if (isProfileView) {
+      dashCompInfoEl.classList.add("hidden");
+    } else {
+      renderCompetitionCard(dashCompInfoEl, state.currentComp, { collapsibleGoals: true });
+    }
+  } else if (dashCompInfoEl) {
+    dashCompInfoEl.classList.add("hidden");
+  }
+
+  if (profileCard) {
+    if (isProfileView) {
+      const displayRank = myRank > 0 ? myRank : ranked.length + 1;
+      profileBackBtn?.classList.remove("hidden");
+      profileCard.classList.remove("hidden");
+      profileCard.innerHTML = `
+        <div class="dash-profile-hero">
+          <div class="dash-profile-avatar">
+            <button class="dash-profile-avatar-btn pick-selected-avatar-btn" id="dash-profile-avatar-btn" type="button" title="Tap to edit avatar">
+              ${getBoardAvatarHtml(emp, state.currentUser, displayRank)}
+              <span class="pick-avatar-edit-pill">Edit photo</span>
+            </button>
+          </div>
+          <div class="dash-profile-copy">
+            <div class="dash-profile-kicker">Player Profile</div>
+            <div class="dash-profile-name">${escapeHtml(emp.name)}</div>
+            <div class="dash-profile-stats">
+              <div class="dash-profile-stat">
+                <div class="dash-profile-stat-label">Sales / Hr</div>
+                <div class="dash-profile-stat-value">$${sph.toFixed(0)}</div>
+              </div>
+              <div class="dash-profile-stat">
+                <div class="dash-profile-stat-label">Total Sales</div>
+                <div class="dash-profile-stat-value">$${totalSales.toFixed(0)}</div>
+              </div>
+              <div class="dash-profile-stat">
+                <div class="dash-profile-stat-label">Rank</div>
+                <div class="dash-profile-stat-value">${myRank > 0 ? `#${myRank}` : "—"}</div>
+              </div>
+              <div class="dash-profile-stat">
+                <div class="dash-profile-stat-label">Orders</div>
+                <div class="dash-profile-stat-value">${ordersCount}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      profileBackBtn.onclick = () => {
+        state.dashView = "logging";
+        showScreen("board");
+      };
+      document.getElementById("dash-profile-avatar-btn")?.addEventListener("click", () => {
+        promptPickAvatarUpload(state.currentUser);
+      });
+    } else {
+      profileBackBtn?.classList.add("hidden");
+      profileCard.classList.add("hidden");
+      profileCard.innerHTML = "";
+    }
+  }
 
   // Hide stat cards if no logs exist in the competition yet
   const statRow = document.querySelector(".stat-row");
   if (statRow) {
     const compHasLogs = hasLogsInComp(state.currentComp);
-    statRow.style.display = compHasLogs ? "grid" : "none";
+    statRow.style.display = compHasLogs && !isProfileView ? "grid" : "none";
 
     if (compHasLogs) {
       document.getElementById("stat-sph").textContent   = `$${sph.toFixed(0)}`;
       document.getElementById("stat-total").textContent = `$${totalSales.toFixed(0)}`;
-      const ranked = getRankedPlayers(state.currentComp);
-      const myRank = ranked.findIndex(r => r.id === state.currentUser) + 1;
       document.getElementById("stat-rank").textContent = myRank > 0 ? `#${myRank}` : "—";
     }
   }
@@ -1172,8 +1206,11 @@ function renderDash() {
       goalsHtml += `<div class="goal-block"><div class="goal-label">☀️ Daily Goal</div>${renderGoalBar(d.total, g.value, "total")}</div>`;
     }
     goalsEl.innerHTML = goalsHtml;
-    goalsEl.style.display = goalsHtml ? "flex" : "none";
+    goalsEl.style.display = goalsHtml && !isProfileView ? "flex" : "none";
   }
+
+  const vibeCard = document.querySelector(".vibe-card");
+  if (vibeCard) vibeCard.style.display = isProfileView ? "none" : "flex";
 
   const dashLogCard = document.getElementById("dash-log-card");
   if (dashLogCard) {
@@ -1587,6 +1624,8 @@ function renderAdminTabBar() {
 function renderAdminTab() {
   const content = document.getElementById("admin-tab-content");
   if (!content) return;
+  const topBackBtn = document.getElementById("admin-back-top");
+  if (topBackBtn) topBackBtn.classList.add("hidden");
   content.innerHTML = "";
   content.classList.toggle("admin-tab-content-compact", state.admin.tab === "competitions");
   switch (state.admin.tab) {
@@ -1724,14 +1763,59 @@ function renderAdminComps(container) {
 
 function renderCompEditPanel(compId, comp) {
   const content = document.getElementById("admin-tab-content");
+  const contentParent = content?.parentElement;
+  let topBackBtn = document.getElementById("admin-back-top");
+  if (!topBackBtn && contentParent) {
+    topBackBtn = document.createElement("button");
+    topBackBtn.id = "admin-back-top";
+    topBackBtn.type = "button";
+    topBackBtn.className = "app-back-btn admin-back-top hidden";
+    contentParent.insertBefore(topBackBtn, content);
+  }
+  if (topBackBtn) {
+    topBackBtn.textContent = "← Back";
+    topBackBtn.classList.remove("hidden");
+    topBackBtn.onclick = () => {
+      state.admin.tab = "competitions";
+      renderAdminTabBar();
+      renderAdminTab();
+    };
+  }
   content.innerHTML = "";
-  content.appendChild(makeBtn("← Back", "del-btn", () => { state.admin.tab = "competitions"; renderAdminTabBar(); renderAdminTab(); }));
 
   const title = document.createElement("div");
   title.className = "admin-section-title";
   title.style.margin = "12px 0";
   title.textContent = `EDITING: ${comp.name}`;
   content.appendChild(title);
+
+  const editShell = document.createElement("div");
+  editShell.className = "admin-edit-shell";
+  content.appendChild(editShell);
+
+  const createEditGroup = (groupTitle, subtitle = "") => {
+    const group = document.createElement("section");
+    group.className = "admin-edit-group";
+
+    const header = document.createElement("div");
+    header.className = "admin-edit-group-header";
+    header.innerHTML = `
+      <div class="admin-edit-group-title">${escapeHtml(groupTitle)}</div>
+      ${subtitle ? `<div class="admin-edit-group-sub">${escapeHtml(subtitle)}</div>` : ""}
+    `;
+
+    const body = document.createElement("div");
+    body.className = "admin-edit-group-body";
+
+    group.appendChild(header);
+    group.appendChild(body);
+    editShell.appendChild(group);
+    return body;
+  };
+
+  const setupGroup = createEditGroup("Competition Setup", "Core details and current state");
+  const prizesGroup = createEditGroup("Prizes", "What players are working toward");
+  const goalsGroup = createEditGroup("Goals", "Competition target and daily pacing");
 
   // Track original values and changes
   const originalValues = {
@@ -1774,9 +1858,9 @@ function renderCompEditPanel(compId, comp) {
   };
 
   const nameWrap = document.createElement("div");
-  nameWrap.style.marginBottom = "10px";
+  nameWrap.className = "admin-edit-field-stack";
   nameWrap.innerHTML = `<label class="field-label">Competition Name</label><input type="text" id="comp-edit-name" class="log-input" value="${escapeHtml(comp.name)}" placeholder="Competition Name" />`;
-  content.appendChild(nameWrap);
+  setupGroup.appendChild(nameWrap);
   addChangeListener("comp-edit-name", comp.name);
 
   const dateRangeWrap = document.createElement("div");
@@ -1794,7 +1878,7 @@ function renderCompEditPanel(compId, comp) {
       </div>
     </div>
   `;
-  content.appendChild(dateRangeWrap);
+  setupGroup.appendChild(dateRangeWrap);
   addChangeListener("comp-edit-startDate", comp.startDate || "");
   addChangeListener("comp-edit-endDate", comp.endDate || "");
 
@@ -1827,7 +1911,7 @@ function renderCompEditPanel(compId, comp) {
 
   // Prize field with formatting toolbar
   const prizeWrap = document.createElement("div");
-  prizeWrap.style.marginBottom = "10px";
+  prizeWrap.className = "admin-edit-field-stack";
   prizeWrap.innerHTML = `
     <label class="field-label">PRIZES</label>
     <div class="prize-format-toolbar">
@@ -1837,12 +1921,16 @@ function renderCompEditPanel(compId, comp) {
     </div>
     <textarea id="comp-edit-prize" class="prize-textarea">${escapeHtml(comp.prize || "")}</textarea>
   `;
-  content.appendChild(prizeWrap);
+  prizesGroup.appendChild(prizeWrap);
   setupPrizeFormatButtons("comp-edit-prize");
   addChangeListener("comp-edit-prize", comp.prize || "");
 
+  const setupMetaRow = document.createElement("div");
+  setupMetaRow.className = "admin-edit-two-col";
+  setupGroup.appendChild(setupMetaRow);
+
   const statusWrap = document.createElement("div");
-  statusWrap.style.marginBottom = "10px";
+  statusWrap.className = "admin-edit-field-stack";
   statusWrap.innerHTML = `<label class="field-label">STATUS</label>`;
   const statusSel = document.createElement("select");
   statusSel.className = "log-input"; statusSel.id = "comp-edit-status";
@@ -1853,7 +1941,7 @@ function renderCompEditPanel(compId, comp) {
     statusSel.appendChild(opt);
   });
   statusWrap.appendChild(statusSel);
-  content.appendChild(statusWrap);
+  setupMetaRow.appendChild(statusWrap);
   addChangeListener("comp-edit-status", comp.status);
 
   const winnerDisplayText = !isCompEnded(comp)
@@ -1863,19 +1951,12 @@ function renderCompEditPanel(compId, comp) {
       : "No winner set";
 
   const winnerWrap = document.createElement("div");
-  winnerWrap.style.marginBottom = "10px";
+  winnerWrap.className = "admin-edit-field-stack";
   winnerWrap.innerHTML = `
     <label class="field-label">WINNER</label>
     <div class="admin-readonly-field">${escapeHtml(winnerDisplayText)}</div>
   `;
-  content.appendChild(winnerWrap);
-
-  // ═══ Goals Section ═══
-  const goalsTitle = document.createElement("div");
-  goalsTitle.className = "admin-section-title";
-  goalsTitle.style.margin = "20px 0 12px 0";
-  goalsTitle.textContent = "GOALS";
-  content.appendChild(goalsTitle);
+  setupMetaRow.appendChild(winnerWrap);
 
   const compGoals = getCompGoals(compId);
 
@@ -1883,25 +1964,23 @@ function renderCompEditPanel(compId, comp) {
   const compGoalSection = document.createElement("div");
   compGoalSection.className = "goal-admin-block";
   compGoalSection.innerHTML = `
-    <div class="goal-admin-label">🎯 Competition Total Goal</div>
-    <div style="display:flex;align-items:center;margin-top:8px;gap:8px;">
-      <label class="field-label" style="margin:0;min-width:60px;">TYPE</label>
-      <span style="color:var(--text2);font-weight:500;">Total Sales</span>
-    </div>
+    <div class="goal-admin-label">Competition Total Goal</div>
     <div style="margin-top:8px;">
       <label class="field-label">TARGET</label>
-      <input type="number" id="goal-val-competition" class="log-input" placeholder="e.g. 5000" value="${compGoals.competition?.value || ""}" min="0" step="1" />
+      <label class="goal-day-input-shell goal-admin-input-shell" for="goal-val-competition">
+        <span class="goal-day-currency">$</span>
+        <input type="number" id="goal-val-competition" class="daily-goal-input log-input goal-day-input" placeholder="0" value="${compGoals.competition?.value || ""}" min="0" step="1" />
+      </label>
     </div>
   `;
-  content.appendChild(compGoalSection);
+  goalsGroup.appendChild(compGoalSection);
   addChangeListener("goal-val-competition", compGoals.competition?.value || "");
 
   // Daily Goals by Week
   const dailyGoalsSection = document.createElement("div");
   dailyGoalsSection.className = "goal-admin-block";
-  dailyGoalsSection.style.marginTop = "16px";
   dailyGoalsSection.innerHTML = `<div class="goal-admin-label" style="margin-bottom:8px;">Daily Goals by Week</div>`;
-  content.appendChild(dailyGoalsSection);
+  goalsGroup.appendChild(dailyGoalsSection);
 
   const weekPickerWrap = document.createElement("div");
   weekPickerWrap.className = "daily-goal-week-picker-wrap";
@@ -2020,8 +2099,10 @@ function renderCompEditPanel(compId, comp) {
     showToast("All changes saved ✅");
     state.admin.tab = "competitions"; renderAdminTabBar(); renderAdminTab();
   });
-  saveAllBtn.style.marginTop = "20px";
-  content.appendChild(saveAllBtn);
+  const actionsWrap = document.createElement("div");
+  actionsWrap.className = "admin-edit-actions";
+  editShell.appendChild(actionsWrap);
+  actionsWrap.appendChild(saveAllBtn);
 
   const delBtn = makeBtn("🗑️ Delete Competition", "del-btn danger", async () => {
     if (confirm(`Delete "${comp.name}"? All logs will be removed.`)) {
@@ -2031,8 +2112,7 @@ function renderCompEditPanel(compId, comp) {
       state.admin.tab = "competitions"; renderAdminTabBar(); renderAdminTab();
     }
   });
-  delBtn.style.marginTop = "8px";
-  content.appendChild(delBtn);
+  actionsWrap.appendChild(delBtn);
 }
 
 // ══════════════════════════════════════════════════════

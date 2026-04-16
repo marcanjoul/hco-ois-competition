@@ -204,6 +204,14 @@
   overflow-y: auto;
 }
 
+.admin-back-top {
+  margin-bottom: var(--space-2);
+}
+
+.admin-back-top.hidden {
+  display: none;
+}
+
 .admin-tab-content.admin-tab-content-compact {
   flex: 0 0 auto;
   align-self: stretch;
@@ -221,6 +229,67 @@
   color: var(--text2);
   margin-bottom: var(--space-3);
   text-transform: uppercase;
+}
+
+.admin-edit-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.admin-edit-group {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.admin-edit-group-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-edit-group-title {
+  font-family: var(--type-title-family);
+  font-size: var(--type-title-size);
+  letter-spacing: var(--type-title-letter-spacing);
+  color: var(--text);
+  text-transform: uppercase;
+}
+
+.admin-edit-group-sub {
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  color: var(--text2);
+}
+
+.admin-edit-group-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-edit-field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-edit-two-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.admin-edit-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 6px;
 }
 
 .admin-readonly-field {
@@ -966,12 +1035,13 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: var(--space-4);
-  margin-bottom: var(--space-3);
 }
 .goal-admin-label { font-family: var(--type-title-family); font-size: var(--type-title-size); letter-spacing: 1px; color: var(--text); margin-bottom: 4px; }
 .goal-admin-hint { font-family: var(--type-caption-family); font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); color: var(--text2); margin-bottom: var(--space-3); }
+.goal-admin-input-shell {
+  margin-top: 8px;
+}
 .admin-date-range {
-  margin-bottom: 12px;
   padding: 0;
   border: 0;
   border-radius: 0;
