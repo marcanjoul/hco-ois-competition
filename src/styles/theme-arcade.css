@@ -370,7 +370,13 @@ body::after {
 .admin-action-edit,
 .admin-action-delete,
 .pick-avatar-upload-option,
-.pick-selected-clear-btn {
+.pick-selected-clear-btn,
+.del-btn,
+.mini-btn,
+.collapsible-toggle,
+.prize-format-btn,
+.admin-lock-btn,
+.btn-secondary {
   border-radius: 0 !important;
   border: 3px solid #2b6dff !important;
   background: #101e55 !important;
@@ -390,7 +396,13 @@ body::after {
 .pick-success-cta:hover,
 .admin-action-edit:hover,
 .admin-action-delete:hover,
-.pick-avatar-upload-option:hover {
+.pick-avatar-upload-option:hover,
+.del-btn:hover,
+.mini-btn:hover,
+.collapsible-toggle:hover,
+.prize-format-btn:hover,
+.admin-lock-btn:hover,
+.btn-secondary:hover {
   transform: translate(-2px, -2px);
 }
 
@@ -405,9 +417,33 @@ body::after {
 .pick-success-cta:active,
 .admin-action-edit:active,
 .admin-action-delete:active,
-.pick-avatar-upload-option:active {
+.pick-avatar-upload-option:active,
+.del-btn:active,
+.mini-btn:active,
+.collapsible-toggle:active,
+.prize-format-btn:active,
+.admin-lock-btn:active,
+.btn-secondary:active {
   transform: translate(2px, 2px);
   box-shadow: 1px 1px 0 #09153a !important;
+}
+
+.mini-btn:not(.btn-ghost) {
+  background: var(--accent) !important;
+  color: #06102b !important;
+  border-color: #f5bf1f !important;
+}
+
+.btn-secondary {
+  background: #050d27 !important;
+  color: #7a8fb8 !important;
+  border-color: #2b3f6a !important;
+  box-shadow: 3px 3px 0 #09153a !important;
+}
+
+.del-btn.danger {
+  border-color: var(--red) !important;
+  color: var(--red) !important;
 }
 
 .log-btn,
