@@ -17,10 +17,6 @@
 // src/main.js
 import { db } from "./firebase.js";
 import { ref, set, get, onValue, update, remove } from "firebase/database";
-import { inject } from '@vercel/analytics';
-
-// Initialize Vercel Web Analytics
-inject();
 
 // App-wide constants.
 // Example on the website: weekday labels and preview limits.
@@ -1430,28 +1426,16 @@ function renderBoard() {
 
   // Has logs - show ranked list
   const metric = state.settings.rankingMetric || "sph";
-  const topVal = metric === "sph" ? (players[0]?.sph || 1) : (players[0]?.total || 1);
   const winner = comp?.winner;
-  const tiedByMetric = (a, b) => {
-    if (!a || !b) return false;
-    const aVal = metric === "sph" ? a.sph : a.total;
-    const bVal = metric === "sph" ? b.sph : b.total;
-    return Math.abs(aVal - bVal) < 0.001;
-  };
-  const getDisplayRank = (index) => {
-    if (index <= 0) return 1;
-    return tiedByMetric(players[index], players[index - 1]) ? getDisplayRank(index - 1) : index + 1;
-  };
+  const movementById = getLeaderboardMovement(compId);
 
   function makeBoardCard(player, index, tieGroupSize = 1) {
-    const displayRank = getDisplayRank(index);
-    const rankLabel = index === 0 ? "👑" : displayRank <= 3
-      ? (displayRank === 2 ? "🥈" : "🥉")
-      : `#${displayRank}`;
+    const displayRank = getLeaderboardDisplayRank(players, index, metric);
     const isWinner = winner === player.id;
     const emp = state.employees[player.id];
     const card = document.createElement("div");
     const isCurrentUser = state.currentUser === player.id;
+    const movement = movementById.get(player.id) || { type: "same", label: "HOLD" };
     const rankClasses = ["board-card"];
     if (displayRank <= 3) rankClasses.push(`rank-${displayRank}`);
     if (isWinner) rankClasses.push("winner-card");
@@ -1461,11 +1445,15 @@ function renderBoard() {
     card.style.animationDelay = `${index * 0.06}s`;
     const safePlayerName = escapeHtml(player.name);
     card.innerHTML = `
+      <div class="board-rank-stack">
+        <div class="board-rank-num">#${displayRank}</div>
+        <div class="board-trend board-trend-${movement.type}">${movement.label}</div>
+      </div>
       ${getBoardAvatarHtml(emp || { name: player.name }, player.id, displayRank)}
       <div class="board-info">
         <div class="board-name-row">
           <div class="board-name">
-            ${safePlayerName}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}${displayRank > 3 ? ` <span class='board-rank-inline'>#${displayRank}</span>` : ""}
+            ${safePlayerName}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}
           </div>
         </div>
         <div class="board-meta">$${player.total.toFixed(2)} total · ${player.hours.toFixed(1)} hrs</div>
@@ -1487,7 +1475,7 @@ function renderBoard() {
   for (let i = 0; i < players.length; i++) {
     const tieGroup = [players[i]];
     let j = i + 1;
-    while (j < players.length && tiedByMetric(players[j - 1], players[j])) {
+    while (j < players.length && playersTiedOnLeaderboard(players[j - 1], players[j], metric)) {
       tieGroup.push(players[j]);
       j++;
     }
@@ -1495,7 +1483,7 @@ function renderBoard() {
     if (tieGroup.length > 1) {
       const wrap = document.createElement("div");
       wrap.className = "board-tie-group";
-      wrap.innerHTML = `<div class="board-tie-group-label">Tied at #${getDisplayRank(i)}</div>`;
+      wrap.innerHTML = `<div class="board-tie-group-label">Tied at #${getLeaderboardDisplayRank(players, i, metric)}</div>`;
       tieGroup.forEach((tiedPlayer, offset) => {
         wrap.appendChild(makeBoardCard(tiedPlayer, i + offset, tieGroup.length));
       });
@@ -1550,6 +1538,71 @@ function getRankedPlayers(compId, logsSource = state.logs) {
     })
     .filter(player => player.total > 0 || player.hours > 0)
     .sort((a, b) => metric === "sph" ? b.sph - a.sph : b.total - a.total);
+}
+
+function getLeaderboardMetricValue(player, metric = state.settings.rankingMetric || "sph") {
+  return metric === "sph" ? player.sph : player.total;
+}
+
+function playersTiedOnLeaderboard(a, b, metric = state.settings.rankingMetric || "sph") {
+  if (!a || !b) return false;
+  return Math.abs(getLeaderboardMetricValue(a, metric) - getLeaderboardMetricValue(b, metric)) < 0.001;
+}
+
+function getLeaderboardDisplayRank(players, index, metric = state.settings.rankingMetric || "sph") {
+  if (index <= 0) return 1;
+  return playersTiedOnLeaderboard(players[index], players[index - 1], metric)
+    ? getLeaderboardDisplayRank(players, index - 1, metric)
+    : index + 1;
+}
+
+function getCompetitionLogDates(compId, logsSource = state.logs) {
+  const compLogs = logsSource[compId] || {};
+  const dates = new Set();
+  Object.values(compLogs).forEach(empLogs => {
+    Object.keys(empLogs || {}).forEach(date => dates.add(date));
+  });
+  return Array.from(dates).sort();
+}
+
+function buildCompetitionLogsSnapshot(compId, cutoffDate, logsSource = state.logs) {
+  const snapshot = { ...logsSource, [compId]: {} };
+  const compLogs = logsSource[compId] || {};
+  Object.entries(compLogs).forEach(([empId, empLogs]) => {
+    snapshot[compId][empId] = Object.fromEntries(
+      Object.entries(empLogs || {}).filter(([date]) => date <= cutoffDate)
+    );
+  });
+  return snapshot;
+}
+
+function getLeaderboardMovement(compId) {
+  const currentPlayers = getRankedPlayers(compId);
+  const currentMetric = state.settings.rankingMetric || "sph";
+  const logDates = getCompetitionLogDates(compId);
+  if (logDates.length <= 1) {
+    return new Map(currentPlayers.map(player => [player.id, { type: "new", label: "NE" }]));
+  }
+
+  const previousSnapshot = buildCompetitionLogsSnapshot(compId, logDates[logDates.length - 2]);
+  const previousPlayers = getRankedPlayers(compId, previousSnapshot);
+  const previousRankById = new Map(
+    previousPlayers.map((player, index) => [
+      player.id,
+      getLeaderboardDisplayRank(previousPlayers, index, currentMetric)
+    ])
+  );
+
+  return new Map(
+    currentPlayers.map((player, index) => {
+      const currentRank = getLeaderboardDisplayRank(currentPlayers, index, currentMetric);
+      const previousRank = previousRankById.get(player.id);
+      if (!previousRank) return [player.id, { type: "new", label: "NE" }];
+      if (previousRank > currentRank) return [player.id, { type: "up", label: `↑${previousRank - currentRank}` }];
+      if (previousRank < currentRank) return [player.id, { type: "down", label: `↓${currentRank - previousRank}` }];
+      return [player.id, { type: "same", label: "—" }];
+    })
+  );
 }
 
 // ══════════════════════════════════════════════════════
