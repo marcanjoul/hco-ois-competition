@@ -137,9 +137,7 @@
   border-color: var(--accent);
 }
 .board-card.rank-1:hover { border-color: var(--gold); box-shadow: var(--glow-gold), var(--shadow-elevation-2); }
-.board-card.rank-2:hover { border-color: var(--silver); }
-.board-card.rank-3:hover { border-color: var(--bronze); }
-.board-card.is-you:not(.rank-1):not(.rank-2):not(.rank-3) {
+.board-card.is-you:not(.rank-1) {
   border-color: var(--accent2);
   box-shadow: 0 0 0 1px rgba(77,158,250,0.25), 0 2px 12px rgba(77,158,250,0.10);
 }
@@ -154,14 +152,6 @@
   border-width: 2px;
 }
 
-.board-card.rank-2 {
-  border-color: var(--silver);
-  background: rgba(155,155,155,0.06);
-}
-.board-card.rank-3 {
-  border-color: var(--bronze);
-  background: rgba(192,122,58,0.06);
-}
 
 .board-card.winner-card {
   border-color: var(--gold);
@@ -262,8 +252,6 @@
 }
 
 .board-card.rank-1 .board-rank-num { color: var(--gold); }
-.board-card.rank-2 .board-rank-num { color: var(--silver); }
-.board-card.rank-3 .board-rank-num { color: var(--bronze); }
 
 .board-info { flex: 1; min-width: 0; }
 
@@ -366,8 +354,6 @@
   color: var(--text);
 }
 .board-card.rank-1 .board-sph { font-size: 30px; color: var(--gold); }
-.board-card.rank-2 .board-sph { font-size: 27px; color: var(--silver); }
-.board-card.rank-3 .board-sph { font-size: 26px; color: var(--bronze); }
 
 .board-sph-label {
   font-family: var(--type-label-family);
