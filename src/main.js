@@ -567,7 +567,7 @@ async function logEntryFromPick() {
 
   const existingLog = (state.logs[state.currentComp] || {})[state.currentUser]?.[state.selectedDate];
   if (existingLog && (existingLog.sales > 0 || existingLog.hours > 0)) {
-    showToast("Stage already cleared for this day - ghost admin can edit"); return;
+    showToast("OIS Already Added - Manager Can Edit"); return;
   }
 
   await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
@@ -1624,7 +1624,7 @@ async function logEntry() {
   // Block overwriting an existing log
   const existingLog = (state.logs[state.currentComp] || {})[state.currentUser]?.[state.selectedDate];
   if (existingLog && (existingLog.sales > 0 || existingLog.hours > 0)) {
-    showToast("Stage already cleared for this day - ghost admin can edit"); return;
+    showToast("OIS Already Added - Manager Can Edit"); return;
   }
 
   await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
