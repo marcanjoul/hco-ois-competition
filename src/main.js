@@ -659,7 +659,7 @@ function updatePickLogBtnState() {
     btn.disabled = true;
     btn.classList.remove("btn-ghost");
     btn.classList.add("btn-locked");
-    btn.textContent = "STAGE CLEARED";
+    btn.textContent = "OIS ADDED";
     if (lockedMsg) lockedMsg.classList.add("visible");
     if (salesInput) {
       salesInput.readOnly = true;
@@ -1267,7 +1267,7 @@ function renderDash() {
     logBtn.disabled = true;
     logBtn.classList.remove("btn-disabled");
     logBtn.classList.add("btn-locked");
-    logBtn.textContent = "STAGE CLEARED";
+    logBtn.textContent = "OIS ADDED";
   } else {
     salesInput.readOnly = false; hoursInput.readOnly = false;
     salesInput.classList.remove("input-locked"); hoursInput.classList.remove("input-locked");
