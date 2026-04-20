@@ -1079,7 +1079,6 @@ function renderDash() {
   const hasLogs = Object.keys(myLogs).length > 0;
   const ranked = getRankedPlayers(state.currentComp);
   const myRank = ranked.findIndex(r => r.id === state.currentUser) + 1;
-  const ordersCount = Object.keys(myLogs).length;
 
   const dashCompInfoEl = document.getElementById("dash-comp-info");
   let profileCard = document.getElementById("dash-profile-card");
@@ -1132,16 +1131,20 @@ function renderDash() {
                 <div class="dash-profile-stat-value">$${sph.toFixed(0)}</div>
               </div>
               <div class="dash-profile-stat">
-                <div class="dash-profile-stat-label">Total Sales</div>
+                <div class="dash-profile-stat-label">Total Sales Made</div>
                 <div class="dash-profile-stat-value">$${totalSales.toFixed(0)}</div>
+              </div>
+              <div class="dash-profile-stat">
+                <div class="dash-profile-stat-label">Hours Worked</div>
+                <div class="dash-profile-stat-value">${totalHours.toFixed(1)}</div>
               </div>
               <div class="dash-profile-stat">
                 <div class="dash-profile-stat-label">Rank</div>
                 <div class="dash-profile-stat-value">${myRank > 0 ? `#${myRank}` : "—"}</div>
               </div>
               <div class="dash-profile-stat">
-                <div class="dash-profile-stat-label">Orders</div>
-                <div class="dash-profile-stat-value">${ordersCount}</div>
+                <div class="dash-profile-stat-label">Orders Logged</div>
+                <div class="dash-profile-stat-value">${Object.keys(myLogs).length}</div>
               </div>
             </div>
           </div>
@@ -1170,6 +1173,7 @@ function renderDash() {
     if (compHasLogs) {
       document.getElementById("stat-sph").textContent   = `$${sph.toFixed(0)}`;
       document.getElementById("stat-total").textContent = `$${totalSales.toFixed(0)}`;
+      document.getElementById("stat-hours").textContent = totalHours.toFixed(1);
       document.getElementById("stat-rank").textContent = myRank > 0 ? `#${myRank}` : "—";
     }
   }
@@ -1456,7 +1460,6 @@ function renderBoard() {
             ${safePlayerName}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}
           </div>
         </div>
-        <div class="board-meta">$${player.total.toFixed(2)} total · ${player.hours.toFixed(1)} hrs</div>
       </div>
       <div class="board-score">
         <div class="board-sph">$${player.sph.toFixed(0)}</div>

@@ -160,7 +160,7 @@
 
 .dash-profile-stats {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-2);
 }
 
@@ -189,12 +189,16 @@
   color: var(--text);
 }
 
+.dash-profile-stat:last-child:nth-child(odd) {
+  grid-column: 2 / 3;
+}
+
 /* Stat row
    Example on the website: the 3 stat boxes for Sales/HR, Total Sales, and Rank.
 */
 .stat-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-2);
 }
 
