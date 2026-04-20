@@ -28,6 +28,26 @@
    ──────────────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {
+  .board-body {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .board-card {
+    padding: 10px 12px;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .board-card.rank-1 {
+    padding: 12px;
+  }
+
+  .board-tie-group {
+    padding: 10px;
+    gap: 8px;
+  }
+
   .admin-edit-group {
     padding: 12px;
     gap: 12px;
@@ -69,45 +89,88 @@
     font-size: 14px;
   }
 
-  .board-card {
-    align-items: flex-start;
-    gap: 10px;
+  .board-avatar-stack {
+    width: 60px;
+    min-width: 60px;
+    padding-top: 7px;
+    padding-bottom: 11px;
   }
 
-  .board-avatar-stack {
-    width: 68px;
-    min-width: 68px;
-    padding-top: 8px;
-    padding-bottom: 14px;
+  .board-rank-stack {
+    width: 34px;
+    min-width: 34px;
+    gap: 5px;
+  }
+
+  .board-rank-num {
+    font-size: 14px;
   }
 
   .board-avatar-stack.rank-1 {
-    padding-top: 16px;
+    padding-top: 12px;
   }
 
   .board-avatar-crown {
-    font-size: 28px;
-    top: 5px;
-    right: -1px;
+    font-size: 24px;
+    top: 3px;
+    right: -2px;
   }
 
   .board-avatar-medal {
-    font-size: 24px;
-    bottom: 3px;
+    font-size: 20px;
+    bottom: 2px;
   }
 
   .board-score {
-    min-width: 72px;
+    min-width: 60px;
     flex-shrink: 0;
   }
 
   .board-meta {
-    font-size: 7px;
+    font-size: 10px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.1;
     letter-spacing: 0.2px;
+  }
+
+  .board-name-row {
+    margin-bottom: 4px;
+    gap: 6px;
+  }
+
+  .board-trend {
+    min-width: 24px;
+    font-size: 7px;
+    letter-spacing: 0.5px;
+  }
+
+  .board-name {
+    font-size: 17px;
+  }
+
+  .board-card.rank-1 .board-name {
+    font-size: 19px;
+  }
+
+  .avatar-board {
+    width: 48px;
+    height: 48px;
+    font-size: 19px;
+  }
+
+  .board-sph {
+    font-size: 16px;
+  }
+
+  .board-card.rank-1 .board-sph {
+    font-size: 18px;
+  }
+
+  .board-sph-label {
+    font-size: 7px;
+    margin-top: 1px;
   }
 
   .pick-info-btn {
@@ -243,6 +306,92 @@
 }
 
 @media (max-width: 380px) {
+  .board-body {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .board-card {
+    padding: 8px 10px;
+    gap: 7px;
+  }
+
+  .board-card.rank-1 {
+    padding: 10px;
+  }
+
+  .board-avatar-stack {
+    width: 52px;
+    min-width: 52px;
+    padding-top: 6px;
+    padding-bottom: 9px;
+  }
+
+  .board-rank-stack {
+    width: 28px;
+    min-width: 28px;
+    gap: 4px;
+  }
+
+  .board-rank-num {
+    font-size: 11px;
+  }
+
+  .board-avatar-stack.rank-1 {
+    padding-top: 10px;
+  }
+
+  .board-avatar-crown {
+    font-size: 20px;
+    top: 2px;
+    right: -2px;
+  }
+
+  .board-avatar-medal {
+    font-size: 17px;
+    bottom: 1px;
+  }
+
+  .avatar-board {
+    width: 42px;
+    height: 42px;
+    font-size: 17px;
+  }
+
+  .board-name {
+    font-size: 15px;
+  }
+
+  .board-card.rank-1 .board-name {
+    font-size: 17px;
+  }
+
+  .board-trend {
+    min-width: 20px;
+    font-size: 6px;
+  }
+
+  .board-meta {
+    font-size: 8px;
+    line-height: 1.05;
+  }
+
+  .board-score {
+    min-width: 52px;
+  }
+
+  .board-sph {
+    font-size: 13px;
+  }
+
+  .board-card.rank-1 .board-sph {
+    font-size: 15px;
+  }
+
+  .board-sph-label {
+    font-size: 6px;
+  }
+
   .history-item {
     grid-template-columns: 48px minmax(0, 1fr) auto;
     padding: 10px 12px;
@@ -433,24 +582,6 @@
     align-self: flex-start;
   }
 
-  .board-name { font-size: 18px; }
-  .board-card.rank-1 .board-name { font-size: 18px; }
-  .avatar-board {
-    width: 56px;
-    height: 56px;
-    font-size: 22px;
-  }
-  .board-meta {
-    font-size: 6px;
-    line-height: 1.1;
-    letter-spacing: 0.1px;
-  }
-  .board-score {
-    min-width: 58px;
-  }
-  .board-sph { font-size: 16px; }
-  .board-card.rank-1 .board-sph { font-size: 20px; }
-  .board-sph-label { font-size: 7px; }
 }
 
 @media (max-width: 380px) {
