@@ -1699,7 +1699,7 @@ function renderAdminTab() {
 // ADMIN — Competitions
 // ══════════════════════════════════════════════════════
 function renderAdminComps(container) {
-  container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">MANAGE COMPETITIONS</div>`;
+  container.innerHTML = `<div class="admin-section-title">MANAGE COMPETITIONS</div>`;
   const entries = Object.entries(state.competitions);
   const toShow = state.admin.showAllComps ? entries : entries.slice(0, PREVIEW_COUNT);
   const list = document.createElement("div");
@@ -2264,7 +2264,7 @@ function renderAdminEmpsList() {
 }
 
 function renderAdminEmps(container) {
-  container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">MANAGE PLAYERS</div>`;
+  container.innerHTML = `<div class="admin-section-title">MANAGE PLAYERS</div>`;
   const employeeCount = Object.keys(state.employees || {}).length;
 
   const toolsWrap = document.createElement("div");
@@ -2358,9 +2358,9 @@ function openEditAvatarModal(empId, emp) {
         ${isCustomAvatar ? `<button class="mini-btn del-btn danger">Remove Avatar</button>` : ""}
       </div>
 
-      <div style="display:flex;gap:8px;margin-top:16px;">
+      <div class="admin-btn-row">
         <button class="log-btn" id="avatar-save-btn">SAVE AVATAR</button>
-        <button class="log-btn" id="avatar-cancel-btn" style="background:var(--bg);color:var(--text2);border:2px solid var(--border);box-shadow:none;">CANCEL</button>
+        <button class="btn-secondary" id="avatar-cancel-btn">CANCEL</button>
       </div>
     </div>
   `;
@@ -2461,9 +2461,9 @@ function openEditEmpModal(empId, emp) {
         ${isCustomAvatar ? `<button class="mini-btn del-btn danger">Remove Avatar</button>` : ""}
       </div>
 
-      <div style="display:flex;gap:8px;margin-top:16px;">
+      <div class="admin-btn-row">
         <button class="log-btn" id="emp-save-btn">SAVE CHANGES</button>
-        <button class="log-btn" id="emp-cancel-btn" style="background:var(--bg);color:var(--text2);border:2px solid var(--border);box-shadow:none;">CANCEL</button>
+        <button class="btn-secondary" id="emp-cancel-btn">CANCEL</button>
       </div>
     </div>
   `;
@@ -2544,7 +2544,7 @@ function renderAdminLogs(container) {
   // Default selected date to today
   if (!state.admin.selectedDate) state.admin.selectedDate = getTodayDate();
   if (!state.admin.selectedComp) state.admin.selectedComp = state.currentComp || Object.keys(state.competitions)[0] || null;
-  container.innerHTML = `<div class="admin-section-title" style="margin-bottom:12px;">MANAGE ORDERS</div>`;
+  container.innerHTML = `<div class="admin-section-title">MANAGE ORDERS</div>`;
 
   const compWrap = document.createElement("div");
   compWrap.style.marginBottom = "10px";
@@ -2849,9 +2849,9 @@ function renderAdminLogEdit(empId, compId, date, log) {
       <div class="log-field-wrap"><label class="field-label">SALES ($)</label><input type="number" id="admin-edit-sales" class="log-input" value="${log.sales}" min="0" step="0.01" /></div>
       <div class="log-field-wrap"><label class="field-label">HOURS</label><input type="number" id="admin-edit-hours" class="log-input" value="${log.hours}" min="0" step="0.5" /></div>
     </div>
-    <div style="display:flex;gap:8px;margin-top:10px;">
+    <div class="admin-btn-row">
       <button class="log-btn" id="admin-save-edit-btn">SAVE</button>
-      <button class="log-btn" id="admin-cancel-edit-btn" style="background:var(--bg);color:var(--text2);border:2px solid var(--border);box-shadow:none;">CANCEL</button>
+      <button class="btn-secondary" id="admin-cancel-edit-btn">CANCEL</button>
     </div>
   `;
   document.getElementById("admin-save-edit-btn").onclick = async () => {
@@ -3139,4 +3139,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   pinInput.addEventListener("keydown", e => {
     if (e.key === "Enter" && !pinSubmitBtn.disabled) pinSubmitBtn.click();
   });
+
+  const pinRevealBtn = document.getElementById("btn-pin-reveal");
+  const eyeOpen = document.getElementById("icon-eye-open");
+  const eyeClosed = document.getElementById("icon-eye-closed");
+  if (pinRevealBtn) {
+    pinRevealBtn.addEventListener("click", () => {
+      const isPassword = pinInput.type === "password";
+      pinInput.type = isPassword ? "text" : "password";
+      eyeOpen.style.display = isPassword ? "none" : "";
+      eyeClosed.style.display = isPassword ? "" : "none";
+    });
+  }
 });
