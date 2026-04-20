@@ -59,7 +59,7 @@
 
   .board-card {
     padding: 8px 10px;
-    align-items: flex-start;
+    align-items: center;
     gap: 7px;
   }
 
@@ -124,7 +124,7 @@
     width: 34px;
     min-width: 34px;
     gap: 4px;
-    transform: translateY(8px);
+    transform: none;
   }
 
   .board-rank-num {
@@ -190,7 +190,7 @@
   }
 
   .board-card.rank-1 .board-sph {
-    font-size: 18px;
+    font-size: 22px;
   }
 
   .board-sph-label {
@@ -427,7 +427,7 @@
     width: 28px;
     min-width: 28px;
     gap: 3px;
-    transform: translateY(7px);
+    transform: none;
   }
 
   .board-rank-num {
@@ -482,7 +482,7 @@
   }
 
   .board-card.rank-1 .board-sph {
-    font-size: 15px;
+    font-size: 19px;
   }
 
   .board-sph-label {

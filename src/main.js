@@ -1127,11 +1127,11 @@ function renderDash() {
             <div class="dash-profile-name">${escapeHtml(emp.name)}</div>
             <div class="dash-profile-stats">
               <div class="dash-profile-stat">
-                <div class="dash-profile-stat-label">Sales / Hr</div>
+                <div class="dash-profile-stat-label">Sales/Hr</div>
                 <div class="dash-profile-stat-value">$${sph.toFixed(0)}</div>
               </div>
               <div class="dash-profile-stat">
-                <div class="dash-profile-stat-label">Total Sales Made</div>
+                <div class="dash-profile-stat-label">Total Sales</div>
                 <div class="dash-profile-stat-value">$${totalSales.toFixed(0)}</div>
               </div>
               <div class="dash-profile-stat">
@@ -1143,7 +1143,7 @@ function renderDash() {
                 <div class="dash-profile-stat-value">${myRank > 0 ? `#${myRank}` : "—"}</div>
               </div>
               <div class="dash-profile-stat">
-                <div class="dash-profile-stat-label">Orders Logged</div>
+                <div class="dash-profile-stat-label"># of Orders</div>
                 <div class="dash-profile-stat-value">${Object.keys(myLogs).length}</div>
               </div>
             </div>
