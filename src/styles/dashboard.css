@@ -149,18 +149,33 @@
   margin-bottom: 8px;
 }
 
+.dash-profile-name-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
 .dash-profile-name {
   font-family: var(--type-display-family);
   font-size: 30px;
   line-height: 0.95;
   color: var(--text);
-  margin-bottom: 12px;
   word-break: break-word;
+}
+
+.dash-profile-rank-badge {
+  font-family: var(--type-display-family);
+  font-size: 20px;
+  line-height: 1;
+  color: var(--gold, #f5a623);
+  opacity: 0.9;
 }
 
 .dash-profile-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-2);
 }
 
@@ -333,5 +348,8 @@
 
   .dash-profile-name {
     font-size: 24px;
+  }
+  .dash-profile-rank-badge {
+    font-size: 17px;
   }
 }
