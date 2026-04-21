@@ -1124,7 +1124,10 @@ function renderDash() {
           </div>
           <div class="dash-profile-copy">
             <div class="dash-profile-kicker">Player Profile</div>
-            <div class="dash-profile-name">${escapeHtml(emp.name)}</div>
+            <div class="dash-profile-name-row">
+              <div class="dash-profile-name">${escapeHtml(emp.name)}</div>
+              ${myRank > 0 ? `<div class="dash-profile-rank-badge">#${myRank}</div>` : ""}
+            </div>
             <div class="dash-profile-stats">
               <div class="dash-profile-stat">
                 <div class="dash-profile-stat-label">Sales/Hr</div>
@@ -1137,10 +1140,6 @@ function renderDash() {
               <div class="dash-profile-stat">
                 <div class="dash-profile-stat-label">Hours Worked</div>
                 <div class="dash-profile-stat-value">${totalHours.toFixed(1)}</div>
-              </div>
-              <div class="dash-profile-stat">
-                <div class="dash-profile-stat-label">Rank</div>
-                <div class="dash-profile-stat-value">${myRank > 0 ? `#${myRank}` : "—"}</div>
               </div>
               <div class="dash-profile-stat">
                 <div class="dash-profile-stat-label"># of Orders</div>
