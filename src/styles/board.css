@@ -107,7 +107,7 @@
 
 .board-body {
   flex: 1;
-  padding: var(--space-4);
+  padding: var(--space-4) 28px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;

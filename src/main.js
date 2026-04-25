@@ -33,6 +33,7 @@ function getTodayDate() {
 // Example on the website: which screen is open, who is selected, and which comp is active.
 let state = {
   competitions: {},
+  deletedCompetitions: {},
   employees: {},
   logs: {},
   settings: {},
@@ -69,6 +70,8 @@ const dbRef = {
   dateLog:  (cId, eId, date) => ref(db, `logs/${cId}/${eId}/${date}`),
   settings: ()              => ref(db, "settings"),
   goals:    ()              => ref(db, "goals"),
+  deletedComps: ()         => ref(db, "deleted_competitions"),
+  deletedComp:  (id)       => ref(db, `deleted_competitions/${id}`),
 };
 
 // ══════════════════════════════════════════════════════
@@ -83,15 +86,17 @@ async function bootstrap() {
 }
 
 async function loadInitialData() {
-  const [compsSnap, empsSnap, logsSnap, settingsSnap, goalsSnap] = await Promise.all([
+  const [compsSnap, empsSnap, logsSnap, settingsSnap, goalsSnap, deletedSnap] = await Promise.all([
     get(dbRef.comps()),
     get(dbRef.emps()),
     get(dbRef.logs()),
     get(dbRef.settings()),
     get(dbRef.goals()),
+    get(dbRef.deletedComps()),
   ]);
 
   state.competitions = compsSnap.val() || {};
+  state.deletedCompetitions = deletedSnap.val() || {};
   state.employees = empsSnap.val() || {};
   state.logs = logsSnap.val() || {};
   state.settings = settingsSnap.val() || {};
@@ -104,6 +109,7 @@ async function loadInitialData() {
 
   applySettings(state.settings);
   await checkAndAutoCloseComps();
+  await purgeExpiredDeletedComps();
 }
 
 // Turns a human name into a safe ID for storage.
@@ -351,6 +357,20 @@ function startListeners() {
     renderPickScreen();
     if (state.admin.tab === "competitions") renderAdminTab();
   });
+
+  onValue(dbRef.deletedComps(), snap => {
+    state.deletedCompetitions = snap.val() || {};
+    if (state.admin.tab === "competitions") renderAdminTab();
+  });
+}
+
+async function purgeExpiredDeletedComps() {
+  const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  const purges = Object.entries(state.deletedCompetitions)
+    .filter(([, d]) => now - (d.deletedAt || 0) > SEVEN_DAYS)
+    .map(([id]) => remove(dbRef.deletedComp(id)));
+  if (purges.length) await Promise.all(purges);
 }
 
 // ══════════════════════════════════════════════════════
@@ -1798,6 +1818,65 @@ function renderAdminComps(container) {
     });
     checkReady();
   };
+
+  // Recently Deleted section
+  const deletedEntries = Object.entries(state.deletedCompetitions)
+    .sort(([, a], [, b]) => b.deletedAt - a.deletedAt);
+  if (deletedEntries.length > 0) {
+    const deletedSection = document.createElement("div");
+    deletedSection.className = "goal-admin-block admin-recently-deleted-section";
+
+    const deletedToggle = document.createElement("button");
+    deletedToggle.className = "collapsible-toggle admin-recently-deleted-toggle";
+    deletedToggle.innerHTML = `🗑 RECENTLY DELETED (${deletedEntries.length}) <span class="collapsible-toggle-icon">▼</span>`;
+
+    const deletedContent = document.createElement("div");
+    deletedContent.className = "admin-recently-deleted-list";
+    deletedContent.style.display = "none";
+
+    const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+    deletedEntries.forEach(([id, data]) => {
+      const comp = data.comp || {};
+      const daysLeft = Math.max(0, Math.ceil((SEVEN_DAYS - (Date.now() - data.deletedAt)) / (24 * 60 * 60 * 1000)));
+      const row = document.createElement("div");
+      row.className = "admin-item admin-deleted-comp-item";
+      const left = document.createElement("div");
+      left.className = "admin-item-left";
+      left.innerHTML = `
+        <span class="admin-item-name">${escapeHtml(comp.name || id)}</span>
+        <span class="admin-deleted-expiry">Deleted · ${daysLeft}d left to restore</span>
+      `;
+      const right = document.createElement("div");
+      right.className = "admin-item-actions";
+      const restoreBtn = makeBtn("Restore", "del-btn admin-restore-btn", async () => {
+        const ok = await showAppConfirm({
+          title: "Restore Competition",
+          message: `Restore "${comp.name}" and all its logs?`,
+          confirmLabel: "Restore",
+        });
+        if (!ok) return;
+        if (data.comp) await set(dbRef.comp(id), data.comp);
+        if (data.logs) await set(ref(db, `logs/${id}`), data.logs);
+        if (data.goals) await set(ref(db, `goals/${id}`), data.goals);
+        await remove(dbRef.deletedComp(id));
+        showToast(`"${comp.name}" restored ✅`);
+      });
+      right.appendChild(restoreBtn);
+      row.appendChild(left);
+      row.appendChild(right);
+      deletedContent.appendChild(row);
+    });
+
+    deletedSection.appendChild(deletedToggle);
+    deletedSection.appendChild(deletedContent);
+    container.appendChild(deletedSection);
+
+    deletedToggle.onclick = () => {
+      const isHidden = deletedContent.style.display === "none";
+      deletedContent.style.display = isHidden ? "flex" : "none";
+      deletedToggle.classList.toggle("expanded", isHidden);
+    };
+  }
 }
 
 function renderCompEditPanel(compId, comp) {
@@ -2244,14 +2323,23 @@ function renderCompEditPanel(compId, comp) {
   const delBtn = makeBtn("DELETE COMPETITION", "log-btn admin-danger-btn", async () => {
     const confirmed = await showAppConfirm({
       title: "Delete Competition",
-      message: `Delete "${comp.name}"? All logs for this competition will be removed.`,
+      message: `Delete "${comp.name}"? It will be kept in Recently Deleted for 7 days and can be restored.`,
       confirmLabel: "Delete Competition",
       confirmClassName: "log-btn admin-danger-btn",
     });
     if (!confirmed) return;
+    const snapshot = {
+      comp: { ...comp },
+      logs: state.logs[compId] || null,
+      goals: state.goals[compId] || null,
+      deletedAt: Date.now(),
+    };
+    await set(dbRef.deletedComp(compId), snapshot);
     await remove(dbRef.comp(compId));
     await remove(ref(db, `logs/${compId}`));
+    await remove(ref(db, `goals/${compId}`));
     delete state.logs[compId];
+    showToast("Competition moved to Recently Deleted");
     state.admin.tab = "competitions"; renderAdminTabBar(); renderAdminTab();
   });
   actionsWrap.appendChild(delBtn);

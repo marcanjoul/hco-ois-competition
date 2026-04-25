@@ -381,6 +381,38 @@
   margin-top: 14px;
 }
 
+.admin-recently-deleted-section {
+  margin-top: 10px;
+}
+
+.admin-recently-deleted-toggle {
+  color: var(--text3);
+  border-color: var(--border);
+}
+
+.admin-recently-deleted-list {
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0 4px;
+}
+
+.admin-deleted-comp-item {
+  opacity: 0.8;
+}
+
+.admin-deleted-expiry {
+  font-family: var(--type-label-family);
+  font-size: 10px;
+  letter-spacing: 0.6px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+.admin-restore-btn {
+  color: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
 .admin-new-comp-form {
   margin-top: 8px;
 }

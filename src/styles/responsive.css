@@ -53,7 +53,7 @@
   }
 
   .board-body {
-    padding: 12px 18px;
+    padding: 12px 24px;
     gap: 10px;
   }
 
@@ -457,7 +457,7 @@
   }
 
   .board-body {
-    padding: 10px 14px;
+    padding: 10px 20px;
     gap: 8px;
   }
 
