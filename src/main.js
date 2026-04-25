@@ -1289,9 +1289,12 @@ function renderDash() {
         </div>
         <div class="history-info">
           <div class="history-sales">$${(log.sales || 0).toFixed(2)}</div>
-          <div class="history-meta">${log.hours || 0} hrs worked</div>
+          <div class="history-meta">${(log.hours || 0).toFixed(1)} hrs</div>
         </div>
-        <div class="history-sph">$${daySph.toFixed(0)}/hr</div>
+        <div class="board-score history-score">
+          <div class="board-sph">$${daySph.toFixed(0)}</div>
+          <div class="board-sph-label">/HR</div>
+        </div>
       `;
       historyList.appendChild(item);
     });

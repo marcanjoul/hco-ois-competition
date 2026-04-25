@@ -14,6 +14,14 @@
 /* Competition selector control
    Example on the website: the "Select..." dropdown at the top of leaderboard.
 */
+#screen-board .screen-inner {
+  padding-top: 10px;
+}
+
+#screen-board .screen-top-bar {
+  padding-top: 10px;
+}
+
 .comp-select {
   background: var(--bg);
   border: 1px solid var(--border);
