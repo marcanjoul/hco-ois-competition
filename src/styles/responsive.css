@@ -116,20 +116,20 @@
   }
 
   .goal-day-card {
-    gap: 10px;
-    padding: 10px 12px;
+    gap: 8px;
+    padding: 8px 10px;
   }
 
   .goal-day-name {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .goal-day-date {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .goal-day-input {
-    font-size: 20px;
+    font-size: 16px;
   }
 
   .admin-edit-two-col {
@@ -752,6 +752,23 @@
 
   .admin-log-player-badge {
     align-self: flex-start;
+  }
+
+  .admin-log-edit-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-log-edit-actions .admin-action-delete {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+
+  .admin-log-edit-header .admin-log-header-name {
+    font-size: 26px;
+  }
+
+  .admin-log-edit-header .admin-log-header-sub {
+    font-size: 16px;
   }
 
 }

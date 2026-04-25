@@ -1050,6 +1050,14 @@ select.log-input:focus { background-color: var(--surface); }
   line-height: 1;
 }
 
+.pick-success-stat-accent {
+  color: var(--accent);
+}
+
+.pick-success-stat-gold {
+  color: var(--gold);
+}
+
 .pick-success-cta {
   background: var(--surface2);
   border: 1px solid var(--accent);
@@ -1173,6 +1181,10 @@ select.log-input:focus { background-color: var(--surface); }
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.comp-detail-spaced {
+  margin-top: 12px;
 }
 
 .goal-progress-top {

@@ -82,6 +82,30 @@ async function bootstrap() {
   }
 }
 
+async function loadInitialData() {
+  const [compsSnap, empsSnap, logsSnap, settingsSnap, goalsSnap] = await Promise.all([
+    get(dbRef.comps()),
+    get(dbRef.emps()),
+    get(dbRef.logs()),
+    get(dbRef.settings()),
+    get(dbRef.goals()),
+  ]);
+
+  state.competitions = compsSnap.val() || {};
+  state.employees = empsSnap.val() || {};
+  state.logs = logsSnap.val() || {};
+  state.settings = settingsSnap.val() || {};
+  state.goals = goalsSnap.val() || {};
+
+  state.currentComp = getActiveComp();
+  if (!state.boardComp || !state.competitions[state.boardComp]) {
+    state.boardComp = state.currentComp;
+  }
+
+  applySettings(state.settings);
+  await checkAndAutoCloseComps();
+}
+
 // Turns a human name into a safe ID for storage.
 // Example: "Adam Smith" becomes "adam_smith".
 function slugify(str) {
@@ -432,7 +456,7 @@ function getCompetitionGoalMarkup(compId) {
     goalsHtml += `<div class="comp-detail"><div class="detail-label">Competition Goal: <span class="detail-label-goal">$${compGoals.competition.value}</span></div>${renderGoalBar(storeTotalSales, compGoals.competition.value, "total")}</div>`;
   }
   if (todayGoal?.value) {
-    goalsHtml += `<div class="comp-detail" style="margin-top:12px"><div class="detail-label">Today's Goal: <span class="detail-label-goal">$${todayGoal.value}</span></div>${renderGoalBar(storeTodaySales, todayGoal.value, "total")}</div>`;
+    goalsHtml += `<div class="comp-detail comp-detail-spaced"><div class="detail-label">Today's Goal: <span class="detail-label-goal">$${todayGoal.value}</span></div>${renderGoalBar(storeTodaySales, todayGoal.value, "total")}</div>`;
   }
   return goalsHtml;
 }
@@ -556,8 +580,8 @@ async function logEntryFromPick() {
     const rankDisplay = rank > 0 ? `#${rank}` : "—";
     successStats.innerHTML = `
       <div class="pick-success-stat"><div class="pick-success-stat-label">SALES</div><div class="pick-success-stat-value">$${sales.toFixed(0)}</div></div>
-      <div class="pick-success-stat"><div class="pick-success-stat-label">$/HR</div><div class="pick-success-stat-value" style="color:var(--accent)">$${sph.toFixed(0)}</div></div>
-      <div class="pick-success-stat"><div class="pick-success-stat-label">RANK</div><div class="pick-success-stat-value" style="color:var(--gold)">${rankDisplay}</div></div>
+      <div class="pick-success-stat"><div class="pick-success-stat-label">$/HR</div><div class="pick-success-stat-value pick-success-stat-accent">$${sph.toFixed(0)}</div></div>
+      <div class="pick-success-stat"><div class="pick-success-stat-label">RANK</div><div class="pick-success-stat-value pick-success-stat-gold">${rankDisplay}</div></div>
     `;
   }
   if (successState) successState.classList.add("visible");
@@ -943,6 +967,10 @@ function closePickAvatarUploadModal() {
   if (modal) modal.classList.remove("active");
 }
 
+function getAdminLogEmptyState(message) {
+  return `<div class="admin-log-empty-state admin-log-detail-empty">${escapeHtml(message)}</div>`;
+}
+
 function triggerAvatarFileInput(empId, { accept = "image/*", capture } = {}) {
   const fileInput = document.createElement("input");
   fileInput.type = "file";
@@ -1242,7 +1270,7 @@ function renderDash() {
   historyList.innerHTML = "";
   const hasAnyLogs = Object.keys(myLogs).length > 0;
   if (!hasAnyLogs) {
-    historyList.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:16px">No logs yet this competition</p>`;
+    historyList.innerHTML = `<div class="ui-empty-state history-empty-state">No logs yet this competition</div>`;
   } else {
     const sortedDates = Object.keys(myLogs).sort().reverse();
     sortedDates.forEach(date => {
@@ -1700,7 +1728,7 @@ function renderAdminComps(container) {
   // New competition form
   const newCompSection = document.createElement("div");
   newCompSection.className = "goal-admin-block";
-  newCompSection.style.marginTop = "14px";
+  newCompSection.classList.add("admin-new-comp-section");
 
   const toggleBtn = document.createElement("button");
   toggleBtn.className = "collapsible-toggle";
@@ -1709,13 +1737,13 @@ function renderAdminComps(container) {
   const collapsibleContent = document.createElement("div");
   collapsibleContent.id = "new-comp-form";
   collapsibleContent.style.display = "none";
-  collapsibleContent.style.marginTop = "8px";
+  collapsibleContent.className = "admin-new-comp-form";
   collapsibleContent.innerHTML = `
-    <div style="margin-top:8px;">
+    <div class="admin-form-field-offset">
       <label class="field-label">NAME *</label>
-      <input type="text" id="input-new-comp" class="log-input" placeholder="e.g.OIS Competition" style="margin-bottom:8px;" />
+      <input type="text" id="input-new-comp" class="log-input admin-form-input-spaced" placeholder="e.g.OIS Competition" />
     </div>
-    <div class="log-fields" style="margin-bottom:8px;">
+    <div class="log-fields admin-form-fields-spaced">
       <div class="log-field-wrap">
         <label class="field-label">START DATE *</label>
         <input type="date" id="input-new-comp-start" class="log-input" />
@@ -2058,11 +2086,11 @@ function renderCompEditPanel(compId, comp) {
   const compGoalPanel = createGoalPanel({
     title: "Competition Total Goal",
     className: "goal-admin-collapsible",
-    collapsedOnMobile: false,
+    collapsed: true,
   });
   compGoalSection.appendChild(compGoalPanel.wrapper);
   compGoalPanel.body.innerHTML = `
-    <div style="margin-top:8px;">
+    <div class="admin-form-field-offset">
       <label class="field-label">TARGET</label>
       <label class="goal-day-input-shell goal-admin-input-shell" for="goal-val-competition">
         <span class="goal-day-currency">$</span>
@@ -2245,7 +2273,7 @@ function renderAdminEmpsList() {
   list.className = "admin-list admin-emp-list";
 
   if (toShow.length === 0) {
-    list.innerHTML = `<div style="color:var(--text3);font-size:0.8rem;text-align:center;padding:16px;">No employees found</div>`;
+    list.innerHTML = `<div class="ui-empty-state admin-list-empty-state">No employees found</div>`;
   } else {
     const today = getTodayDate();
     const compId = state.currentComp;
@@ -2604,8 +2632,7 @@ function renderAdminLogs(container) {
 
   const detail = document.createElement("div");
   detail.className = "admin-log-detail-wrap"; detail.id = "admin-logs-detail";
-  detail.style.marginTop = "14px";
-  detail.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">Choose a day, then pick a player to manage their log</p>`;
+  detail.innerHTML = getAdminLogEmptyState("Choose a day, then pick a player to manage their log");
   container.appendChild(detail);
 
   refreshAdminDayView();
@@ -2624,7 +2651,7 @@ function refreshAdminDayView() {
     dayContainer.innerHTML = "";
     playerList.innerHTML = `<div class="admin-log-empty-state">Select a competition to manage its logs</div>`;
     playerStatus.textContent = "";
-    dayDetail.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">Select a competition first</p>`;
+    dayDetail.innerHTML = getAdminLogEmptyState("Select a competition first");
     return;
   }
 
@@ -2694,7 +2721,7 @@ function refreshAdminDayView() {
   if (!playersForDay.length) {
     playerList.innerHTML = `<div class="admin-log-empty-state">No players found for this day</div>`;
     playerStatus.textContent = "";
-    dayDetail.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">No players are available yet</p>`;
+    dayDetail.innerHTML = getAdminLogEmptyState("No players are available yet");
     return;
   }
 
@@ -2768,7 +2795,7 @@ function refreshAdminDayView() {
 
   const selectedPlayer = playersForDay.find(p => p.id === state.admin.selectedEmp);
   if (!selectedPlayer) {
-    dayDetail.innerHTML = `<p style="color:var(--text3);font-size:0.8rem;text-align:center;padding:20px;">Choose a player if you want to review or add an OIS</p>`;
+    dayDetail.innerHTML = getAdminLogEmptyState("Choose a player to review or add an OIS");
     return;
   }
   if (selectedPlayer.log) {
@@ -2824,11 +2851,11 @@ function renderAdminLogCreate(empId, compId, date) {
       </div>
       <div class="admin-log-header-badge not-logged">✗ No Log Yet</div>
     </div>
-    <div class="log-fields" style="margin-top:14px;">
+    <div class="log-fields admin-log-form-fields">
       <div class="log-field-wrap"><label class="field-label">SALES ($)</label><input type="number" id="admin-create-sales" class="log-input" placeholder="0.00" min="0" step="0.01" /></div>
       <div class="log-field-wrap"><label class="field-label">HOURS</label><input type="number" id="admin-create-hours" class="log-input" placeholder="0.0" min="0" step="0.5" /></div>
     </div>
-    <button class="log-btn btn-ghost" id="admin-create-log-btn" style="margin-top:10px;" disabled>+ CREATE LOG</button>
+    <button class="log-btn btn-ghost admin-log-form-submit" id="admin-create-log-btn" disabled>+ CREATE LOG</button>
   `;
   const s = document.getElementById("admin-create-sales");
   const h = document.getElementById("admin-create-hours");
@@ -2856,20 +2883,23 @@ function renderAdminLogEdit(empId, compId, date, log) {
   if (!detail) return;
   const d = new Date(date + "T00:00:00");
   const dayName = DAYS[d.getDay()];
+  const empName = state.employees[empId]?.name || "";
   detail.innerHTML = `
-    <div class="admin-log-header">
+    <div class="admin-log-header admin-log-edit-header">
       <div class="admin-log-header-info">
-        <div class="admin-log-header-name">${escapeHtml(state.employees[empId]?.name || "")}</div>
-        <div class="admin-log-header-sub">${escapeHtml(`Editing ${dayName} ${date} · ${state.competitions[compId]?.name || ""}`)}</div>
+        <div class="admin-log-edit-kicker">Editing Order</div>
+        <div class="admin-log-header-name">${escapeHtml(empName)}</div>
+        <div class="admin-log-header-sub">${escapeHtml(`${dayName} ${date}`)}</div>
       </div>
     </div>
-    <div class="log-fields" style="margin-top:14px;">
+    <div class="log-fields admin-log-form-fields admin-log-edit-fields">
       <div class="log-field-wrap"><label class="field-label">SALES ($)</label><input type="number" id="admin-edit-sales" class="log-input" value="${log.sales}" min="0" step="0.01" /></div>
       <div class="log-field-wrap"><label class="field-label">HOURS</label><input type="number" id="admin-edit-hours" class="log-input" value="${log.hours}" min="0" step="0.5" /></div>
     </div>
-    <div class="admin-btn-row">
+    <div class="admin-btn-row admin-log-edit-actions">
       <button class="log-btn" id="admin-save-edit-btn">SAVE</button>
       <button class="btn-secondary" id="admin-cancel-edit-btn">CANCEL</button>
+      <button class="admin-action-delete" id="admin-delete-edit-btn">DELETE</button>
     </div>
   `;
   document.getElementById("admin-save-edit-btn").onclick = async () => {
@@ -2882,7 +2912,25 @@ function renderAdminLogEdit(empId, compId, date, log) {
     showToast("Log updated ✅");
     if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
   };
-  document.getElementById("admin-cancel-edit-btn").onclick = () => renderAdminLogDetail(empId, compId, date, log);
+  document.getElementById("admin-cancel-edit-btn").onclick = () => {
+    state.admin.selectedEmp = null;
+    refreshAdminDayView();
+    document.getElementById("admin-logs-player-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  document.getElementById("admin-delete-edit-btn").onclick = async () => {
+    const confirmed = await showAppConfirm({
+      title: "Delete Order",
+      message: `Delete ${empName}'s order for ${date}?`,
+      confirmLabel: "DELETE",
+      confirmClassName: "log-btn admin-danger-btn",
+    });
+    if (!confirmed) return;
+    await remove(dbRef.dateLog(compId, empId, date));
+    state.admin.selectedEmp = null;
+    showToast("Order deleted");
+    refreshAdminDayView();
+    if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
+  };
 }
 
 // ══════════════════════════════════════════════════════
@@ -2992,8 +3040,9 @@ function closeInfoModal() {
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     await bootstrap();
+    await loadInitialData();
   } catch (error) {
-    console.error("Bootstrap failed", error);
+    console.error("Initial data load failed", error);
     setTimeout(() => showToast("Live data is reconnecting. Some info may load a moment late."), 0);
   } finally {
     startListeners();
