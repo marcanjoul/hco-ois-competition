@@ -1069,6 +1069,21 @@ body::after {
   box-shadow: none;
 }
 
+.history-rate {
+  border: 3px solid #52ff98;
+  background: #0f3925;
+  box-shadow: 3px 3px 0 #09153a;
+}
+
+.history-rate-value {
+  color: #52ff98;
+  text-shadow: 2px 2px 0 #071a10;
+}
+
+.history-rate-label {
+  color: #8ad7ff;
+}
+
 .admin-date-range-summary {
   display: none;
 }
@@ -1475,6 +1490,14 @@ body::after {
     flex-wrap: wrap;
     gap: 10px;
     padding: 12px 10px 10px;
+  }
+
+  #screen-board .screen-inner {
+    padding-top: 6px;
+  }
+
+  #screen-board .screen-top-bar {
+    padding-top: 6px;
   }
 
   .screen-top-title {

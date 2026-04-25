@@ -138,9 +138,9 @@
   }
 
   .history-item {
-    grid-template-columns: 58px minmax(0, 1fr) auto;
-    padding: 12px 14px;
-    gap: 12px;
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    padding: 8px 10px;
+    gap: 10px;
   }
 
   .history-day-name {
@@ -148,11 +148,11 @@
   }
 
   .history-day-num {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .history-sales {
-    font-size: 22px;
+    font-size: 18px;
   }
 
   .history-meta {
@@ -160,8 +160,17 @@
     margin-top: 2px;
   }
 
-  .history-sph {
-    font-size: 14px;
+  .history-rate {
+    min-width: 56px;
+    padding: 5px 7px;
+  }
+
+  .history-rate-value {
+    font-size: 15px;
+  }
+
+  .history-rate-label {
+    font-size: 7px;
   }
 
   .board-avatar-stack {
@@ -556,8 +565,17 @@
     font-size: 13px;
   }
 
-  .history-sph {
-    font-size: 11px;
+  .history-rate {
+    min-width: 52px;
+    padding: 4px 6px;
+  }
+
+  .history-rate-value {
+    font-size: 14px;
+  }
+
+  .history-rate-label {
+    font-size: 6px;
   }
 
   .pick-inner {
