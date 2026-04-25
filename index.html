@@ -83,7 +83,7 @@
       <button class="pick-info-btn" id="btn-info" title="Rules">i</button>
 
       <!-- Competition Info Card
-           Example on the website: the card with competition name, days left, prize, and progress.
+           Example on the website: the card with competition name, days left, and progress.
       -->
       <div id="pick-comp-info" class="pick-comp-info hidden">
         <div id="pick-comp-name" class="pick-comp-name"></div>
@@ -92,9 +92,6 @@
           <div class="pick-countdown">
             <span id="pick-countdown-num" class="pick-countdown-num">—</span>
             <span id="pick-countdown-label" class="pick-countdown-label">DAYS LEFT</span>
-          </div>
-          <div id="pick-prize-pill" class="pick-prize-pill" style="display:none">
-            🎁 <span id="pick-prize-text"></span>
           </div>
         </div>
         <div id="pick-comp-goals" class="pick-comp-goals" style="display:none">
@@ -128,16 +125,16 @@
         <div class="log-card-title">INSERT OIS</div>
 
         <!-- Step 1: Name -->
-        <div class="pick-step-header" style="margin-bottom:var(--space-3)">
+        <div class="pick-step-header pick-step-header-first">
           <div class="pick-step-num">1</div>
           <div class="pick-step-label">Who are you?</div>
         </div>
         <div class="pick-emp-selector-wrap">
-          <button class="pick-emp-selector" id="pick-emp-selector">Choose player...</button>
+          <button class="pick-emp-selector" id="pick-emp-selector">Choose player</button>
         </div>
         <div id="pick-emp-grid" class="pick-emp-grid hidden">
           <div class="search-wrap">
-            <input type="text" id="pick-emp-search" class="log-input" placeholder="Find player..." autocomplete="off" />
+            <input type="text" id="pick-emp-search" class="log-input" placeholder="Search players" autocomplete="off" />
             <div id="pick-search-info" class="search-results-info hidden"></div>
           </div>
           <div id="pick-emp-list"></div>
@@ -147,13 +144,13 @@
            Example on the website: day picker, Sales field, Hours field, and "ADD OIS".
       -->
         <div id="pick-form-steps">
-          <div class="pick-step-header" style="margin:var(--space-4) 0 var(--space-2)">
+          <div class="pick-step-header pick-step-header-form">
             <div class="pick-step-num">2</div>
             <div class="pick-step-label">Pick the day</div>
           </div>
           <div class="day-row" id="pick-day-row"></div>
 
-          <div class="pick-step-header" style="margin:var(--space-2) 0 var(--space-2)">
+          <div class="pick-step-header pick-step-header-form">
             <div class="pick-step-num">3</div>
             <div class="pick-step-label">Enter Sales & Hours</div>
           </div>

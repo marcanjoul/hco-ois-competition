@@ -77,8 +77,59 @@
     gap: 12px;
   }
 
+  .admin-collapsible-toggle {
+    padding: 10px 12px;
+    min-height: 50px;
+  }
+
+  .admin-collapsible-title {
+    font-size: 18px;
+    letter-spacing: 0.8px;
+  }
+
+  .admin-collapsible-sub {
+    font-size: 10px;
+  }
+
   .admin-edit-group-body {
     gap: 12px;
+  }
+
+  .goal-admin-block {
+    padding: 10px;
+  }
+
+  .goal-admin-collapsible {
+    gap: 10px;
+  }
+
+  .daily-goal-week-display {
+    min-height: 44px;
+    padding: 0 10px;
+    font-size: 15px;
+  }
+
+  .daily-goal-week-controls .week-nav-btn {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .goal-day-card {
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .goal-day-name {
+    font-size: 16px;
+  }
+
+  .goal-day-date {
+    font-size: 12px;
+  }
+
+  .goal-day-input {
+    font-size: 20px;
   }
 
   .admin-edit-two-col {
@@ -247,12 +298,6 @@
     margin-bottom: 4px;
   }
 
-  .pick-prize-pill {
-    padding: 6px 9px;
-    font-size: 9px;
-    max-width: 118px;
-  }
-
   .pick-comp-dates {
     font-size: 11px;
     padding: 0;
@@ -341,12 +386,12 @@
   }
 
   .avatar-pick-large {
-    width: 72px;
-    height: 72px;
+    width: 52px;
+    height: 52px;
   }
 
   .avatar-pick-large .avatar-placeholder {
-    font-size: 28px;
+    font-size: 22px;
   }
 
   .pick-selected-emp-card {
@@ -355,8 +400,8 @@
   }
 
   .pick-avatar-edit-pill {
-    min-width: 72px;
-    font-size: 9px;
+    min-width: 52px;
+    font-size: 7px;
   }
 
   .pick-selected-emp-name {
@@ -364,12 +409,12 @@
   }
 
   .log-card {
-    padding: var(--space-3);
+    padding: 10px;
   }
 
   .log-card-title {
     font-size: 20px;
-    margin-bottom: var(--space-3);
+    margin-bottom: 10px;
   }
 
   .log-btn {
@@ -535,8 +580,8 @@
   }
 
   .avatar-pick-large {
-    width: 60px;
-    height: 60px;
+    width: 48px;
+    height: 48px;
   }
 
   .avatar-pick-large .avatar-placeholder {
@@ -585,11 +630,6 @@
   .pick-countdown-label {
     font-size: 11px;
     margin-bottom: 8px;
-  }
-
-  .pick-prize-pill {
-    max-width: none;
-    width: fit-content;
   }
 
   .pick-comp-dates {
@@ -645,10 +685,6 @@
     align-items: stretch;
   }
 
-  .daily-goal-week-display {
-    font-size: 28px;
-  }
-
   .goal-day-input-shell {
     min-width: 0;
     width: 100%;
@@ -673,16 +709,18 @@
   }
 
   .admin-log-week-controls .week-nav-btn,
-  .admin-day-buttons .week-nav-btn {
+  .admin-day-buttons .week-nav-btn,
+  .daily-goal-week-controls .week-nav-btn {
     min-width: 38px;
     min-height: 38px;
     font-size: 14px;
   }
 
-  .admin-log-week-display {
+  .admin-log-week-display,
+  .daily-goal-week-display {
     min-height: 38px;
     padding: 0 10px;
-    font-size: 17px;
+    font-size: 15px;
   }
 
   .admin-log-player-header,
@@ -719,12 +757,6 @@
 }
 
 @media (max-width: 380px) {
-  .daily-goal-week-display {
-    min-height: 60px;
-    font-size: 21px;
-    padding: 10px 12px;
-  }
-
   .goal-day-name {
     font-size: 16px;
   }
