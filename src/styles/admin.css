@@ -377,6 +377,23 @@
   padding-top: 6px;
 }
 
+.admin-new-comp-section {
+  margin-top: 14px;
+}
+
+.admin-new-comp-form {
+  margin-top: 8px;
+}
+
+.admin-form-field-offset {
+  margin-top: 8px;
+}
+
+.admin-form-input-spaced,
+.admin-form-fields-spaced {
+  margin-bottom: 8px;
+}
+
 .admin-field-changed {
   border-color: var(--accent) !important;
 }
@@ -399,6 +416,11 @@
   flex-direction: column;
   gap: 0;
   margin-bottom: var(--space-3);
+}
+
+.admin-list-empty-state {
+  border: 1px dashed var(--border);
+  background: var(--surface);
 }
 
 .admin-emp-list {
@@ -861,6 +883,68 @@
 .admin-action-edit:hover { border-color: var(--accent); color: var(--accent); }
 .admin-action-delete:hover { border-color: var(--red); color: var(--red); }
 
+.admin-log-edit-header {
+  display: block;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+.admin-log-edit-header .admin-log-header-name {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.admin-log-edit-header .admin-log-header-sub {
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.admin-log-edit-kicker {
+  margin-bottom: 6px;
+  font-family: var(--type-label-family);
+  font-size: 9px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 0.8px;
+  color: var(--text2);
+  text-transform: uppercase;
+}
+
+.admin-log-edit-fields {
+  margin-top: 0;
+}
+
+.admin-log-form-fields {
+  margin-top: 14px;
+}
+
+.admin-log-form-submit {
+  margin-top: 10px;
+}
+
+.admin-log-edit-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.admin-log-edit-actions > * {
+  min-width: 0;
+  min-height: 44px;
+  padding: 9px 10px;
+  font-size: 14px;
+  letter-spacing: 0.8px;
+}
+
+.admin-log-edit-actions .admin-action-delete {
+  min-width: 86px;
+  color: var(--red);
+  border-color: var(--red);
+  background: transparent;
+}
+
 .admin-log-week-wrap {
   margin-bottom: 10px;
 }
@@ -1090,6 +1174,10 @@
   font-family: var(--type-caption-family);
   font-size: var(--type-caption-size);
   font-weight: 700;
+}
+
+.admin-log-detail-empty {
+  margin: 0;
 }
 
 /* Admin day buttons
@@ -1344,10 +1432,13 @@
 }
 .goal-admin-collapsible .admin-collapsible-toggle {
   background: var(--surface2);
+  min-height: 44px;
+  padding: 9px 12px;
 }
 .goal-admin-collapsible .admin-collapsible-title {
-  font-family: var(--type-label-family);
-  font-size: 13px;
-  font-weight: var(--type-label-weight);
-  letter-spacing: var(--type-label-letter-spacing);
+  font-family: var(--type-body-family);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  line-height: 1;
 }

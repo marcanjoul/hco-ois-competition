@@ -621,7 +621,8 @@ body::after {
   color: #52ff98;
 }
 
-.admin-log-empty-state {
+.admin-log-empty-state,
+.ui-empty-state {
   border: 3px dashed #2348b3 !important;
   background: rgba(11, 21, 64, 0.55) !important;
   color: #8ad7ff;
@@ -631,22 +632,54 @@ body::after {
   border-color: var(--accent) !important;
 }
 
+.bottom-nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px 6px calc(4px + env(safe-area-inset-bottom));
+}
+
 .nav-btn {
-  gap: 8px;
-  min-height: 100%;
+  min-height: 0;
+  gap: 0;
   justify-content: center;
+  border: 2px solid #2348b3 !important;
+  background: linear-gradient(180deg, #102260, #0a1641) !important;
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,0.24) !important;
 }
 
 .nav-btn::after {
-  display: none;
+  display: block;
+  top: auto;
+  bottom: 0;
+  left: 10px;
+  right: 10px;
+  height: 3px;
+  background: transparent;
+  opacity: 1;
 }
 
 .nav-icon {
   display: none;
 }
 
+.nav-label {
+  color: #8ad7ff;
+  text-shadow: 2px 2px 0 #09153a;
+}
+
+.nav-btn.active {
+  background: linear-gradient(180deg, #2c184d, #180f33) !important;
+  border-color: var(--accent-alt) !important;
+  transform: none;
+}
+
+.nav-btn.active::after {
+  background: var(--accent-alt);
+}
+
 .nav-btn.active .nav-label {
-  color: var(--accent-alt);
+  color: #ffd6ef;
 }
 
 #pick-emp-list .name-btn,
@@ -1010,6 +1043,25 @@ body::after {
   color: var(--text) !important;
 }
 
+.admin-log-edit-kicker {
+  color: var(--accent2) !important;
+  font-family: "Press Start 2P", monospace;
+}
+
+.admin-log-edit-header .admin-log-header-name {
+  color: var(--accent) !important;
+  font-family: "VT323", monospace;
+  font-size: 34px;
+  letter-spacing: 0.5px;
+  text-shadow: 2px 2px 0 #0b1540;
+  text-transform: none;
+}
+
+.admin-log-edit-header .admin-log-header-sub {
+  color: var(--text) !important;
+  font-size: 20px;
+}
+
 .admin-date-range {
   border: 0;
   border-radius: 0;
@@ -1204,8 +1256,16 @@ body::after {
   }
 
   .goal-admin-collapsible .admin-collapsible-title {
-    font-size: 12px;
-    letter-spacing: 0.8px;
+    font-family: "VT323", monospace;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-shadow: none;
+  }
+
+  .goal-admin-collapsible .admin-collapsible-toggle {
+    min-height: 42px;
+    padding: 8px 10px;
   }
 
   #daily-goals-grid {
@@ -1274,8 +1334,11 @@ body::after {
   :root {
     --type-display-size: 30px;
     --type-heading-size: 18px;
-    --type-body-size: 23px;
-    --type-caption-size: 20px;
+    --type-body-size: 20px;
+    --type-caption-size: 16px;
+    --type-small-size: 15px;
+    --header-height: 64px;
+    --nav-height: 56px;
   }
 
   .pick-inner {
@@ -1284,7 +1347,35 @@ body::after {
   }
 
   .app-header {
-    height: 70px;
+    height: var(--header-height);
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .bottom-nav {
+    height: var(--nav-height);
+    gap: 3px;
+    padding: 4px 5px calc(4px + env(safe-area-inset-bottom));
+  }
+
+  .nav-btn {
+    padding: 4px 3px;
+    border-width: 2px !important;
+  }
+
+  .nav-label {
+    font-size: 7px;
+    letter-spacing: 0.3px;
+    line-height: 1.1;
+  }
+
+  .dash-name {
+    font-size: 15px;
+  }
+
+  .dash-comp-badge {
+    font-size: 8px;
+    letter-spacing: 0.5px;
   }
 
   .pick-info-btn {
@@ -1349,7 +1440,7 @@ body::after {
   }
 
   .goal-current {
-    font-size: 34px;
+    font-size: 24px;
   }
 
   .goal-percent {
@@ -1359,11 +1450,15 @@ body::after {
   }
 
   .goal-hype {
-    font-size: 16px !important;
+    font-size: 12px !important;
   }
 
   .goal-bar-bg {
     height: 10px;
+  }
+
+  .admin-date-input {
+    min-height: 46px;
   }
 
   .log-card {
