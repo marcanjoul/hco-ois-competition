@@ -21,6 +21,7 @@ import { ref, set, get, onValue, update, remove } from "firebase/database";
 // App-wide constants.
 // Example on the website: weekday labels and preview limits.
 const ADMIN_PIN = import.meta.env.VITE_ADMIN_PIN;
+const CROWN_ICON_URL = new URL("./assets/icons/crown-pixel-flaticon.svg", import.meta.url).href;
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const PREVIEW_COUNT = 5;
 
@@ -169,7 +170,7 @@ function getBoardAvatarHtml(emp, playerId, displayRank) {
   const medal = displayRank === 1 ? "🥇" : displayRank === 2 ? "🥈" : displayRank === 3 ? "🥉" : "";
   return `
     <div class="board-avatar-stack${displayRank === 1 ? " rank-1" : ""}">
-      ${displayRank === 1 ? '<div class="board-avatar-crown">👑</div>' : ""}
+      ${displayRank === 1 ? `<div class="board-avatar-crown"><img class="board-avatar-crown-icon" src="${CROWN_ICON_URL}" alt="Top player crown" /></div>` : ""}
       ${getAvatarHtml(emp || { name: playerId }, "board", playerId)}
       ${medal ? `<div class="board-avatar-medal">${medal}</div>` : ""}
     </div>
@@ -730,7 +731,8 @@ function renderPickScreen(filterText = "") {
 
   const hasLogs = hasLogsInComp(state.currentComp);
   const players = hasLogs ? getRankedPlayers(state.currentComp) : getAlphabeticalPlayers(state.currentComp);
-  const filtered = Object.entries(state.employees)
+  const activeEmps = Object.entries(state.employees).filter(([, emp]) => !emp.inactive);
+  const filtered = activeEmps
     .filter(([, emp]) => emp.name.toLowerCase().includes(filterText.toLowerCase()));
 
   if (filtered.length === 0) {
@@ -744,7 +746,7 @@ function renderPickScreen(filterText = "") {
   const resultsInfo = document.getElementById("search-results-info");
   if (resultsInfo) {
     if (filterText) {
-      resultsInfo.textContent = `${filtered.length} of ${Object.keys(state.employees).length} employees`;
+      resultsInfo.textContent = `${filtered.length} of ${activeEmps.length} employees`;
       resultsInfo.classList.remove("hidden");
     } else {
       resultsInfo.classList.add("hidden");
@@ -1017,13 +1019,14 @@ function renderPickEmpGrid(filterText = "") {
   const searchInfo = document.getElementById("pick-search-info");
   if (!list) return;
 
-  const filtered = Object.entries(state.employees)
+  const activeEmps = Object.entries(state.employees).filter(([, emp]) => !emp.inactive);
+  const filtered = activeEmps
     .filter(([, emp]) => emp.name.toLowerCase().includes(filterText.toLowerCase()))
     .sort(([, a], [, b]) => a.name.localeCompare(b.name));
 
   if (searchInfo) {
     if (filterText) {
-      searchInfo.textContent = `${filtered.length} of ${Object.keys(state.employees).length} employees`;
+      searchInfo.textContent = `${filtered.length} of ${activeEmps.length} employees`;
       searchInfo.classList.remove("hidden");
     } else {
       searchInfo.classList.add("hidden");
@@ -1457,7 +1460,7 @@ function renderBoard() {
       <div class="board-info">
         <div class="board-name-row">
           <div class="board-name">
-            ${safePlayerName}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}
+            ${safePlayerName}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}${emp?.inactive ? " <span class='past-emp-label'>PAST</span>" : ""}
           </div>
         </div>
       </div>
@@ -1520,6 +1523,7 @@ function hasLogsInComp(compId) {
 function getAlphabeticalPlayers(compId) {
   const compLogs = state.logs[compId] || {};
   return Object.entries(state.employees)
+    .filter(([, emp]) => !emp.inactive)
     .map(([id, emp]) => {
       const empLogs = compLogs[id] || {};
       let total = 0, hours = 0;
@@ -2322,12 +2326,18 @@ function renderCompEditPanel(compId, comp) {
 function renderAdminEmpsList() {
   const listContainer = document.getElementById("admin-emp-list-container");
   if (!listContainer) return;
-  
+
   const search = state.admin.empSearch.toLowerCase();
-  const allEntries = Object.entries(state.employees).sort(([, a], [, b]) => a.name.localeCompare(b.name));
-  const filtered = search ? allEntries.filter(([, emp]) => emp.name.toLowerCase().includes(search)) : allEntries;
+  const allActive = Object.entries(state.employees)
+    .filter(([, emp]) => !emp.inactive)
+    .sort(([, a], [, b]) => a.name.localeCompare(b.name));
+  const allPast = Object.entries(state.employees)
+    .filter(([, emp]) => emp.inactive)
+    .sort(([, a], [, b]) => a.name.localeCompare(b.name));
+
+  const filtered = search ? allActive.filter(([, emp]) => emp.name.toLowerCase().includes(search)) : allActive;
   const toShow = state.admin.showAllEmps ? filtered : filtered.slice(0, PREVIEW_COUNT);
-  
+
   listContainer.innerHTML = "";
   const list = document.createElement("div");
   list.className = "admin-list admin-emp-list";
@@ -2335,8 +2345,6 @@ function renderAdminEmpsList() {
   if (toShow.length === 0) {
     list.innerHTML = `<div class="ui-empty-state admin-list-empty-state">No employees found</div>`;
   } else {
-    const today = getTodayDate();
-    const compId = state.currentComp;
     toShow.forEach(([id, emp]) => {
       const item = document.createElement("div");
       item.className = "admin-item admin-emp-item";
@@ -2346,15 +2354,17 @@ function renderAdminEmpsList() {
       leftPart.className = "admin-item-left";
       leftPart.innerHTML = `${getAvatarHtml(emp, "small", id)} <span class="admin-item-name">${escapeHtml(emp.name)}</span>`;
       item.appendChild(leftPart);
-      
+
       const rightPart = document.createElement("div");
       rightPart.className = "admin-item-actions";
       rightPart.appendChild(makeBtn("Edit", "del-btn", () => openEditEmpModal(id, emp)));
       rightPart.appendChild(makeBtn("✕", "del-btn danger", async () => {
-        if (confirm(`Remove "${emp.name}"?`)) await remove(dbRef.emp(id));
+        if (confirm(`Remove "${emp.name}"? They'll move to Past Players.`)) {
+          await update(dbRef.emp(id), { inactive: true, removedAt: Date.now() });
+        }
       }));
       item.appendChild(rightPart);
-      
+
       list.appendChild(item);
     });
   }
@@ -2367,11 +2377,56 @@ function renderAdminEmpsList() {
       () => { state.admin.showAllEmps = !state.admin.showAllEmps; renderAdminEmpsList(); }
     ));
   }
+
+  // Past Players section
+  if (allPast.length > 0) {
+    const pastSection = document.createElement("div");
+    pastSection.className = "goal-admin-block admin-past-emps-section";
+
+    const pastToggle = document.createElement("button");
+    pastToggle.className = "collapsible-toggle";
+    pastToggle.innerHTML = `👤 PAST PLAYERS (${allPast.length}) <span class="collapsible-toggle-icon">▼</span>`;
+
+    const pastContent = document.createElement("div");
+    pastContent.style.display = "none";
+
+    const pastList = document.createElement("div");
+    pastList.className = "admin-list admin-emp-list";
+    allPast.forEach(([id, emp]) => {
+      const item = document.createElement("div");
+      item.className = "admin-item admin-emp-item";
+
+      const leftPart = document.createElement("div");
+      leftPart.className = "admin-item-left";
+      leftPart.innerHTML = `${getAvatarHtml(emp, "small", id)} <span class="admin-item-name">${escapeHtml(emp.name)}</span>`;
+      item.appendChild(leftPart);
+
+      const rightPart = document.createElement("div");
+      rightPart.className = "admin-item-actions";
+      rightPart.appendChild(makeBtn("Restore", "del-btn", async () => {
+        await update(dbRef.emp(id), { inactive: false, removedAt: null });
+      }));
+      item.appendChild(rightPart);
+
+      pastList.appendChild(item);
+    });
+
+    pastContent.appendChild(pastList);
+    pastSection.appendChild(pastToggle);
+    pastSection.appendChild(pastContent);
+    listContainer.appendChild(pastSection);
+
+    pastToggle.onclick = () => {
+      const isHidden = pastContent.style.display === "none";
+      pastContent.style.display = isHidden ? "block" : "none";
+      pastToggle.classList.toggle("expanded", isHidden);
+    };
+  }
 }
 
 function renderAdminEmps(container) {
   container.innerHTML = `<div class="admin-section-title">MANAGE PLAYERS</div>`;
-  const employeeCount = Object.keys(state.employees || {}).length;
+  const employeeCount = Object.values(state.employees || {}).filter(e => !e.inactive).length;
 
   const toolsWrap = document.createElement("div");
   toolsWrap.className = "admin-team-tools";

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Pixel crown</title>
+  <rect width="512" height="512" fill="none"/>
+  <g shape-rendering="crispEdges">
+    <rect x="241" y="30" width="30" height="30" fill="#ffcb13"/>
+    <rect x="30" y="120" width="30" height="30" fill="#ffcb13"/>
+    <rect x="452" y="120" width="30" height="30" fill="#ffcb13"/>
+    <rect x="241" y="120" width="30" height="61" fill="#ff8f1a"/>
+    <rect x="120" y="181" width="31" height="31" fill="#e7659d"/>
+    <rect x="151" y="181" width="30" height="60" fill="#b84aa3"/>
+    <rect x="211" y="181" width="60" height="61" fill="#ffcb13"/>
+    <rect x="271" y="181" width="30" height="61" fill="#ff8f1a"/>
+    <rect x="331" y="181" width="31" height="31" fill="#e7659d"/>
+    <rect x="362" y="181" width="30" height="30" fill="#b84aa3"/>
+    <rect x="30" y="211" width="30" height="91" fill="#ffcb13"/>
+    <rect x="90" y="211" width="30" height="30" fill="#e7659d"/>
+    <rect x="120" y="211" width="31" height="60" fill="#e7659d"/>
+    <rect x="151" y="211" width="30" height="60" fill="#b84aa3"/>
+    <rect x="211" y="211" width="90" height="61" fill="#ffcb13"/>
+    <rect x="301" y="211" width="30" height="60" fill="#ff8f1a"/>
+    <rect x="331" y="211" width="31" height="60" fill="#e7659d"/>
+    <rect x="362" y="211" width="60" height="30" fill="#b84aa3"/>
+    <rect x="452" y="211" width="30" height="91" fill="#ff8f1a"/>
+    <rect x="60" y="241" width="60" height="61" fill="#ffcb13"/>
+    <rect x="120" y="271" width="30" height="30" fill="#000"/>
+    <rect x="181" y="241" width="151" height="61" fill="#ffcb13"/>
+    <rect x="332" y="271" width="60" height="31" fill="#ff8f1a"/>
+    <rect x="392" y="241" width="60" height="61" fill="#ff8f1a"/>
+    <rect x="60" y="302" width="181" height="30" fill="#ffcb13"/>
+    <rect x="241" y="302" width="30" height="60" fill="#16a9db"/>
+    <rect x="271" y="302" width="30" height="60" fill="#000"/>
+    <rect x="301" y="302" width="60" height="30" fill="#ffcb13"/>
+    <rect x="361" y="302" width="121" height="30" fill="#ff8f1a"/>
+    <rect x="60" y="332" width="30" height="60" fill="#ffcb13"/>
+    <rect x="90" y="332" width="30" height="30" fill="#fff4bb"/>
+    <rect x="120" y="332" width="30" height="60" fill="#ffcb13"/>
+    <rect x="151" y="332" width="30" height="30" fill="#fff4bb"/>
+    <rect x="181" y="332" width="30" height="60" fill="#ffcb13"/>
+    <rect x="211" y="332" width="30" height="30" fill="#000"/>
+    <rect x="241" y="332" width="30" height="60" fill="#16a9db"/>
+    <rect x="271" y="332" width="30" height="30" fill="#000"/>
+    <rect x="301" y="332" width="30" height="60" fill="#ffcb13"/>
+    <rect x="331" y="332" width="30" height="30" fill="#fff4bb"/>
+    <rect x="361" y="332" width="31" height="60" fill="#ffcb13"/>
+    <rect x="392" y="332" width="30" height="30" fill="#fff4bb"/>
+    <rect x="422" y="332" width="60" height="60" fill="#ff8f1a"/>
+    <rect x="90" y="392" width="271" height="30" fill="#ffcb13"/>
+    <rect x="361" y="392" width="61" height="30" fill="#ff8f1a"/>
+    <rect x="30" y="452" width="301" height="30" fill="#ffcb13"/>
+    <rect x="331" y="452" width="151" height="30" fill="#ff8f1a"/>
+  </g>
+</svg>

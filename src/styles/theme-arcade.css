@@ -725,9 +725,10 @@ body::after {
 
 #pick-emp-list .board-avatar-crown,
 #name-grid .board-avatar-crown {
-  top: 1px;
-  right: 0;
-  font-size: 16px;
+  top: -6px;
+  right: -5px;
+  width: 17px;
+  height: 17px;
 }
 
 #pick-emp-list .board-avatar-medal,
@@ -1647,9 +1648,10 @@ body::after {
 
   #pick-emp-list .board-avatar-crown,
   #name-grid .board-avatar-crown {
-    top: 1px;
-    right: 0;
-    font-size: 15px;
+    top: -5px;
+    right: -5px;
+    width: 16px;
+    height: 16px;
   }
 
   #pick-emp-list .board-avatar-medal,

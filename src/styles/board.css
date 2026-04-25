@@ -221,12 +221,24 @@
 
 .board-avatar-crown {
   position: absolute;
-  top: 4px;
-  right: -2px;
+  top: -10px;
+  right: -8px;
   transform: rotate(18deg);
-  font-size: 32px;
-  line-height: 1;
+  width: 35px;
+  height: 35px;
   z-index: 2;
+}
+
+.board-avatar-crown-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter:
+    drop-shadow(2px 2px 0 rgba(5, 8, 22, 0.62))
+    drop-shadow(0 4px 8px rgba(20, 54, 161, 0.5))
+    drop-shadow(0 0 6px rgba(71, 215, 255, 0.24));
 }
 
 .board-avatar-medal {
@@ -331,6 +343,19 @@
   letter-spacing: 1px;
   background: var(--gold);
   color: var(--bg);
+  padding: 2px 5px;
+  border-radius: 3px;
+  margin-left: var(--space-1);
+  vertical-align: middle;
+}
+
+.past-emp-label {
+  font-family: var(--type-label-family);
+  font-size: 8px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 1px;
+  background: rgba(255,255,255,0.12);
+  color: var(--text3);
   padding: 2px 5px;
   border-radius: 3px;
   margin-left: var(--space-1);
