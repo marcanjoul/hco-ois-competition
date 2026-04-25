@@ -208,22 +208,20 @@ function isCompEnded(comp) {
 }
 
 function getActiveComp() {
-  // Find the most recent non-archived, non-closed comp that is active or not yet ended
+  // Find the most recent comp that hasn't ended yet
   const entries = Object.entries(state.competitions)
-    .filter(([, c]) => c.status !== "archived" && c.status !== "closed" && !isCompEnded(c))
+    .filter(([, c]) => !isCompEnded(c))
     .sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0));
   return entries[0]?.[0] || null;
 }
 
 async function checkAndAutoCloseComps() {
   for (const [id, comp] of Object.entries(state.competitions)) {
-    if (comp.status === "active" && isCompEnded(comp)) {
+    if (!comp.winner && isCompEnded(comp)) {
       const ranked = getRankedPlayers(id);
       const winner = ranked.find(p => p.hours > 0);
       await update(dbRef.comp(id), {
-        status: "closed",
         winner: winner ? winner.id : null,
-        autoClosedAt: Date.now(),
       });
     }
   }
@@ -288,15 +286,6 @@ function getCompetitionCountdownStyle(comp) {
   return `color:${color};text-shadow:4px 4px 0 ${shadow};`;
 }
 
-function getCompetitionStatusMeta(comp) {
-  if (comp?.status === "closed") {
-    return { key: "closed", label: "Closed" };
-  }
-  if (comp?.status === "archived") {
-    return { key: "archived", label: "Archived" };
-  }
-  return { key: "active", label: "Active" };
-}
 
 // ══════════════════════════════════════════════════════
 // Apply settings
@@ -567,7 +556,7 @@ async function logEntryFromPick() {
   if (isNaN(sales) || sales < 0) { showToast("Enter a valid sales amount 💸"); return; }
   if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked ⏱️"); return; }
   if (!state.currentUser) { showToast("Select your name first 👤"); return; }
-  if (state.competitions[state.currentComp]?.status === "closed") { showToast("This competition is closed 🔒"); return; }
+  if (isCompEnded(state.competitions[state.currentComp])) { showToast("This competition has ended 🔒"); return; }
 
   const today = getTodayDate();
   if (state.selectedDate > today) { showToast("Can't log orders in the future 🔮"); return; }
@@ -1333,7 +1322,6 @@ function renderBoardCompSelect() {
   menu.innerHTML = "";
 
   const nonArchivedComps = Object.entries(state.competitions)
-    .filter(([, c]) => c.status !== "archived")
     .sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0));
 
   if (nonArchivedComps.length === 0) {
@@ -1628,7 +1616,7 @@ async function logEntry() {
   const hours = parseFloat(document.getElementById("input-hours").value);
   if (isNaN(sales) || sales < 0) { showToast("Enter a valid sales amount 💸"); return; }
   if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked ⏱️"); return; }
-  if (state.competitions[state.currentComp]?.status === "closed") { showToast("This competition is closed 🔒"); return; }
+  if (isCompEnded(state.competitions[state.currentComp])) { showToast("This competition has ended 🔒"); return; }
 
   const today = getTodayDate();
   if (state.selectedDate > today) { showToast("Can't log orders in the future 🔮"); return; }
@@ -1721,21 +1709,23 @@ function renderAdminComps(container) {
     const item = document.createElement("div");
     item.className = "admin-item admin-comp-item";
     item.id = `admin-comp-item-${id}`;
-    const statusMeta = getCompetitionStatusMeta(comp);
-    
+    const ended = isCompEnded(comp);
+
     const leftPart = document.createElement("div");
     leftPart.className = "admin-item-left";
     leftPart.innerHTML = `
       <span class="admin-item-name">${escapeHtml(comp.name)}</span>
-      <span class="comp-status-chip comp-status-${statusMeta.key}">Status: ${statusMeta.label}</span>
+      ${ended ? `<span class="comp-status-chip comp-status-ended">Ended</span>` : ""}
     `;
     item.appendChild(leftPart);
-    
+
     const rightPart = document.createElement("div");
     rightPart.className = "admin-item-actions";
-    rightPart.appendChild(makeBtn("Edit", "del-btn", () => renderCompEditPanel(id, comp)));
+    if (!ended) {
+      rightPart.appendChild(makeBtn("Edit", "del-btn", () => renderCompEditPanel(id, comp)));
+    }
     item.appendChild(rightPart);
-    
+
     list.appendChild(item);
   });
   container.appendChild(list);
@@ -1810,7 +1800,7 @@ function renderAdminComps(container) {
     const endDate = document.getElementById("input-new-comp-end").value;
     if (!name || !startDate || !endDate) return;
     const id = `comp_${Date.now()}`;
-    await set(dbRef.comp(id), { name, startDate, endDate, createdAt: Date.now(), status: "active" });
+    await set(dbRef.comp(id), { name, startDate, endDate, createdAt: Date.now() });
     showToast(`"${name}" created! 🏆`);
     ["input-new-comp","input-new-comp-start","input-new-comp-end"].forEach(i => {
       const el = document.getElementById(i);
@@ -2001,7 +1991,6 @@ function renderCompEditPanel(compId, comp) {
     name: comp.name,
     startDate: comp.startDate || "",
     endDate: comp.endDate || "",
-    status: comp.status,
     competitionGoal: getCompGoals(compId).competition?.value || "",
   };
 
@@ -2111,25 +2100,6 @@ function renderCompEditPanel(compId, comp) {
   endDateInput?.addEventListener("input", updateDateRangeUI);
   updateDateRangeUI();
 
-  const setupMetaRow = document.createElement("div");
-  setupMetaRow.className = "admin-edit-two-col";
-  setupGroup.appendChild(setupMetaRow);
-
-  const statusWrap = document.createElement("div");
-  statusWrap.className = "admin-edit-field-stack";
-  statusWrap.innerHTML = `<label class="field-label">STATUS</label>`;
-  const statusSel = document.createElement("select");
-  statusSel.className = "log-input"; statusSel.id = "comp-edit-status";
-  ["active", "closed"].forEach(s => {
-    const opt = document.createElement("option");
-    opt.value = s; opt.textContent = s.charAt(0).toUpperCase() + s.slice(1);
-    if (getCompetitionStatusMeta(comp).key === s) opt.selected = true;
-    statusSel.appendChild(opt);
-  });
-  statusWrap.appendChild(statusSel);
-  setupMetaRow.appendChild(statusWrap);
-  addChangeListener("comp-edit-status", comp.status);
-
   const winnerDisplayText = !isCompEnded(comp)
     ? "Winner TBA"
     : (comp.winner && state.employees[comp.winner]?.name)
@@ -2142,7 +2112,7 @@ function renderCompEditPanel(compId, comp) {
     <label class="field-label">WINNER</label>
     <div class="admin-readonly-field">${escapeHtml(winnerDisplayText)}</div>
   `;
-  setupMetaRow.appendChild(winnerWrap);
+  setupGroup.appendChild(winnerWrap);
 
   const compGoals = getCompGoals(compId);
   const goalPanels = [];
@@ -2292,7 +2262,6 @@ function renderCompEditPanel(compId, comp) {
       name: document.getElementById("comp-edit-name").value.trim() || comp.name,
       startDate: document.getElementById("comp-edit-startDate").value,
       endDate: document.getElementById("comp-edit-endDate").value,
-      status: document.getElementById("comp-edit-status").value,
     });
 
     // Save competition goal
@@ -3134,7 +3103,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadInitialData();
   } catch (error) {
     console.error("Initial data load failed", error);
-    setTimeout(() => showToast("Live data is reconnecting. Some info may load a moment late."), 0);
   } finally {
     startListeners();
   }
