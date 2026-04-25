@@ -248,7 +248,6 @@ body::after {
 }
 
 .pick-countdown,
-.pick-prize-pill,
 .pick-comp-dates,
 .pick-winner-row,
 .pick-goals-toggle,
@@ -276,7 +275,6 @@ body::after {
   text-shadow: 4px 4px 0 #6e1525;
 }
 
-.pick-prize-pill,
 .pick-winner-row,
 .status-badge.winner,
 .goal-percent-hit {
@@ -374,7 +372,6 @@ body::after {
 .del-btn,
 .mini-btn,
 .collapsible-toggle,
-.prize-format-btn,
 .admin-lock-btn,
 .btn-secondary {
   border-radius: 0 !important;
@@ -400,7 +397,6 @@ body::after {
 .del-btn:hover,
 .mini-btn:hover,
 .collapsible-toggle:hover,
-.prize-format-btn:hover,
 .admin-lock-btn:hover,
 .btn-secondary:hover {
   transform: translate(-2px, -2px);
@@ -421,7 +417,6 @@ body::after {
 .del-btn:active,
 .mini-btn:active,
 .collapsible-toggle:active,
-.prize-format-btn:active,
 .admin-lock-btn:active,
 .btn-secondary:active {
   transform: translate(2px, 2px);
@@ -613,12 +608,17 @@ body::after {
   background: #0b1540;
 }
 
-.admin-log-player-badge.logged {
-  color: #52ff98;
+.admin-log-player-badge.edit {
+  color: #ffd84d;
 }
 
 .admin-log-player-badge.open {
   color: #47d7ff;
+}
+
+.admin-log-player-card.has-log:hover .admin-log-player-badge.edit,
+.admin-log-player-card.has-log.active .admin-log-player-badge.edit {
+  color: #52ff98;
 }
 
 .admin-log-empty-state {
@@ -651,61 +651,61 @@ body::after {
 
 #pick-emp-list .name-btn,
 #name-grid .name-btn {
-  min-height: 78px;
-  padding: 14px 18px;
-  gap: 16px;
+  min-height: 50px;
+  padding: 8px 10px;
+  gap: 10px;
 }
 
 #pick-emp-list .name-btn > span:last-child,
 #pick-emp-list .name-btn > div,
 #name-grid .name-btn > span:last-child,
 #name-grid .name-btn > div {
-  font-size: 30px;
+  font-size: 20px;
   line-height: 1.05;
 }
 
 #pick-emp-list .avatar-small,
 #name-grid .avatar-small {
-  width: 56px;
-  height: 56px;
+  width: 38px;
+  height: 38px;
 }
 
 #pick-emp-list .board-avatar-stack,
 #name-grid .board-avatar-stack {
-  width: 64px;
-  min-width: 64px;
-  padding-top: 10px;
-  padding-bottom: 12px;
+  width: 44px;
+  min-width: 44px;
+  padding-top: 5px;
+  padding-bottom: 7px;
 }
 
 #pick-emp-list .board-avatar-stack.rank-1,
 #name-grid .board-avatar-stack.rank-1 {
-  padding-top: 16px;
+  padding-top: 9px;
 }
 
 #pick-emp-list .avatar-board,
 #name-grid .avatar-board {
-  width: 52px;
-  height: 52px;
-  font-size: 22px;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
 }
 
 #pick-emp-list .board-avatar-crown,
 #name-grid .board-avatar-crown {
-  top: 4px;
+  top: 1px;
   right: 0;
-  font-size: 26px;
+  font-size: 16px;
 }
 
 #pick-emp-list .board-avatar-medal,
 #name-grid .board-avatar-medal {
-  bottom: 4px;
-  font-size: 22px;
+  bottom: 1px;
+  font-size: 14px;
 }
 
 #pick-emp-list .avatar-small .avatar-placeholder,
 #name-grid .avatar-small .avatar-placeholder {
-  font-size: 24px;
+  font-size: 17px;
 }
 
 .log-input,
@@ -752,14 +752,15 @@ body::after {
 }
 
 .pick-emp-selector {
-  font-size: 34px !important;
+  font-size: 24px !important;
   color: #fff2a8 !important;
-  min-height: 78px;
+  min-height: 52px;
+  padding: 10px 12px !important;
   text-shadow: 2px 2px 0 #0b1540;
 }
 
 .pick-emp-selector.has-selection {
-  font-size: 26px !important;
+  font-size: 20px !important;
   color: var(--text) !important;
   text-shadow: none;
 }
@@ -780,6 +781,12 @@ body::after {
 
 .log-input::placeholder {
   color: #87a8ff;
+}
+
+#pick-emp-grid .log-input {
+  min-height: 42px;
+  padding: 7px 10px;
+  font-size: 20px;
 }
 
 .stat-card.accent,
@@ -1003,14 +1010,6 @@ body::after {
   color: var(--text) !important;
 }
 
-.daily-goal-week-shell {
-  background:
-    linear-gradient(180deg, rgba(14, 28, 78, 0.98), rgba(6, 13, 36, 0.98));
-  border: 3px solid #2b6dff;
-  box-shadow: 4px 4px 0 #09153a;
-  padding: 10px;
-}
-
 .admin-date-range {
   border: 0;
   border-radius: 0;
@@ -1034,19 +1033,15 @@ body::after {
   min-height: 74px;
 }
 
-.daily-goal-week-caption {
-  color: #8ad7ff;
-}
-
 .daily-goal-week-display {
   border: 3px solid #2b6dff;
   border-radius: 0;
-  background: #050d27;
-  box-shadow: inset 0 0 0 2px #0b1540;
+  background: #101e55;
+  box-shadow: 4px 4px 0 #09153a;
   color: #ffd84d;
   font-family: "VT323", monospace;
-  font-size: 38px;
-  letter-spacing: 0.8px;
+  font-size: 24px;
+  letter-spacing: 0.5px;
   text-shadow: 2px 2px 0 #8e5f00;
 }
 
@@ -1061,23 +1056,24 @@ body::after {
   border-radius: 0;
   background:
     linear-gradient(180deg, rgba(14, 28, 78, 0.98), rgba(8, 16, 46, 0.98));
-  box-shadow: 4px 4px 0 #09153a;
+  box-shadow: 3px 3px 0 #09153a;
 }
 
 .goal-day-name {
   color: #8ad7ff;
+  font-size: 16px;
   text-shadow: 2px 2px 0 #09153a;
 }
 
 .goal-day-date {
   color: #6e95ff;
   font-family: "VT323", monospace;
-  font-size: 22px;
+  font-size: 13px;
   letter-spacing: 0.6px;
 }
 
 .goal-day-input-shell {
-  min-width: 170px;
+  min-width: 122px;
 }
 
 .goal-day-currency {
@@ -1096,7 +1092,7 @@ body::after {
 }
 
 .goal-day-input {
-  min-height: 58px;
+  min-height: 38px;
   border-radius: 0 !important;
   border-left-width: 0 !important;
   color: #ffd84d !important;
@@ -1194,6 +1190,59 @@ body::after {
     line-height: 1.15 !important;
     text-align: center;
   }
+
+  .daily-goal-week-display {
+    min-height: 38px;
+    padding: 0 8px;
+    font-size: 18px;
+  }
+
+  .daily-goal-week-controls .week-nav-btn {
+    min-width: 38px;
+    min-height: 38px;
+    font-size: 14px;
+  }
+
+  .goal-admin-collapsible .admin-collapsible-title {
+    font-size: 12px;
+    letter-spacing: 0.8px;
+  }
+
+  #daily-goals-grid {
+    gap: 7px;
+  }
+
+  .goal-day-card {
+    gap: 8px;
+    padding: 7px 8px;
+    box-shadow: 3px 3px 0 #09153a;
+  }
+
+  .goal-day-name {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .goal-day-date {
+    font-size: 13px;
+    line-height: 1;
+  }
+
+  .goal-day-input-shell {
+    min-width: 126px;
+    padding-left: 34px;
+  }
+
+  .goal-day-currency {
+    width: 34px;
+    font-size: 16px;
+  }
+
+  .goal-day-input {
+    min-height: 38px;
+    padding: 5px 8px;
+    font-size: 17px;
+  }
 }
 
 .admin-team-search-icon {
@@ -1230,9 +1279,8 @@ body::after {
   }
 
   .pick-inner {
-    gap: 12px;
-    padding-left: 10px;
-    padding-right: 10px;
+    gap: 8px;
+    padding: 8px 8px calc(var(--nav-height) + 8px);
   }
 
   .app-header {
@@ -1240,21 +1288,21 @@ body::after {
   }
 
   .pick-info-btn {
-    width: 44px;
-    height: 44px;
-    top: 14px;
-    right: 14px;
-    font-size: 34px !important;
+    width: 36px;
+    height: 36px;
+    top: 10px;
+    right: 10px;
+    font-size: 24px !important;
   }
 
   .pick-comp-info {
-    padding: 14px 14px 0;
+    padding: 9px 9px 0;
   }
 
   .pick-comp-name {
-    font-size: 24px;
-    line-height: 1.08;
-    margin-bottom: 6px;
+    font-size: 20px;
+    line-height: 1;
+    margin-bottom: 3px;
   }
 
   .pick-comp-hero-row {
@@ -1262,34 +1310,34 @@ body::after {
   }
 
   .pick-countdown {
-    padding: 8px 10px;
-    gap: 8px;
+    padding: 5px 8px;
+    gap: 6px;
   }
 
   .pick-countdown-num {
-    font-size: 40px;
-    line-height: 0.9;
+    font-size: 30px;
+    line-height: 0.95;
   }
 
   .pick-countdown-label {
-    font-size: 10px;
-    margin-bottom: 4px;
+    font-size: 8px;
+    margin-bottom: 2px;
   }
 
   .pick-comp-dates {
-    margin-bottom: 12px;
+    margin-bottom: 7px;
     padding: 0;
-    font-size: 20px;
+    font-size: 13px;
   }
 
   .pick-goals-toggle {
     min-height: 0;
-    padding: 12px 14px;
-    font-size: 14px;
+    padding: 8px 10px;
+    font-size: 10px;
   }
 
   .pick-goals-content {
-    padding: 10px 12px 12px;
+    padding: 8px 9px 9px;
   }
 
   .comp-detail {
@@ -1319,12 +1367,12 @@ body::after {
   }
 
   .log-card {
-    padding: 14px;
+    padding: 9px;
   }
 
   .log-card-title {
-    margin-bottom: 14px;
-    font-size: 16px;
+    margin-bottom: 8px;
+    font-size: 20px;
   }
 
   .screen-top-bar {
@@ -1343,7 +1391,11 @@ body::after {
 
   .pick-step-header {
     gap: 8px;
-    margin-bottom: 10px !important;
+    margin-bottom: 7px !important;
+  }
+
+  .pick-step-header-form {
+    margin: 10px 0 7px !important;
   }
 
   .pick-step-num {
@@ -1358,21 +1410,21 @@ body::after {
   }
 
   .day-row {
-    gap: 4px;
+    gap: 3px;
     overflow-x: visible;
   }
 
   .week-nav-btn {
     min-width: 32px;
-    min-height: 42px;
+    min-height: 38px;
     font-size: 14px;
     flex: 0 0 32px;
   }
 
   .day-btn {
     min-width: 0;
-    min-height: 42px;
-    padding: 4px 2px;
+    min-height: 38px;
+    padding: 3px 2px;
     gap: 1px;
   }
 
@@ -1395,15 +1447,21 @@ body::after {
   }
 
   .pick-emp-selector {
-    min-height: 64px;
-    padding: 12px 14px;
-    font-size: 28px !important;
+    min-height: 42px;
+    padding: 7px 9px !important;
+    font-size: 18px !important;
   }
 
   .log-input,
   .comp-select,
   #input-pin {
-    font-size: 24px;
+    font-size: 20px;
+  }
+
+  #pick-emp-grid .log-input {
+    min-height: 36px;
+    padding: 6px 8px;
+    font-size: 17px;
   }
 
   .comp-select {
@@ -1431,55 +1489,55 @@ body::after {
 
   #pick-emp-list .name-btn,
   #name-grid .name-btn {
-    min-height: 70px;
-    padding: 12px 14px;
-    gap: 14px;
+    min-height: 48px;
+    padding: 7px 9px;
+    gap: 9px;
   }
 
   #pick-emp-list .name-btn > span:last-child,
   #pick-emp-list .name-btn > div,
   #name-grid .name-btn > span:last-child,
   #name-grid .name-btn > div {
-    font-size: 26px;
+    font-size: 18px;
   }
 
   #pick-emp-list .avatar-small,
   #name-grid .avatar-small {
-    width: 50px;
-    height: 50px;
+    width: 36px;
+    height: 36px;
   }
 
   #pick-emp-list .board-avatar-stack,
   #name-grid .board-avatar-stack {
-    width: 58px;
-    min-width: 58px;
-    padding-top: 8px;
-    padding-bottom: 10px;
+    width: 42px;
+    min-width: 42px;
+    padding-top: 5px;
+    padding-bottom: 6px;
   }
 
   #pick-emp-list .board-avatar-stack.rank-1,
   #name-grid .board-avatar-stack.rank-1 {
-    padding-top: 13px;
+    padding-top: 8px;
   }
 
   #pick-emp-list .avatar-board,
   #name-grid .avatar-board {
-    width: 48px;
-    height: 48px;
-    font-size: 20px;
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
   }
 
   #pick-emp-list .board-avatar-crown,
   #name-grid .board-avatar-crown {
-    top: 4px;
+    top: 1px;
     right: 0;
-    font-size: 22px;
+    font-size: 15px;
   }
 
   #pick-emp-list .board-avatar-medal,
   #name-grid .board-avatar-medal {
-    bottom: 3px;
-    font-size: 19px;
+    bottom: 0;
+    font-size: 13px;
   }
 
   .admin-item-name,

@@ -285,6 +285,14 @@
   background: var(--surface);
 }
 
+.admin-edit-group-collapsible,
+.goal-admin-collapsible {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
 .admin-edit-group-header {
   display: flex;
   flex-direction: column;
@@ -310,6 +318,44 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.admin-collapsible-body[hidden] {
+  display: none !important;
+}
+
+.admin-collapsible-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.admin-collapsible-title-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  min-width: 0;
+  text-align: left;
+}
+
+.admin-collapsible-title {
+  font-family: var(--type-title-family);
+  font-size: var(--type-title-size);
+  letter-spacing: var(--type-title-letter-spacing);
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.admin-collapsible-sub {
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  color: var(--text2);
+  letter-spacing: 0;
+  line-height: 1.25;
+  text-transform: none;
 }
 
 .admin-edit-field-stack {
@@ -1023,12 +1069,16 @@
   white-space: nowrap;
 }
 
-.admin-log-player-badge.logged {
-  color: var(--green);
+.admin-log-player-badge.edit {
+  color: var(--accent);
 }
-
 .admin-log-player-badge.open {
   color: var(--accent2);
+}
+
+.admin-log-player-card.has-log:hover .admin-log-player-badge.edit,
+.admin-log-player-card.has-log.active .admin-log-player-badge.edit {
+  color: var(--green);
 }
 
 .admin-log-empty-state {
@@ -1157,23 +1207,16 @@
 .daily-goal-week-picker-wrap {
   margin-bottom: 12px;
 }
-.daily-goal-week-shell {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.daily-goal-week-heading-row {
-  display: flex;
+.daily-goal-week-controls {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
   align-items: center;
-  gap: 10px;
 }
-.daily-goal-week-caption {
-  font-family: var(--type-label-family);
-  font-size: 10px;
-  font-weight: var(--type-label-weight);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--text3);
+.daily-goal-week-controls .week-nav-btn {
+  min-width: 52px;
+  min-height: 52px;
+  padding: 0;
 }
 .daily-goal-week-input-wrap {
   position: relative;
@@ -1183,15 +1226,18 @@
 .daily-goal-week-display {
   display: flex;
   align-items: center;
-  min-height: 72px;
-  padding: 12px 18px;
-  border: 2px solid var(--border);
-  border-radius: 10px;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   background: var(--surface2);
   color: var(--text);
-  font-family: var(--type-title-family);
-  font-size: 18px;
-  line-height: 1.2;
+  font-family: var(--type-subheading-family);
+  font-size: 16px;
+  letter-spacing: 0.4px;
+  line-height: 1.1;
+  text-align: center;
 }
 .daily-goal-week-picker-native {
   position: absolute;
@@ -1210,8 +1256,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 12px 14px;
+  gap: 10px;
+  padding: 8px 10px;
   border: 2px solid var(--border);
   border-radius: 12px;
   background: var(--surface);
@@ -1221,13 +1267,13 @@
 }
 .goal-day-name {
   font-family: var(--type-title-family);
-  font-size: 18px;
+  font-size: 15px;
   color: var(--text);
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 .goal-day-date {
   font-family: var(--type-caption-family);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--text3);
 }
@@ -1235,8 +1281,8 @@
   position: relative;
   display: flex;
   align-items: center;
-  min-width: 144px;
-  padding-left: 42px;
+  min-width: 118px;
+  padding-left: 34px;
   cursor: text;
 }
 .goal-day-currency {
@@ -1244,7 +1290,7 @@
   left: 0;
   top: 0;
   bottom: 0;
-  width: 42px;
+  width: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1254,7 +1300,7 @@
   background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.14));
   color: var(--text2);
   font-family: var(--type-title-family);
-  font-size: 20px;
+  font-size: 15px;
   text-shadow: 0 1px 0 rgba(255,255,255,0.1), 0 -1px 0 rgba(0,0,0,0.35);
   box-shadow: inset 1px 1px 0 rgba(255,255,255,0.06), inset -1px -1px 0 rgba(0,0,0,0.22);
 }
@@ -1262,8 +1308,8 @@
   width: 100%;
   min-width: 0;
   text-align: center;
-  font-size: 24px;
-  padding: 8px 12px 8px 14px;
+  font-size: 16px;
+  padding: 5px 8px;
   border-radius: 0 10px 10px 0 !important;
   border-left-width: 0 !important;
 }
@@ -1292,42 +1338,16 @@
 }
 .collapsible-toggle:hover { border-color: var(--accent); color: var(--accent); }
 .collapsible-toggle.expanded { border-radius: var(--radius-sm) var(--radius-sm) 0 0; border-bottom-color: transparent; }
-
-/* Prize textarea
-   Example on the website: the bigger text area used for prize descriptions.
-*/
-.prize-textarea {
-  width: 100%;
-  min-height: 80px;
+.admin-collapsible-toggle {
+  padding: 12px 14px;
+  min-height: 56px;
+}
+.goal-admin-collapsible .admin-collapsible-toggle {
   background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3) var(--space-4);
-  font-family: var(--type-body-family);
-  font-size: var(--type-body-size);
-  font-weight: 600;
-  color: var(--text);
-  outline: none;
-  resize: vertical;
-  transition: border-color 0.15s;
 }
-.prize-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,111,244,0.12); }
-
-.prize-format-toolbar {
-  display: flex;
-  gap: var(--space-1);
-  margin-bottom: var(--space-2);
+.goal-admin-collapsible .admin-collapsible-title {
+  font-family: var(--type-label-family);
+  font-size: 13px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-letter-spacing);
 }
-.prize-format-btn {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xs);
-  padding: 4px var(--space-2);
-  font-family: var(--type-body-family);
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text2);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.prize-format-btn:hover { border-color: var(--accent); color: var(--accent); }

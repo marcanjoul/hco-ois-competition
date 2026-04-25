@@ -3,7 +3,7 @@
   This file controls the main home/logging screen.
 
   Website examples:
-  - The competition card with the title, countdown, prize, and progress
+  - The competition card with the title, countdown, and progress
   - The "INSERT OIS" card
   - The player picker, day picker, Sales/Hours inputs, and "ADD OIS" button
 */
@@ -17,7 +17,7 @@
 .pick-bg-stripe {
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: 200px;
+  height: 150px;
   background: linear-gradient(180deg, rgba(26,111,244,0.07) 0%, transparent 100%);
   z-index: 0;
   pointer-events: none;
@@ -27,28 +27,28 @@
   position: relative;
   z-index: 1;
   flex: 1;
-  padding: calc(var(--space-4)) var(--space-4) calc(var(--nav-height) + var(--space-4));
+  padding: 10px 10px calc(var(--nav-height) + 10px);
   max-width: var(--max-width);
   margin: 0 auto;
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: 10px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 .pick-info-btn {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 12px;
+  right: 12px;
   background: var(--accent) !important;
   border: 3px solid #f5bf1f !important;
   border-radius: 0;
-  width: 52px;
-  height: 52px;
+  width: 40px;
+  height: 40px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 900;
   color: #06102b !important;
   font-family: var(--type-heading-family);
@@ -76,13 +76,13 @@
     radial-gradient(circle at 0% 100%, rgba(26,111,244,0.12) 0%, transparent 32%),
     linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
   border: 1px solid rgba(26,111,244,0.18);
-  border-radius: 26px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
   box-shadow:
     0 24px 50px rgba(26,111,244,0.10),
     0 6px 18px rgba(15,25,35,0.08);
   position: relative;
-  padding: 14px 14px 0;
+  padding: 10px 10px 0;
 }
 .pick-comp-info.hidden { display: none; }
 .pick-comp-info::before {
@@ -102,8 +102,8 @@
   position: absolute;
   top: 16px;
   right: 20px;
-  width: 120px;
-  height: 120px;
+  width: 80px;
+  height: 80px;
   background:
     radial-gradient(circle, rgba(255,255,255,0.9) 0 10%, transparent 11%),
     radial-gradient(circle, rgba(255,255,255,0.55) 0 8%, transparent 9%);
@@ -116,47 +116,47 @@
 /* Competition name — huge, dominant */
 .pick-comp-name {
   font-family: var(--type-display-family);
-  font-size: 34px;
-  letter-spacing: 1.8px;
+  font-size: 24px;
+  letter-spacing: 1px;
   color: var(--text);
-  line-height: 0.95;
-  max-width: calc(100% - 78px);
+  line-height: 1;
+  max-width: calc(100% - 54px);
   text-wrap: balance;
   text-shadow: 0 2px 0 rgba(255,255,255,0.8);
-  padding: 2px 0 6px;
+  padding: 0 0 4px;
 }
 
 .pick-comp-dates {
   display: block;
-  margin: -2px 0 10px;
+  margin: 0 0 8px;
   padding: 0;
   background: transparent;
   border: 0;
   box-shadow: none;
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
-  letter-spacing: 1.2px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   color: var(--text2);
   opacity: 0.9;
 }
 
-/* Countdown + prize row */
+/* Countdown row */
 .pick-comp-hero-row {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 10px;
-  padding: 0 0 10px;
+  padding: 0 0 8px;
 }
 
 .pick-countdown {
   display: inline-flex;
   align-items: flex-end;
-  gap: 8px;
-  padding: 8px 12px 10px;
-  border-radius: 22px;
+  gap: 6px;
+  padding: 6px 9px;
+  border-radius: var(--radius-sm);
   background: linear-gradient(180deg, rgba(26,111,244,0.12) 0%, rgba(26,111,244,0.05) 100%);
   border: 1px solid rgba(26,111,244,0.14);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
@@ -164,8 +164,8 @@
 
 .pick-countdown-num {
   font-family: var(--type-display-family);
-  font-size: 58px;
-  letter-spacing: -1px;
+  font-size: 34px;
+  letter-spacing: 0;
   line-height: 1;
   color: var(--accent);
   text-shadow: 0 10px 22px rgba(26,111,244,0.18);
@@ -181,37 +181,17 @@
 
 .pick-countdown-label {
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
-  letter-spacing: 2.2px;
+  letter-spacing: 1px;
   color: var(--text2);
   text-transform: uppercase;
-  margin-bottom: 8px;
-}
-
-.pick-prize-pill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: linear-gradient(180deg, rgba(245,166,35,0.18) 0%, rgba(245,166,35,0.08) 100%);
-  border: 1px solid rgba(245,166,35,0.34);
-  border-radius: 99px;
-  padding: 8px 12px;
-  font-family: var(--type-label-family);
-  font-size: 11px;
-  font-weight: var(--type-label-weight);
-  color: var(--gold);
-  max-width: 170px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex-shrink: 0;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  margin-bottom: 3px;
 }
 
 /* Goal bars — collapsible section */
 .pick-comp-goals {
-  margin: 0 -14px;
+  margin: 0 -10px;
   border-top: 1px solid rgba(26,111,244,0.14);
   background: linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(233,241,251,0.55) 100%);
 }
@@ -221,13 +201,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 18px;
+  padding: 10px 12px;
   background: transparent;
   color: #3d5573;
   font-family: var(--type-label-family);
-  font-size: 14px;
+  font-size: 10px;
   font-weight: var(--type-label-weight);
-  letter-spacing: 2.4px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
   cursor: pointer;
   transition: color 0.2s, background 0.2s;
@@ -245,9 +225,9 @@
 
 .pick-goals-content {
   display: none;
-  padding: 0 14px 14px;
+  padding: 0 10px 10px;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 .pick-goals-content.open { display: flex; }
 
@@ -255,16 +235,16 @@
 .pick-winner-row {
   background: linear-gradient(180deg, rgba(245,166,35,0.12) 0%, rgba(245,166,35,0.05) 100%);
   border-top: 1px solid rgba(245,166,35,0.25);
-  margin: 0 -14px;
-  padding: 10px 14px;
+  margin: 0 -10px;
+  padding: 8px 10px;
   display: flex;
   align-items: center;
   gap: var(--space-2);
   font-family: var(--type-label-family);
-  font-size: 12px;
+  font-size: 10px;
   font-weight: var(--type-label-weight);
   color: var(--gold);
-  letter-spacing: 1.6px;
+  letter-spacing: 1px;
 }
 
 /* No competition state */
@@ -303,17 +283,25 @@
 .pick-step-header {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-2);
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.pick-step-header-first {
+  margin-bottom: 8px;
+}
+
+.pick-step-header-form {
+  margin: 12px 0 8px;
 }
 
 .pick-step-num {
-  width: 24px; height: 24px;
+  width: 20px; height: 20px;
   border-radius: 50%;
   background: var(--accent);
   color: white;
   font-family: var(--type-label-family);
-  font-size: 12px;
+  font-size: 10px;
   font-weight: var(--type-label-weight);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
@@ -321,7 +309,7 @@
 
 .pick-step-label {
   font-family: var(--type-label-family);
-  font-size: var(--type-label-size);
+  font-size: 10px;
   font-weight: var(--type-label-weight);
   letter-spacing: var(--type-label-letter-spacing);
   color: var(--text2);
@@ -333,25 +321,26 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  margin-bottom: var(--space-2);
 }
 .pick-emp-selector-wrap.hidden { display: none; }
 
 .pick-emp-selector {
   width: 100%;
-  padding: var(--space-4) var(--space-4);
+  padding: 12px 14px;
   text-align: left;
   background: var(--bg);
   border: 2px solid var(--accent);
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-family: var(--type-body-family);
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 900;
   color: var(--text);
   transition: all 0.2s;
   position: relative;
   padding-right: 36px;
-  min-height: 64px;
+  min-height: 52px;
   box-shadow: 0 0 0 4px rgba(26,111,244,0.08);
 }
 .pick-emp-selector::after {
@@ -381,10 +370,22 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: var(--space-3);
+  padding: 8px;
   margin-bottom: var(--space-2);
+  max-height: 360px;
+  overflow: hidden;
 }
 .pick-emp-grid.hidden { display: none; }
+
+.pick-emp-grid .search-wrap {
+  margin-bottom: 8px;
+}
+
+.pick-emp-grid .log-input {
+  min-height: 44px;
+  padding: 8px 10px;
+  font-size: 18px;
+}
 
 /* Selected employee profile card */
 #pick-emp-profile { margin-bottom: var(--space-3); }
@@ -393,8 +394,8 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3);
+  gap: 10px;
+  padding: 8px 10px;
   background: linear-gradient(180deg, rgba(26,111,244,0.08) 0%, rgba(26,111,244,0.03) 100%);
   border: 1px solid rgba(26,111,244,0.18);
   border-radius: var(--radius);
@@ -410,29 +411,29 @@
 }
 
 .avatar-pick-large {
-  width: 100px;
-  height: 100px;
-  font-size: 40px;
-  border-width: 3px;
+  width: 52px;
+  height: 52px;
+  font-size: 22px;
+  border-width: 2px;
   background: var(--surface);
   box-shadow: 0 8px 20px rgba(15,25,35,0.12);
 }
 
 .avatar-pick-large .avatar-placeholder {
-  font-size: 40px;
+  font-size: 22px;
 }
 
 .pick-avatar-edit-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 100px;
-  padding: 4px 8px;
+  min-width: 52px;
+  padding: 3px 5px;
   border-radius: 999px;
   background: rgba(26,111,244,0.14);
   color: var(--accent);
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 7px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -453,7 +454,7 @@
 }
 
 .pick-selected-emp-name {
-  font-size: 22px;
+  font-size: 18px;
   line-height: 1.05;
   font-weight: 900;
   color: var(--text);
@@ -596,13 +597,13 @@
 }
 
 .pick-selected-clear-btn {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: var(--surface);
   border: 1px solid rgba(15,25,35,0.08);
   color: var(--text2);
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 800;
   display: flex;
   align-items: center;
@@ -630,7 +631,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: var(--space-2) var(--space-3);
+  padding: 8px 10px;
   text-align: left;
   font-family: var(--type-body-family);
   font-weight: 700;
@@ -638,13 +639,17 @@
   color: var(--text);
   cursor: pointer;
   transition: all 0.15s ease;
-  min-height: 44px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: var(--space-2);
   overflow: hidden;
   position: relative;
+}
+
+#pick-emp-list {
+  max-height: 260px;
 }
 .name-btn:hover {
   border-color: var(--accent);
@@ -673,8 +678,8 @@
 .log-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: var(--space-4);
+  border-radius: var(--radius-sm);
+  padding: 10px;
   box-shadow: var(--shadow);
 }
 
@@ -684,10 +689,10 @@
 
 .log-card-title {
   font-family: var(--type-heading-family);
-  font-size: var(--type-heading-size);
-  letter-spacing: var(--type-heading-letter-spacing);
+  font-size: 22px;
+  letter-spacing: 1px;
   color: var(--text);
-  margin-bottom: var(--space-4);
+  margin-bottom: 10px;
   line-height: 1;
 }
 
@@ -722,8 +727,8 @@
 */
 .day-row {
   display: flex;
-  gap: var(--space-1);
-  margin-bottom: var(--space-3);
+  gap: 4px;
+  margin-bottom: 10px;
   align-items: stretch;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -733,15 +738,15 @@
 
 /* Week nav arrows — big touch targets */
 .week-nav-btn {
-  min-width: 44px;
-  min-height: 52px;
+  min-width: 34px;
+  min-height: 42px;
   border-radius: var(--radius-xs);
   border: 1px solid var(--border);
   background: var(--surface2);
   color: var(--text2);
   font-family: var(--type-body-family);
   font-weight: 900;
-  font-size: 18px;
+  font-size: 15px;
   flex-shrink: 0;
   transition: all 0.15s;
   display: flex;
@@ -758,14 +763,14 @@
 /* Day chip base */
 .day-btn {
   flex: 1;
-  min-width: 36px;
-  min-height: 52px;
+  min-width: 0;
+  min-height: 42px;
   border-radius: var(--radius-xs);
   border: 1.5px solid var(--border);
   background: var(--surface2);
   color: var(--text2);
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 0.5px;
   cursor: pointer;
@@ -778,8 +783,8 @@
   position: relative;
 }
 
-.day-btn-dayname { font-size: 9px; font-weight: 800; text-transform: uppercase; }
-.day-btn-date { font-size: 15px; font-weight: 900; line-height: 1; }
+.day-btn-dayname { font-size: 8px; font-weight: 800; text-transform: uppercase; }
+.day-btn-date { font-size: 12px; font-weight: 900; line-height: 1; }
 .day-btn-checkmark {
   position: absolute;
   top: 2px; right: 3px;
@@ -792,14 +797,14 @@
   border-color: var(--accent);
   color: var(--accent);
 }
-.day-btn.today .day-btn-date { font-size: 16px; }
+.day-btn.today .day-btn-date { font-size: 13px; }
 
 /* Selected: filled accent, white, slightly larger */
 .day-btn.active {
   background: var(--accent);
   border-color: var(--accent);
   color: white;
-  transform: scale(1.06);
+  transform: scale(1.03);
   box-shadow: var(--glow-accent);
   z-index: 1;
 }
@@ -845,7 +850,7 @@
   background: var(--surface);
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: var(--space-3) var(--space-4);
+  padding: 9px 10px;
   font-family: var(--type-body-family);
   font-size: 16px;
   font-weight: 700;
@@ -890,11 +895,11 @@ select.log-input:focus { background-color: var(--surface); }
 .log-fields {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
-  margin-bottom: var(--space-3);
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
-.log-field-wrap { display: flex; flex-direction: column; gap: var(--space-2); }
+.log-field-wrap { display: flex; flex-direction: column; gap: 6px; }
 
 /* ── LOG BUTTON ──
    Example on the website: the main "ADD OIS" button.
@@ -904,15 +909,15 @@ select.log-input:focus { background-color: var(--surface); }
   background: var(--accent);
   border: none;
   border-radius: var(--radius-sm);
-  padding: 14px var(--space-6);
+  padding: 10px 14px;
   color: white;
   font-family: var(--type-title-family);
-  font-size: 20px;
-  letter-spacing: 2px;
+  font-size: 18px;
+  letter-spacing: 1.2px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.34,1.2,0.64,1);
   box-shadow: var(--glow-accent);
-  min-height: 52px;
+  min-height: 46px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1263,23 +1268,4 @@ select.log-input:focus { background-color: var(--surface); }
 @keyframes goal-shimmer {
   0%, 100% { transform: translateX(-100%); }
   55% { transform: translateX(120%); }
-}
-
-/* Prizes section */
-.prizes-section { margin-top: var(--space-3); }
-.prizes-title {
-  font-family: var(--type-label-family);
-  font-size: var(--type-label-size);
-  font-weight: var(--type-label-weight);
-  letter-spacing: var(--type-label-letter-spacing);
-  color: var(--gold);
-  margin-bottom: var(--space-2);
-}
-.prizes-content {
-  font-family: var(--type-body-family);
-  font-size: var(--type-body-size);
-  font-weight: 600;
-  color: var(--text2);
-  line-height: 1.6;
-  white-space: pre-line;
 }

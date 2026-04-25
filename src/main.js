@@ -166,41 +166,6 @@ window.updateBtnState = function(inputId, btnId) {
   btn.classList.toggle("btn-ghost", !hasValue);
 };
 
-// Adds the formatting toolbar behavior for the admin prize textarea.
-function setupPrizeFormatButtons(textareaId) {
-  const textarea = document.getElementById(textareaId);
-  if (!textarea) return;
-
-  const toolbar = textarea.previousElementSibling;
-  if (!toolbar || !toolbar.classList.contains("prize-format-toolbar")) return;
-
-  const buttons = toolbar.querySelectorAll(".prize-format-btn");
-  buttons.forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      const action = btn.dataset.action;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const selected = textarea.value.substring(start, end);
-      const before = textarea.value.substring(0, start);
-      const after = textarea.value.substring(end);
-
-      let inserted = "";
-      if (action === "bullet") {
-        inserted = selected ? `• ${selected}` : "• ";
-      } else if (action === "indent") {
-        inserted = selected ? `   - ${selected}` : "   - ";
-      } else if (action === "emphasis") {
-        inserted = selected ? `→ ${selected}` : "→ ";
-      }
-
-      textarea.value = before + inserted + after;
-      textarea.focus();
-      textarea.setSelectionRange(start + inserted.length, start + inserted.length);
-    });
-  });
-}
-
 // ══════════════════════════════════════════════════════
 // Competition helpers
 // Example on the website: deciding which competition is active and whether it has ended.
@@ -484,7 +449,6 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
   const ended = isCompEnded(comp);
   const days = daysRemaining(comp);
   const winner = comp.winner ? state.employees[comp.winner] : null;
-  const firstPrizeLine = (comp.prize || "").split("\n")[0].replace(/^[•→\-\s]+/, "").trim();
   const goalsHtml = getCompetitionGoalMarkup(compId);
   const hasGoals = !!goalsHtml;
   const countdownNum = ended ? "END" : (days !== null ? (days <= 0 ? "0" : String(days)) : "—");
@@ -502,7 +466,6 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
         <span class="${countdownClass}" style="${countdownStyle}">${countdownNum}</span>
         <span class="pick-countdown-label">${countdownLabel}</span>
       </div>
-      ${firstPrizeLine ? `<div class="pick-prize-pill">🎁 <span>${escapeHtml(firstPrizeLine.substring(0, 40) + (firstPrizeLine.length > 40 ? "…" : ""))}</span></div>` : ""}
     </div>
     ${hasGoals ? `
       <div class="pick-comp-goals" style="display:block">
@@ -882,7 +845,7 @@ function resetPickEmployeeSelection({ openGrid = false } = {}) {
 
   const selectorBtn = document.getElementById("pick-emp-selector");
   if (selectorBtn) {
-    selectorBtn.textContent = "Choose player...";
+    selectorBtn.textContent = "Choose player";
     selectorBtn.classList.remove("has-selection");
   }
 
@@ -1185,8 +1148,7 @@ function renderDash() {
   const winnerBanner = document.getElementById("winner-banner");
   if (winnerBanner) {
     if (!isProfileView && winner && state.employees[winner]) {
-      const prize = comp?.prize || "";
-      winnerBanner.innerHTML = `🏆 <strong>${escapeHtml(state.employees[winner].name)}</strong> won${prize ? ` — ${escapeHtml(prize)}` : ""}!`;
+      winnerBanner.innerHTML = `🏆 <strong>${escapeHtml(state.employees[winner].name)}</strong> won!`;
       winnerBanner.style.display = "block";
     } else {
       winnerBanner.style.display = "none";
@@ -1753,15 +1715,6 @@ function renderAdminComps(container) {
       <label class="field-label">NAME *</label>
       <input type="text" id="input-new-comp" class="log-input" placeholder="e.g.OIS Competition" style="margin-bottom:8px;" />
     </div>
-    <div style="margin-top:4px;">
-      <label class="field-label">PRIZES</label>
-      <div class="prize-format-toolbar">
-        <button type="button" class="prize-format-btn" data-action="bullet">• Bullet</button>
-        <button type="button" class="prize-format-btn" data-action="indent">   - Sub-item</button>
-        <button type="button" class="prize-format-btn" data-action="emphasis">→ Emphasis</button>
-      </div>
-      <textarea id="input-new-comp-prize" class="prize-textarea" placeholder="e.g. • $50 gift card&#10;   - Redeemable anytime&#10;• Extra shifts"></textarea>
-    </div>
     <div class="log-fields" style="margin-bottom:8px;">
       <div class="log-field-wrap">
         <label class="field-label">START DATE *</label>
@@ -1786,9 +1739,6 @@ function renderAdminComps(container) {
     toggleBtn.classList.toggle("expanded", isHidden);
   };
 
-  // Setup formatting buttons for new competition
-  setupPrizeFormatButtons("input-new-comp-prize");
-
   const checkReady = () => {
     const name = document.getElementById("input-new-comp")?.value.trim();
     const start = document.getElementById("input-new-comp-start")?.value;
@@ -1805,14 +1755,13 @@ function renderAdminComps(container) {
 
   document.getElementById("btn-add-comp").onclick = async () => {
     const name = document.getElementById("input-new-comp").value.trim();
-    const prize = document.getElementById("input-new-comp-prize").value.trim();
     const startDate = document.getElementById("input-new-comp-start").value;
     const endDate = document.getElementById("input-new-comp-end").value;
     if (!name || !startDate || !endDate) return;
     const id = `comp_${Date.now()}`;
-    await set(dbRef.comp(id), { name, prize, startDate, endDate, createdAt: Date.now(), status: "active" });
+    await set(dbRef.comp(id), { name, startDate, endDate, createdAt: Date.now(), status: "active" });
     showToast(`"${name}" created! 🏆`);
-    ["input-new-comp","input-new-comp-prize","input-new-comp-start","input-new-comp-end"].forEach(i => {
+    ["input-new-comp","input-new-comp-start","input-new-comp-end"].forEach(i => {
       const el = document.getElementById(i);
       if (el) el.value = "";
     });
@@ -1852,36 +1801,96 @@ function renderCompEditPanel(compId, comp) {
   editShell.className = "admin-edit-shell";
   content.appendChild(editShell);
 
-  const createEditGroup = (groupTitle, subtitle = "") => {
-    const group = document.createElement("section");
-    group.className = "admin-edit-group";
+  const isCompactEditLayout = () => window.matchMedia?.("(max-width: 640px)")?.matches;
+  const setCollapsibleState = (toggle, panel, expanded) => {
+    toggle.classList.toggle("expanded", expanded);
+    toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+    panel.hidden = !expanded;
+    const icon = toggle.querySelector(".collapsible-toggle-icon");
+    if (icon) icon.textContent = expanded ? "▲" : "▼";
+  };
+  const createCollapsiblePanel = ({
+    title,
+    subtitle = "",
+    className = "",
+    collapsedOnMobile = true,
+    collapsed = false,
+    onToggle = null,
+  }) => {
+    const wrapper = document.createElement("section");
+    wrapper.className = className;
 
-    const header = document.createElement("div");
-    header.className = "admin-edit-group-header";
-    header.innerHTML = `
-      <div class="admin-edit-group-title">${escapeHtml(groupTitle)}</div>
-      ${subtitle ? `<div class="admin-edit-group-sub">${escapeHtml(subtitle)}</div>` : ""}
+    const bodyId = `collapsible-${Math.random().toString(36).slice(2)}`;
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "collapsible-toggle admin-collapsible-toggle";
+    toggle.setAttribute("aria-controls", bodyId);
+    toggle.innerHTML = `
+      <span class="admin-collapsible-title-wrap">
+        <span class="admin-collapsible-title">${escapeHtml(title)}</span>
+        ${subtitle ? `<span class="admin-collapsible-sub">${escapeHtml(subtitle)}</span>` : ""}
+      </span>
+      <span class="collapsible-toggle-icon" aria-hidden="true">▼</span>
     `;
 
     const body = document.createElement("div");
-    body.className = "admin-edit-group-body";
+    body.id = bodyId;
+    body.className = "admin-collapsible-body";
 
-    group.appendChild(header);
-    group.appendChild(body);
+    const shouldCollapse = collapsed || (collapsedOnMobile && isCompactEditLayout());
+    setCollapsibleState(toggle, body, !shouldCollapse);
+    toggle.addEventListener("click", () => {
+      const nextExpanded = toggle.getAttribute("aria-expanded") !== "true";
+      setCollapsibleState(toggle, body, nextExpanded);
+      onToggle?.(nextExpanded, { toggle, body, wrapper });
+    });
+
+    wrapper.appendChild(toggle);
+    wrapper.appendChild(body);
+    return { wrapper, body, toggle };
+  };
+
+  const editGroupPanels = [];
+  const createEditGroup = (groupTitle, subtitle = "", options = {}) => {
+    const group = document.createElement("section");
+    group.className = "admin-edit-group";
+
+    const panel = createCollapsiblePanel({
+      title: groupTitle,
+      subtitle,
+      className: "admin-edit-group-collapsible",
+      collapsedOnMobile: options.collapsedOnMobile ?? true,
+      collapsed: options.collapsed ?? false,
+      onToggle: (expanded) => {
+        if (!expanded) return;
+        editGroupPanels.forEach((otherPanel) => {
+          if (otherPanel !== panel) {
+            setCollapsibleState(otherPanel.toggle, otherPanel.body, false);
+          }
+        });
+      },
+    });
+    const { body, wrapper } = panel;
+    body.classList.add("admin-edit-group-body");
+
+    editGroupPanels.push(panel);
+    group.appendChild(wrapper);
     editShell.appendChild(group);
     return body;
   };
 
-  const setupGroup = createEditGroup("Competition Setup", "Core details and current state");
-  const prizesGroup = createEditGroup("Prizes", "What players are working toward");
-  const goalsGroup = createEditGroup("Goals", "Competition target and daily pacing");
+  const setupGroup = createEditGroup("Competition Setup", "Core details and current state", {
+    collapsedOnMobile: false,
+  });
+  const goalsGroup = createEditGroup("Goals", "Competition target and daily pacing", {
+    collapsed: true,
+  });
 
   // Track original values and changes
   const originalValues = {
     name: comp.name,
     startDate: comp.startDate || "",
     endDate: comp.endDate || "",
-    prize: comp.prize || "",
     status: comp.status,
     competitionGoal: getCompGoals(compId).competition?.value || "",
   };
@@ -1992,22 +2001,6 @@ function renderCompEditPanel(compId, comp) {
   endDateInput?.addEventListener("input", updateDateRangeUI);
   updateDateRangeUI();
 
-  // Prize field with formatting toolbar
-  const prizeWrap = document.createElement("div");
-  prizeWrap.className = "admin-edit-field-stack";
-  prizeWrap.innerHTML = `
-    <label class="field-label">PRIZES</label>
-    <div class="prize-format-toolbar">
-      <button type="button" class="prize-format-btn" data-action="bullet">• Bullet</button>
-      <button type="button" class="prize-format-btn" data-action="indent">   - Sub-item</button>
-      <button type="button" class="prize-format-btn" data-action="emphasis">→ Emphasis</button>
-    </div>
-    <textarea id="comp-edit-prize" class="prize-textarea">${escapeHtml(comp.prize || "")}</textarea>
-  `;
-  prizesGroup.appendChild(prizeWrap);
-  setupPrizeFormatButtons("comp-edit-prize");
-  addChangeListener("comp-edit-prize", comp.prize || "");
-
   const setupMetaRow = document.createElement("div");
   setupMetaRow.className = "admin-edit-two-col";
   setupGroup.appendChild(setupMetaRow);
@@ -2042,12 +2035,33 @@ function renderCompEditPanel(compId, comp) {
   setupMetaRow.appendChild(winnerWrap);
 
   const compGoals = getCompGoals(compId);
+  const goalPanels = [];
+  const createGoalPanel = (options) => {
+    const panel = createCollapsiblePanel({
+      ...options,
+      onToggle: (expanded) => {
+        if (!expanded) return;
+        goalPanels.forEach((otherPanel) => {
+          if (otherPanel !== panel) {
+            setCollapsibleState(otherPanel.toggle, otherPanel.body, false);
+          }
+        });
+      },
+    });
+    goalPanels.push(panel);
+    return panel;
+  };
 
   // Competition Total Goal
   const compGoalSection = document.createElement("div");
   compGoalSection.className = "goal-admin-block";
-  compGoalSection.innerHTML = `
-    <div class="goal-admin-label">Competition Total Goal</div>
+  const compGoalPanel = createGoalPanel({
+    title: "Competition Total Goal",
+    className: "goal-admin-collapsible",
+    collapsedOnMobile: false,
+  });
+  compGoalSection.appendChild(compGoalPanel.wrapper);
+  compGoalPanel.body.innerHTML = `
     <div style="margin-top:8px;">
       <label class="field-label">TARGET</label>
       <label class="goal-day-input-shell goal-admin-input-shell" for="goal-val-competition">
@@ -2062,30 +2076,34 @@ function renderCompEditPanel(compId, comp) {
   // Daily Goals by Week
   const dailyGoalsSection = document.createElement("div");
   dailyGoalsSection.className = "goal-admin-block";
-  dailyGoalsSection.innerHTML = `<div class="goal-admin-label" style="margin-bottom:8px;">Daily Goals by Week</div>`;
+  const dailyGoalsPanel = createGoalPanel({
+    title: "Daily Goals by Week",
+    className: "goal-admin-collapsible",
+    collapsed: true,
+  });
+  dailyGoalsSection.appendChild(dailyGoalsPanel.wrapper);
   goalsGroup.appendChild(dailyGoalsSection);
 
   const weekPickerWrap = document.createElement("div");
   weekPickerWrap.className = "daily-goal-week-picker-wrap";
   weekPickerWrap.innerHTML = `
     <label class="field-label">SELECT WEEK</label>
-    <div class="daily-goal-week-shell">
-      <div class="daily-goal-week-heading-row">
-        <span class="daily-goal-week-caption">Week Of</span>
-      </div>
+    <div class="daily-goal-week-controls">
+      <button type="button" class="week-nav-btn" id="daily-goal-prev-week-btn">←</button>
       <label class="daily-goal-week-input-wrap" for="daily-goal-week-picker">
         <div class="daily-goal-week-display" id="daily-goal-week-display"></div>
         <input type="date" id="daily-goal-week-picker" class="daily-goal-week-picker-native" value="${comp.startDate || ""}" min="${comp.startDate || ""}" max="${comp.endDate || ""}" />
       </label>
+      <button type="button" class="week-nav-btn" id="daily-goal-next-week-btn">→</button>
     </div>
   `;
-  dailyGoalsSection.appendChild(weekPickerWrap);
+  dailyGoalsPanel.body.appendChild(weekPickerWrap);
 
   const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const dailyGoalsGrid = document.createElement("div");
   dailyGoalsGrid.id = "daily-goals-grid";
   dailyGoalsGrid.style.marginTop = "12px";
-  dailyGoalsSection.appendChild(dailyGoalsGrid);
+  dailyGoalsPanel.body.appendChild(dailyGoalsGrid);
 
   const clampCompetitionDate = (dateStr) => {
     if (!dateStr) return comp.startDate || comp.endDate || getTodayDate();
@@ -2153,6 +2171,8 @@ function renderCompEditPanel(compId, comp) {
 
   const weekPicker = document.getElementById("daily-goal-week-picker");
   weekPicker.onchange = () => renderDailyGoalsForWeek(weekPicker.value);
+  document.getElementById("daily-goal-prev-week-btn").onclick = () => renderDailyGoalsForWeek(prevWeek(weekPicker.value));
+  document.getElementById("daily-goal-next-week-btn").onclick = () => renderDailyGoalsForWeek(nextWeek(weekPicker.value));
   renderDailyGoalsForWeek(clampCompetitionDate(comp.startDate || getTodayDate()));
 
   // ═══ Save All Button ═══
@@ -2160,7 +2180,6 @@ function renderCompEditPanel(compId, comp) {
     // Save competition details
     await update(dbRef.comp(compId), {
       name: document.getElementById("comp-edit-name").value.trim() || comp.name,
-      prize: document.getElementById("comp-edit-prize").value.trim(),
       startDate: document.getElementById("comp-edit-startDate").value,
       endDate: document.getElementById("comp-edit-endDate").value,
       status: document.getElementById("comp-edit-status").value,
@@ -2695,13 +2714,13 @@ function refreshAdminDayView() {
         <div class="admin-log-player-name">${escapeHtml(emp.name)}</div>
         <div class="admin-log-player-meta">${log ? `$${log.sales.toFixed(0)} · ${log.hours.toFixed(1)} hrs` : "No log yet"}</div>
       </div>
-      ${log ? '<div class="admin-log-player-badge logged">Logged</div>' : ""}
+      ${log ? '<div class="admin-log-player-badge edit">Edit</div>' : '<div class="admin-log-player-badge open">Add</div>'}
     `;
     btn.onclick = () => {
       state.admin.selectedEmp = id;
       document.querySelectorAll("#admin-logs-player-list .admin-log-player-card").forEach(card => card.classList.remove("active"));
       btn.classList.add("active");
-      if (log) renderAdminLogDetail(id, compId, selectedDate, log);
+      if (log) renderAdminLogEdit(id, compId, selectedDate, log);
       else renderAdminLogCreate(id, compId, selectedDate);
       document.getElementById("admin-logs-detail")?.scrollIntoView({ behavior: "smooth", block: "start" });
     };
@@ -2713,7 +2732,7 @@ function refreshAdminDayView() {
     loggedSection.className = "admin-log-player-section";
     loggedSection.innerHTML = `
       <div class="admin-log-player-section-header">
-        <div class="admin-log-player-section-title">Logged Today</div>
+        <div class="admin-log-player-section-title">Orders Today</div>
         <div class="admin-log-player-section-count">${loggedPlayers.length}</div>
       </div>
     `;
@@ -2753,7 +2772,7 @@ function refreshAdminDayView() {
     return;
   }
   if (selectedPlayer.log) {
-    renderAdminLogDetail(selectedPlayer.id, compId, selectedDate, selectedPlayer.log);
+    renderAdminLogEdit(selectedPlayer.id, compId, selectedDate, selectedPlayer.log);
   } else {
     renderAdminLogCreate(selectedPlayer.id, compId, selectedDate);
   }
@@ -3040,6 +3059,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       empGrid.classList.toggle("hidden");
       if (isOpening) {
         renderPickEmpGrid();
+        document.getElementById("pick-emp-search")?.focus();
       }
     };
   }

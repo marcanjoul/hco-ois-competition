@@ -128,13 +128,11 @@ Website examples:
   - `.pick-comp-name`
   - `.pick-comp-dates`
   - `.pick-countdown`
-  - `.pick-prize-pill`
 
 Website examples:
 
 - Competition title
 - `DAYS LEFT`
-- Prize pill with gift icon
 
 ### Change the player picker area
 
