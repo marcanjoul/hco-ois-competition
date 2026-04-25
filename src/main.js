@@ -620,7 +620,7 @@ function renderPickDayRow() {
     if (isFutureDate) classes.push("disabled");
     const btn = document.createElement("button");
     btn.className = classes.join(" ");
-    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark">✓</div>' : ''}`;
+    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>`;
 
     if (!isFutureDate) {
       btn.onclick = () => {
@@ -1237,7 +1237,7 @@ function renderDash() {
     if (isFutureDate) classes.push("disabled");
     const btn = document.createElement("button");
     btn.className = classes.join(" ");
-    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasEntry ? '<div class="day-btn-checkmark">✓</div>' : ''}`;
+    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>`;
 
     if (!isFutureDate) {
       btn.onclick = () => { state.selectedDate = dayInfo.date; renderDash(); };
