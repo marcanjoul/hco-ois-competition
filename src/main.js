@@ -167,12 +167,10 @@ function getAvatarHtml(emp, size = "", empId = "") {
 }
 
 function getBoardAvatarHtml(emp, playerId, displayRank) {
-  const medal = displayRank === 1 ? "🥇" : displayRank === 2 ? "🥈" : displayRank === 3 ? "🥉" : "";
   return `
     <div class="board-avatar-stack${displayRank === 1 ? " rank-1" : ""}">
       ${displayRank === 1 ? `<div class="board-avatar-crown"><img class="board-avatar-crown-icon" src="${CROWN_ICON_URL}" alt="Top player crown" /></div>` : ""}
       ${getAvatarHtml(emp || { name: playerId }, "board", playerId)}
-      ${medal ? `<div class="board-avatar-medal">${medal}</div>` : ""}
     </div>
   `;
 }
