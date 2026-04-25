@@ -125,9 +125,10 @@
 }
 
 .dash-profile-avatar .board-avatar-crown {
-  top: 0;
-  right: -8px;
-  font-size: 50px;
+  top: -21px;
+  right: -18px;
+  width: 54px;
+  height: 54px;
 }
 
 .dash-profile-avatar .board-avatar-medal {

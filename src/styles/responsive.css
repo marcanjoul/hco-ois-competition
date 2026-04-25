@@ -196,9 +196,10 @@
   }
 
   .board-avatar-crown {
-    font-size: 22px;
-    top: 2px;
-    right: -2px;
+    width: 24px;
+    height: 24px;
+    top: -7px;
+    right: -7px;
   }
 
   .board-avatar-medal {
@@ -493,9 +494,10 @@
   }
 
   .board-avatar-crown {
-    font-size: 18px;
-    top: 1px;
-    right: -2px;
+    width: 20px;
+    height: 20px;
+    top: -6px;
+    right: -7px;
   }
 
   .board-avatar-medal {
