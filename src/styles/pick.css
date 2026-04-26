@@ -152,14 +152,148 @@
 }
 
 .pick-countdown {
-  display: inline-flex;
-  align-items: flex-end;
-  gap: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   padding: 6px 9px;
   border-radius: var(--radius-sm);
   background: linear-gradient(180deg, rgba(26,111,244,0.12) 0%, rgba(26,111,244,0.05) 100%);
   border: 1px solid rgba(26,111,244,0.14);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+}
+
+.pick-countdown-copy {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pick-countdown-kicker,
+.pick-countdown-end {
+  font-family: var(--type-label-family);
+  font-size: 9px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 1px;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+
+.pick-countdown-end {
+  color: var(--text2);
+}
+
+.pick-countdown-status {
+  font-family: var(--type-label-family);
+  font-size: 10px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.pick-countdown-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.pick-countdown-ticker {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: var(--type-label-family);
+  font-size: 8px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 1px;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+
+.pick-countdown-ticker span {
+  display: inline-block;
+  padding-right: 18px;
+}
+
+.pick-countdown-days {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.pick-countdown-day {
+  min-width: 36px;
+  padding: 5px 6px;
+  border-radius: var(--radius-xs);
+  background: rgba(26,111,244,0.08);
+  border: 1px solid rgba(26,111,244,0.12);
+  text-align: center;
+  color: var(--text2);
+}
+
+.pick-countdown-day-name,
+.pick-countdown-day-num {
+  display: block;
+}
+
+.pick-countdown-day-name {
+  font-family: var(--type-label-family);
+  font-size: 8px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.pick-countdown-day-num {
+  font-family: var(--type-subheading-family);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.pick-countdown-day.past {
+  opacity: 0.38;
+}
+
+.pick-countdown-day.today {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(26,111,244,0.14);
+}
+
+.pick-countdown-track {
+  position: relative;
+  height: 30px;
+  border-radius: 99px;
+  background: rgba(26,111,244,0.12);
+  overflow: hidden;
+}
+
+.pick-countdown-track-label {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  font-family: var(--type-label-family);
+  font-size: 8px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 0.8px;
+  color: var(--text3);
+}
+
+.pick-countdown-track-label.start { left: 10px; }
+.pick-countdown-track-label.finish { right: 10px; }
+
+.pick-countdown-runner {
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--accent);
+  box-shadow: 0 4px 12px rgba(26,111,244,0.22);
 }
 
 .pick-countdown-num {
@@ -187,6 +321,49 @@
   color: var(--text2);
   text-transform: uppercase;
   margin-bottom: 3px;
+}
+
+.pick-countdown-meter {
+  position: relative;
+  height: 8px;
+  width: 100%;
+  border-radius: 99px;
+  overflow: hidden;
+  background: rgba(26,111,244,0.12);
+  box-shadow: inset 0 1px 2px rgba(15,25,35,0.08);
+}
+
+.pick-countdown-meter-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 0.7s cubic-bezier(0.34,1.2,0.64,1);
+}
+
+.pick-comp-days-left {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 2px 0 8px;
+}
+
+.pick-comp-days-num {
+  font-family: var(--type-display-family);
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.pick-comp-days-label {
+  font-family: var(--type-label-family);
+  font-size: 11px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text2);
 }
 
 /* Goal bars — collapsible section */
@@ -1187,51 +1364,75 @@ select.log-input:focus { background-color: var(--surface); }
   margin-top: 12px;
 }
 
-.goal-progress-top {
+.goal-progress-top,
+.goal-meter-row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: stretch;
   gap: var(--space-3);
   margin-bottom: 0;
 }
 
 .goal-progress-copy {
   display: flex;
-  flex-direction: column;
-  gap: 0;
+  justify-content: flex-end;
+  align-items: baseline;
   min-width: 0;
 }
 
 .goal-current {
+  position: relative;
+  z-index: 2;
   font-family: var(--type-display-family);
-  font-size: 44px;
-  line-height: 0.95;
-  letter-spacing: 0.5px;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: 0.4px;
   color: #162435;
+  text-shadow: none;
+  white-space: normal;
 }
 .goal-current.goal-hit {
   color: #25a95c;
-  text-shadow: 0 10px 22px rgba(63,185,80,0.16);
+  text-shadow: none;
 }
 
-.goal-percent {
+.goal-percent,
+.goal-target {
   align-self: center;
   flex-shrink: 0;
-  min-width: 62px;
-  padding: 8px 10px;
-  border-radius: 999px;
-  background: rgba(26,111,244,0.10);
-  color: var(--accent);
+  min-width: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #55718f;
+  font-family: var(--type-label-family);
+  font-size: 11px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 1px;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.goal-percent-hit,
+.goal-target-hit {
+  background: rgba(63,185,80,0.14);
+  color: var(--green);
+}
+
+.goal-percent-inline {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--type-label-family);
   font-size: 12px;
   font-weight: var(--type-label-weight);
-  letter-spacing: 1.4px;
-  text-align: center;
-}
-
-.goal-percent-hit {
-  background: rgba(63,185,80,0.14);
-  color: var(--green);
+  letter-spacing: 1px;
+  color: #162435;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.35);
+  pointer-events: none;
 }
 
 .goal-hype {
@@ -1247,7 +1448,7 @@ select.log-input:focus { background-color: var(--surface); }
 
 .goal-bar-bg {
   position: relative;
-  height: 12px;
+  height: 16px;
   background: linear-gradient(180deg, rgba(222,232,245,0.95) 0%, rgba(232,240,250,0.85) 100%);
   border-radius: 999px;
   overflow: hidden;
@@ -1255,29 +1456,16 @@ select.log-input:focus { background-color: var(--surface); }
 }
 
 .goal-bar-fill {
-  position: relative;
+  position: absolute;
+  inset: 0 auto 0 0;
   height: 100%;
-  background: linear-gradient(90deg, #2b7cff 0%, #55b7ff 100%);
+  background: linear-gradient(90deg, #9af45b 0%, #45a748 100%);
   border-radius: 999px;
   transition: width 0.7s cubic-bezier(0.34,1.2,0.64,1);
-  box-shadow: 0 6px 14px rgba(26,111,244,0.24);
-}
-
-.goal-bar-fill::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.55) 55%, rgba(255,255,255,0.0) 100%);
-  transform: translateX(-100%);
-  animation: goal-shimmer 2.8s ease-in-out infinite;
+  box-shadow: none;
 }
 
 .goal-bar-fill.goal-hit-bar {
   background: linear-gradient(90deg, #32b851 0%, #3fd49a 100%);
   box-shadow: 0 6px 14px rgba(63,185,80,0.24);
-}
-
-@keyframes goal-shimmer {
-  0%, 100% { transform: translateX(-100%); }
-  55% { transform: translateX(120%); }
 }

@@ -252,6 +252,7 @@ body::after {
 .pick-winner-row,
 .pick-goals-toggle,
 .goal-percent,
+.goal-target,
 .status-badge,
 .admin-log-header-badge {
   border-radius: 0 !important;
@@ -305,12 +306,43 @@ body::after {
 .pick-comp-goals {
   border-top-color: #ffd84d !important;
   background:
-    linear-gradient(180deg, rgba(225, 255, 77, 0.858), rgba(245, 192, 31, 0.825)) !important;
+    linear-gradient(180deg, rgba(7, 18, 47, 0.92), rgba(5, 8, 22, 0.72)) !important;
+}
+
+.goal-progress-copy {
+  justify-content: flex-end;
+}
+
+.goal-percent-inline {
+  color: #47d7ff;
+  font-family: "Press Start 2P", monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0 #050816;
+}
+
+.goal-target {
+  color: #47d7ff;
+  background: transparent;
+  border: 0 !important;
+  font-family: "VT323", monospace;
+  font-size: 18px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 #050816;
+}
+
+.goal-target-hit {
+  color: #52ff98;
+  background: transparent;
+  border-color: transparent !important;
 }
 
 .goal-current {
-  color: var(--accent) !important;
-  text-shadow: 4px 4px 0 #8e5f00;
+  font-size: 16px !important;
+  color: #ffd84d !important;
+  text-align: right;
+  text-shadow: 2px 2px 0 #050816 !important;
 }
 
 .goal-current.goal-hit {
@@ -319,9 +351,10 @@ body::after {
 }
 
 .goal-hype {
-  color: #d8e7ff !important;
-  font-size: 20px !important;
+  color: #8ad7ff !important;
+  font-size: 18px !important;
   line-height: 1.15;
+  text-shadow: 2px 2px 0 #050816;
 }
 
 .goal-hype-hit {
@@ -337,16 +370,20 @@ body::after {
 }
 
 .goal-bar-bg {
+  height: 26px;
   background:
-    repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0 14px, transparent 14px 18px),
+    repeating-linear-gradient(90deg, rgba(71, 215, 255, 0.1) 0 16px, transparent 16px 22px),
     #07122f;
-  border: 3px solid #2348b3;
+  border: 3px solid #2348b3 !important;
+  box-shadow:
+    inset 0 0 0 2px #050816,
+    0 0 12px rgba(71, 215, 255, 0.12) !important;
 }
 
 .goal-bar-fill {
   background:
-    repeating-linear-gradient(90deg, #ffd84d 0 16px, #f6bf1f 16px 22px);
-  box-shadow: 0 0 18px rgba(255, 216, 77, 0.3);
+    repeating-linear-gradient(90deg, #ffd84d 0 18px, #f6bf1f 18px 24px);
+  box-shadow: 0 0 16px rgba(255, 216, 77, 0.22);
 }
 
 .goal-hit-bar {
@@ -1213,6 +1250,17 @@ body::after {
   margin-top: 16px;
 }
 
+#screen-admin .admin-tab-content {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+#screen-admin .admin-tab-content::after {
+  content: none !important;
+  display: none !important;
+}
+
 .admin-tab-btn {
   font-size: 10px !important;
   letter-spacing: 1px !important;
@@ -1456,7 +1504,14 @@ body::after {
   }
 
   .goal-current {
-    font-size: 24px;
+    font-size: 12px !important;
+  }
+
+  .goal-target {
+    min-width: 0;
+    padding: 0;
+    font-size: 9px;
+    letter-spacing: 0.8px;
   }
 
   .goal-percent {
@@ -1470,7 +1525,7 @@ body::after {
   }
 
   .goal-bar-bg {
-    height: 10px;
+    height: 18px;
   }
 
   .admin-date-input {
@@ -2043,8 +2098,7 @@ body::after {
 .stat-value,
 .board-sph,
 .board-rank,
-.pick-success-stat-value,
-.goal-current {
+.pick-success-stat-value {
   text-shadow:
     2px 2px 0 #ff8f1a,
     4px 4px 0 #050816,
@@ -2386,7 +2440,7 @@ button.btn-disabled:hover,
 
 #screen-pick .pick-comp-name,
 #screen-pick .pick-comp-dates,
-#screen-pick .pick-comp-hero-row,
+#screen-pick .pick-comp-days-left,
 #screen-pick .pick-comp-goals,
 #screen-pick .pick-winner-row {
   position: relative;
@@ -2404,66 +2458,26 @@ button.btn-disabled:hover,
   filter: none !important;
 }
 
-#screen-pick .pick-countdown {
-  background:
-    linear-gradient(180deg, rgba(71, 215, 255, 0.1), rgba(3, 7, 22, 0.18)) !important;
-  border: 3px solid rgba(71, 215, 255, 0.72) !important;
-  box-shadow:
-    inset 0 0 0 3px #050816,
-    0 0 16px rgba(71, 215, 255, 0.14) !important;
-  min-width: min(100%, 340px);
-  width: min(100%, 340px);
-  padding: 12px 16px 22px;
-  gap: 16px;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+/* ── MAZE: DAYS LEFT ── */
+
+#screen-pick .pick-comp-days-left {
+  gap: 8px;
+  padding: 0 0 8px;
 }
 
-#screen-pick .pick-countdown::before {
-  content: "";
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 9px;
-  height: 6px;
-  background:
-    repeating-linear-gradient(90deg, #ffd84d 0 20px, #ff9a3c 20px 28px, transparent 28px 34px),
-    rgba(71, 215, 255, 0.16);
-  box-shadow:
-    0 0 8px rgba(255, 216, 77, 0.24),
-    0 0 0 2px #050816;
+#screen-pick .pick-comp-days-num {
+  font-family: "Press Start 2P", monospace;
+  font-size: 36px;
+  line-height: 1;
+  text-shadow: 2px 2px 0 #050816;
 }
 
-#screen-pick .pick-countdown::after {
-  content: "";
-  position: absolute;
-  left: 16px;
-  right: auto;
-  bottom: 7px;
-  width: 9px;
-  height: 10px;
-  background:
-    linear-gradient(180deg, #fff2a8, #ffd84d);
-  box-shadow:
-    0 0 10px rgba(255, 216, 77, 0.36),
-    2px 2px 0 #050816;
-}
-
-#screen-pick .pick-countdown-num {
-  min-width: 0;
-  text-shadow:
-    4px 4px 0 #050816,
-    0 0 16px rgba(255, 216, 77, 0.28) !important;
-  filter: none !important;
-  color: #ffd84d !important;
-}
-
-#screen-pick .pick-countdown-label {
-  max-width: none;
-  padding-top: 0;
-  border-top: 0;
+#screen-pick .pick-comp-days-label {
+  font-family: "VT323", monospace;
+  font-size: 22px;
   letter-spacing: 2px;
-  color: #47d7ff !important;
-  text-shadow: none !important;
+  line-height: 1;
+  margin-bottom: 3px;
+  color: var(--text2);
+  text-shadow: none;
 }

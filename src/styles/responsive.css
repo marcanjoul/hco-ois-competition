@@ -364,8 +364,8 @@
   }
 
   .goal-current {
-    font-size: clamp(1.35rem, 6vw, 1.75rem);
-    line-height: 0.92;
+    font-size: clamp(0.95rem, 4.2vw, 1.2rem);
+    line-height: 1;
   }
 
   .goal-percent {
@@ -381,7 +381,14 @@
   }
 
   .goal-bar-bg {
-    height: 8px;
+    height: 12px;
+  }
+
+  .goal-target {
+    min-width: 0;
+    padding: 0;
+    font-size: 9px;
+    letter-spacing: 0.7px;
   }
 
   .pick-inner {
@@ -666,7 +673,7 @@
   }
 
   .goal-current {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .goal-hype {
@@ -685,6 +692,12 @@
   .goal-percent {
     min-width: 56px;
     padding: 7px 8px;
+    font-size: 11px;
+  }
+
+  .goal-target {
+    min-width: 0;
+    padding: 0;
     font-size: 11px;
   }
 
