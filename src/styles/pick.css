@@ -1384,7 +1384,7 @@ select.log-input:focus { background-color: var(--surface); }
   position: relative;
   z-index: 2;
   font-family: var(--type-display-family);
-  font-size: 24px;
+  font-size: 18px;
   line-height: 1;
   letter-spacing: 0.4px;
   color: #162435;
