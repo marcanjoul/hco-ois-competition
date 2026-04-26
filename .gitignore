@@ -15,9 +15,6 @@ dist
 dist-ssr
 *.local
 
-# Project-local notes
-src/README-styling.md
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -28,3 +25,6 @@ src/README-styling.md
 *.njsproj
 *.sln
 *.sw?
+
+#MD Files
+src/styling.md
