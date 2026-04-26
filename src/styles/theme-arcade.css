@@ -350,19 +350,6 @@ body::after {
   text-shadow: 4px 4px 0 #145a34;
 }
 
-.goal-hype {
-  color: #8ad7ff !important;
-  font-size: 18px !important;
-  line-height: 1.15;
-  text-shadow: 2px 2px 0 #050816;
-}
-
-.goal-hype-hit {
-  background: transparent !important;
-  border-color: transparent !important;
-  color: #52ff98 !important;
-}
-
 .goal-bar-bg,
 .goal-bar-fill,
 .goal-hit-bar {
@@ -750,7 +737,7 @@ body::after {
 
 #pick-emp-list .board-avatar-stack.rank-1,
 #name-grid .board-avatar-stack.rank-1 {
-  padding-top: 9px;
+  padding-top: 11px;
 }
 
 #pick-emp-list .avatar-board,
@@ -762,10 +749,11 @@ body::after {
 
 #pick-emp-list .board-avatar-crown,
 #name-grid .board-avatar-crown {
-  top: -6px;
-  right: -5px;
-  width: 17px;
-  height: 17px;
+  top: -4px;
+  left: 50%;
+  right: auto;
+  width: 16px;
+  height: 16px;
 }
 
 #pick-emp-list .board-avatar-medal,
@@ -861,7 +849,6 @@ body::after {
 }
 
 .stat-card.accent,
-.board-card.rank-1,
 .winner-banner,
 .pick-success-state.visible {
   background:
@@ -1504,7 +1491,8 @@ body::after {
   }
 
   .goal-current {
-    font-size: 12px !important;
+    font-size: 9px !important;
+    letter-spacing: 0;
   }
 
   .goal-target {
@@ -1518,10 +1506,6 @@ body::after {
     min-width: 54px;
     padding: 6px 8px;
     font-size: 10px;
-  }
-
-  .goal-hype {
-    font-size: 12px !important;
   }
 
   .goal-bar-bg {
@@ -1691,7 +1675,7 @@ body::after {
 
   #pick-emp-list .board-avatar-stack.rank-1,
   #name-grid .board-avatar-stack.rank-1 {
-    padding-top: 8px;
+    padding-top: 10px;
   }
 
   #pick-emp-list .avatar-board,
@@ -1703,10 +1687,11 @@ body::after {
 
   #pick-emp-list .board-avatar-crown,
   #name-grid .board-avatar-crown {
-    top: -5px;
-    right: -5px;
-    width: 16px;
-    height: 16px;
+    top: -3px;
+    left: 50%;
+    right: auto;
+    width: 14px;
+    height: 14px;
   }
 
   #pick-emp-list .board-avatar-medal,
@@ -2383,12 +2368,13 @@ button.btn-disabled:hover,
 }
 
 .board-card.rank-1 {
-  border-color: var(--power-pellet) !important;
+  border-color: var(--maze-blue-bright) !important;
   box-shadow:
     0 0 0 4px #07102d,
-    0 0 0 7px rgba(255, 216, 77, 0.86),
+    0 0 0 7px var(--maze-blue),
     8px 8px 0 rgba(0, 0, 0, 0.62),
-    0 0 24px rgba(255, 216, 77, 0.26) !important;
+    0 0 24px rgba(71, 215, 255, 0.18),
+    0 0 18px rgba(255, 216, 77, 0.10) !important;
 }
 
 .board-card.rank-1::before {

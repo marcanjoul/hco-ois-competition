@@ -437,49 +437,6 @@ function getTodaySph(empId, compId) {
   return { total: log.sales || 0, hours: log.hours || 0, sph: log.hours > 0 ? (log.sales / log.hours) : 0 };
 }
 
-function pickGoalHype(current, target, pct, isHit) {
-  const remaining = Math.max(0, target - current);
-  const roundedRemaining = `$${remaining.toFixed(0)}`;
-  const pools = isHit
-    ? [
-        "Goal CLEARED. Y'all are cooking!",
-        "Okayyyy this goal got smoked.",
-        "Ate that goal UP.",
-        "Started from the bottom now WE HERE."
-      ]
-    : pct >= 85
-      ? [
-          `So close. ${roundedRemaining} more and it's OURS.`,
-          `${roundedRemaining} left. Finish the job.`,
-          `Locked in guys! Just ${roundedRemaining} to go!`,
-          `${roundedRemaining} more and this goal is DONE.`
-        ]
-      : pct >= 50
-        ? [
-            "Halfway there. Momentum is looking real nice.",
-            "You're in your bag now. Keep stacking.",
-            "This is a strong run. Don't let up.",
-            "Mid-game heat. A few more orders and we got this!"
-          ]
-        : pct > 0
-          ? [
-              "Let's go guys!",
-              "Let's get these orders IN.",
-              "Keep the pressure ON guys.",
-              "We're... getting there..."
-            ]
-          : [
-              "No pressure, but lets get an order in.",
-              "Fresh slate. Time to start a run.",
-              "First order energy starts NOW.",
-              "Lock in and let's get this bar moving."
-            ];
-
-  const seed = `${target}|${current.toFixed(2)}|${Math.round(pct)}|${isHit}`;
-  const hash = Array.from(seed).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return pools[hash % pools.length];
-}
-
 function renderGoalBar(current, target, type) {
   const pct = Math.min(100, target > 0 ? (current / target) * 100 : 0);
   const isHit = current >= target;
@@ -487,7 +444,6 @@ function renderGoalBar(current, target, type) {
   const targetLabel = type === "sph" ? `$${target.toFixed(2)}/hr` : `$${target.toFixed(2)}`;
   const progressLabel = `${label} / ${targetLabel}`;
   const percentLabel = `${Math.round(pct)}%`;
-  const hype = pickGoalHype(current, target, pct, isHit);
   return `
     <div class="goal-progress">
       <div class="goal-progress-copy">
@@ -497,7 +453,6 @@ function renderGoalBar(current, target, type) {
         <div class="goal-bar-fill${isHit ? " goal-hit-bar" : ""}" style="width:${pct}%"></div>
         <span class="goal-percent-inline">${percentLabel}</span>
       </div>
-      <div class="goal-hype${isHit ? " goal-hype-hit" : ""}">${hype}</div>
     </div>
   `;
 }

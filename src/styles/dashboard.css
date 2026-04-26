@@ -115,7 +115,7 @@
 }
 
 .dash-profile-avatar .board-avatar-stack.rank-1 {
-  padding-top: 32px;
+  padding-top: 38px;
 }
 
 .dash-profile-avatar .avatar-board {
@@ -125,10 +125,11 @@
 }
 
 .dash-profile-avatar .board-avatar-crown {
-  top: -21px;
-  right: -18px;
-  width: 54px;
-  height: 54px;
+  top: -10px;
+  left: 50%;
+  right: auto;
+  width: 44px;
+  height: 44px;
 }
 
 .dash-profile-avatar .board-avatar-medal {
