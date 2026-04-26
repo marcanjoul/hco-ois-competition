@@ -379,14 +379,14 @@
 
 .board-sph {
   font-family: var(--type-display-family);
-  font-size: 24px;
+  font-size: 17px;
   letter-spacing: 1px;
   text-align: right;
   flex-shrink: 0;
   line-height: 1;
   color: var(--text);
 }
-.board-card.rank-1 .board-sph { font-size: 30px; color: var(--gold); }
+.board-card.rank-1 .board-sph { font-size: 20px; color: var(--gold); }
 
 .board-sph-label {
   font-family: var(--type-label-family);

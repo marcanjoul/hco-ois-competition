@@ -247,11 +247,11 @@
   }
 
   .board-sph {
-    font-size: 16px;
+    font-size: 12px;
   }
 
   .board-card.rank-1 .board-sph {
-    font-size: 22px;
+    font-size: 15px;
   }
 
   .board-sph-label {
@@ -541,11 +541,11 @@
   }
 
   .board-sph {
-    font-size: 13px;
+    font-size: 11px;
   }
 
   .board-card.rank-1 .board-sph {
-    font-size: 19px;
+    font-size: 13px;
   }
 
   .board-sph-label {
@@ -673,7 +673,7 @@
   }
 
   .goal-current {
-    font-size: 22px;
+    font-size: 14px;
   }
 
   .goal-hype {

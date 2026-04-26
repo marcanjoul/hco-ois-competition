@@ -47,6 +47,7 @@ let state = {
   currentScreen: "welcome",
   adminUnlocked: false,
   searchDebounceTimer: null,
+  endedRevealDismissedCompId: null,
   admin: {
     showAllComps: false,
     showAllEmps: false,
@@ -214,6 +215,13 @@ function getActiveComp() {
   return entries[0]?.[0] || null;
 }
 
+function getLatestEndedCompId() {
+  const entries = Object.entries(state.competitions)
+    .filter(([, c]) => isCompEnded(c))
+    .sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0));
+  return entries[0]?.[0] || null;
+}
+
 async function checkAndAutoCloseComps() {
   for (const [id, comp] of Object.entries(state.competitions)) {
     if (!comp.winner && isCompEnded(comp)) {
@@ -353,6 +361,10 @@ function startListeners() {
   onValue(dbRef.comps(), snap => {
     state.competitions = snap.val() || {};
     state.currentComp = getActiveComp();
+    if (state.currentComp) {
+      state.endedRevealDismissedCompId = null;
+      document.getElementById("competition-ended-modal")?.classList.remove("active");
+    }
     if (!state.boardComp) state.boardComp = state.currentComp;
     // Reset boardComp if the competition was deleted
     if (state.boardComp && !state.competitions[state.boardComp]) {
@@ -471,8 +483,8 @@ function pickGoalHype(current, target, pct, isHit) {
 function renderGoalBar(current, target, type) {
   const pct = Math.min(100, target > 0 ? (current / target) * 100 : 0);
   const isHit = current >= target;
-  const label = type === "sph" ? `$${current.toFixed(0)}/hr` : `$${current.toFixed(0)}`;
-  const targetLabel = type === "sph" ? `$${target.toFixed(0)}/hr` : `$${target.toFixed(0)}`;
+  const label = type === "sph" ? `$${current.toFixed(2)}/hr` : `$${current.toFixed(2)}`;
+  const targetLabel = type === "sph" ? `$${target.toFixed(2)}/hr` : `$${target.toFixed(2)}`;
   const progressLabel = `${label} / ${targetLabel}`;
   const percentLabel = `${Math.round(pct)}%`;
   const hype = pickGoalHype(current, target, pct, isHit);
@@ -630,8 +642,8 @@ async function logEntryFromPick() {
   if (successStats) {
     const rankDisplay = rank > 0 ? `#${rank}` : "—";
     successStats.innerHTML = `
-      <div class="pick-success-stat"><div class="pick-success-stat-label">SALES</div><div class="pick-success-stat-value">$${sales.toFixed(0)}</div></div>
-      <div class="pick-success-stat"><div class="pick-success-stat-label">$/HR</div><div class="pick-success-stat-value pick-success-stat-accent">$${sph.toFixed(0)}</div></div>
+      <div class="pick-success-stat"><div class="pick-success-stat-label">SALES</div><div class="pick-success-stat-value">$${sales.toFixed(2)}</div></div>
+      <div class="pick-success-stat"><div class="pick-success-stat-label">$/HR</div><div class="pick-success-stat-value pick-success-stat-accent">$${sph.toFixed(2)}</div></div>
       <div class="pick-success-stat"><div class="pick-success-stat-label">RANK</div><div class="pick-success-stat-value pick-success-stat-gold">${rankDisplay}</div></div>
     `;
   }
@@ -752,6 +764,7 @@ function renderPickScreen(filterText = "") {
     if (noCompsMsg) noCompsMsg.classList.remove("hidden");
     const logCard = document.getElementById("pick-log-card");
     if (logCard) logCard.style.display = "none";
+    if (state.currentScreen === "pick") maybeShowCompetitionEndedModal();
     return;
   } else if (compInfo && state.currentComp) {
     const logCard = document.getElementById("pick-log-card");
@@ -1175,11 +1188,11 @@ function renderDash() {
             <div class="dash-profile-stats">
               <div class="dash-profile-stat">
                 <div class="dash-profile-stat-label">Sales/Hr</div>
-                <div class="dash-profile-stat-value">$${sph.toFixed(0)}</div>
+                <div class="dash-profile-stat-value">$${sph.toFixed(2)}</div>
               </div>
               <div class="dash-profile-stat">
                 <div class="dash-profile-stat-label">Total Sales</div>
-                <div class="dash-profile-stat-value">$${totalSales.toFixed(0)}</div>
+                <div class="dash-profile-stat-value">$${totalSales.toFixed(2)}</div>
               </div>
               <div class="dash-profile-stat">
                 <div class="dash-profile-stat-label">Hours Worked</div>
@@ -1214,8 +1227,8 @@ function renderDash() {
     statRow.style.display = compHasLogs && !isProfileView ? "grid" : "none";
 
     if (compHasLogs) {
-      document.getElementById("stat-sph").textContent   = `$${sph.toFixed(0)}`;
-      document.getElementById("stat-total").textContent = `$${totalSales.toFixed(0)}`;
+      document.getElementById("stat-sph").textContent   = `$${sph.toFixed(2)}`;
+      document.getElementById("stat-total").textContent = `$${totalSales.toFixed(2)}`;
       document.getElementById("stat-hours").textContent = totalHours.toFixed(1);
       document.getElementById("stat-rank").textContent = myRank > 0 ? `#${myRank}` : "—";
     }
@@ -1345,7 +1358,7 @@ function renderDash() {
           <div class="history-meta">${(log.hours || 0).toFixed(1)} hrs</div>
         </div>
         <div class="board-score history-score">
-          <div class="board-sph">$${daySph.toFixed(0)}</div>
+          <div class="board-sph">$${daySph.toFixed(2)}</div>
           <div class="board-sph-label">/HR</div>
         </div>
       `;
@@ -1506,7 +1519,7 @@ function renderBoard() {
         </div>
       </div>
       <div class="board-score">
-        <div class="board-sph">$${player.sph.toFixed(0)}</div>
+        <div class="board-sph">$${player.sph.toFixed(2)}</div>
         <div class="board-sph-label">/HR</div>
       </div>
     `;
@@ -1530,7 +1543,7 @@ function renderBoard() {
     if (tieGroup.length > 1) {
       const wrap = document.createElement("div");
       wrap.className = "board-tie-group";
-      wrap.innerHTML = `<div class="board-tie-group-label">Tied at #${getLeaderboardDisplayRank(players, i, metric)}</div>`;
+      wrap.innerHTML = `<div class="board-tie-group-label">TIE AT #${getLeaderboardDisplayRank(players, i, metric)} · ${tieGroup.length} PLAYERS</div>`;
       tieGroup.forEach((tiedPlayer, offset) => {
         wrap.appendChild(makeBoardCard(tiedPlayer, i + offset, tieGroup.length));
       });
@@ -1602,6 +1615,91 @@ function getLeaderboardDisplayRank(players, index, metric = state.settings.ranki
   return playersTiedOnLeaderboard(players[index], players[index - 1], metric)
     ? getLeaderboardDisplayRank(players, index - 1, metric)
     : index + 1;
+}
+
+function renderCompetitionEndedModal(compId) {
+  const modal = document.getElementById("competition-ended-modal");
+  const body = document.getElementById("competition-ended-body");
+  if (!modal || !body || !compId || !state.competitions[compId]) return;
+
+  const comp = state.competitions[compId];
+  const players = getRankedPlayers(compId);
+  const metric = state.settings.rankingMetric || "sph";
+  const winner = comp.winner ? state.employees[comp.winner] : (players[0] ? state.employees[players[0].id] : null);
+  const topThree = players.slice(0, 3);
+  const rest = players.slice(3);
+  const podiumOrder = [topThree[1], topThree[0], topThree[2]].filter(Boolean);
+
+  const scoreLabel = metric === "sph" ? "/HR" : "TOTAL";
+  const scoreValue = (player) => metric === "sph" ? `$${player.sph.toFixed(2)}` : `$${player.total.toFixed(2)}`;
+  const podiumHtml = podiumOrder.map((player) => {
+    const originalIndex = players.findIndex(p => p.id === player.id);
+    const rank = getLeaderboardDisplayRank(players, originalIndex, metric);
+    const emp = state.employees[player.id] || { name: player.name };
+    return `
+      <div class="ended-podium-place ended-podium-place-${rank}">
+        <div class="ended-podium-rank">#${rank}</div>
+        ${getBoardAvatarHtml(emp, player.id, rank)}
+        <div class="ended-podium-name">${escapeHtml(player.name)}</div>
+        <div class="ended-podium-score">${scoreValue(player)} <span>${scoreLabel}</span></div>
+      </div>
+    `;
+  }).join("");
+
+  const restHtml = rest.map((player, index) => {
+    const rank = getLeaderboardDisplayRank(players, index + 3, metric);
+    return `
+      <div class="ended-rank-row">
+        <span class="ended-rank-num">#${rank}</span>
+        <span class="ended-rank-name">${escapeHtml(player.name)}</span>
+        <span class="ended-rank-score">${scoreValue(player)}</span>
+      </div>
+    `;
+  }).join("");
+
+  body.innerHTML = `
+    <div class="competition-ended-kicker">Competition Ended</div>
+    <div class="competition-ended-title">${escapeHtml(comp.name || "Competition")}</div>
+    <div class="competition-ended-winner">
+      <span class="competition-ended-winner-label">Winner</span>
+      <span class="competition-ended-winner-name">${escapeHtml(winner?.name || "No winner")}</span>
+    </div>
+    ${podiumHtml ? `<div class="ended-podium">${podiumHtml}</div>` : `
+      <div class="ended-empty">No orders were logged this round.</div>
+    `}
+    ${restHtml ? `<div class="ended-rank-list">${restHtml}</div>` : ""}
+    <button class="competition-ended-board-btn" id="competition-ended-board-btn" type="button">View Leaderboard</button>
+  `;
+
+  modal.dataset.compId = compId;
+  modal.classList.add("active");
+
+  document.getElementById("competition-ended-board-btn")?.addEventListener("click", () => {
+    closeCompetitionEndedModal();
+    state.boardComp = compId;
+    renderBoard();
+    showScreen("board");
+  });
+}
+
+function closeCompetitionEndedModal() {
+  const modal = document.getElementById("competition-ended-modal");
+  if (!modal) return;
+  if (modal.dataset.compId) state.endedRevealDismissedCompId = modal.dataset.compId;
+  modal.classList.remove("active");
+}
+
+function maybeShowCompetitionEndedModal({ force = false } = {}) {
+  let compId = null;
+  if (state.currentComp && isCompEnded(state.competitions[state.currentComp])) {
+    compId = state.currentComp;
+  } else if (!state.currentComp) {
+    compId = getLatestEndedCompId();
+  }
+  if (!compId) return;
+  if (!force && state.endedRevealDismissedCompId === compId) return;
+  if (force) state.endedRevealDismissedCompId = null;
+  renderCompetitionEndedModal(compId);
 }
 
 function getCompetitionLogDates(compId, logsSource = state.logs) {
@@ -2895,7 +2993,7 @@ function refreshAdminDayView() {
     btn.innerHTML = `
       <div class="admin-log-player-main">
         <div class="admin-log-player-name">${escapeHtml(emp.name)}</div>
-        <div class="admin-log-player-meta">${log ? `$${log.sales.toFixed(0)} · ${log.hours.toFixed(1)} hrs` : "No log yet"}</div>
+        <div class="admin-log-player-meta">${log ? `$${log.sales.toFixed(2)} · ${log.hours.toFixed(1)} hrs` : "No log yet"}</div>
       </div>
       ${log ? '<div class="admin-log-player-badge edit">Edit</div>' : '<div class="admin-log-player-badge open">Add</div>'}
     `;
@@ -2964,7 +3062,7 @@ function refreshAdminDayView() {
 function renderAdminLogDetail(empId, compId, date, log) {
   const detail = document.getElementById("admin-logs-detail");
   if (!detail) return;
-  const sph = log.hours > 0 ? (log.sales / log.hours).toFixed(0) : "—";
+  const sph = log.hours > 0 ? (log.sales / log.hours).toFixed(2) : "—";
   const d = new Date(date + "T00:00:00");
   const dayName = DAYS[d.getDay()];
   detail.innerHTML = `
@@ -3205,7 +3303,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const welcomeStartBtn = document.getElementById("welcome-start-btn");
   if (welcomeStartBtn) {
-    welcomeStartBtn.onclick = () => showScreen("pick");
+    welcomeStartBtn.onclick = () => {
+      showScreen("pick");
+      maybeShowCompetitionEndedModal({ force: true });
+    };
   }
 
   document.getElementById("btn-log").onclick = logEntry;
@@ -3289,7 +3390,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("pick-btn-log").onclick = logEntryFromPick;
 
   // Bottom nav
-  document.getElementById("nav-home").onclick = () => showScreen("pick");
+  document.getElementById("nav-home").onclick = () => {
+    showScreen("pick");
+    maybeShowCompetitionEndedModal({ force: true });
+  };
   document.getElementById("nav-board").onclick = () => { renderBoard(); showScreen("board"); };
   document.getElementById("nav-admin").onclick = () => {
     if (state.adminUnlocked) {
@@ -3321,6 +3425,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
+  const endedModal = document.getElementById("competition-ended-modal");
+  const endedModalClose = document.getElementById("competition-ended-close");
+  if (endedModalClose) endedModalClose.onclick = closeCompetitionEndedModal;
+  if (endedModal) {
+    endedModal.addEventListener("click", (e) => {
+      if (e.target === endedModal) closeCompetitionEndedModal();
+    });
+  }
+
   document.addEventListener("click", (e) => {
     const picker = document.getElementById("board-comp-picker");
     if (!picker || picker.contains(e.target)) return;
@@ -3329,6 +3442,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeBoardCompMenu();
+    if (e.key === "Escape") closeCompetitionEndedModal();
   });
 
   // PIN submit
