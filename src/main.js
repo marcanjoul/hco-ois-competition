@@ -285,6 +285,52 @@ function getCompetitionCountdownStyle(comp) {
   return `color:${color};text-shadow:4px 4px 0 ${shadow};`;
 }
 
+function getCompetitionTimePct(comp) {
+  if (!comp?.startDate || !comp?.endDate) return 0;
+
+  const start = new Date(comp.startDate + "T00:00:00").getTime();
+  const end = new Date(comp.endDate + "T23:59:59").getTime();
+  const now = Date.now();
+
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return 0;
+  return Math.min(100, Math.max(0, ((end - now) / (end - start)) * 100));
+}
+
+function getCompetitionDayStrip(comp) {
+  if (!comp?.startDate || !comp?.endDate) return "";
+
+  const start = new Date(comp.startDate + "T00:00:00");
+  const end = new Date(comp.endDate + "T00:00:00");
+  const todayStr = getTodayDate();
+  const days = [];
+
+  if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || end < start) return "";
+
+  for (let d = new Date(start); d <= end && days.length < 21; d.setDate(d.getDate() + 1)) {
+    const dateString = formatLocalDate(d);
+    const stateClass = dateString < todayStr ? "past" : dateString === todayStr ? "today" : "future";
+    days.push(`
+      <span class="pick-countdown-day ${stateClass}">
+        <span class="pick-countdown-day-name">${DAYS[d.getDay()]}</span>
+        <span class="pick-countdown-day-num">${d.getDate()}</span>
+      </span>
+    `);
+  }
+
+  return days.join("");
+}
+
+function getCompetitionElapsedPct(comp) {
+  if (!comp?.startDate || !comp?.endDate) return 0;
+
+  const start = new Date(comp.startDate + "T00:00:00").getTime();
+  const end = new Date(comp.endDate + "T23:59:59").getTime();
+  const now = Date.now();
+
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return 0;
+  return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+}
+
 
 // ══════════════════════════════════════════════════════
 // Apply settings
@@ -426,20 +472,20 @@ function renderGoalBar(current, target, type) {
   const pct = Math.min(100, target > 0 ? (current / target) * 100 : 0);
   const isHit = current >= target;
   const label = type === "sph" ? `$${current.toFixed(0)}/hr` : `$${current.toFixed(0)}`;
+  const targetLabel = type === "sph" ? `$${target.toFixed(0)}/hr` : `$${target.toFixed(0)}`;
+  const progressLabel = `${label} / ${targetLabel}`;
   const percentLabel = `${Math.round(pct)}%`;
   const hype = pickGoalHype(current, target, pct, isHit);
   return `
     <div class="goal-progress">
-      <div class="goal-progress-top">
-        <div class="goal-progress-copy">
-          <span class="goal-current${isHit ? " goal-hit" : ""}">${label}</span>
-        </div>
-        <span class="goal-percent${isHit ? " goal-percent-hit" : ""}">${percentLabel}</span>
+      <div class="goal-progress-copy">
+        <span class="goal-current${isHit ? " goal-hit" : ""}">${progressLabel}</span>
+      </div>
+      <div class="goal-bar-bg" aria-label="${label} raised toward ${targetLabel} goal">
+        <div class="goal-bar-fill${isHit ? " goal-hit-bar" : ""}" style="width:${pct}%"></div>
+        <span class="goal-percent-inline">${percentLabel}</span>
       </div>
       <div class="goal-hype${isHit ? " goal-hype-hit" : ""}">${hype}</div>
-      <div class="goal-bar-bg">
-        <div class="goal-bar-fill${isHit ? " goal-hit-bar" : ""}" style="width:${pct}%"></div>
-      </div>
     </div>
   `;
 }
@@ -461,10 +507,10 @@ function getCompetitionGoalMarkup(compId) {
 
   let goalsHtml = "";
   if (compGoals.competition?.value) {
-    goalsHtml += `<div class="comp-detail"><div class="detail-label">Competition Goal: <span class="detail-label-goal">$${compGoals.competition.value}</span></div>${renderGoalBar(storeTotalSales, compGoals.competition.value, "total")}</div>`;
+    goalsHtml += `<div class="comp-detail"><div class="detail-label">Competition Goal</div>${renderGoalBar(storeTotalSales, compGoals.competition.value, "total")}</div>`;
   }
   if (todayGoal?.value) {
-    goalsHtml += `<div class="comp-detail comp-detail-spaced"><div class="detail-label">Today's Goal: <span class="detail-label-goal">$${todayGoal.value}</span></div>${renderGoalBar(storeTodaySales, todayGoal.value, "total")}</div>`;
+    goalsHtml += `<div class="comp-detail comp-detail-spaced"><div class="detail-label">Today's Goal</div>${renderGoalBar(storeTodaySales, todayGoal.value, "total")}</div>`;
   }
   return goalsHtml;
 }
@@ -483,22 +529,19 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
   const winner = comp.winner ? state.employees[comp.winner] : null;
   const goalsHtml = getCompetitionGoalMarkup(compId);
   const hasGoals = !!goalsHtml;
-  const countdownNum = ended ? "END" : (days !== null ? (days <= 0 ? "0" : String(days)) : "—");
-  const countdownLabel = ended ? "COMPETITION OVER" : (days === 1 ? "DAY LEFT" : "DAYS LEFT");
-  const countdownClass = `pick-countdown-num${ended ? " ended" : ""}`;
-  const countdownStyle = ended ? "" : getCompetitionCountdownStyle(comp);
+  const daysNum = days !== null ? Math.max(0, days) : null;
+  const numHue = daysNum !== null ? Math.max(0, Math.min(44, Math.round(44 * (daysNum - 1) / 7))) : 44;
+  const numColorStyle = daysNum !== null ? `color:hsl(${numHue},100%,65%)` : "";
+  const daysLeftHtml = !ended && daysNum !== null
+    ? `<div class="pick-comp-days-left"><span class="pick-comp-days-num" style="${numColorStyle}">${daysNum}</span><span class="pick-comp-days-label">${daysNum === 1 ? "day left" : "days left"}</span></div>`
+    : "";
 
   container.classList.add("pick-comp-info");
   container.classList.remove("hidden");
   container.innerHTML = `
     <div class="pick-comp-name">${escapeHtml(comp.name)}</div>
     <div class="pick-comp-dates">${comp.startDate && comp.endDate ? escapeHtml(`${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}`) : ""}</div>
-    <div class="pick-comp-hero-row">
-      <div class="pick-countdown">
-        <span class="${countdownClass}" style="${countdownStyle}">${countdownNum}</span>
-        <span class="pick-countdown-label">${countdownLabel}</span>
-      </div>
-    </div>
+    ${daysLeftHtml}
     ${hasGoals ? `
       <div class="pick-comp-goals" style="display:block">
         ${collapsibleGoals ? `
