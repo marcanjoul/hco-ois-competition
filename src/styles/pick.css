@@ -1435,17 +1435,6 @@ select.log-input:focus { background-color: var(--surface); }
   pointer-events: none;
 }
 
-.goal-hype {
-  font-family: var(--type-body-family);
-  font-size: 13px;
-  font-weight: 800;
-  color: #55718f;
-}
-
-.goal-hype-hit {
-  color: #2aa75e;
-}
-
 .goal-bar-bg {
   position: relative;
   height: 16px;

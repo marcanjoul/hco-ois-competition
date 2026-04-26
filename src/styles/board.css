@@ -144,20 +144,23 @@
   box-shadow: var(--shadow-elevation-2);
   border-color: var(--accent);
 }
-.board-card.rank-1:hover { border-color: var(--gold); box-shadow: var(--glow-gold), var(--shadow-elevation-2); }
+.board-card.rank-1:hover {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 14px rgba(245,166,35,0.10),
+    var(--shadow-elevation-2);
+}
 .board-card.is-you:not(.rank-1) {
   border-color: var(--accent2);
   box-shadow: 0 0 0 1px rgba(77,158,250,0.25), 0 2px 12px rgba(77,158,250,0.10);
 }
 .board-card:active { transform: scale(0.98); }
 
-/* Rank #1 — gold, bigger, prominent */
 .board-card.rank-1 {
-  border-color: var(--gold);
-  background: rgba(245,166,35,0.08);
-  box-shadow: var(--glow-gold);
-  padding: 12px 14px;
-  border-width: 2px;
+  box-shadow:
+    0 0 12px rgba(245,166,35,0.08),
+    0 1px 4px rgba(15,25,35,0.08),
+    0 4px 12px rgba(15,25,35,0.05);
 }
 
 
@@ -216,16 +219,17 @@
 }
 
 .board-avatar-stack.rank-1 {
-  padding-top: 14px;
+  padding-top: 18px;
 }
 
 .board-avatar-crown {
   position: absolute;
-  top: -10px;
-  right: -8px;
-  transform: rotate(18deg);
-  width: 35px;
-  height: 35px;
+  top: -9px;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
   z-index: 2;
 }
 
