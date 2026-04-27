@@ -771,6 +771,12 @@
     font-size: 14px;
   }
 
+  .admin-day-buttons .week-nav-btn {
+    flex-basis: 30px;
+    min-width: 30px;
+    font-size: 12px;
+  }
+
   .admin-log-week-display {
     min-height: 38px;
     padding: 0 10px;
@@ -815,14 +821,6 @@
   .admin-log-edit-actions .admin-action-delete {
     grid-column: 1 / -1;
     min-width: 0;
-  }
-
-  .admin-log-edit-header .admin-log-header-name {
-    font-size: 26px;
-  }
-
-  .admin-log-edit-header .admin-log-header-sub {
-    font-size: 16px;
   }
 
 }

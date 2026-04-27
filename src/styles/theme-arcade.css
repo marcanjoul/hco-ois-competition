@@ -389,6 +389,13 @@ body::after {
   font-size: 14px;
 }
 
+.admin-day-buttons .week-nav-btn {
+  flex-basis: 36px;
+  min-width: 36px;
+  min-height: 42px;
+  font-size: 12px;
+}
+
 .name-btn,
 .log-btn,
 .week-nav-btn,
@@ -1137,25 +1144,6 @@ body::after {
   color: var(--text) !important;
 }
 
-.admin-log-edit-kicker {
-  color: var(--accent2) !important;
-  font-family: "Press Start 2P", monospace;
-}
-
-.admin-log-edit-header .admin-log-header-name {
-  color: var(--accent) !important;
-  font-family: "VT323", monospace;
-  font-size: 34px;
-  letter-spacing: 0.5px;
-  text-shadow: 2px 2px 0 #0b1540;
-  text-transform: none;
-}
-
-.admin-log-edit-header .admin-log-header-sub {
-  color: var(--text) !important;
-  font-size: 20px;
-}
-
 .admin-date-range {
   border: 0;
   border-radius: 0;
@@ -1603,6 +1591,12 @@ body::after {
     min-height: 38px;
     font-size: 14px;
     flex: 0 0 32px;
+  }
+
+  .admin-day-buttons .week-nav-btn {
+    min-width: 28px;
+    flex-basis: 28px;
+    font-size: 12px;
   }
 
   .day-btn {

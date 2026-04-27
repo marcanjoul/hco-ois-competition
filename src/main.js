@@ -2880,7 +2880,7 @@ function refreshAdminDayView() {
     if (hasLog) classes.push("logged");
     if (isFutureDate || isOutOfComp) classes.push("disabled");
     btn.className = classes.join(" ");
-    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>${hasLog ? '<div class="day-btn-checkmark">✓</div>' : ''}`;
+    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>`;
     btn.title = hasLog ? `${logsForDay.length} order${logsForDay.length === 1 ? "" : "s"} on this day` : "No orders on this day";
     if (!isFutureDate && !isOutOfComp) {
       btn.onclick = () => {
@@ -3087,17 +3087,7 @@ function renderAdminLogCreate(empId, compId, date, target = null) {
 function renderAdminLogEdit(empId, compId, date, log, target = null) {
   const detail = target || document.getElementById("admin-logs-detail");
   if (!detail) return;
-  const d = new Date(date + "T00:00:00");
-  const dayName = DAYS[d.getDay()];
-  const empName = state.employees[empId]?.name || "";
   detail.innerHTML = `
-    <div class="admin-log-header admin-log-edit-header">
-      <div class="admin-log-header-info">
-        <div class="admin-log-edit-kicker">Editing Order</div>
-        <div class="admin-log-header-name">${escapeHtml(empName)}</div>
-        <div class="admin-log-header-sub">${escapeHtml(`${dayName} ${date}`)}</div>
-      </div>
-    </div>
     <div class="log-fields admin-log-form-fields admin-log-edit-fields">
       <div class="log-field-wrap"><label class="field-label">SALES ($)</label><input type="number" id="admin-edit-sales" class="log-input" value="${log.sales}" min="0" step="0.01" /></div>
       <div class="log-field-wrap"><label class="field-label">HOURS</label><input type="number" id="admin-edit-hours" class="log-input" value="${log.hours}" min="0" step="0.5" /></div>

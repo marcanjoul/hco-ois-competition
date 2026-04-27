@@ -927,34 +927,6 @@
 .admin-action-edit:hover { border-color: var(--accent); color: var(--accent); }
 .admin-action-delete:hover { border-color: var(--red); color: var(--red); }
 
-.admin-log-edit-header {
-  display: block;
-  margin-bottom: 12px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-}
-
-.admin-log-edit-header .admin-log-header-name {
-  font-size: 22px;
-  line-height: 1;
-}
-
-.admin-log-edit-header .admin-log-header-sub {
-  font-size: 14px;
-  margin-top: 5px;
-}
-
-.admin-log-edit-kicker {
-  margin-bottom: 6px;
-  font-family: var(--type-label-family);
-  font-size: 9px;
-  font-weight: var(--type-label-weight);
-  letter-spacing: 0.8px;
-  color: var(--text2);
-  text-transform: uppercase;
-}
-
 .admin-log-edit-fields {
   margin-top: 0;
 }
@@ -1005,6 +977,13 @@
   min-width: 52px;
   min-height: 52px;
   padding: 0;
+}
+
+.admin-day-buttons .week-nav-btn {
+  flex: 0 0 40px;
+  min-width: 40px;
+  min-height: 42px;
+  font-size: 13px;
 }
 
 .admin-log-week-input-wrap {
