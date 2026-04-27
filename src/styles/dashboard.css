@@ -109,7 +109,10 @@
 }
 
 .dash-profile-avatar-btn .pick-avatar-edit-pill {
-  margin-top: -2px;
+  min-width: 116px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-top: -10px;
 }
 
 .dash-profile-avatar .board-avatar-stack {
@@ -193,6 +196,8 @@
   padding: var(--space-3);
   box-shadow: var(--shadow-elevation-1);
   min-width: 0;
+  overflow: hidden;
+  text-align: center;
 }
 
 .dash-profile-stat-label {
@@ -206,16 +211,20 @@
 }
 
 .dash-profile-stat-value {
+  display: block;
   font-family: var(--type-display-family);
-  font-size: 24px;
+  font-size: clamp(18px, 5.6vw, 24px);
   line-height: 1;
   color: var(--text);
+  width: 100%;
   max-width: 100%;
   white-space: nowrap;
+  overflow: hidden;
+  letter-spacing: 0;
 }
 
 .dash-profile-stat-value-total {
-  font-size: 20px;
+  font-size: clamp(16px, 5vw, 20px);
   letter-spacing: 0;
 }
 
@@ -386,5 +395,17 @@
   }
   .dash-profile-rank-badge {
     font-size: 17px;
+  }
+
+  .dash-profile-stat {
+    padding: 10px 6px;
+  }
+
+  .dash-profile-stat-value {
+    font-size: clamp(16px, 5vw, 20px);
+  }
+
+  .dash-profile-stat-value-total {
+    font-size: clamp(15px, 4.7vw, 18px);
   }
 }
