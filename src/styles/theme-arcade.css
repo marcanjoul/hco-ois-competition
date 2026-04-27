@@ -318,6 +318,9 @@ body::after {
   font-family: "Press Start 2P", monospace;
   font-size: 9px;
   letter-spacing: 1px;
+  flex-basis: 58px;
+  line-height: 1;
+  text-align: right;
   text-shadow: 2px 2px 0 #050816;
 }
 
@@ -376,6 +379,14 @@ body::after {
 .goal-hit-bar {
   background:
     repeating-linear-gradient(90deg, #52ff98 0 16px, #1fc766 16px 22px);
+}
+
+.week-nav-btn {
+  flex: 0 0 48px;
+  min-width: 48px;
+  min-height: 52px;
+  padding: 0;
+  font-size: 14px;
 }
 
 .name-btn,
@@ -623,6 +634,15 @@ body::after {
   color: #ffd6ef !important;
 }
 
+.admin-log-inline-detail {
+  margin-top: -3px;
+  border: 3px solid var(--accent-alt) !important;
+  border-top: 0 !important;
+  border-radius: 0 !important;
+  background: #07122f !important;
+  box-shadow: 4px 4px 0 #09153a !important;
+}
+
 .admin-log-player-name {
   font-size: 24px;
 }
@@ -638,6 +658,10 @@ body::after {
 
 .admin-log-player-badge.open {
   color: #47d7ff;
+}
+
+.admin-log-player-badge.close {
+  color: #ff5f7a;
 }
 
 .admin-log-player-card.has-log:hover .admin-log-player-badge.edit,
@@ -920,6 +944,11 @@ body::after {
   text-shadow: 3px 3px 0 #8e5f00;
 }
 
+.dash-profile-stat-value-total {
+  font-size: 20px;
+  letter-spacing: 0;
+}
+
 .app-back-btn {
   border: 3px solid #2b6dff !important;
   background: #13266c !important;
@@ -1047,6 +1076,46 @@ body::after {
   border: 3px solid #2b6dff !important;
 }
 
+.admin-team-tools {
+  padding: 12px 14px !important;
+  margin-bottom: 12px;
+}
+
+.admin-team-tools-header {
+  margin-bottom: 8px;
+}
+
+.admin-team-controls {
+  gap: 8px;
+}
+
+.admin-team-field {
+  gap: 4px;
+}
+
+.admin-team-tools-title {
+  font-size: 18px !important;
+  line-height: 1.2;
+}
+
+.admin-team-field-label {
+  font-size: 9px;
+  line-height: 1.1;
+}
+
+.admin-team-tools .admin-team-input {
+  min-height: 42px;
+  padding: 8px 10px !important;
+  font-size: 16px;
+}
+
+.admin-new-row-top .mini-btn {
+  min-width: 70px;
+  min-height: 42px;
+  padding: 0 10px;
+  font-size: 11px;
+}
+
 .admin-emp-list {
   background: transparent !important;
   border: none !important;
@@ -1125,24 +1194,6 @@ body::after {
   min-height: 74px;
 }
 
-.daily-goal-week-display {
-  border: 3px solid #2b6dff;
-  border-radius: 0;
-  background: #101e55;
-  box-shadow: 4px 4px 0 #09153a;
-  color: #ffd84d;
-  font-family: "VT323", monospace;
-  font-size: 24px;
-  letter-spacing: 0.5px;
-  text-shadow: 2px 2px 0 #8e5f00;
-}
-
-.daily-goal-week-input-wrap:hover .daily-goal-week-display,
-.daily-goal-week-input-wrap:focus-within .daily-goal-week-display {
-  border-color: #47d7ff;
-  background: #0a1741;
-}
-
 .goal-day-card {
   border: 3px solid #2b6dff;
   border-radius: 0;
@@ -1197,6 +1248,10 @@ body::after {
 
 .comp-status-chip.comp-status-active {
   color: var(--green) !important;
+}
+
+.comp-status-chip.comp-status-upcoming {
+  color: var(--gold) !important;
 }
 
 .comp-status-chip.comp-status-closed {
@@ -1292,35 +1347,6 @@ body::after {
     letter-spacing: 0.6px !important;
     line-height: 1.15 !important;
     text-align: center;
-  }
-
-  .daily-goal-week-display {
-    min-height: 38px;
-    padding: 0 8px;
-    font-size: 18px;
-  }
-
-  .daily-goal-week-controls .week-nav-btn {
-    min-width: 38px;
-    min-height: 38px;
-    font-size: 14px;
-  }
-
-  .goal-admin-collapsible .admin-collapsible-title {
-    font-family: "VT323", monospace;
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 0.4px;
-    text-shadow: none;
-  }
-
-  .goal-admin-collapsible .admin-collapsible-toggle {
-    min-height: 42px;
-    padding: 8px 10px;
-  }
-
-  #daily-goals-grid {
-    gap: 7px;
   }
 
   .goal-day-card {
@@ -1719,6 +1745,10 @@ body::after {
     gap: 12px;
   }
 
+  .admin-inline-comp-edit {
+    margin-top: -3px;
+  }
+
   .admin-comp-item .admin-item-actions {
     align-self: stretch;
   }
@@ -1951,9 +1981,16 @@ body::after {
 .history-title,
 .admin-section-title {
   color: var(--power-pellet) !important;
+}
+
+.maze-glow-text,
+.log-card-title,
+.history-title,
+.admin-section-title {
   text-shadow:
     2px 2px 0 #ff8f1a,
-    4px 4px 0 #06102b;
+    4px 4px 0 #06102b,
+    0 0 4.5px rgba(255, 216, 77, 0.105) !important;
 }
 
 .name-btn,
@@ -1975,6 +2012,13 @@ body::after {
 .admin-tab-btn {
   box-shadow:
     4px 4px 0 #050816,
+    inset 2px 2px 0 rgba(255, 255, 255, 0.08),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.32) !important;
+}
+
+.week-nav-btn {
+  box-shadow:
+    3px 3px 0 #050816,
     inset 2px 2px 0 rgba(255, 255, 255, 0.08),
     inset -2px -2px 0 rgba(0, 0, 0, 0.32) !important;
 }
@@ -2502,7 +2546,11 @@ button.btn-disabled:hover,
   font-family: "Press Start 2P", monospace;
   font-size: 36px;
   line-height: 1;
-  text-shadow: 2px 2px 0 #050816;
+  text-shadow:
+    2px 2px 0 #ff8f1a,
+    4px 4px 0 #050816,
+    0 0 4.5px rgba(255, 216, 77, 0.12),
+    0 0 8.25px rgba(255, 216, 77, 0.0675) !important;
 }
 
 #screen-pick .pick-comp-days-label {
@@ -2660,6 +2708,49 @@ button.btn-disabled:hover,
 }
 
 @media (max-width: 640px) {
+  .pick-success-state {
+    gap: 10px;
+    padding: 12px 8px;
+  }
+
+  .pick-success-checkmark {
+    font-size: 36px;
+  }
+
+  .pick-success-title {
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+
+  .pick-success-stats {
+    gap: 6px;
+  }
+
+  .pick-success-stat {
+    padding: 8px 4px;
+  }
+
+  .pick-success-stat-label {
+    font-size: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .pick-success-stat-value {
+    font-size: 13px;
+    letter-spacing: 0;
+    text-shadow:
+      1px 1px 0 #ff8f1a,
+      3px 3px 0 #050816,
+      0 0 10px rgba(255, 216, 77, 0.22) !important;
+  }
+
+  .pick-success-cta {
+    min-height: 46px;
+    padding: 10px 8px;
+    font-size: 11px;
+    letter-spacing: 0.6px;
+  }
+
   .competition-ended-title {
     font-size: 13px;
   }
