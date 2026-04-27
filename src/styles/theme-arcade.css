@@ -941,11 +941,11 @@ body::after {
 
 .dash-profile-stat-value {
   color: var(--accent);
-  text-shadow: 3px 3px 0 #8e5f00;
+  text-shadow: 2px 2px 0 #8e5f00;
 }
 
 .dash-profile-stat-value-total {
-  font-size: 20px;
+  font-size: clamp(16px, 5vw, 20px);
   letter-spacing: 0;
 }
 
