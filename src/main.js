@@ -54,6 +54,7 @@ let state = {
     showUnloggedPlayers: false,
     selectedEmp: null,
     selectedComp: null,
+    editingCompId: null,
     selectedDate: getTodayDate(),
     empSearch: "",
     tab: "competitions",
@@ -207,12 +208,29 @@ function isCompEnded(comp) {
   return new Date() > end;
 }
 
+function isCompUpcoming(comp) {
+  if (!comp?.startDate) return false;
+  return comp.startDate > getTodayDate();
+}
+
 function getActiveComp() {
   // Find the most recent comp that hasn't ended yet
   const entries = Object.entries(state.competitions)
     .filter(([, c]) => !isCompEnded(c))
     .sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0));
   return entries[0]?.[0] || null;
+}
+
+function getNewCompetitionDateBlock() {
+  const activeCompId = getActiveComp();
+  const activeComp = activeCompId ? state.competitions[activeCompId] : null;
+  if (!activeComp?.endDate || isCompEnded(activeComp)) return null;
+  return {
+    compId: activeCompId,
+    compName: activeComp.name || "the current competition",
+    endDate: activeComp.endDate,
+    earliestStartDate: shiftLocalDate(activeComp.endDate, 1),
+  };
 }
 
 function getLatestEndedCompId() {
@@ -431,12 +449,6 @@ function getPlayerSph(empId, compId) {
   return { total, hours, sph: hours > 0 ? total / hours : 0 };
 }
 
-function getTodaySph(empId, compId) {
-  const log = (state.logs[compId] || {})[empId]?.[getTodayDate()];
-  if (!log) return { total: 0, hours: 0, sph: 0 };
-  return { total: log.sales || 0, hours: log.hours || 0, sph: log.hours > 0 ? (log.sales / log.hours) : 0 };
-}
-
 function renderGoalBar(current, target, type) {
   const pct = Math.min(100, target > 0 ? (current / target) * 100 : 0);
   const isHit = current >= target;
@@ -449,8 +461,10 @@ function renderGoalBar(current, target, type) {
       <div class="goal-progress-copy">
         <span class="goal-current${isHit ? " goal-hit" : ""}">${progressLabel}</span>
       </div>
-      <div class="goal-bar-bg" aria-label="${label} raised toward ${targetLabel} goal">
-        <div class="goal-bar-fill${isHit ? " goal-hit-bar" : ""}" style="width:${pct}%"></div>
+      <div class="goal-meter-row" aria-label="${label} raised toward ${targetLabel} goal">
+        <div class="goal-bar-bg">
+          <div class="goal-bar-fill${isHit ? " goal-hit-bar" : ""}" style="width:${pct}%"></div>
+        </div>
         <span class="goal-percent-inline">${percentLabel}</span>
       </div>
     </div>
@@ -459,25 +473,18 @@ function renderGoalBar(current, target, type) {
 
 function getCompetitionGoalMarkup(compId) {
   const compGoals = getCompGoals(compId);
-  const todayDate = getTodayDate();
-  const todayGoal = compGoals[`daily_${todayDate}`];
   const compLogs = state.logs[compId] || {};
   let storeTotalSales = 0;
-  let storeTodaySales = 0;
 
   Object.values(compLogs).forEach(empLogs => {
-    Object.entries(empLogs || {}).forEach(([date, log]) => {
+    Object.values(empLogs || {}).forEach(log => {
       storeTotalSales += log.sales || 0;
-      if (date === todayDate) storeTodaySales += log.sales || 0;
     });
   });
 
   let goalsHtml = "";
   if (compGoals.competition?.value) {
     goalsHtml += `<div class="comp-detail"><div class="detail-label">Competition Goal</div>${renderGoalBar(storeTotalSales, compGoals.competition.value, "total")}</div>`;
-  }
-  if (todayGoal?.value) {
-    goalsHtml += `<div class="comp-detail comp-detail-spaced"><div class="detail-label">Today's Goal</div>${renderGoalBar(storeTodaySales, todayGoal.value, "total")}</div>`;
   }
   return goalsHtml;
 }
@@ -728,7 +735,7 @@ function renderPickScreen(filterText = "") {
     renderCompetitionCard(compInfo, state.currentComp, { collapsibleGoals: false });
   }
 
-  // Daily goals are now shown in competition info card, hide this duplicate
+  // Competition goals are shown in the competition info card, hide this duplicate.
   const goalsEl = document.getElementById("pick-goals");
   if (goalsEl) {
     goalsEl.classList.add("hidden");
@@ -1147,7 +1154,7 @@ function renderDash() {
               </div>
               <div class="dash-profile-stat">
                 <div class="dash-profile-stat-label">Total Sales</div>
-                <div class="dash-profile-stat-value">$${totalSales.toFixed(2)}</div>
+                <div class="dash-profile-stat-value dash-profile-stat-value-total">$${totalSales.toFixed(2)}</div>
               </div>
               <div class="dash-profile-stat">
                 <div class="dash-profile-stat-label">Hours Worked</div>
@@ -1212,12 +1219,6 @@ function renderDash() {
     if (compGoals.competition?.value) {
       const g = compGoals.competition;
       goalsHtml += `<div class="goal-block"><div class="goal-label">🎯 Competition Goal</div>${renderGoalBar(g.type === "sph" ? sph : totalSales, g.value, g.type)}</div>`;
-    }
-    const todayGoal = compGoals[`daily_${getTodayDate()}`];
-    if (todayGoal?.value) {
-      const g = todayGoal;
-      const d = getTodaySph(state.currentUser, state.currentComp);
-      goalsHtml += `<div class="goal-block"><div class="goal-label">☀️ Daily Goal</div>${renderGoalBar(d.total, g.value, "total")}</div>`;
     }
     goalsEl.innerHTML = goalsHtml;
     goalsEl.style.display = goalsHtml && !isProfileView ? "flex" : "none";
@@ -1804,38 +1805,53 @@ function renderAdminComps(container) {
   list.className = "admin-list";
 
   toShow.forEach(([id, comp]) => {
+    const compWrap = document.createElement("div");
+    compWrap.className = `admin-comp-row${state.admin.editingCompId === id ? " editing" : ""}`;
+
     const item = document.createElement("div");
     item.className = "admin-item admin-comp-item";
     item.id = `admin-comp-item-${id}`;
     const ended = isCompEnded(comp);
+    const upcoming = isCompUpcoming(comp);
 
     const leftPart = document.createElement("div");
     leftPart.className = "admin-item-left";
     leftPart.innerHTML = `
       <span class="admin-item-name">${escapeHtml(comp.name)}</span>
       ${ended ? `<span class="comp-status-chip comp-status-ended">Ended</span>` : ""}
+      ${upcoming ? `<span class="comp-status-chip comp-status-upcoming">Upcoming</span>` : ""}
     `;
     item.appendChild(leftPart);
 
     const rightPart = document.createElement("div");
     rightPart.className = "admin-item-actions";
     if (!ended) {
-      rightPart.appendChild(makeBtn("Edit", "del-btn", () => renderCompEditPanel(id, comp)));
+      rightPart.appendChild(makeBtn(state.admin.editingCompId === id ? "Close" : "Edit", "del-btn", () => {
+        state.admin.editingCompId = state.admin.editingCompId === id ? null : id;
+        renderAdminTab();
+        requestAnimationFrame(() => {
+          document.getElementById(`admin-comp-row-${id}`)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+      }));
     }
     item.appendChild(rightPart);
 
-    list.appendChild(item);
+    compWrap.id = `admin-comp-row-${id}`;
+    compWrap.appendChild(item);
+    if (state.admin.editingCompId === id) {
+      const inlineEdit = document.createElement("div");
+      inlineEdit.className = "goal-admin-block admin-new-comp-form admin-edit-comp-form admin-inline-comp-edit";
+      compWrap.appendChild(inlineEdit);
+      renderCompEditForm(id, comp, inlineEdit, {
+        onDone: () => {
+          state.admin.editingCompId = null;
+          renderAdminTab();
+        },
+      });
+    }
+
+    list.appendChild(compWrap);
   });
-  container.appendChild(list);
-
-  if (entries.length > PREVIEW_COUNT) {
-    container.appendChild(makeBtn(
-      state.admin.showAllComps ? "Show less ▲" : `View all ${entries.length} ▼`,
-      "view-all-btn",
-      () => { state.admin.showAllComps = !state.admin.showAllComps; renderAdminTab(); }
-    ));
-  }
-
   // New competition form
   const newCompSection = document.createElement("div");
   newCompSection.className = "goal-admin-block";
@@ -1864,8 +1880,20 @@ function renderAdminComps(container) {
         <input type="date" id="input-new-comp-end" class="log-input" />
       </div>
     </div>
+    <div class="admin-form-field-offset">
+      <label class="field-label">COMPETITION GOAL</label>
+      <label class="goal-day-input-shell goal-admin-input-shell" for="input-new-comp-goal">
+        <span class="goal-day-currency">$</span>
+        <input type="number" id="input-new-comp-goal" class="log-input goal-day-input" placeholder="0" min="0" step="1" />
+      </label>
+    </div>
     <button class="log-btn btn-ghost" id="btn-add-comp" disabled>+ CREATE COMPETITION</button>
   `;
+
+  const dateBlock = getNewCompetitionDateBlock();
+  const blockMessage = dateBlock
+    ? `"${dateBlock.compName}" ends on ${formatDate(dateBlock.endDate)}. New competitions must start on or after ${formatDate(dateBlock.earliestStartDate)}.`
+    : "";
 
   newCompSection.appendChild(toggleBtn);
   newCompSection.appendChild(collapsibleContent);
@@ -1884,28 +1912,91 @@ function renderAdminComps(container) {
     const end = document.getElementById("input-new-comp-end")?.value;
     const btn = document.getElementById("btn-add-comp");
     if (!btn) return;
-    const ready = !!(name && start && end && start <= end);
+    const isAfterBlockedRange = !dateBlock || !start || start >= dateBlock.earliestStartDate;
+    const ready = !!(name && start && end && start <= end && isAfterBlockedRange);
     btn.disabled = !ready;
     btn.classList.toggle("btn-ghost", !ready);
   };
-  document.getElementById("input-new-comp").oninput = checkReady;
-  document.getElementById("input-new-comp-start").onchange = checkReady;
-  document.getElementById("input-new-comp-end").onchange = checkReady;
+  const newCompNameInput = document.getElementById("input-new-comp");
+  const newCompStartInput = document.getElementById("input-new-comp-start");
+  const newCompEndInput = document.getElementById("input-new-comp-end");
+  let lastDateBlockAlertAt = 0;
+  let dateBlockAlertShown = false;
+  const showDateBlockAlert = (force = false) => {
+    if (!dateBlock) return;
+    if (!force && dateBlockAlertShown) return;
+    const now = Date.now();
+    if (now - lastDateBlockAlertAt < 600) return;
+    lastDateBlockAlertAt = now;
+    dateBlockAlertShown = true;
+    showAppAlert({
+      title: "Date Unavailable",
+      message: blockMessage,
+      confirmLabel: "Got it",
+    });
+  };
+  if (dateBlock && newCompStartInput) {
+    newCompStartInput.min = dateBlock.earliestStartDate;
+    newCompStartInput.title = blockMessage;
+  }
+  if (dateBlock && newCompEndInput) {
+    newCompEndInput.min = dateBlock.earliestStartDate;
+  }
+  newCompNameInput.oninput = checkReady;
+  newCompStartInput.onfocus = showDateBlockAlert;
+  newCompStartInput.onclick = showDateBlockAlert;
+  newCompStartInput.onchange = () => {
+    if (dateBlock && newCompStartInput.value && newCompStartInput.value < dateBlock.earliestStartDate) {
+      newCompStartInput.value = "";
+      showDateBlockAlert(true);
+    }
+    if (newCompEndInput) {
+      newCompEndInput.min = newCompStartInput.value || dateBlock?.earliestStartDate || "";
+      if (newCompEndInput.value && newCompStartInput.value && newCompEndInput.value < newCompStartInput.value) {
+        newCompEndInput.value = "";
+      }
+    }
+    checkReady();
+  };
+  newCompEndInput.onchange = checkReady;
 
   document.getElementById("btn-add-comp").onclick = async () => {
     const name = document.getElementById("input-new-comp").value.trim();
     const startDate = document.getElementById("input-new-comp-start").value;
     const endDate = document.getElementById("input-new-comp-end").value;
+    const goalValue = parseFloat(document.getElementById("input-new-comp-goal").value);
     if (!name || !startDate || !endDate) return;
+    const latestDateBlock = getNewCompetitionDateBlock();
+    if (latestDateBlock && startDate < latestDateBlock.earliestStartDate) {
+      await showAppAlert({
+        title: "Date Unavailable",
+        message: `"${latestDateBlock.compName}" ends on ${formatDate(latestDateBlock.endDate)}. New competitions must start on or after ${formatDate(latestDateBlock.earliestStartDate)}.`,
+        confirmLabel: "Got it",
+      });
+      return;
+    }
     const id = `comp_${Date.now()}`;
     await set(dbRef.comp(id), { name, startDate, endDate, createdAt: Date.now() });
+    if (goalValue > 0) {
+      await set(ref(db, `goals/${id}/competition`), { type: "total", value: goalValue });
+    }
     showToast(`"${name}" created! 🏆`);
-    ["input-new-comp","input-new-comp-start","input-new-comp-end"].forEach(i => {
+    ["input-new-comp","input-new-comp-start","input-new-comp-end","input-new-comp-goal"].forEach(i => {
       const el = document.getElementById(i);
       if (el) el.value = "";
     });
     checkReady();
   };
+
+  container.appendChild(list);
+
+  if (entries.length > PREVIEW_COUNT) {
+    container.appendChild(makeBtn(
+      state.admin.showAllComps ? "Show less ▲" : `View all ${entries.length} ▼`,
+      "view-all-btn",
+      () => { state.admin.showAllComps = !state.admin.showAllComps; renderAdminTab(); }
+    ));
+  }
 
   // Recently Deleted section
   const deletedEntries = Object.entries(state.deletedCompetitions)
@@ -1967,6 +2058,155 @@ function renderAdminComps(container) {
   }
 }
 
+function renderCompEditForm(compId, comp, editForm, { onDone = null } = {}) {
+  editForm.innerHTML = "";
+  const changedFields = {};
+  let saveAllBtn = null;
+
+  const normalizeStringValue = (value) => String(value ?? "");
+  const normalizeNumericGoalValue = (value) => {
+    const num = Number.parseFloat(String(value ?? "").trim());
+    if (!Number.isFinite(num) || num <= 0) return "";
+    return String(num);
+  };
+
+  const getHighlightTarget = (el) => (
+    el?.closest(".goal-day-input-shell") ||
+    el?.closest(".admin-form-field-offset") ||
+    el?.closest(".log-field-wrap") ||
+    el
+  );
+
+  const updateSaveButtonState = () => {
+    if (!saveAllBtn) return;
+    const isDirty = Object.keys(changedFields).length > 0;
+    saveAllBtn.disabled = !isDirty;
+    saveAllBtn.classList.toggle("btn-ghost", !isDirty);
+  };
+
+  const highlightField = (id) => {
+    const el = editForm.querySelector(`#${id}`);
+    const target = getHighlightTarget(el);
+    target?.classList.toggle("admin-field-changed", !!changedFields[id]);
+    updateSaveButtonState();
+  };
+
+  const addChangeListener = (id, originalValue, compare = "string") => {
+    const el = editForm.querySelector(`#${id}`);
+    if (!el) return;
+    const checkChange = () => {
+      const currentValue = el.value;
+      const normalizedCurrent = compare === "numeric-goal"
+        ? normalizeNumericGoalValue(currentValue)
+        : normalizeStringValue(currentValue);
+      const normalizedOriginal = compare === "numeric-goal"
+        ? normalizeNumericGoalValue(originalValue)
+        : normalizeStringValue(originalValue);
+
+      if (normalizedCurrent !== normalizedOriginal) changedFields[id] = true;
+      else delete changedFields[id];
+      highlightField(id);
+    };
+    el.addEventListener("input", checkChange);
+    el.addEventListener("change", checkChange);
+  };
+
+  const compGoals = getCompGoals(compId);
+  editForm.innerHTML = `
+    <div class="admin-form-field-offset">
+      <label class="field-label">NAME *</label>
+      <input type="text" id="comp-edit-name" class="log-input admin-form-input-spaced" value="${escapeHtml(comp.name)}" placeholder="e.g.OIS Competition" />
+    </div>
+    <div class="log-fields admin-form-fields-spaced">
+      <div class="log-field-wrap">
+        <label class="field-label" for="comp-edit-startDate">START DATE *</label>
+        <input type="date" id="comp-edit-startDate" class="log-input" value="${escapeHtml(comp.startDate || "")}" />
+      </div>
+      <div class="log-field-wrap">
+        <label class="field-label" for="comp-edit-endDate">END DATE *</label>
+        <input type="date" id="comp-edit-endDate" class="log-input" value="${escapeHtml(comp.endDate || "")}" />
+      </div>
+    </div>
+    ${isCompEnded(comp) ? `
+      <div class="admin-form-field-offset">
+        <label class="field-label">WINNER</label>
+        <div class="admin-readonly-field">${escapeHtml((comp.winner && state.employees[comp.winner]?.name) ? state.employees[comp.winner].name : "No winner set")}</div>
+      </div>
+    ` : ""}
+    <div class="admin-form-field-offset">
+      <label class="field-label">COMPETITION GOAL</label>
+      <label class="goal-day-input-shell goal-admin-input-shell" for="goal-val-competition">
+        <span class="goal-day-currency">$</span>
+        <input type="number" id="goal-val-competition" class="log-input goal-day-input" placeholder="0" value="${compGoals.competition?.value || ""}" min="0" step="1" />
+      </label>
+    </div>
+    <div class="admin-edit-actions">
+      <button class="log-btn btn-ghost" id="admin-save-comp-edit-btn" disabled>SAVE ALL CHANGES</button>
+      <button class="log-btn admin-danger-btn" id="admin-delete-comp-edit-btn">DELETE COMPETITION</button>
+    </div>
+  `;
+
+  addChangeListener("comp-edit-name", comp.name);
+  addChangeListener("comp-edit-startDate", comp.startDate || "");
+  addChangeListener("comp-edit-endDate", comp.endDate || "");
+  addChangeListener("goal-val-competition", compGoals.competition?.value || "", "numeric-goal");
+
+  const startDateInput = editForm.querySelector("#comp-edit-startDate");
+  const endDateInput = editForm.querySelector("#comp-edit-endDate");
+  const updateDateRangeUI = () => {
+    const startValue = startDateInput?.value || "";
+    const endValue = endDateInput?.value || "";
+    if (startDateInput) startDateInput.max = endValue || "";
+    if (endDateInput) endDateInput.min = startValue || "";
+  };
+  startDateInput?.addEventListener("change", updateDateRangeUI);
+  endDateInput?.addEventListener("change", updateDateRangeUI);
+  startDateInput?.addEventListener("input", updateDateRangeUI);
+  endDateInput?.addEventListener("input", updateDateRangeUI);
+  updateDateRangeUI();
+
+  saveAllBtn = editForm.querySelector("#admin-save-comp-edit-btn");
+  saveAllBtn.onclick = async () => {
+    await update(dbRef.comp(compId), {
+      name: editForm.querySelector("#comp-edit-name").value.trim() || comp.name,
+      startDate: editForm.querySelector("#comp-edit-startDate").value,
+      endDate: editForm.querySelector("#comp-edit-endDate").value,
+    });
+
+    const compGoalValue = parseFloat(editForm.querySelector("#goal-val-competition").value);
+    if (compGoalValue > 0) await set(ref(db, `goals/${compId}/competition`), { type: "total", value: compGoalValue });
+    else await remove(ref(db, `goals/${compId}/competition`));
+
+    showToast("All changes saved ✅");
+    onDone?.();
+  };
+
+  editForm.querySelector("#admin-delete-comp-edit-btn").onclick = async () => {
+    const confirmed = await showAppConfirm({
+      title: "Delete Competition",
+      message: `Delete "${comp.name}"? It will be kept in Recently Deleted for 7 days and can be restored.`,
+      confirmLabel: "Delete Competition",
+      confirmClassName: "log-btn admin-danger-btn",
+    });
+    if (!confirmed) return;
+    const snapshot = {
+      comp: { ...comp },
+      logs: state.logs[compId] || null,
+      goals: state.goals[compId] || null,
+      deletedAt: Date.now(),
+    };
+    await set(dbRef.deletedComp(compId), snapshot);
+    await remove(dbRef.comp(compId));
+    await remove(ref(db, `logs/${compId}`));
+    await remove(ref(db, `goals/${compId}`));
+    delete state.logs[compId];
+    showToast("Competition moved to Recently Deleted");
+    onDone?.();
+  };
+
+  updateSaveButtonState();
+}
+
 function renderCompEditPanel(compId, comp) {
   const content = document.getElementById("admin-tab-content");
   const contentParent = content?.parentElement;
@@ -1999,101 +2239,11 @@ function renderCompEditPanel(compId, comp) {
   editShell.className = "admin-edit-shell";
   content.appendChild(editShell);
 
-  const isCompactEditLayout = () => window.matchMedia?.("(max-width: 640px)")?.matches;
-  const setCollapsibleState = (toggle, panel, expanded) => {
-    toggle.classList.toggle("expanded", expanded);
-    toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
-    panel.hidden = !expanded;
-    const icon = toggle.querySelector(".collapsible-toggle-icon");
-    if (icon) icon.textContent = expanded ? "▲" : "▼";
-  };
-  const createCollapsiblePanel = ({
-    title,
-    subtitle = "",
-    className = "",
-    collapsedOnMobile = true,
-    collapsed = false,
-    onToggle = null,
-  }) => {
-    const wrapper = document.createElement("section");
-    wrapper.className = className;
-
-    const bodyId = `collapsible-${Math.random().toString(36).slice(2)}`;
-    const toggle = document.createElement("button");
-    toggle.type = "button";
-    toggle.className = "collapsible-toggle admin-collapsible-toggle";
-    toggle.setAttribute("aria-controls", bodyId);
-    toggle.innerHTML = `
-      <span class="admin-collapsible-title-wrap">
-        <span class="admin-collapsible-title">${escapeHtml(title)}</span>
-        ${subtitle ? `<span class="admin-collapsible-sub">${escapeHtml(subtitle)}</span>` : ""}
-      </span>
-      <span class="collapsible-toggle-icon" aria-hidden="true">▼</span>
-    `;
-
-    const body = document.createElement("div");
-    body.id = bodyId;
-    body.className = "admin-collapsible-body";
-
-    const shouldCollapse = collapsed || (collapsedOnMobile && isCompactEditLayout());
-    setCollapsibleState(toggle, body, !shouldCollapse);
-    toggle.addEventListener("click", () => {
-      const nextExpanded = toggle.getAttribute("aria-expanded") !== "true";
-      setCollapsibleState(toggle, body, nextExpanded);
-      onToggle?.(nextExpanded, { toggle, body, wrapper });
-    });
-
-    wrapper.appendChild(toggle);
-    wrapper.appendChild(body);
-    return { wrapper, body, toggle };
-  };
-
-  const editGroupPanels = [];
-  const createEditGroup = (groupTitle, subtitle = "", options = {}) => {
-    const group = document.createElement("section");
-    group.className = "admin-edit-group";
-
-    const panel = createCollapsiblePanel({
-      title: groupTitle,
-      subtitle,
-      className: "admin-edit-group-collapsible",
-      collapsedOnMobile: options.collapsedOnMobile ?? true,
-      collapsed: options.collapsed ?? false,
-      onToggle: (expanded) => {
-        if (!expanded) return;
-        editGroupPanels.forEach((otherPanel) => {
-          if (otherPanel !== panel) {
-            setCollapsibleState(otherPanel.toggle, otherPanel.body, false);
-          }
-        });
-      },
-    });
-    const { body, wrapper } = panel;
-    body.classList.add("admin-edit-group-body");
-
-    editGroupPanels.push(panel);
-    group.appendChild(wrapper);
-    editShell.appendChild(group);
-    return body;
-  };
-
-  const setupGroup = createEditGroup("Competition Setup", "Core details and current state", {
-    collapsedOnMobile: false,
-  });
-  const goalsGroup = createEditGroup("Goals", "Competition target and daily pacing", {
-    collapsed: true,
-  });
-
-  // Track original values and changes
-  const originalValues = {
-    name: comp.name,
-    startDate: comp.startDate || "",
-    endDate: comp.endDate || "",
-    competitionGoal: getCompGoals(compId).competition?.value || "",
-  };
+  const editForm = document.createElement("div");
+  editForm.className = "goal-admin-block admin-new-comp-form admin-edit-comp-form";
+  editShell.appendChild(editForm);
 
   const changedFields = {};
-  const dailyGoalChanges = {};
   let saveAllBtn = null;
 
   const normalizeStringValue = (value) => String(value ?? "");
@@ -2105,13 +2255,14 @@ function renderCompEditPanel(compId, comp) {
 
   const getHighlightTarget = (el) => (
     el?.closest(".goal-day-input-shell") ||
-    el?.closest(".admin-edit-field-stack") ||
+    el?.closest(".admin-form-field-offset") ||
+    el?.closest(".log-field-wrap") ||
     el
   );
 
   const updateSaveButtonState = () => {
     if (!saveAllBtn) return;
-    const isDirty = Object.keys(changedFields).length > 0 || Object.keys(dailyGoalChanges).length > 0;
+    const isDirty = Object.keys(changedFields).length > 0;
     saveAllBtn.disabled = !isDirty;
     saveAllBtn.classList.toggle("btn-ghost", !isDirty);
   };
@@ -2147,50 +2298,34 @@ function renderCompEditPanel(compId, comp) {
   };
 
   const nameWrap = document.createElement("div");
-  nameWrap.className = "admin-edit-field-stack";
-  nameWrap.innerHTML = `<label class="field-label">Competition Name</label><input type="text" id="comp-edit-name" class="log-input" value="${escapeHtml(comp.name)}" placeholder="Competition Name" />`;
-  setupGroup.appendChild(nameWrap);
+  nameWrap.className = "admin-form-field-offset";
+  nameWrap.innerHTML = `<label class="field-label">NAME *</label><input type="text" id="comp-edit-name" class="log-input admin-form-input-spaced" value="${escapeHtml(comp.name)}" placeholder="e.g.OIS Competition" />`;
+  editForm.appendChild(nameWrap);
   addChangeListener("comp-edit-name", comp.name);
 
   const dateRangeWrap = document.createElement("div");
-  dateRangeWrap.className = "admin-date-range";
-  dateRangeWrap.innerHTML = ` <label class="field-label">Competition Window</label>
-    <div class="admin-date-range-grid">
-      <div class="admin-date-field">
-        <label class="field-label" for="comp-edit-startDate">Start Date</label>
-        <input type="date" id="comp-edit-startDate" class="log-input admin-date-input" value="${escapeHtml(comp.startDate || "")}" />
+  dateRangeWrap.className = "log-fields admin-form-fields-spaced";
+  dateRangeWrap.innerHTML = `
+      <div class="log-field-wrap">
+        <label class="field-label" for="comp-edit-startDate">START DATE *</label>
+        <input type="date" id="comp-edit-startDate" class="log-input" value="${escapeHtml(comp.startDate || "")}" />
       </div>
-      <div class="admin-date-range-connector" aria-hidden="true">→</div>
-      <div class="admin-date-field">
-        <label class="field-label" for="comp-edit-endDate">End Date</label>
-        <input type="date" id="comp-edit-endDate" class="log-input admin-date-input" value="${escapeHtml(comp.endDate || "")}" />
+      <div class="log-field-wrap">
+        <label class="field-label" for="comp-edit-endDate">END DATE *</label>
+        <input type="date" id="comp-edit-endDate" class="log-input" value="${escapeHtml(comp.endDate || "")}" />
       </div>
-    </div>
   `;
-  setupGroup.appendChild(dateRangeWrap);
+  editForm.appendChild(dateRangeWrap);
   addChangeListener("comp-edit-startDate", comp.startDate || "");
   addChangeListener("comp-edit-endDate", comp.endDate || "");
 
   const startDateInput = document.getElementById("comp-edit-startDate");
   const endDateInput = document.getElementById("comp-edit-endDate");
-  const dateSummary = document.getElementById("comp-edit-date-summary");
   const updateDateRangeUI = () => {
     const startValue = startDateInput?.value || "";
     const endValue = endDateInput?.value || "";
     if (startDateInput) startDateInput.max = endValue || "";
     if (endDateInput) endDateInput.min = startValue || "";
-
-    if (!dateSummary) return;
-    if (startValue && endValue) {
-      const dayCount = Math.round((new Date(endValue + "T00:00:00") - new Date(startValue + "T00:00:00")) / 86400000) + 1;
-      if (dayCount > 0) {
-        dateSummary.textContent = `${formatDate(startValue)} -> ${formatDate(endValue)}  |  ${dayCount} day${dayCount === 1 ? "" : "s"}`;
-        return;
-      }
-      dateSummary.textContent = "End date must be after start date";
-      return;
-    }
-    dateSummary.textContent = "Choose the start and end of the competition";
   };
   startDateInput?.addEventListener("change", updateDateRangeUI);
   endDateInput?.addEventListener("change", updateDateRangeUI);
@@ -2198,160 +2333,34 @@ function renderCompEditPanel(compId, comp) {
   endDateInput?.addEventListener("input", updateDateRangeUI);
   updateDateRangeUI();
 
-  const winnerDisplayText = !isCompEnded(comp)
-    ? "Winner TBA"
-    : (comp.winner && state.employees[comp.winner]?.name)
+  if (isCompEnded(comp)) {
+    const winnerDisplayText = (comp.winner && state.employees[comp.winner]?.name)
       ? state.employees[comp.winner].name
       : "No winner set";
 
-  const winnerWrap = document.createElement("div");
-  winnerWrap.className = "admin-edit-field-stack";
-  winnerWrap.innerHTML = `
-    <label class="field-label">WINNER</label>
-    <div class="admin-readonly-field">${escapeHtml(winnerDisplayText)}</div>
-  `;
-  setupGroup.appendChild(winnerWrap);
+    const winnerWrap = document.createElement("div");
+    winnerWrap.className = "admin-form-field-offset";
+    winnerWrap.innerHTML = `
+      <label class="field-label">WINNER</label>
+      <div class="admin-readonly-field">${escapeHtml(winnerDisplayText)}</div>
+    `;
+    editForm.appendChild(winnerWrap);
+  }
 
   const compGoals = getCompGoals(compId);
-  const goalPanels = [];
-  const createGoalPanel = (options) => {
-    const panel = createCollapsiblePanel({
-      ...options,
-      onToggle: (expanded) => {
-        if (!expanded) return;
-        goalPanels.forEach((otherPanel) => {
-          if (otherPanel !== panel) {
-            setCollapsibleState(otherPanel.toggle, otherPanel.body, false);
-          }
-        });
-      },
-    });
-    goalPanels.push(panel);
-    return panel;
-  };
 
   // Competition Total Goal
   const compGoalSection = document.createElement("div");
-  compGoalSection.className = "goal-admin-block";
-  const compGoalPanel = createGoalPanel({
-    title: "Competition Total Goal",
-    className: "goal-admin-collapsible",
-    collapsed: true,
-  });
-  compGoalSection.appendChild(compGoalPanel.wrapper);
-  compGoalPanel.body.innerHTML = `
-    <div class="admin-form-field-offset">
-      <label class="field-label">TARGET</label>
-      <label class="goal-day-input-shell goal-admin-input-shell" for="goal-val-competition">
-        <span class="goal-day-currency">$</span>
-        <input type="number" id="goal-val-competition" class="daily-goal-input log-input goal-day-input" placeholder="0" value="${compGoals.competition?.value || ""}" min="0" step="1" />
-      </label>
-    </div>
+  compGoalSection.className = "admin-form-field-offset";
+  compGoalSection.innerHTML = `
+    <label class="field-label">COMPETITION GOAL</label>
+    <label class="goal-day-input-shell goal-admin-input-shell" for="goal-val-competition">
+      <span class="goal-day-currency">$</span>
+      <input type="number" id="goal-val-competition" class="log-input goal-day-input" placeholder="0" value="${compGoals.competition?.value || ""}" min="0" step="1" />
+    </label>
   `;
-  goalsGroup.appendChild(compGoalSection);
+  editForm.appendChild(compGoalSection);
   addChangeListener("goal-val-competition", compGoals.competition?.value || "", "numeric-goal");
-
-  // Daily Goals by Week
-  const dailyGoalsSection = document.createElement("div");
-  dailyGoalsSection.className = "goal-admin-block";
-  const dailyGoalsPanel = createGoalPanel({
-    title: "Daily Goals by Week",
-    className: "goal-admin-collapsible",
-    collapsed: true,
-  });
-  dailyGoalsSection.appendChild(dailyGoalsPanel.wrapper);
-  goalsGroup.appendChild(dailyGoalsSection);
-
-  const weekPickerWrap = document.createElement("div");
-  weekPickerWrap.className = "daily-goal-week-picker-wrap";
-  weekPickerWrap.innerHTML = `
-    <label class="field-label">SELECT WEEK</label>
-    <div class="daily-goal-week-controls">
-      <button type="button" class="week-nav-btn" id="daily-goal-prev-week-btn">←</button>
-      <label class="daily-goal-week-input-wrap" for="daily-goal-week-picker">
-        <div class="daily-goal-week-display" id="daily-goal-week-display"></div>
-        <input type="date" id="daily-goal-week-picker" class="daily-goal-week-picker-native" value="${comp.startDate || ""}" min="${comp.startDate || ""}" max="${comp.endDate || ""}" />
-      </label>
-      <button type="button" class="week-nav-btn" id="daily-goal-next-week-btn">→</button>
-    </div>
-  `;
-  dailyGoalsPanel.body.appendChild(weekPickerWrap);
-
-  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const dailyGoalsGrid = document.createElement("div");
-  dailyGoalsGrid.id = "daily-goals-grid";
-  dailyGoalsGrid.style.marginTop = "12px";
-  dailyGoalsPanel.body.appendChild(dailyGoalsGrid);
-
-  const clampCompetitionDate = (dateStr) => {
-    if (!dateStr) return comp.startDate || comp.endDate || getTodayDate();
-    if (comp.startDate && dateStr < comp.startDate) return comp.startDate;
-    if (comp.endDate && dateStr > comp.endDate) return comp.endDate;
-    return dateStr;
-  };
-
-  const renderDailyGoalsForWeek = (dateStr) => {
-    const safeDateStr = clampCompetitionDate(dateStr);
-    const weekInfo = getWeekForDate(safeDateStr);
-    const weekDisplay = document.getElementById("daily-goal-week-display");
-    const weekPicker = document.getElementById("daily-goal-week-picker");
-    if (weekPicker && weekPicker.value !== safeDateStr) {
-      weekPicker.value = safeDateStr;
-    }
-    if (weekDisplay) {
-      weekDisplay.textContent = `${formatDate(weekInfo.startDate)} -> ${formatDate(weekInfo.endDate)}`;
-    }
-
-    dailyGoalsGrid.innerHTML = "";
-    for (let i = 0; i < weekInfo.days.length; i++) {
-      const { date: dateString } = weekInfo.days[i];
-      const isInRange = dateString >= comp.startDate && dateString <= comp.endDate;
-
-      if (!isInRange) continue;
-
-      const dayGoal = compGoals[`daily_${dateString}`] || {};
-      const pendingValue = Object.prototype.hasOwnProperty.call(dailyGoalChanges, dateString)
-        ? dailyGoalChanges[dateString]
-        : undefined;
-      const fieldId = `daily-goal-${dateString}`;
-
-      const dayCard = document.createElement("div");
-      dayCard.className = "goal-day-card";
-      dayCard.innerHTML = `
-        <div class="goal-day-meta">
-          <div class="goal-day-name">${daysOfWeek[i]}</div>
-          <div class="goal-day-date">${dateString}</div>
-        </div>
-        <label class="goal-day-input-shell" for="${fieldId}">
-          <span class="goal-day-currency">$</span>
-          <input type="number" id="${fieldId}" data-date="${dateString}" class="daily-goal-input log-input goal-day-input" placeholder="0" value="${pendingValue ?? dayGoal.value ?? ""}" min="0" step="1" />
-        </label>
-      `;
-      dailyGoalsGrid.appendChild(dayCard);
-
-      // Track daily goal changes
-      const input = document.getElementById(fieldId);
-      getHighlightTarget(input)?.classList.toggle("admin-field-changed", Object.prototype.hasOwnProperty.call(dailyGoalChanges, dateString));
-      input.addEventListener("input", () => {
-        const normalizedCurrent = normalizeNumericGoalValue(input.value);
-        const normalizedOriginal = normalizeNumericGoalValue(dayGoal.value || "");
-        if (normalizedCurrent !== normalizedOriginal) {
-          dailyGoalChanges[dateString] = normalizedCurrent ? Number.parseFloat(normalizedCurrent) : null;
-        } else {
-          delete dailyGoalChanges[dateString];
-        }
-        getHighlightTarget(input)?.classList.toggle("admin-field-changed", dateString in dailyGoalChanges);
-        updateSaveButtonState();
-      });
-    }
-    updateSaveButtonState();
-  };
-
-  const weekPicker = document.getElementById("daily-goal-week-picker");
-  weekPicker.onchange = () => renderDailyGoalsForWeek(weekPicker.value);
-  document.getElementById("daily-goal-prev-week-btn").onclick = () => renderDailyGoalsForWeek(prevWeek(weekPicker.value));
-  document.getElementById("daily-goal-next-week-btn").onclick = () => renderDailyGoalsForWeek(nextWeek(weekPicker.value));
-  renderDailyGoalsForWeek(clampCompetitionDate(comp.startDate || getTodayDate()));
 
   // ═══ Save All Button ═══
   saveAllBtn = makeBtn("SAVE ALL CHANGES", "log-btn btn-ghost", async () => {
@@ -2370,21 +2379,12 @@ function renderCompEditPanel(compId, comp) {
       await remove(ref(db, `goals/${compId}/competition`));
     }
 
-    // Save daily goals
-    for (const [dateStr, value] of Object.entries(dailyGoalChanges)) {
-      if (value > 0) {
-        await set(ref(db, `goals/${compId}/daily_${dateStr}`), { type: "total", value });
-      } else {
-        await remove(ref(db, `goals/${compId}/daily_${dateStr}`));
-      }
-    }
-
     showToast("All changes saved ✅");
     state.admin.tab = "competitions"; renderAdminTabBar(); renderAdminTab();
   });
   const actionsWrap = document.createElement("div");
   actionsWrap.className = "admin-edit-actions";
-  editShell.appendChild(actionsWrap);
+  editForm.appendChild(actionsWrap);
   actionsWrap.appendChild(saveAllBtn);
 
   const delBtn = makeBtn("DELETE COMPETITION", "log-btn admin-danger-btn", async () => {
@@ -2839,28 +2839,21 @@ function renderAdminLogs(container) {
   `;
   container.appendChild(playerDayWrap);
 
-  const detail = document.createElement("div");
-  detail.className = "admin-log-detail-wrap"; detail.id = "admin-logs-detail";
-  detail.innerHTML = getAdminLogEmptyState("Choose a day, then pick a player to manage their log");
-  container.appendChild(detail);
-
   refreshAdminDayView();
 }
 
 function refreshAdminDayView() {
   const compId = state.admin.selectedComp || state.currentComp;
   const dayContainer = document.getElementById("admin-logs-days");
-  const dayDetail = document.getElementById("admin-logs-detail");
   const playerList = document.getElementById("admin-logs-player-list");
   const playerStatus = document.getElementById("admin-logs-player-status");
-  if (!dayContainer || !dayDetail || !playerList || !playerStatus) return;
+  if (!dayContainer || !playerList || !playerStatus) return;
 
   const comp = state.competitions[compId];
   if (!comp) {
     dayContainer.innerHTML = "";
     playerList.innerHTML = `<div class="admin-log-empty-state">Select a competition to manage its logs</div>`;
     playerStatus.textContent = "";
-    dayDetail.innerHTML = getAdminLogEmptyState("Select a competition first");
     return;
   }
 
@@ -2930,7 +2923,6 @@ function refreshAdminDayView() {
   if (!playersForDay.length) {
     playerList.innerHTML = `<div class="admin-log-empty-state">No players found for this day</div>`;
     playerStatus.textContent = "";
-    dayDetail.innerHTML = getAdminLogEmptyState("No players are available yet");
     return;
   }
 
@@ -2942,6 +2934,9 @@ function refreshAdminDayView() {
   const unloggedPlayers = playersForDay.filter(p => !p.log);
   playerList.innerHTML = "";
   const renderPlayerCard = ({ id, emp, log }) => {
+    const wrap = document.createElement("div");
+    wrap.className = `admin-log-player-card-wrap${state.admin.selectedEmp === id ? " active" : ""}`;
+
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = `admin-log-player-card${log ? " has-log" : ""}${state.admin.selectedEmp === id ? " active" : ""}`;
@@ -2950,17 +2945,28 @@ function refreshAdminDayView() {
         <div class="admin-log-player-name">${escapeHtml(emp.name)}</div>
         <div class="admin-log-player-meta">${log ? `$${log.sales.toFixed(2)} · ${log.hours.toFixed(1)} hrs` : "No log yet"}</div>
       </div>
-      ${log ? '<div class="admin-log-player-badge edit">Edit</div>' : '<div class="admin-log-player-badge open">Add</div>'}
+      ${state.admin.selectedEmp === id ? '<div class="admin-log-player-badge close">Close</div>' : (log ? '<div class="admin-log-player-badge edit">Edit</div>' : '<div class="admin-log-player-badge open">Add</div>')}
     `;
     btn.onclick = () => {
-      state.admin.selectedEmp = id;
-      document.querySelectorAll("#admin-logs-player-list .admin-log-player-card").forEach(card => card.classList.remove("active"));
-      btn.classList.add("active");
-      if (log) renderAdminLogEdit(id, compId, selectedDate, log);
-      else renderAdminLogCreate(id, compId, selectedDate);
-      document.getElementById("admin-logs-detail")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      state.admin.selectedEmp = state.admin.selectedEmp === id ? null : id;
+      refreshAdminDayView();
+      if (state.admin.selectedEmp) {
+        requestAnimationFrame(() => {
+          document.querySelector(".admin-log-player-card-wrap.active")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+      }
     };
-    return btn;
+    wrap.appendChild(btn);
+
+    if (state.admin.selectedEmp === id) {
+      const inlineDetail = document.createElement("div");
+      inlineDetail.className = "admin-log-inline-detail";
+      wrap.appendChild(inlineDetail);
+      if (log) renderAdminLogEdit(id, compId, selectedDate, log, inlineDetail);
+      else renderAdminLogCreate(id, compId, selectedDate, inlineDetail);
+    }
+
+    return wrap;
   };
 
   if (loggedPlayers.length) {
@@ -3001,17 +3007,6 @@ function refreshAdminDayView() {
     openSection.appendChild(openList);
     playerList.appendChild(openSection);
   }
-
-  const selectedPlayer = playersForDay.find(p => p.id === state.admin.selectedEmp);
-  if (!selectedPlayer) {
-    dayDetail.innerHTML = getAdminLogEmptyState("Choose a player to review or add an OIS");
-    return;
-  }
-  if (selectedPlayer.log) {
-    renderAdminLogEdit(selectedPlayer.id, compId, selectedDate, selectedPlayer.log);
-  } else {
-    renderAdminLogCreate(selectedPlayer.id, compId, selectedDate);
-  }
 }
 
 function renderAdminLogDetail(empId, compId, date, log) {
@@ -3047,8 +3042,8 @@ function renderAdminLogDetail(empId, compId, date, log) {
   };
 }
 
-function renderAdminLogCreate(empId, compId, date) {
-  const detail = document.getElementById("admin-logs-detail");
+function renderAdminLogCreate(empId, compId, date, target = null) {
+  const detail = target || document.getElementById("admin-logs-detail");
   if (!detail) return;
   const d = new Date(date + "T00:00:00");
   const dayName = DAYS[d.getDay()];
@@ -3066,15 +3061,15 @@ function renderAdminLogCreate(empId, compId, date) {
     </div>
     <button class="log-btn btn-ghost admin-log-form-submit" id="admin-create-log-btn" disabled>+ CREATE LOG</button>
   `;
-  const s = document.getElementById("admin-create-sales");
-  const h = document.getElementById("admin-create-hours");
+  const s = detail.querySelector("#admin-create-sales");
+  const h = detail.querySelector("#admin-create-hours");
   const checkReady = () => {
     const ready = s.value.trim() !== "" && h.value.trim() !== "";
-    const btn = document.getElementById("admin-create-log-btn");
+    const btn = detail.querySelector("#admin-create-log-btn");
     if (btn) { btn.disabled = !ready; btn.classList.toggle("btn-ghost", !ready); }
   };
   s.oninput = checkReady; h.oninput = checkReady;
-  document.getElementById("admin-create-log-btn").onclick = async () => {
+  detail.querySelector("#admin-create-log-btn").onclick = async () => {
     const sales = parseFloat(s.value);
     const hours = parseFloat(h.value);
     if (isNaN(sales) || sales < 0) { showToast("Enter valid sales amount"); return; }
@@ -3082,13 +3077,15 @@ function renderAdminLogCreate(empId, compId, date) {
     if (date > getTodayDate()) { showToast("Can't create logs for future dates 🔮"); return; }
     await set(dbRef.dateLog(compId, empId, date), { sales, hours });
     upsertLocalLog(compId, empId, date, { sales, hours });
+    state.admin.selectedEmp = null;
     showToast("Log created ✅");
+    refreshAdminDayView();
     if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
   };
 }
 
-function renderAdminLogEdit(empId, compId, date, log) {
-  const detail = document.getElementById("admin-logs-detail");
+function renderAdminLogEdit(empId, compId, date, log, target = null) {
+  const detail = target || document.getElementById("admin-logs-detail");
   if (!detail) return;
   const d = new Date(date + "T00:00:00");
   const dayName = DAYS[d.getDay()];
@@ -3107,26 +3104,22 @@ function renderAdminLogEdit(empId, compId, date, log) {
     </div>
     <div class="admin-btn-row admin-log-edit-actions">
       <button class="log-btn" id="admin-save-edit-btn">SAVE</button>
-      <button class="btn-secondary" id="admin-cancel-edit-btn">CANCEL</button>
       <button class="admin-action-delete" id="admin-delete-edit-btn">DELETE</button>
     </div>
   `;
-  document.getElementById("admin-save-edit-btn").onclick = async () => {
-    const sales = parseFloat(document.getElementById("admin-edit-sales").value);
-    const hours = parseFloat(document.getElementById("admin-edit-hours").value);
+  detail.querySelector("#admin-save-edit-btn").onclick = async () => {
+    const sales = parseFloat(detail.querySelector("#admin-edit-sales").value);
+    const hours = parseFloat(detail.querySelector("#admin-edit-hours").value);
     if (isNaN(sales) || sales < 0) { showToast("Enter valid sales amount"); return; }
     if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked"); return; }
     await set(dbRef.dateLog(compId, empId, date), { sales, hours });
     upsertLocalLog(compId, empId, date, { sales, hours });
+    state.admin.selectedEmp = null;
     showToast("Log updated ✅");
+    refreshAdminDayView();
     if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
   };
-  document.getElementById("admin-cancel-edit-btn").onclick = () => {
-    state.admin.selectedEmp = null;
-    refreshAdminDayView();
-    document.getElementById("admin-logs-player-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-  document.getElementById("admin-delete-edit-btn").onclick = async () => {
+  detail.querySelector("#admin-delete-edit-btn").onclick = async () => {
     const confirmed = await showAppConfirm({
       title: "Delete Order",
       message: `Delete ${empName}'s order for ${date}?`,
@@ -3203,6 +3196,50 @@ function showAppConfirm({
     modal.querySelector(".app-confirm-close")?.addEventListener("click", () => close(false));
     modal.querySelector(".app-confirm-cancel")?.addEventListener("click", () => close(false));
     modal.querySelector(".app-confirm-confirm")?.addEventListener("click", () => close(true));
+    modal.classList.add("active");
+  });
+}
+
+function showAppAlert({
+  title = "Notice",
+  message = "",
+  confirmLabel = "OK",
+  confirmClassName = "log-btn",
+} = {}) {
+  return new Promise((resolve) => {
+    let modal = document.getElementById("app-alert-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "app-alert-modal";
+      modal.className = "info-modal app-confirm-modal";
+      document.body.appendChild(modal);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) close();
+      });
+    }
+
+    const close = () => {
+      modal.classList.remove("active");
+      resolve(true);
+    };
+
+    modal.innerHTML = `
+      <div class="info-modal-content app-confirm-content">
+        <div class="info-modal-header app-confirm-header">
+          <div class="info-modal-title app-confirm-title">${escapeHtml(title)}</div>
+          <button class="info-modal-close app-confirm-close" type="button" aria-label="Close">✕</button>
+        </div>
+        <div class="info-modal-body app-confirm-body">
+          <p class="app-confirm-message">${escapeHtml(message)}</p>
+          <div class="app-confirm-actions">
+            <button class="${escapeHtml(confirmClassName)} app-confirm-confirm" type="button">${escapeHtml(confirmLabel)}</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    modal.querySelector(".app-confirm-close")?.addEventListener("click", close);
+    modal.querySelector(".app-confirm-confirm")?.addEventListener("click", close);
     modal.classList.add("active");
   });
 }

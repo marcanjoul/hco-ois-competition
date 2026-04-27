@@ -28,6 +28,44 @@
    ──────────────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {
+  .pick-success-state {
+    gap: 10px;
+    padding: 12px 8px;
+  }
+
+  .pick-success-checkmark {
+    font-size: 38px;
+  }
+
+  .pick-success-title {
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+
+  .pick-success-stats {
+    gap: 6px;
+  }
+
+  .pick-success-stat {
+    padding: 8px 4px;
+  }
+
+  .pick-success-stat-label {
+    font-size: 7px;
+    letter-spacing: 0.6px;
+  }
+
+  .pick-success-stat-value {
+    font-size: 15px;
+    letter-spacing: 0;
+  }
+
+  .pick-success-cta {
+    padding: 10px 8px;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
   .dash-profile-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -93,22 +131,6 @@
 
   .goal-admin-block {
     padding: 10px;
-  }
-
-  .goal-admin-collapsible {
-    gap: 10px;
-  }
-
-  .daily-goal-week-display {
-    min-height: 44px;
-    padding: 0 10px;
-    font-size: 15px;
-  }
-
-  .daily-goal-week-controls .week-nav-btn {
-    min-width: 44px;
-    min-height: 44px;
-    font-size: 16px;
   }
 
   .goal-day-card {
@@ -440,6 +462,22 @@
 }
 
 @media (max-width: 380px) {
+  .pick-success-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pick-success-stat {
+    padding: 7px 3px;
+  }
+
+  .pick-success-stat-label {
+    font-size: 6px;
+  }
+
+  .pick-success-stat-value {
+    font-size: 13px;
+  }
+
   .dash-profile-stats {
     grid-template-columns: 1fr;
   }
@@ -727,15 +765,13 @@
   }
 
   .admin-log-week-controls .week-nav-btn,
-  .admin-day-buttons .week-nav-btn,
-  .daily-goal-week-controls .week-nav-btn {
+  .admin-day-buttons .week-nav-btn {
     min-width: 38px;
     min-height: 38px;
     font-size: 14px;
   }
 
-  .admin-log-week-display,
-  .daily-goal-week-display {
+  .admin-log-week-display {
     min-height: 38px;
     padding: 0 10px;
     font-size: 15px;
