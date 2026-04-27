@@ -2543,14 +2543,25 @@ button.btn-disabled:hover,
 }
 
 #screen-pick .pick-comp-days-num {
+  position: relative;
+  display: inline-block;
   font-family: "Press Start 2P", monospace;
   font-size: 36px;
   line-height: 1;
   text-shadow:
     2px 2px 0 #ff8f1a,
-    4px 4px 0 #050816,
-    0 0 4.5px rgba(255, 216, 77, 0.12),
-    0 0 8.25px rgba(255, 216, 77, 0.0675) !important;
+    4px 4px 0 #050816 !important;
+}
+
+#screen-pick .pick-comp-days-num::after {
+  content: attr(data-days);
+  position: absolute;
+  inset: 0;
+  color: #c98f2a;
+  opacity: 0.38;
+  transform: translate(-1px, -1px);
+  text-shadow: none;
+  pointer-events: none;
 }
 
 #screen-pick .pick-comp-days-label {
