@@ -1499,7 +1499,7 @@ function renderBoard() {
     if (tieGroup.length > 1) {
       const wrap = document.createElement("div");
       wrap.className = "board-tie-group";
-      wrap.innerHTML = `<div class="board-tie-group-label">TIE AT #${getLeaderboardDisplayRank(players, i, metric)} · ${tieGroup.length} PLAYERS</div>`;
+      wrap.innerHTML = `<div class="board-tie-group-label">TIE AT #${getLeaderboardDisplayRank(players, i, metric)}`;
       tieGroup.forEach((tiedPlayer, offset) => {
         wrap.appendChild(makeBoardCard(tiedPlayer, i + offset, tieGroup.length));
       });
