@@ -203,8 +203,7 @@ window.updateBtnState = function(inputId, btnId) {
 // ══════════════════════════════════════════════════════
 function isCompEnded(comp) {
   if (!comp?.endDate) return false;
-  const end = new Date(comp.endDate);
-  end.setHours(23, 59, 59, 999);
+  const end = new Date(`${comp.endDate}T23:59:59.999`);
   return new Date() > end;
 }
 
@@ -506,8 +505,10 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
   const daysNum = days !== null ? Math.max(0, days) : null;
   const numHue = daysNum !== null ? Math.max(0, Math.min(44, Math.round(44 * (daysNum - 1) / 7))) : 44;
   const numColorStyle = daysNum !== null ? `color:hsl(${numHue},100%,65%)` : "";
+  const daysText = daysNum === 0 ? "Last day" : daysNum;
+  const daysLabel = daysNum === 1 ? "day left" : "days left";
   const daysLeftHtml = !ended && daysNum !== null
-    ? `<div class="pick-comp-days-left"><span class="pick-comp-days-num" data-days="${daysNum}" style="${numColorStyle}">${daysNum}</span><span class="pick-comp-days-label">${daysNum === 1 ? "day left" : "days left"}</span></div>`
+    ? `<div class="pick-comp-days-left"><span class="pick-comp-days-num${daysNum === 0 ? " last-day" : ""}" data-days="${daysText}" style="${numColorStyle}">${daysText}</span>${daysNum === 0 ? "" : `<span class="pick-comp-days-label">${daysLabel}</span>`}</div>`
     : "";
 
   container.classList.add("pick-comp-info");
