@@ -357,6 +357,11 @@
   font-weight: 900;
 }
 
+.pick-comp-days-num.last-day {
+  font-size: 24px;
+  text-transform: uppercase;
+}
+
 .pick-comp-days-label {
   font-family: var(--type-label-family);
   font-size: 11px;

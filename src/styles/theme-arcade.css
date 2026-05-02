@@ -2547,6 +2547,10 @@ button.btn-disabled:hover,
     4px 4px 0 #050816 !important;
 }
 
+#screen-pick .pick-comp-days-num.last-day {
+  font-size: 22px;
+}
+
 #screen-pick .pick-comp-days-num::after {
   content: attr(data-days);
   position: absolute;
