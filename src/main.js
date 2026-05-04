@@ -55,6 +55,7 @@ let state = {
     selectedEmp: null,
     selectedComp: null,
     editingCompId: null,
+    compFilter: "all",
     selectedDate: getTodayDate(),
     empSearch: "",
     tab: "competitions",
@@ -1801,8 +1802,44 @@ function renderAdminTab() {
 // ══════════════════════════════════════════════════════
 function renderAdminComps(container) {
   container.innerHTML = `<div class="admin-section-title">MANAGE COMPETITIONS</div>`;
-  const entries = Object.entries(state.competitions);
-  const toShow = state.admin.showAllComps ? entries : entries.slice(0, PREVIEW_COUNT);
+  const entries = Object.entries(state.competitions)
+    .sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0));
+  const filterOptions = [
+    { id: "all", label: "All" },
+    { id: "active", label: "Active" },
+    { id: "ended", label: "Ended" },
+  ];
+  const filteredEntries = entries.filter(([, comp]) => {
+    const ended = isCompEnded(comp);
+    if (state.admin.compFilter === "active") return !ended;
+    if (state.admin.compFilter === "ended") return ended;
+    return true;
+  });
+  const toShow = state.admin.showAllComps ? filteredEntries : filteredEntries.slice(0, PREVIEW_COUNT);
+
+  const filterBar = document.createElement("div");
+  filterBar.className = "admin-comp-filter-bar";
+  filterOptions.forEach(option => {
+    const count = entries.filter(([, comp]) => {
+      const ended = isCompEnded(comp);
+      if (option.id === "active") return !ended;
+      if (option.id === "ended") return ended;
+      return true;
+    }).length;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `admin-comp-filter-btn${state.admin.compFilter === option.id ? " active" : ""}`;
+    btn.innerHTML = `<span>${option.label}</span><span class="admin-comp-filter-count">${count}</span>`;
+    btn.onclick = () => {
+      state.admin.compFilter = option.id;
+      state.admin.showAllComps = false;
+      state.admin.editingCompId = null;
+      renderAdminTab();
+    };
+    filterBar.appendChild(btn);
+  });
+  container.appendChild(filterBar);
+
   const list = document.createElement("div");
   list.className = "admin-list";
 
@@ -1854,6 +1891,13 @@ function renderAdminComps(container) {
 
     list.appendChild(compWrap);
   });
+  if (filteredEntries.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "admin-list-empty-state admin-comp-empty-state";
+    const emptyLabel = state.admin.compFilter === "active" ? "No active competitions" : "No ended competitions";
+    empty.textContent = emptyLabel;
+    list.appendChild(empty);
+  }
   // New competition form
   const newCompSection = document.createElement("div");
   newCompSection.className = "goal-admin-block";
@@ -1992,9 +2036,9 @@ function renderAdminComps(container) {
 
   container.appendChild(list);
 
-  if (entries.length > PREVIEW_COUNT) {
+  if (filteredEntries.length > PREVIEW_COUNT) {
     container.appendChild(makeBtn(
-      state.admin.showAllComps ? "Show less ▲" : `View all ${entries.length} ▼`,
+      state.admin.showAllComps ? "Show less ▲" : `View all ${filteredEntries.length} ▼`,
       "view-all-btn",
       () => { state.admin.showAllComps = !state.admin.showAllComps; renderAdminTab(); }
     ));
@@ -2528,10 +2572,9 @@ function renderAdminEmps(container) {
   toolsWrap.className = "admin-team-tools";
   toolsWrap.innerHTML = `
     <div class="admin-team-tools-header">
-      <div>
-        <div class="admin-team-tools-title-row">
-          <div class="admin-team-tools-title">Search, edit, and add players fast.</div>
-        </div>
+      <div class="admin-team-tools-title-row">
+        <div class="admin-team-tools-title">Players</div>
+        <div class="admin-team-tools-count">${employeeCount} active</div>
       </div>
     </div>
     <div class="admin-team-controls">
