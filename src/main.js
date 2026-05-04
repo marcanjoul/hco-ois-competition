@@ -1089,15 +1089,16 @@ function renderDash() {
   }
 
   document.getElementById("dash-name").textContent = emp.name.toUpperCase();
-  const comp = state.competitions[state.currentComp];
+  const viewingCompId = isProfileView ? (state.boardComp || state.currentComp) : state.currentComp;
+  const comp = state.competitions[viewingCompId];
   document.getElementById("dash-comp-name").textContent = comp ? comp.name : "";
 
-  const myLogs = (state.logs[state.currentComp] || {})[state.currentUser] || {};
+  const myLogs = (state.logs[viewingCompId] || {})[state.currentUser] || {};
   let totalSales = 0, totalHours = 0;
   Object.values(myLogs).forEach(d => { totalSales += d.sales || 0; totalHours += d.hours || 0; });
   const sph = totalHours > 0 ? totalSales / totalHours : 0;
   const hasLogs = Object.keys(myLogs).length > 0;
-  const ranked = getRankedPlayers(state.currentComp);
+  const ranked = getRankedPlayers(viewingCompId);
   const myRank = ranked.findIndex(r => r.id === state.currentUser) + 1;
 
   const dashCompInfoEl = document.getElementById("dash-comp-info");
@@ -1123,7 +1124,7 @@ function renderDash() {
     if (isProfileView) {
       dashCompInfoEl.classList.add("hidden");
     } else {
-      renderCompetitionCard(dashCompInfoEl, state.currentComp, { collapsibleGoals: true });
+      renderCompetitionCard(dashCompInfoEl, viewingCompId, { collapsibleGoals: true });
     }
   } else if (dashCompInfoEl) {
     dashCompInfoEl.classList.add("hidden");
@@ -1186,7 +1187,7 @@ function renderDash() {
   // Hide stat cards if no logs exist in the competition yet
   const statRow = document.querySelector(".stat-row");
   if (statRow) {
-    const compHasLogs = hasLogsInComp(state.currentComp);
+    const compHasLogs = hasLogsInComp(viewingCompId);
     statRow.style.display = compHasLogs && !isProfileView ? "grid" : "none";
 
     if (compHasLogs) {
@@ -1215,7 +1216,7 @@ function renderDash() {
   // Goals
   const goalsEl = document.getElementById("dash-goals");
   if (goalsEl) {
-    const compGoals = getCompGoals(state.currentComp);
+    const compGoals = getCompGoals(viewingCompId);
     let goalsHtml = "";
     if (compGoals.competition?.value) {
       const g = compGoals.competition;

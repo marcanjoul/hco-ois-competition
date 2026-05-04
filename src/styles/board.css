@@ -343,6 +343,7 @@
 .winner-label {
   font-family: var(--type-label-family);
   font-size: 8px;
+  line-height: 1;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   background: var(--gold);
@@ -356,6 +357,7 @@
 .past-emp-label {
   font-family: var(--type-label-family);
   font-size: 8px;
+  line-height: 1;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   background: rgba(255,255,255,0.12);
