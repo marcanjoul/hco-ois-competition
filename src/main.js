@@ -149,6 +149,15 @@ function upsertLocalLog(compId, empId, date, log) {
   state.logs[compId][empId][date] = log;
 }
 
+function removeLocalLog(compId, empId, date) {
+  if (!compId || !empId || !date) return;
+  const empLogs = state.logs[compId]?.[empId];
+  if (!empLogs) return;
+  delete empLogs[date];
+  if (Object.keys(empLogs).length === 0) delete state.logs[compId][empId];
+  if (Object.keys(state.logs[compId] || {}).length === 0) delete state.logs[compId];
+}
+
 // ══════════════════════════════════════════════════════
 // Avatar helpers
 // Example on the website: the player photo or letter icon shown beside names.
@@ -3079,12 +3088,25 @@ function renderAdminLogDetail(empId, compId, date, log) {
     </div>
   `;
   document.getElementById("admin-edit-log-btn").onclick = () => renderAdminLogEdit(empId, compId, date, log);
-  document.getElementById("admin-delete-log-btn").onclick = async () => {
-    if (confirm(`Delete log for ${state.employees[empId]?.name} on ${date}?`)) {
-      await remove(dbRef.dateLog(compId, empId, date));
-      showToast("Log deleted ✅");
-    }
-  };
+  document.getElementById("admin-delete-log-btn").onclick = () => confirmAndDeleteAdminLog(empId, compId, date);
+}
+
+async function confirmAndDeleteAdminLog(empId, compId, date) {
+  const empName = state.employees[empId]?.name || "this player";
+  const confirmed = await showAppConfirm({
+    title: "Delete Order",
+    message: `Delete ${empName}'s order for ${date}?`,
+    confirmLabel: "DELETE",
+    confirmClassName: "log-btn admin-danger-btn",
+  });
+  if (!confirmed) return;
+
+  await remove(dbRef.dateLog(compId, empId, date));
+  removeLocalLog(compId, empId, date);
+  state.admin.selectedEmp = null;
+  showToast("Order deleted");
+  refreshAdminDayView();
+  if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
 }
 
 function renderAdminLogCreate(empId, compId, date, target = null) {
@@ -3155,18 +3177,7 @@ function renderAdminLogEdit(empId, compId, date, log, target = null) {
     if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
   };
   detail.querySelector("#admin-delete-edit-btn").onclick = async () => {
-    const confirmed = await showAppConfirm({
-      title: "Delete Order",
-      message: `Delete ${empName}'s order for ${date}?`,
-      confirmLabel: "DELETE",
-      confirmClassName: "log-btn admin-danger-btn",
-    });
-    if (!confirmed) return;
-    await remove(dbRef.dateLog(compId, empId, date));
-    state.admin.selectedEmp = null;
-    showToast("Order deleted");
-    refreshAdminDayView();
-    if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
+    await confirmAndDeleteAdminLog(empId, compId, date);
   };
 }
 
