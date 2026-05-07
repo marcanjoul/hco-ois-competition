@@ -825,6 +825,11 @@ body::after {
   max-width: 340px;
 }
 
+.board-comp-trigger {
+  position: relative;
+  padding-right: 44px !important;
+}
+
 .board-comp-menu {
   background:
     linear-gradient(180deg, rgba(12, 25, 70, 0.98), rgba(7, 15, 41, 0.98));
@@ -851,11 +856,42 @@ body::after {
   background: #13266c !important;
 }
 
+/* ── Unified dropdown arrow ── */
+.board-comp-trigger::after,
+.pick-emp-selector::after {
+  content: "▼";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  color: var(--accent);
+  text-shadow: 2px 2px 0 #8e5f00;
+  pointer-events: none;
+}
+
+/* select can't use ::after — use a bigger pixel-triangle instead */
+select.log-input {
+  padding-right: 54px !important;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--accent) 50%),
+    linear-gradient(135deg, var(--accent) 50%, transparent 50%) !important;
+  background-position:
+    calc(100% - 22px) calc(50% - 5px),
+    calc(100% - 12px) calc(50% - 5px) !important;
+  background-size: 10px 10px, 10px 10px !important;
+  background-repeat: no-repeat !important;
+  background-color: #050d27 !important;
+}
+
 .pick-emp-selector {
   font-size: 24px !important;
   color: #fff2a8 !important;
   min-height: 52px;
-  padding: 10px 12px !important;
+  padding: 10px 44px 10px 12px !important;
   text-shadow: 2px 2px 0 #0b1540;
 }
 
@@ -865,18 +901,26 @@ body::after {
   text-shadow: none;
 }
 
-.comp-select {
-  padding-right: 54px !important;
-  appearance: none;
-  -webkit-appearance: none;
+/* ── Dropdown open/focus state — shared across all three ── */
+.board-comp-picker.open .board-comp-trigger,
+.pick-emp-selector.open,
+select.log-input:focus {
+  border-color: var(--accent2) !important;
+  background: #0d2060 !important;
+  box-shadow: 4px 4px 0 #09153a, 0 0 0 2px rgba(71, 215, 255, 0.22) !important;
+}
+
+.board-comp-picker.open .board-comp-trigger::after,
+.pick-emp-selector.open::after {
+  color: var(--accent2);
+  text-shadow: 2px 2px 0 #073a4a;
+  transform: translateY(-50%) rotate(180deg);
+}
+
+select.log-input:focus {
   background-image:
-    linear-gradient(45deg, transparent 50%, var(--accent) 50%),
-    linear-gradient(135deg, var(--accent) 50%, transparent 50%) !important;
-  background-position:
-    calc(100% - 24px) calc(50% - 4px),
-    calc(100% - 16px) calc(50% - 4px) !important;
-  background-size: 8px 8px, 8px 8px !important;
-  background-repeat: no-repeat !important;
+    linear-gradient(45deg, transparent 50%, var(--accent2) 50%),
+    linear-gradient(135deg, var(--accent2) 50%, transparent 50%) !important;
 }
 
 .log-input::placeholder {
@@ -1029,6 +1073,35 @@ body::after {
   font-size: 15px;
   letter-spacing: 0.5px;
   text-shadow: 1px 1px 0 #0b1540;
+}
+
+.board-zero-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 4px;
+  color: #8faee8;
+  font-family: "Press Start 2P", monospace;
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-shadow: 1px 1px 0 #05102a, 0 0 12px rgba(71, 143, 232, 0.4);
+}
+
+.board-zero-divider::before,
+.board-zero-divider::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, #8faee8 0 8px, transparent 8px 14px);
+}
+
+.board-card.zero-sph {
+  filter: saturate(0.28) brightness(0.82);
+}
+
+.board-card.zero-sph .board-rank-num {
+  color: #5a6e9a;
+  text-shadow: none;
 }
 
 .toast {
