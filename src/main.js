@@ -1512,7 +1512,7 @@ function renderBoard() {
     if (tieGroup.length > 1) {
       const wrap = document.createElement("div");
       wrap.className = "board-tie-group";
-      wrap.innerHTML = `<div class="board-tie-group-label">TIE AT #${getLeaderboardDisplayRank(players, i, metric)}`;
+      wrap.innerHTML = `<div class="board-tie-group-label">TIE AT #${getLeaderboardDisplayRank(players, i, metric)}</div>`;
       tieGroup.forEach((tiedPlayer, offset) => {
         wrap.appendChild(makeBoardCard(tiedPlayer, i + offset, tieGroup.length));
       });
@@ -1586,6 +1586,20 @@ function getLeaderboardDisplayRank(players, index, metric = state.settings.ranki
     : index + 1;
 }
 
+function getLeaderboardRankGroups(players, metric = state.settings.rankingMetric || "sph") {
+  const groups = [];
+  for (let i = 0; i < players.length; i++) {
+    const rank = getLeaderboardDisplayRank(players, i, metric);
+    const lastGroup = groups[groups.length - 1];
+    if (lastGroup && lastGroup.rank === rank) {
+      lastGroup.players.push(players[i]);
+    } else {
+      groups.push({ rank, players: [players[i]] });
+    }
+  }
+  return groups;
+}
+
 function renderCompetitionEndedModal(compId) {
   const modal = document.getElementById("competition-ended-modal");
   const body = document.getElementById("competition-ended-body");
@@ -1594,44 +1608,58 @@ function renderCompetitionEndedModal(compId) {
   const comp = state.competitions[compId];
   const players = getRankedPlayers(compId);
   const metric = state.settings.rankingMetric || "sph";
-  const winner = comp.winner ? state.employees[comp.winner] : (players[0] ? state.employees[players[0].id] : null);
-  const topThree = players.slice(0, 3);
-  const rest = players.slice(3);
-  const podiumOrder = [topThree[1], topThree[0], topThree[2]].filter(Boolean);
+  const rankGroups = getLeaderboardRankGroups(players, metric);
+  const winnerGroup = rankGroups.find(group => group.rank === 1);
+  const storedWinner = comp.winner ? state.employees[comp.winner] : null;
+  const winnerNames = winnerGroup?.players?.length
+    ? winnerGroup.players.map(player => player.name).join(" + ")
+    : (storedWinner?.name || "No winner");
+  const podiumGroups = rankGroups.filter(group => group.rank <= 3);
+  const restGroups = rankGroups.filter(group => group.rank > 3);
+  const podiumRankOrder = [2, 1, 3];
+  const podiumOrder = podiumRankOrder
+    .map(rank => podiumGroups.find(group => group.rank === rank))
+    .filter(Boolean);
 
   const scoreLabel = metric === "sph" ? "/HR" : "TOTAL";
   const scoreValue = (player) => metric === "sph" ? `$${player.sph.toFixed(2)}` : `$${player.total.toFixed(2)}`;
-  const podiumHtml = podiumOrder.map((player) => {
-    const originalIndex = players.findIndex(p => p.id === player.id);
-    const rank = getLeaderboardDisplayRank(players, originalIndex, metric);
-    const emp = state.employees[player.id] || { name: player.name };
+  const podiumHtml = podiumOrder.map((group) => {
+    const rank = group.rank;
+    const tied = group.players.length > 1;
+    const playerHtml = group.players.map((player) => {
+      const emp = state.employees[player.id] || { name: player.name };
+      return `
+        <div class="ended-podium-player">
+          ${getBoardAvatarHtml(emp, player.id, rank)}
+          <div class="ended-podium-name">${escapeHtml(player.name)}</div>
+          <div class="ended-podium-score">${scoreValue(player)} <span>${scoreLabel}</span></div>
+        </div>
+      `;
+    }).join("");
     return `
-      <div class="ended-podium-place ended-podium-place-${rank}">
-        <div class="ended-podium-rank">#${rank}</div>
-        ${getBoardAvatarHtml(emp, player.id, rank)}
-        <div class="ended-podium-name">${escapeHtml(player.name)}</div>
-        <div class="ended-podium-score">${scoreValue(player)} <span>${scoreLabel}</span></div>
+      <div class="ended-podium-place ended-podium-place-${rank}${tied ? " ended-podium-tie" : ""}">
+        <div class="ended-podium-rank">#${rank}${tied ? " TIE" : ""}</div>
+        <div class="ended-podium-players">${playerHtml}</div>
       </div>
     `;
   }).join("");
 
-  const restHtml = rest.map((player, index) => {
-    const rank = getLeaderboardDisplayRank(players, index + 3, metric);
-    return `
-      <div class="ended-rank-row">
-        <span class="ended-rank-num">#${rank}</span>
-        <span class="ended-rank-name">${escapeHtml(player.name)}</span>
-        <span class="ended-rank-score">${scoreValue(player)}</span>
-      </div>
-    `;
-  }).join("");
+  const restHtml = restGroups.flatMap((group) => (
+    group.players.map((player) => `
+        <div class="ended-rank-row${group.players.length > 1 ? " ended-rank-row-tie" : ""}">
+          <span class="ended-rank-num">#${group.rank}</span>
+          <span class="ended-rank-name">${escapeHtml(player.name)}</span>
+          <span class="ended-rank-score">${scoreValue(player)}</span>
+        </div>
+      `)
+  )).join("");
 
   body.innerHTML = `
     <div class="competition-ended-kicker">Competition Ended</div>
     <div class="competition-ended-title">${escapeHtml(comp.name || "Competition")}</div>
     <div class="competition-ended-winner">
-      <span class="competition-ended-winner-label">Winner</span>
-      <span class="competition-ended-winner-name">${escapeHtml(winner?.name || "No winner")}</span>
+      <span class="competition-ended-winner-label">${winnerGroup?.players?.length > 1 ? "Winners" : "Winner"}</span>
+      <span class="competition-ended-winner-name">${escapeHtml(winnerNames)}</span>
     </div>
     ${podiumHtml ? `<div class="ended-podium">${podiumHtml}</div>` : `
       <div class="ended-empty">No orders were logged this round.</div>
