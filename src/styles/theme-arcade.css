@@ -261,19 +261,28 @@ body::after {
 }
 
 .pick-countdown {
-  background: #101e55;
-  border-color: #47d7ff;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
 }
 
 .pick-countdown-num {
   color: var(--accent);
   font-size: 46px;
-  text-shadow: 4px 4px 0 #8e5f00;
+  text-shadow: 1px 1px 0 #8e5f00;
 }
 
 .pick-countdown-num.urgent {
   color: var(--red);
-  text-shadow: 4px 4px 0 #6e1525;
+  text-shadow: 1px 1px 0 #6e1525;
+}
+
+.pick-countdown-num.last-day {
+  color: var(--red);
+  font-size: 38px;
 }
 
 .pick-winner-row,
@@ -2575,7 +2584,7 @@ button.btn-disabled:hover,
 
 #screen-pick .pick-comp-name,
 #screen-pick .pick-comp-dates,
-#screen-pick .pick-comp-days-left,
+#screen-pick .pick-comp-hero-row,
 #screen-pick .pick-comp-goals,
 #screen-pick .pick-winner-row {
   position: relative;
@@ -2591,49 +2600,6 @@ button.btn-disabled:hover,
 #screen-pick .pick-comp-dates {
   text-shadow: none !important;
   filter: none !important;
-}
-
-/* ── MAZE: DAYS LEFT ── */
-
-#screen-pick .pick-comp-days-left {
-  gap: 8px;
-  padding: 0 0 8px;
-}
-
-#screen-pick .pick-comp-days-num {
-  position: relative;
-  display: inline-block;
-  font-family: "Press Start 2P", monospace;
-  font-size: 36px;
-  line-height: 1;
-  text-shadow:
-    2px 2px 0 #ff8f1a,
-    4px 4px 0 #050816 !important;
-}
-
-#screen-pick .pick-comp-days-num.last-day {
-  font-size: 22px;
-}
-
-#screen-pick .pick-comp-days-num::after {
-  content: attr(data-days);
-  position: absolute;
-  inset: 0;
-  color: #c98f2a;
-  opacity: 0.38;
-  transform: translate(-1px, -1px);
-  text-shadow: none;
-  pointer-events: none;
-}
-
-#screen-pick .pick-comp-days-label {
-  font-family: "VT323", monospace;
-  font-size: 22px;
-  letter-spacing: 2px;
-  line-height: 1;
-  margin-bottom: 3px;
-  color: var(--text2);
-  text-shadow: none;
 }
 
 /* Competition ended reveal */

@@ -512,21 +512,22 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
   const winner = comp.winner ? state.employees[comp.winner] : null;
   const goalsHtml = getCompetitionGoalMarkup(compId);
   const hasGoals = !!goalsHtml;
-  const daysNum = days !== null ? Math.max(0, days) : null;
-  const numHue = daysNum !== null ? Math.max(0, Math.min(44, Math.round(44 * (daysNum - 1) / 7))) : 44;
-  const numColorStyle = daysNum !== null ? `color:hsl(${numHue},100%,65%)` : "";
-  const daysText = daysNum === 0 ? "Last day" : daysNum;
-  const daysLabel = daysNum === 1 ? "day left" : "days left";
-  const daysLeftHtml = !ended && daysNum !== null
-    ? `<div class="pick-comp-days-left"><span class="pick-comp-days-num${daysNum === 0 ? " last-day" : ""}" data-days="${daysText}" style="${numColorStyle}">${daysText}</span>${daysNum === 0 ? "" : `<span class="pick-comp-days-label">${daysLabel}</span>`}</div>`
-    : "";
+  const countdownNum = ended ? "END" : (days !== null ? (days <= 0 ? "0" : String(days)) : "—");
+  const countdownLabel = ended ? "COMPETITION OVER" : (days === 1 ? "DAY LEFT" : "DAYS LEFT");
+  const countdownClass = `pick-countdown-num${ended ? " ended" : ""}${days === 0 ? " last-day" : ""}`;
+  const countdownStyle = ended ? "" : getCompetitionCountdownStyle(comp);
 
   container.classList.add("pick-comp-info");
   container.classList.remove("hidden");
   container.innerHTML = `
     <div class="pick-comp-name">${escapeHtml(comp.name)}</div>
     <div class="pick-comp-dates">${comp.startDate && comp.endDate ? escapeHtml(`${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}`) : ""}</div>
-    ${daysLeftHtml}
+    <div class="pick-comp-hero-row">
+      <div class="pick-countdown">
+        <span class="${countdownClass}" style="${countdownStyle}">${countdownNum}</span>
+        <span class="pick-countdown-label">${countdownLabel}</span>
+      </div>
+    </div>
     ${hasGoals ? `
       <div class="pick-comp-goals" style="display:block">
         ${collapsibleGoals ? `
