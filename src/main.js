@@ -877,6 +877,7 @@ function enterAsDashboard(empId) {
   if (selectorBtn) {
     selectorBtn.textContent = "👤 " + (emp?.name || "");
     selectorBtn.classList.add("has-selection");
+    selectorBtn.classList.remove("open");
   }
 
   // Hide employee grid
@@ -909,7 +910,7 @@ function resetPickEmployeeSelection({ openGrid = false } = {}) {
   const selectorBtn = document.getElementById("pick-emp-selector");
   if (selectorBtn) {
     selectorBtn.textContent = "Choose player";
-    selectorBtn.classList.remove("has-selection");
+    selectorBtn.classList.remove("has-selection", "open");
   }
 
   const empGrid = document.getElementById("pick-emp-grid");
@@ -1459,15 +1460,19 @@ function renderBoard() {
   const winner = comp?.winner;
   const movementById = getLeaderboardMovement(compId);
 
-  function makeBoardCard(player, index, tieGroupSize = 1) {
-    const displayRank = getLeaderboardDisplayRank(players, index, metric);
+  const ranked = players.filter(p => p.sph > 0);
+  const zeroes = players.filter(p => p.sph === 0);
+
+  function makeBoardCard(player, index, tieGroupSize = 1, isZero = false) {
+    const displayRank = isZero ? null : getLeaderboardDisplayRank(ranked, index, metric);
     const isWinner = winner === player.id;
     const emp = state.employees[player.id];
     const card = document.createElement("div");
     const isCurrentUser = state.currentUser === player.id;
     const movement = movementById.get(player.id) || { type: "same", label: "HOLD" };
     const rankClasses = ["board-card"];
-    if (displayRank <= 3) rankClasses.push(`rank-${displayRank}`);
+    if (!isZero && displayRank <= 3) rankClasses.push(`rank-${displayRank}`);
+    if (isZero) rankClasses.push("zero-sph");
     if (isWinner) rankClasses.push("winner-card");
     if (isCurrentUser) rankClasses.push("is-you");
     if (tieGroupSize > 1) rankClasses.push("tie-card");
@@ -1476,10 +1481,10 @@ function renderBoard() {
     const safePlayerName = escapeHtml(player.name);
     card.innerHTML = `
       <div class="board-rank-stack">
-        <div class="board-rank-num">#${displayRank}</div>
+        <div class="board-rank-num">${isZero ? "—" : `#${displayRank}`}</div>
         <div class="board-trend board-trend-${movement.type}">${movement.label}</div>
       </div>
-      ${getBoardAvatarHtml(emp || { name: player.name }, player.id, displayRank)}
+      ${getBoardAvatarHtml(emp || { name: player.name }, player.id, isZero ? 99 : displayRank)}
       <div class="board-info">
         <div class="board-name-row">
           <div class="board-name">
@@ -1501,18 +1506,18 @@ function renderBoard() {
     return card;
   }
 
-  for (let i = 0; i < players.length; i++) {
-    const tieGroup = [players[i]];
+  for (let i = 0; i < ranked.length; i++) {
+    const tieGroup = [ranked[i]];
     let j = i + 1;
-    while (j < players.length && playersTiedOnLeaderboard(players[j - 1], players[j], metric)) {
-      tieGroup.push(players[j]);
+    while (j < ranked.length && playersTiedOnLeaderboard(ranked[j - 1], ranked[j], metric)) {
+      tieGroup.push(ranked[j]);
       j++;
     }
 
     if (tieGroup.length > 1) {
       const wrap = document.createElement("div");
       wrap.className = "board-tie-group";
-      wrap.innerHTML = `<div class="board-tie-group-label">TIE AT #${getLeaderboardDisplayRank(players, i, metric)}</div>`;
+      wrap.innerHTML = `<div class="board-tie-group-label">TIE AT #${getLeaderboardDisplayRank(ranked, i, metric)}</div>`;
       tieGroup.forEach((tiedPlayer, offset) => {
         wrap.appendChild(makeBoardCard(tiedPlayer, i + offset, tieGroup.length));
       });
@@ -1521,7 +1526,17 @@ function renderBoard() {
       continue;
     }
 
-    body.appendChild(makeBoardCard(players[i], i));
+    body.appendChild(makeBoardCard(ranked[i], i));
+  }
+
+  if (zeroes.length > 0) {
+    const sep = document.createElement("div");
+    sep.className = "board-zero-divider";
+    sep.innerHTML = `<span>NO SALES</span>`;
+    body.appendChild(sep);
+    zeroes.forEach((player, idx) => {
+      body.appendChild(makeBoardCard(player, ranked.length + idx, 1, true));
+    });
   }
 }
 
@@ -3429,6 +3444,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     empSelectorBtn.onclick = () => {
       const isOpening = empGrid.classList.contains("hidden");
       empGrid.classList.toggle("hidden");
+      empSelectorBtn.classList.toggle("open", isOpening);
       if (isOpening) {
         renderPickEmpGrid();
         document.getElementById("pick-emp-search")?.focus();
