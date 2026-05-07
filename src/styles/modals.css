@@ -224,16 +224,67 @@
   text-align: center;
 }
 
+.ended-podium-players {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.ended-podium-player {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.ended-podium-tie {
+  justify-content: flex-start;
+}
+
+.ended-podium-tie .ended-podium-players {
+  gap: 12px;
+}
+
+.ended-podium-tie .ended-podium-player {
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.ended-podium-tie .ended-podium-player:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.ended-podium-tie .board-avatar-stack {
+  width: 52px;
+  min-width: 52px;
+  padding-top: 4px;
+  padding-bottom: 6px;
+}
+
+.ended-podium-tie .avatar-board {
+  width: 48px;
+  height: 48px;
+  font-size: 20px;
+}
+
 .ended-podium-place-1 {
+  grid-column: 2;
   min-height: 210px;
   border-color: var(--gold);
 }
 
 .ended-podium-place-2 {
+  grid-column: 1;
   min-height: 175px;
 }
 
 .ended-podium-place-3 {
+  grid-column: 3;
   min-height: 150px;
 }
 
@@ -370,9 +421,19 @@
     padding: 10px 5px;
   }
 
+  .ended-podium-players,
+  .ended-podium-player {
+    gap: 6px;
+  }
+
+  .ended-podium-tie .ended-podium-players {
+    gap: 8px;
+  }
+
   .ended-podium-place-1 { min-height: 180px; }
   .ended-podium-place-2 { min-height: 152px; }
   .ended-podium-place-3 { min-height: 132px; }
+  .ended-podium-tie.ended-podium-place-3 { min-height: 188px; }
 
   .ended-podium-name {
     font-size: 12px;

@@ -2655,6 +2655,37 @@ button.btn-disabled:hover,
   box-shadow: 4px 4px 0 #050816;
 }
 
+.ended-podium-players {
+  gap: 10px;
+}
+
+.ended-podium-player {
+  min-width: 0;
+}
+
+.ended-podium-tie .ended-podium-player {
+  padding-top: 10px;
+  border-top: 3px dashed #2348b3;
+}
+
+.ended-podium-tie .ended-podium-player:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.ended-podium-tie .board-avatar-stack {
+  width: 48px;
+  min-width: 48px;
+  padding-top: 3px;
+  padding-bottom: 5px;
+}
+
+.ended-podium-tie .avatar-board {
+  width: 44px;
+  height: 44px;
+  font-size: 18px;
+}
+
 .ended-podium-place-1 {
   border-color: #ffd84d;
   background:
@@ -2667,6 +2698,10 @@ button.btn-disabled:hover,
 
 .ended-podium-place-3 {
   border-color: #ff9a3c;
+}
+
+.ended-podium-place-3.ended-podium-tie {
+  min-height: 196px;
 }
 
 .ended-podium-rank {
