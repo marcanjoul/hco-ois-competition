@@ -125,6 +125,30 @@ function removeLocalLog(compId, empId, date) {
   if (Object.keys(state.logs[compId] || {}).length === 0) delete state.logs[compId];
 }
 
+function focusElementSoon(el, options = {}) {
+  if (!el) return;
+  window.requestAnimationFrame(() => el.focus(options));
+}
+
+function focusFirstEditablePickInput() {
+  const salesInput = document.getElementById("pick-input-sales");
+  const hoursInput = document.getElementById("pick-input-hours");
+  const target = salesInput && !salesInput.readOnly && !salesInput.value
+    ? salesInput
+    : hoursInput && !hoursInput.readOnly && !hoursInput.value
+      ? hoursInput
+      : null;
+  focusElementSoon(target, { preventScroll: true });
+}
+
+function closePickEmployeeGrid() {
+  const empGrid = document.getElementById("pick-emp-grid");
+  const empSelectorBtn = document.getElementById("pick-emp-selector");
+  if (!empGrid || empGrid.classList.contains("hidden")) return;
+  empGrid.classList.add("hidden");
+  empSelectorBtn?.classList.remove("open");
+}
+
 // ══════════════════════════════════════════════════════
 // Avatar helpers
 // Example on the website: the player photo or letter icon shown beside names.
@@ -645,6 +669,7 @@ function renderPickDayRow() {
         state.selectedDate = dayInfo.date;
         renderPickDayRow();
         updatePickLogBtnState();
+        focusFirstEditablePickInput();
       };
     } else {
       btn.disabled = true;
@@ -888,6 +913,7 @@ function enterAsDashboard(empId) {
   showSelectedEmployeeProfile(empId, emp);
   renderPickDayRow();
   updatePickLogBtnState();
+  focusFirstEditablePickInput();
 }
 
 function resetPickEmployeeSelection({ openGrid = false } = {}) {
@@ -910,6 +936,7 @@ function resetPickEmployeeSelection({ openGrid = false } = {}) {
   if (searchEl) searchEl.value = "";
   if (openGrid) {
     renderPickEmpGrid();
+    focusElementSoon(searchEl, { preventScroll: true });
   }
 
   const salesInput = document.getElementById("pick-input-sales");
@@ -1362,6 +1389,28 @@ function renderBoardCompSelect() {
       closeBoardCompMenu();
       renderBoardCompSelect();
       renderBoard();
+      focusElementSoon(trigger, { preventScroll: true });
+    };
+    opt.onkeydown = (e) => {
+      const options = Array.from(menu.querySelectorAll(".board-comp-option"));
+      const index = options.indexOf(opt);
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        options[(index + 1) % options.length]?.focus();
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        options[(index - 1 + options.length) % options.length]?.focus();
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        options[0]?.focus();
+      } else if (e.key === "End") {
+        e.preventDefault();
+        options[options.length - 1]?.focus();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        closeBoardCompMenu();
+        focusElementSoon(trigger, { preventScroll: true });
+      }
     };
     menu.appendChild(opt);
   });
@@ -1373,6 +1422,13 @@ function renderBoardCompSelect() {
   trigger.onclick = () => {
     if (picker.classList.contains("open")) closeBoardCompMenu();
     else openBoardCompMenu();
+  };
+  trigger.onkeydown = (e) => {
+    if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openBoardCompMenu();
+      focusElementSoon(menu.querySelector(".board-comp-option.active") || menu.querySelector(".board-comp-option"), { preventScroll: true });
+    }
   };
 }
 
@@ -3241,6 +3297,7 @@ function showAppConfirm({
   confirmClassName = "log-btn",
 } = {}) {
   return new Promise((resolve) => {
+    const returnFocusEl = document.activeElement;
     let modal = document.getElementById("app-confirm-modal");
     if (!modal) {
       modal = document.createElement("div");
@@ -3254,6 +3311,7 @@ function showAppConfirm({
 
     const close = (result) => {
       modal.classList.remove("active");
+      focusElementSoon(returnFocusEl, { preventScroll: true });
       resolve(result);
     };
 
@@ -3277,6 +3335,7 @@ function showAppConfirm({
     modal.querySelector(".app-confirm-cancel")?.addEventListener("click", () => close(false));
     modal.querySelector(".app-confirm-confirm")?.addEventListener("click", () => close(true));
     modal.classList.add("active");
+    focusElementSoon(modal.querySelector(".app-confirm-cancel") || modal.querySelector(".app-confirm-confirm"), { preventScroll: true });
   });
 }
 
@@ -3287,6 +3346,7 @@ function showAppAlert({
   confirmClassName = "log-btn",
 } = {}) {
   return new Promise((resolve) => {
+    const returnFocusEl = document.activeElement;
     let modal = document.getElementById("app-alert-modal");
     if (!modal) {
       modal = document.createElement("div");
@@ -3300,6 +3360,7 @@ function showAppAlert({
 
     const close = () => {
       modal.classList.remove("active");
+      focusElementSoon(returnFocusEl, { preventScroll: true });
       resolve(true);
     };
 
@@ -3321,6 +3382,7 @@ function showAppAlert({
     modal.querySelector(".app-confirm-close")?.addEventListener("click", close);
     modal.querySelector(".app-confirm-confirm")?.addEventListener("click", close);
     modal.classList.add("active");
+    focusElementSoon(modal.querySelector(".app-confirm-confirm"), { preventScroll: true });
   });
 }
 
@@ -3354,14 +3416,20 @@ function launchConfetti() {
 // ══════════════════════════════════════════════════════
 // Info Modal
 // ══════════════════════════════════════════════════════
-function openInfoModal() {
+let infoModalReturnFocusEl = null;
+function openInfoModal(returnFocusEl = document.activeElement) {
   const modal = document.getElementById("info-modal");
-  if (modal) modal.classList.add("active");
+  if (!modal) return;
+  infoModalReturnFocusEl = returnFocusEl;
+  modal.classList.add("active");
+  focusElementSoon(document.getElementById("btn-close-info"), { preventScroll: true });
 }
 
 function closeInfoModal() {
   const modal = document.getElementById("info-modal");
   if (modal) modal.classList.remove("active");
+  focusElementSoon(infoModalReturnFocusEl, { preventScroll: true });
+  infoModalReturnFocusEl = null;
 }
 document.addEventListener("DOMContentLoaded", () => {
   // Start Firebase listeners immediately — they load all data in parallel over
@@ -3438,6 +3506,13 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("pick-emp-search")?.focus();
       }
     };
+    empSelectorBtn.onkeydown = (e) => {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (empGrid.classList.contains("hidden")) empSelectorBtn.click();
+        focusElementSoon(document.getElementById("pick-emp-search"), { preventScroll: true });
+      }
+    };
   }
 
   // Pick screen employee search
@@ -3456,6 +3531,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const pickHoursInput = document.getElementById("pick-input-hours");
   if (pickSalesInput) pickSalesInput.oninput = updatePickLogBtnState;
   if (pickHoursInput) pickHoursInput.oninput = updatePickLogBtnState;
+  if (pickSalesInput) {
+    pickSalesInput.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      focusElementSoon(pickHoursInput, { preventScroll: true });
+    });
+  }
+  if (pickHoursInput) {
+    pickHoursInput.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      const logBtn = document.getElementById("pick-btn-log");
+      if (logBtn && !logBtn.disabled) logBtn.click();
+    });
+  }
 
   // Pick screen log button
   document.getElementById("pick-btn-log").onclick = logEntryFromPick;
@@ -3482,7 +3572,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const infoModal = document.getElementById("info-modal");
 
   if (infoBtnBtn) {
-    infoBtnBtn.onclick = openInfoModal;
+    infoBtnBtn.onclick = () => openInfoModal(infoBtnBtn);
   }
   if (closeInfoBtn) {
     closeInfoBtn.onclick = closeInfoModal;
@@ -3504,13 +3594,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("click", (e) => {
     const picker = document.getElementById("board-comp-picker");
-    if (!picker || picker.contains(e.target)) return;
-    closeBoardCompMenu();
+    if (picker && !picker.contains(e.target)) closeBoardCompMenu();
+
+    const empSelectorWrap = document.querySelector(".pick-emp-selector-wrap");
+    const empGrid = document.getElementById("pick-emp-grid");
+    if (
+      empGrid &&
+      !empGrid.classList.contains("hidden") &&
+      !empGrid.contains(e.target) &&
+      !empSelectorWrap?.contains(e.target)
+    ) {
+      closePickEmployeeGrid();
+    }
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeBoardCompMenu();
-    if (e.key === "Escape") closeCompetitionEndedModal();
+    if (e.key === "Escape") {
+      closeBoardCompMenu();
+      closePickEmployeeGrid();
+      closeInfoModal();
+      closeCompetitionEndedModal();
+    }
   });
 
   // PIN submit
