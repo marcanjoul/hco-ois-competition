@@ -16,7 +16,7 @@
 */
 // src/main.js
 import { db } from "./firebase.js";
-import { ref, set, get, onValue, update, remove } from "firebase/database";
+import { ref, set, onValue, update, remove } from "firebase/database";
 
 // App-wide constants.
 // Example on the website: weekday labels and preview limits.
@@ -82,39 +82,6 @@ const dbRef = {
 // Bootstrap
 // Runs on startup and makes sure required settings data exists.
 // ══════════════════════════════════════════════════════
-async function bootstrap() {
-  const settingsSnap = await get(dbRef.settings());
-  if (!settingsSnap.exists()) {
-    await set(dbRef.settings(), { accentColor: "#ff4fa3", rankingMetric: "sph" });
-  }
-}
-
-async function loadInitialData() {
-  const [compsSnap, empsSnap, logsSnap, settingsSnap, goalsSnap, deletedSnap] = await Promise.all([
-    get(dbRef.comps()),
-    get(dbRef.emps()),
-    get(dbRef.logs()),
-    get(dbRef.settings()),
-    get(dbRef.goals()),
-    get(dbRef.deletedComps()),
-  ]);
-
-  state.competitions = compsSnap.val() || {};
-  state.deletedCompetitions = deletedSnap.val() || {};
-  state.employees = empsSnap.val() || {};
-  state.logs = logsSnap.val() || {};
-  state.settings = settingsSnap.val() || {};
-  state.goals = goalsSnap.val() || {};
-
-  state.currentComp = getActiveComp();
-  if (!state.boardComp || !state.competitions[state.boardComp]) {
-    state.boardComp = state.currentComp;
-  }
-
-  applySettings(state.settings);
-  await checkAndAutoCloseComps();
-  await purgeExpiredDeletedComps();
-}
 
 // Turns a human name into a safe ID for storage.
 // Example: "Adam Smith" becomes "adam_smith".
@@ -384,6 +351,20 @@ function applySettings(s = {}) {
 // ══════════════════════════════════════════════════════
 // Listeners
 // ══════════════════════════════════════════════════════
+
+// Tracks which listeners have delivered their first value so we know when
+// it's safe to run tasks that need all data (e.g. auto-close comps).
+let _dataReady = false;
+const _readySet = new Set();
+function _markReady(name) {
+  if (_readySet.has(name)) return;
+  _readySet.add(name);
+  if (_readySet.size < 6) return;
+  _dataReady = true;
+  checkAndAutoCloseComps();
+  purgeExpiredDeletedComps();
+}
+
 function startListeners() {
   onValue(dbRef.comps(), snap => {
     state.competitions = snap.val() || {};
@@ -393,15 +374,15 @@ function startListeners() {
       document.getElementById("competition-ended-modal")?.classList.remove("active");
     }
     if (!state.boardComp) state.boardComp = state.currentComp;
-    // Reset boardComp if the competition was deleted
     if (state.boardComp && !state.competitions[state.boardComp]) {
       state.boardComp = state.currentComp;
     }
-    checkAndAutoCloseComps();
+    if (_dataReady) checkAndAutoCloseComps();
     renderPickScreen();
     renderBoardCompSelect();
     if (state.currentScreen === "board") renderBoard();
     if (state.admin.tab === "competitions") renderAdminTab();
+    _markReady("comps");
   });
 
   onValue(dbRef.emps(), snap => {
@@ -410,6 +391,7 @@ function startListeners() {
     if (state.currentUser) { renderDash(); renderBoard(); }
     if (state.admin.tab === "employees") renderAdminTab();
     if (state.admin.tab === "logs") renderAdminTab();
+    _markReady("emps");
   });
 
   onValue(dbRef.logs(), snap => {
@@ -417,11 +399,17 @@ function startListeners() {
     renderPickScreen();
     if (state.currentUser) { renderDash(); renderBoard(); }
     if (state.admin.tab === "logs" && state.admin.selectedEmp) refreshAdminDayView();
+    _markReady("logs");
   });
 
   onValue(dbRef.settings(), snap => {
+    if (!snap.exists()) {
+      set(dbRef.settings(), { accentColor: "#ff4fa3", rankingMetric: "sph" });
+      return;
+    }
     state.settings = snap.val() || {};
     applySettings(state.settings);
+    _markReady("settings");
   });
 
   onValue(dbRef.goals(), snap => {
@@ -429,11 +417,13 @@ function startListeners() {
     if (state.currentUser) renderDash();
     renderPickScreen();
     if (state.admin.tab === "competitions") renderAdminTab();
+    _markReady("goals");
   });
 
   onValue(dbRef.deletedComps(), snap => {
     state.deletedCompetitions = snap.val() || {};
     if (state.admin.tab === "competitions") renderAdminTab();
+    _markReady("deletedComps");
   });
 }
 
@@ -1482,7 +1472,7 @@ function renderBoard() {
     card.innerHTML = `
       <div class="board-rank-stack">
         <div class="board-rank-num">${isZero ? "—" : `#${displayRank}`}</div>
-        <div class="board-trend board-trend-${movement.type}">${movement.label}</div>
+        ${isZero ? "" : `<div class="board-trend board-trend-${movement.type}">${movement.label}</div>`}
       </div>
       ${getBoardAvatarHtml(emp || { name: player.name }, player.id, isZero ? 99 : displayRank)}
       <div class="board-info">
@@ -3373,15 +3363,13 @@ function closeInfoModal() {
   const modal = document.getElementById("info-modal");
   if (modal) modal.classList.remove("active");
 }
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    await bootstrap();
-    await loadInitialData();
-  } catch (error) {
-    console.error("Initial data load failed", error);
-  } finally {
-    startListeners();
-  }
+document.addEventListener("DOMContentLoaded", () => {
+  // Start Firebase listeners immediately — they load all data in parallel over
+  // a single WebSocket connection and re-render whenever data changes.
+  startListeners();
+
+  // Show the welcome screen right away; data arrives in the background.
+  showScreen(state.currentScreen);
 
   const welcomeStartBtn = document.getElementById("welcome-start-btn");
   if (welcomeStartBtn) {
@@ -3487,9 +3475,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       showScreen("admin-gate");
     }
   };
-
-  // Match the initial screen state on load.
-  showScreen(state.currentScreen);
 
   // Info modal
   const infoBtnBtn = document.getElementById("btn-info");
