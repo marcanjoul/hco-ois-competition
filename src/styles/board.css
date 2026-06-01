@@ -306,23 +306,23 @@
 }
 
 .board-trend-new {
-  color: #ffffff;
+  color: var(--color-text-inverse);
   background: rgba(255,255,255,0.10);
 }
 
 .board-trend-up {
-  color: #52ff98;
-  background: rgba(82,255,152,0.12);
+  color: var(--trend-up);
+  background: var(--trend-up-bg);
 }
 
 .board-trend-down {
-  color: #ff5d73;
-  background: rgba(255,93,115,0.12);
+  color: var(--trend-down);
+  background: var(--trend-down-bg);
 }
 
 .board-trend-same {
-  color: #8fd7ff;
-  background: rgba(143,215,255,0.10);
+  color: var(--trend-same);
+  background: var(--trend-same-bg);
 }
 
 .board-name {

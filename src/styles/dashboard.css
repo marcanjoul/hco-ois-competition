@@ -42,7 +42,7 @@
   font-family: var(--type-body-family);
   font-size: var(--type-body-size);
   font-weight: 700;
-  color: #B07A10;
+  color: var(--gold-text);
   box-shadow: none;
 }
 .winner-banner.hidden { display: none; }

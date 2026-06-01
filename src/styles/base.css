@@ -47,6 +47,15 @@
   --color-border-default: var(--border);
   --color-feedback-error: var(--red);
   --color-feedback-error-light: rgba(248,81,73,0.1);
+  --gold-text:   #B07A10;
+
+  /* ── Trend badge colors ── */
+  --trend-up:      #52ff98;
+  --trend-up-bg:   rgba(82,255,152,0.12);
+  --trend-down:    #ff5d73;
+  --trend-down-bg: rgba(255,93,115,0.12);
+  --trend-same:    #8fd7ff;
+  --trend-same-bg: rgba(143,215,255,0.10);
 
   /* ── Spacing ── */
   --space-1: 4px;
