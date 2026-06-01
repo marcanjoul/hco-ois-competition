@@ -258,6 +258,12 @@
   .board-card.rank-1 .board-name {
     font-size: 26px;
   }
+  .board-card.rank-2 .board-name {
+    font-size: 25px;
+  }
+  .board-card.rank-3 .board-name {
+    font-size: 24px;
+  }
 
   .avatar-board {
     width: 44px;
@@ -551,6 +557,9 @@
 
   .board-card.rank-1 .board-name {
     font-size: 22px;
+  }
+  .board-card.rank-2 .board-name {
+    font-size: 21px;
   }
 
   .board-trend {
