@@ -125,6 +125,19 @@ function removeLocalLog(compId, empId, date) {
   if (Object.keys(state.logs[compId] || {}).length === 0) delete state.logs[compId];
 }
 
+function countUp(el, target, { prefix = '', suffix = '', decimals = 0, duration = 430 } = {}) {
+  const start = performance.now();
+  function tick(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = prefix + (target * eased).toFixed(decimals) + suffix;
+    if (t < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+let statRowAnimated = false;
+
 function focusElementSoon(el, options = {}) {
   if (!el) return;
   window.requestAnimationFrame(() => el.focus(options));
@@ -817,6 +830,7 @@ function showScreen(name) {
   if (el) el.classList.add("active");
   state.currentScreen = name;
   window.scrollTo(0, 0);
+  if (name === "dash") statRowAnimated = false;
 
   // Only show the persistent header on screens that need it.
   const header = document.getElementById("app-header");
@@ -1211,13 +1225,25 @@ function renderDash() {
   const statRow = document.querySelector(".stat-row");
   if (statRow) {
     const compHasLogs = hasLogsInComp(viewingCompId);
+    const wasHidden = statRow.style.display !== "grid";
     statRow.style.display = compHasLogs && !isProfileView ? "grid" : "none";
 
-    if (compHasLogs) {
-      document.getElementById("stat-sph").textContent   = `$${sph.toFixed(2)}`;
-      document.getElementById("stat-total").textContent = `$${totalSales.toFixed(2)}`;
-      document.getElementById("stat-hours").textContent = totalHours.toFixed(1);
-      document.getElementById("stat-rank").textContent = myRank > 0 ? `#${myRank}` : "—";
+    if (!compHasLogs || isProfileView) {
+      statRowAnimated = false;
+    } else if (compHasLogs) {
+      if (wasHidden && !statRowAnimated) {
+        statRowAnimated = true;
+        countUp(document.getElementById("stat-sph"),   sph,        { prefix: '$', decimals: 2 });
+        countUp(document.getElementById("stat-total"), totalSales, { prefix: '$', decimals: 2 });
+        countUp(document.getElementById("stat-hours"), totalHours, { decimals: 1 });
+        if (myRank > 0) countUp(document.getElementById("stat-rank"), myRank, { prefix: '#', decimals: 0 });
+        else document.getElementById("stat-rank").textContent = "—";
+      } else {
+        document.getElementById("stat-sph").textContent   = `$${sph.toFixed(2)}`;
+        document.getElementById("stat-total").textContent = `$${totalSales.toFixed(2)}`;
+        document.getElementById("stat-hours").textContent = totalHours.toFixed(1);
+        document.getElementById("stat-rank").textContent  = myRank > 0 ? `#${myRank}` : "—";
+      }
     }
   }
 
@@ -1320,7 +1346,7 @@ function renderDash() {
     historyList.innerHTML = `<div class="ui-empty-state history-empty-state">No logs yet this competition</div>`;
   } else {
     const sortedDates = Object.keys(myLogs).sort().reverse();
-    sortedDates.forEach(date => {
+    sortedDates.forEach((date, idx) => {
       const log = myLogs[date];
       if (!log) return;
       const daySph = log.hours > 0 ? (log.sales / log.hours) : 0;
@@ -1329,6 +1355,7 @@ function renderDash() {
       const dayNum = d.getDate();
       const item = document.createElement("div");
       item.className = "history-item";
+      item.style.animationDelay = `${idx * 55}ms`;
       item.innerHTML = `
         <div class="history-day">
           <div class="history-day-name">${dayName}</div>
@@ -1557,6 +1584,7 @@ function renderBoard() {
     if (tieGroup.length > 1) {
       const wrap = document.createElement("div");
       wrap.className = "board-tie-group";
+      wrap.style.animationDelay = `${i * 0.06}s`;
       wrap.innerHTML = `<div class="board-tie-group-label">TIE AT #${getLeaderboardDisplayRank(ranked, i, metric)}</div>`;
       tieGroup.forEach((tiedPlayer, offset) => {
         wrap.appendChild(makeBoardCard(tiedPlayer, i + offset, tieGroup.length));

@@ -325,6 +325,12 @@
   align-items: center;
   gap: 12px;
   box-shadow: var(--shadow-elevation-1);
+  animation: history-item-in 0.28s ease-out both;
+}
+
+@keyframes history-item-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 .history-day {
   display: flex;
