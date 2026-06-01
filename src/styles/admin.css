@@ -560,7 +560,7 @@
 
 .admin-item-name {
   flex: 1;
-  font-weight: 700;
+  font-weight: 800;
   font-size: var(--type-body-size);
   color: var(--text);
   overflow: hidden;
@@ -1233,7 +1233,7 @@
 }
 
 .admin-log-player-name {
-  font-weight: 900;
+  font-weight: 800;
   font-size: var(--type-body-size);
   color: var(--text);
 }
