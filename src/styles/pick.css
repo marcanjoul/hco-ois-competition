@@ -1042,6 +1042,9 @@
   -webkit-appearance: none;
   appearance: none;
 }
+.log-input:hover:not(:focus):not(.input-locked) {
+  border-color: var(--text3);
+}
 .log-input:focus {
   border-color: var(--accent);
   background: var(--surface);
