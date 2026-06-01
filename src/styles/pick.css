@@ -27,7 +27,7 @@
   position: relative;
   z-index: 1;
   flex: 1;
-  padding: 10px 10px calc(var(--nav-height) + 10px);
+  padding: var(--space-3) var(--space-3) calc(var(--nav-height) + var(--space-3));
   max-width: var(--max-width);
   margin: 0 auto;
   width: 100%;
@@ -465,16 +465,16 @@
 .pick-step-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
 }
 
 .pick-step-header-first {
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 
 .pick-step-header-form {
-  margin: 12px 0 8px;
+  margin: var(--space-3) 0 var(--space-2);
 }
 
 .pick-step-num {
@@ -861,7 +861,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 10px;
+  padding: var(--space-3);
   box-shadow: var(--shadow);
 }
 
@@ -1077,11 +1077,11 @@ select.log-input:focus { background-color: var(--surface); }
 .log-fields {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
 }
 
-.log-field-wrap { display: flex; flex-direction: column; gap: 6px; }
+.log-field-wrap { display: flex; flex-direction: column; gap: var(--space-2); }
 
 /* ── LOG BUTTON ──
    Example on the website: the main "ADD OIS" button.
@@ -1201,7 +1201,7 @@ select.log-input:focus { background-color: var(--surface); }
 
 .pick-success-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   gap: var(--space-2);
   width: 100%;
 }

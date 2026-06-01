@@ -107,7 +107,7 @@
 
 .board-body {
   flex: 1;
-  padding: var(--space-4) 28px;
+  padding: var(--space-4) var(--space-6);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -121,10 +121,10 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 10px 14px;
+  padding: var(--space-3) var(--space-4);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-3);
   box-shadow: 0 1px 4px rgba(15,25,35,0.08), 0 4px 12px rgba(15,25,35,0.05);
   cursor: pointer;
   transition: all 0.18s cubic-bezier(0.34,1.2,0.64,1);
