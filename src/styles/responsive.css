@@ -766,8 +766,8 @@
 
   .admin-log-week-controls .week-nav-btn,
   .admin-day-buttons .week-nav-btn {
-    min-width: 38px;
-    min-height: 38px;
+    min-width: 44px;
+    min-height: 44px;
     font-size: 14px;
   }
 
