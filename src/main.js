@@ -3284,9 +3284,12 @@ let toastTimer;
 function showToast(msg, duration = 2200) {
   const toast = document.getElementById("toast");
   toast.textContent = msg;
-  toast.classList.remove("hidden");
+  toast.classList.remove("hidden", "toast-exit");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.add("hidden"), duration);
+  toastTimer = setTimeout(() => {
+    toast.classList.add("toast-exit");
+    setTimeout(() => toast.classList.add("hidden"), 200);
+  }, duration);
 }
 
 function showAppConfirm({
