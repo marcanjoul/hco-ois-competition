@@ -149,12 +149,13 @@
 .hidden { display: none !important; }
 
 .ui-empty-state {
-  padding: 16px;
+  padding: var(--space-4);
   color: var(--text3);
   text-align: center;
   font-family: var(--type-caption-family);
   font-size: var(--type-caption-size);
   font-weight: 700;
+  border-radius: var(--radius-sm);
 }
 
 /* Search input */

@@ -313,6 +313,7 @@
 .history-empty-state {
   border: 1px dashed var(--border);
   background: var(--surface);
+  border-radius: var(--radius-sm);
 }
 .history-item {
   background: var(--surface);
