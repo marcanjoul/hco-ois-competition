@@ -762,12 +762,6 @@ function renderPickScreen(filterText = "") {
     renderCompetitionCard(compInfo, state.currentComp, { collapsibleGoals: false });
   }
 
-  // Competition goals are shown in the competition info card, hide this duplicate.
-  const goalsEl = document.getElementById("pick-goals");
-  if (goalsEl) {
-    goalsEl.classList.add("hidden");
-  }
-
   const grid = document.getElementById("name-grid");
   if (!grid) return;
   grid.innerHTML = "";
@@ -3482,17 +3476,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (successResetBtn) {
     successResetBtn.onclick = () => {
       resetPickEmployeeSelection();
-    };
-  }
-
-  // Goals toggle
-  const goalsToggle = document.getElementById("pick-goals-toggle");
-  if (goalsToggle) {
-    goalsToggle.onclick = () => {
-      const content = document.getElementById("pick-goals-content");
-      const isOpen = content.classList.contains("open");
-      content.classList.toggle("open");
-      goalsToggle.classList.toggle("open");
     };
   }
 
