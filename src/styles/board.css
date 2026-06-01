@@ -114,6 +114,33 @@
   gap: var(--space-3);
 }
 
+/* Inline ended-competition podium on the leaderboard */
+.board-ended-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.board-ended-kicker {
+  font-family: var(--type-label-family);
+  font-size: 9px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+  text-align: center;
+  margin-bottom: var(--space-1);
+}
+
+.board-ended-podium-player {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.board-ended-podium-player:hover { opacity: 0.82; transform: translateY(-2px); }
+.board-ended-podium-player:active { transform: scale(0.96); }
+
 /* Rank 1 card — championship banner treatment
    Example on the website: the first-place player card.
 */
