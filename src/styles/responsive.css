@@ -91,14 +91,14 @@
   }
 
   .board-body {
-    padding: 12px 24px;
-    gap: 10px;
+    padding: var(--space-3) var(--space-6);
+    gap: var(--space-3);
   }
 
   .board-card {
-    padding: 8px 10px;
+    padding: var(--space-2) var(--space-3);
     align-items: center;
-    gap: 7px;
+    gap: var(--space-2);
   }
 
   .board-tie-group {
@@ -157,8 +157,8 @@
 
   .history-item {
     grid-template-columns: 52px minmax(0, 1fr) auto;
-    padding: 8px 10px;
-    gap: 10px;
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
   }
 
   .history-day-name {
@@ -440,7 +440,7 @@
   }
 
   .log-card {
-    padding: 10px;
+    padding: var(--space-3);
   }
 
   .log-card-title {
@@ -495,13 +495,13 @@
   }
 
   .board-body {
-    padding: 10px 20px;
-    gap: 8px;
+    padding: var(--space-3) var(--space-5);
+    gap: var(--space-2);
   }
 
   .board-card {
-    padding: 7px 8px;
-    gap: 6px;
+    padding: var(--space-2);
+    gap: var(--space-2);
   }
 
   .board-avatar-stack {
@@ -581,8 +581,8 @@
 
   .history-item {
     grid-template-columns: 48px minmax(0, 1fr) auto;
-    padding: 10px 12px;
-    gap: 10px;
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
   }
 
   .history-day-name {

@@ -632,7 +632,7 @@ async function logEntryFromPick() {
     successStats.innerHTML = `
       <div class="pick-success-stat"><div class="pick-success-stat-label">SALES</div><div class="pick-success-stat-value">$${sales.toFixed(2)}</div></div>
       <div class="pick-success-stat"><div class="pick-success-stat-label">$/HR</div><div class="pick-success-stat-value pick-success-stat-accent">$${sph.toFixed(2)}</div></div>
-      <div class="pick-success-stat"><div class="pick-success-stat-label">RANK</div><div class="pick-success-stat-value pick-success-stat-gold">${rankDisplay}</div></div>
+      ${sph > 0 ? `<div class="pick-success-stat"><div class="pick-success-stat-label">RANK</div><div class="pick-success-stat-value pick-success-stat-gold">${rankDisplay}</div></div>` : ""}
     `;
   }
   if (successState) successState.classList.add("visible");

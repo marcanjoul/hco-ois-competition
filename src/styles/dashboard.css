@@ -318,7 +318,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 10px 12px;
+  padding: var(--space-3);
   display: grid;
   grid-template-columns: 64px minmax(0, 1fr) auto;
   align-items: center;

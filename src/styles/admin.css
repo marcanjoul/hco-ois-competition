@@ -528,15 +528,15 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+  gap: var(--space-3);
+  padding: var(--space-3);
   border-bottom: 1px solid var(--border);
   min-height: 64px;
   background: transparent;
 }
 
 .admin-emp-item {
-  padding: 10px 14px;
+  padding: var(--space-3) var(--space-4);
   min-height: 70px;
   border-bottom: none;
 }
