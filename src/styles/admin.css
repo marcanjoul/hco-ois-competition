@@ -501,15 +501,19 @@
 .admin-list-empty-state {
   border: 1px dashed var(--border);
   background: var(--surface);
+  border-radius: var(--radius-sm);
 }
 
 .admin-comp-empty-state {
-  padding: 18px;
+  padding: var(--space-4);
   color: var(--text3);
   text-align: center;
   font-family: var(--type-caption-family);
   font-size: var(--type-caption-size);
   font-weight: 700;
+  border: 1px dashed var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
 }
 
 .admin-emp-list {
@@ -1274,7 +1278,7 @@
 }
 
 .admin-log-empty-state {
-  padding: 18px;
+  padding: var(--space-4);
   border: 1px dashed var(--border);
   border-radius: var(--radius-sm);
   color: var(--text3);
