@@ -975,7 +975,7 @@
 .admin-log-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-2); margin-bottom: var(--space-4); }
 .admin-log-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--space-3); text-align: center; }
 .admin-log-stat.accent { background: rgba(26,111,244,0.08); border-color: rgba(26,111,244,0.3); }
-.admin-log-stat-label { font-family: var(--type-label-family); font-size: 9px; font-weight: var(--type-label-weight); letter-spacing: 1px; color: var(--text2); margin-bottom: 4px; text-transform: uppercase; }
+.admin-log-stat-label { font-family: var(--type-label-family); font-size: 9px; font-weight: var(--type-label-weight); letter-spacing: 1px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; }
 .admin-log-stat-value { font-family: var(--type-subheading-family); font-size: 20px; letter-spacing: 1px; color: var(--text); line-height: 1; }
 .admin-log-stat.accent .admin-log-stat-value { color: var(--accent); }
 

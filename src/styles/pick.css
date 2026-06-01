@@ -491,7 +491,7 @@
 
 .pick-step-label {
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: var(--type-label-size);
   font-weight: var(--type-label-weight);
   letter-spacing: var(--type-label-letter-spacing);
   color: var(--text2);
@@ -1353,8 +1353,8 @@ select.log-input:focus { background-color: var(--surface); }
   font-family: var(--type-label-family);
   font-size: 15px;
   font-weight: var(--type-label-weight);
-  letter-spacing: 1.6px;
-  color: #34506f;
+  letter-spacing: var(--type-label-letter-spacing);
+  color: var(--text2);
   text-transform: uppercase;
   line-height: 1.2;
 }
