@@ -593,7 +593,7 @@
 
 .comp-status-upcoming {
   color: var(--gold);
-  background: rgba(245,166,35,0.12);
+  background: var(--color-warning-light);
 }
 
 .admin-comp-item {
@@ -663,7 +663,7 @@
 .del-btn:hover { border-color: var(--accent); color: var(--accent); }
 .del-btn:active { transform: scale(0.96); }
 .del-btn.danger { border-color: var(--red); color: var(--red); }
-.del-btn.danger:hover { background: rgba(248,81,73,0.1); }
+.del-btn.danger:hover { background: var(--color-feedback-error-light); }
 
 @media (max-width: 640px) {
   .admin-emp-list {
