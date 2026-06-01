@@ -298,18 +298,18 @@
 
 .ended-podium-place-1 {
   grid-column: 2;
-  min-height: 210px;
+  min-height: 178px;
   border-color: var(--gold);
 }
 
 .ended-podium-place-2 {
   grid-column: 1;
-  min-height: 175px;
+  min-height: 148px;
 }
 
 .ended-podium-place-3 {
   grid-column: 3;
-  min-height: 150px;
+  min-height: 128px;
 }
 
 .ended-podium-rank {
