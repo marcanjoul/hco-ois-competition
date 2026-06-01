@@ -91,19 +91,19 @@
   }
 
   .board-body {
-    padding: var(--space-3) var(--space-6);
-    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
   }
 
   .board-card {
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-2) var(--space-2);
     align-items: center;
     gap: var(--space-2);
   }
 
   .board-tie-group {
-    padding: 10px;
-    gap: 8px;
+    padding: 8px;
+    gap: 6px;
   }
 
   .admin-edit-group {
