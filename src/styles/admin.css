@@ -647,20 +647,21 @@
   background: none;
   border: 1px solid var(--border);
   border-radius: var(--radius-xs);
-  padding: 6px 10px;
+  padding: var(--space-2) var(--space-3);
   font-size: 11px;
   color: var(--text2);
   cursor: pointer;
   font-family: var(--type-body-family);
   font-weight: 800;
   transition: all 0.15s;
-  min-height: 32px;
+  min-height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   white-space: nowrap;
 }
 .del-btn:hover { border-color: var(--accent); color: var(--accent); }
+.del-btn:active { transform: scale(0.96); }
 .del-btn.danger { border-color: var(--red); color: var(--red); }
 .del-btn.danger:hover { background: rgba(248,81,73,0.1); }
 
@@ -676,7 +677,7 @@
   }
 
   .admin-emp-item {
-    padding: 10px 12px;
+    padding: var(--space-2) var(--space-3);
     min-height: 64px;
   }
 
@@ -715,16 +716,17 @@
   padding: var(--space-2) var(--space-4);
   color: var(--text2);
   font-family: var(--type-body-family);
-  font-weight: 700;
+  font-weight: 800;
   font-size: var(--type-small-size);
   cursor: pointer;
   transition: all 0.15s;
-  min-height: 40px;
+  min-height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .btn-secondary:hover { color: var(--text); border-color: var(--text3); }
+.btn-secondary:active { transform: scale(0.96); }
 
 .admin-btn-row {
   display: flex;

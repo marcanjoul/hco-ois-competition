@@ -1091,7 +1091,7 @@ select.log-input:focus { background-color: var(--surface); }
   background: var(--accent);
   border: none;
   border-radius: var(--radius-sm);
-  padding: 10px 14px;
+  padding: var(--space-3) var(--space-4);
   color: white;
   font-family: var(--type-title-family);
   font-size: 18px;
