@@ -54,7 +54,7 @@
 
 .admin-edit-emp-modal-close {
   background: none; border: none; color: var(--text2); font-size: 20px; cursor: pointer; padding: 0;
-  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
 }
 .admin-edit-emp-modal-close:hover { color: var(--text); }
 
@@ -107,7 +107,7 @@
   z-index: 101;
 }
 .info-modal-title { font-family: var(--type-title-family); font-size: var(--type-title-size); letter-spacing: 1px; color: var(--text); }
-.info-modal-close { background: none; border: none; color: var(--text2); font-size: 20px; cursor: pointer; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.info-modal-close { background: none; border: none; color: var(--text2); font-size: 20px; cursor: pointer; padding: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .info-modal-close:hover { color: var(--text); transform: scale(1.1); }
 .info-modal-body { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); }
 .info-section { display: flex; flex-direction: column; gap: var(--space-2); }
@@ -162,8 +162,8 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   border: 0;

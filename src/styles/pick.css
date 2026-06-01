@@ -779,8 +779,8 @@
 }
 
 .pick-selected-clear-btn {
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--surface);
   border: 1px solid rgba(15,25,35,0.08);
@@ -920,8 +920,8 @@
 
 /* Week nav arrows — big touch targets */
 .week-nav-btn {
-  min-width: 34px;
-  min-height: 42px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: var(--radius-xs);
   border: 1px solid var(--border);
   background: var(--surface2);
@@ -946,7 +946,7 @@
 .day-btn {
   flex: 1;
   min-width: 0;
-  min-height: 42px;
+  min-height: 44px;
   border-radius: var(--radius-xs);
   border: 1.5px solid var(--border);
   background: var(--surface2);
