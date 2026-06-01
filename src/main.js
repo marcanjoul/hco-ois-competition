@@ -624,8 +624,7 @@ async function logEntryFromPick() {
   await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
   upsertLocalLog(state.currentComp, state.currentUser, state.selectedDate, { sales, hours });
 
-  const reaction = getBigOrderReaction(sales);
-  if (reaction) { launchConfetti(); }
+  if (sales > 0) launchConfetti(Math.min(Math.sqrt(sales / 200), 1));
 
   // Compute stats for success panel
   const allMyLogs = { ...((state.logs[state.currentComp] || {})[state.currentUser] || {}), [state.selectedDate]: { sales, hours } };
@@ -1473,6 +1472,73 @@ function closeBoardCompMenu() {
   trigger.setAttribute("aria-expanded", "false");
 }
 
+function renderBoardEndedPodium(compId, body) {
+  const players = getRankedPlayers(compId);
+  const ranked = players.filter(p => p.sph > 0);
+  if (ranked.length === 0) return;
+
+  const metric = state.settings.rankingMetric || "sph";
+  const rankGroups = getLeaderboardRankGroups(ranked, metric);
+  const podiumGroups = rankGroups.filter(g => g.rank <= 3);
+  if (podiumGroups.length === 0) return;
+
+  const scoreValue = (p) => metric === "sph" ? `$${p.sph.toFixed(2)}` : `$${p.total.toFixed(2)}`;
+  const scoreLabel = metric === "sph" ? "/HR" : "TOTAL";
+
+  const section = document.createElement("div");
+  section.className = "board-ended-section";
+
+  const kicker = document.createElement("div");
+  kicker.className = "board-ended-kicker";
+  kicker.textContent = "Competition Ended";
+  section.appendChild(kicker);
+
+  const podiumEl = document.createElement("div");
+  podiumEl.className = "ended-podium";
+
+  [1, 2, 3].forEach(rank => {
+    const group = podiumGroups.find(g => g.rank === rank);
+    if (!group) return;
+    const tied = group.players.length > 1;
+
+    const placeEl = document.createElement("div");
+    placeEl.className = `ended-podium-place ended-podium-place-${rank}${tied ? " ended-podium-tie" : ""}`;
+
+    const rankEl = document.createElement("div");
+    rankEl.className = "ended-podium-rank";
+    rankEl.textContent = `#${rank}${tied ? " TIE" : ""}`;
+    placeEl.appendChild(rankEl);
+
+    const playersEl = document.createElement("div");
+    playersEl.className = "ended-podium-players";
+
+    group.players.forEach(player => {
+      const emp = state.employees[player.id] || { name: player.name };
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "ended-podium-player board-ended-podium-player";
+      btn.innerHTML = `
+        ${getBoardAvatarHtml(emp, player.id, rank)}
+        <div class="ended-podium-name">${escapeHtml(player.name)}</div>
+        <div class="ended-podium-score">${scoreValue(player)} <span>${scoreLabel}</span></div>
+      `;
+      btn.onclick = () => {
+        state.currentUser = player.id;
+        state.dashView = "profile";
+        renderDash();
+        showScreen("dash");
+      };
+      playersEl.appendChild(btn);
+    });
+
+    placeEl.appendChild(playersEl);
+    podiumEl.appendChild(placeEl);
+  });
+
+  section.appendChild(podiumEl);
+  body.appendChild(section);
+}
+
 function renderBoard() {
   const compId = state.boardComp || state.currentComp;
   const body = document.getElementById("board-body");
@@ -1529,6 +1595,16 @@ function renderBoard() {
 
   const ranked = players.filter(p => p.sph > 0);
   const zeroes = players.filter(p => p.sph === 0);
+
+  if (isCompEnded(comp)) {
+    renderBoardEndedPodium(compId, body);
+    if (ranked.length > 0) {
+      const rankDivider = document.createElement("div");
+      rankDivider.className = "board-zero-divider";
+      rankDivider.innerHTML = `<span>FULL RANKINGS</span>`;
+      body.appendChild(rankDivider);
+    }
+  }
 
   function makeBoardCard(player, index, tieGroupSize = 1, isZero = false) {
     const displayRank = isZero ? null : getLeaderboardDisplayRank(ranked, index, metric);
@@ -1852,9 +1928,8 @@ async function logEntry() {
 
   await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
   upsertLocalLog(state.currentComp, state.currentUser, state.selectedDate, { sales, hours });
-  const reaction = getBigOrderReaction(sales);
-  if (reaction) { showToast(reaction, 3500); launchConfetti(); }
-  else showToast("Score captured.");
+  if (sales > 0) launchConfetti(Math.min(Math.sqrt(sales / 200), 1));
+  showToast("Score captured.");
   renderDash();
   renderBoard();
 }
@@ -3411,22 +3486,26 @@ function showAppAlert({
   });
 }
 
-function launchConfetti() {
+function launchConfetti(intensity = 1) {
   const canvas = document.getElementById("confetti-canvas");
   const ctx = canvas.getContext("2d");
   canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-  const pieces = Array.from({ length: 80 }, () => ({
-    x: Math.random() * canvas.width, y: -20, r: Math.random() * 8 + 4,
+  const count = Math.round(18 + intensity * 82); // 18 pieces at min → 100 at max
+  const pieces = Array.from({ length: count }, () => ({
+    x: Math.random() * canvas.width, y: -20,
+    r: Math.random() * (3 + intensity * 8) + 3,
     color: ["#1A6FF4","#4D9EFA","#60B5FF","#3FB950","#F5A623"][Math.floor(Math.random()*5)],
-    vx: (Math.random() - 0.5) * 4, vy: Math.random() * 4 + 3,
+    vx: (Math.random() - 0.5) * (2 + intensity * 4),
+    vy: Math.random() * (2 + intensity * 4) + 2,
     spin: Math.random() * 0.2 - 0.1, angle: 0, life: 1,
   }));
+  const decay = 0.007 + (1 - intensity) * 0.008; // lighter = fades faster
   let frame;
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     let alive = false;
     pieces.forEach(p => {
-      p.x += p.vx; p.y += p.vy; p.angle += p.spin; p.life -= 0.012;
+      p.x += p.vx; p.y += p.vy; p.angle += p.spin; p.life -= decay;
       if (p.life <= 0 || p.y > canvas.height) return;
       alive = true;
       ctx.save(); ctx.globalAlpha = p.life; ctx.translate(p.x, p.y); ctx.rotate(p.angle);
@@ -3461,6 +3540,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // a single WebSocket connection and re-render whenever data changes.
   startListeners();
 
+  if (sessionStorage.getItem("adminUnlocked") === "1") state.adminUnlocked = true;
+
   // Show the welcome screen right away; data arrives in the background.
   showScreen(state.currentScreen);
 
@@ -3489,6 +3570,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (adminLockBtn) {
     adminLockBtn.onclick = () => {
       state.adminUnlocked = false;
+      sessionStorage.removeItem("adminUnlocked");
       document.getElementById("input-pin").value = "";
       document.getElementById("pin-error").classList.add("hidden");
       showScreen("admin-gate");
@@ -3642,6 +3724,7 @@ document.addEventListener("DOMContentLoaded", () => {
   pinSubmitBtn.onclick = () => {
     if (pinInput.value.trim() === ADMIN_PIN) {
       state.adminUnlocked = true;
+      sessionStorage.setItem("adminUnlocked", "1");
       state.admin.showAllComps = false;
       state.admin.showAllEmps = false;
       state.admin.selectedEmp = null;
