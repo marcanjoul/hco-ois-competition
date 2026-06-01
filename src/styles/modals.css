@@ -55,8 +55,9 @@
 .admin-edit-emp-modal-close {
   background: none; border: none; color: var(--text2); font-size: 20px; cursor: pointer; padding: 0;
   width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
 }
-.admin-edit-emp-modal-close:hover { color: var(--text); }
+.admin-edit-emp-modal-close:hover { color: var(--text); transform: scale(1.1); }
 
 .admin-edit-emp-section { display: flex; flex-direction: column; gap: var(--space-3); margin-bottom: var(--space-4); }
 .admin-edit-emp-avatar-section {
@@ -170,7 +171,9 @@
   background: transparent;
   color: var(--text2);
   cursor: pointer;
+  transition: all 0.2s;
 }
+.competition-ended-close:hover { color: var(--text); transform: scale(1.1); }
 
 .competition-ended-kicker,
 .competition-ended-winner-label {
