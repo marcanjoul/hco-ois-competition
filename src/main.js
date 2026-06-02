@@ -816,10 +816,24 @@ function renderPickScreen(filterText = "") {
 // ══════════════════════════════════════════════════════
 // Screen management
 // ══════════════════════════════════════════════════════
+
+// Tracks screens that have already played their entrance animations.
+// On revisit the static containers get .screen-revisit so CSS suppresses
+// their animations; dynamically-created elements (cards, rows) still animate.
+const _visitedScreens = new Set();
+
 function showScreen(name) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   const el = document.getElementById(`screen-${name}`);
-  if (el) el.classList.add("active");
+  if (el) {
+    el.classList.add("active");
+    if (_visitedScreens.has(name)) {
+      el.classList.add("screen-revisit");
+    } else {
+      _visitedScreens.add(name);
+      el.classList.remove("screen-revisit");
+    }
+  }
   state.currentScreen = name;
   window.scrollTo(0, 0);
   if (name === "dash") statRowAnimated = false;
