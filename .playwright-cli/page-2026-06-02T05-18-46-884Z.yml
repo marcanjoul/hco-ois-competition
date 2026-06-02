@@ -1,0 +1,10 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]
+  - generic [ref=e6]:
+    - generic [ref=e7]: WIREGRASS
+    - generic [ref=e8]:
+      - generic [ref=e9]: OIS
+      - generic [ref=e10]: COMPETITION
+    - generic [ref=e13]: LOADING
+  - text: ▼ ▼
+  - text: • • •
