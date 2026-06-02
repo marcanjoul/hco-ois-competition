@@ -398,6 +398,11 @@ function _markReady(name) {
   _readySet.add(name);
   if (_readySet.size < 6) return;
   _dataReady = true;
+  const overlay = document.getElementById("app-loading");
+  if (overlay) {
+    overlay.classList.add("ready");
+    setTimeout(() => overlay.remove(), 300);
+  }
   checkAndAutoCloseComps();
   purgeExpiredDeletedComps();
 }

@@ -141,7 +141,49 @@
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
-   13. UTILITIES
+   13. LOADING OVERLAY
+   Example on the website: the animated dots shown while Firebase data loads.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.app-loading {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 900;
+  transition: opacity 0.28s ease;
+}
+
+.app-loading.ready {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.app-loading-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.app-loading-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: loading-bounce 1s ease-in-out infinite;
+}
+
+.app-loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+.app-loading-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes loading-bounce {
+  0%, 100% { opacity: 0.3; transform: translateY(0); }
+  50%       { opacity: 1;   transform: translateY(-6px); }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   14. UTILITIES
    Small reusable helpers.
    Example on the website: `.hidden` completely hides an element.
    ──────────────────────────────────────────────────────────────────────────── */
