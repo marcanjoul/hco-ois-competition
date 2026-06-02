@@ -154,7 +154,7 @@
 
 .dash-profile-kicker {
   font-family: var(--type-label-family);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -263,7 +263,7 @@
 
 .stat-label {
   font-family: var(--type-label-family);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   color: var(--text3);
@@ -382,7 +382,7 @@
 }
 .history-rate-label {
   font-family: var(--type-label-family);
-  font-size: 8px;
+  font-size: 11px;
   font-weight: var(--type-label-weight);
   letter-spacing: 0.5px;
   color: var(--text2);
