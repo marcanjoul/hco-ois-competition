@@ -392,6 +392,13 @@ function applySettings(s = {}) {
 // it's safe to run tasks that need all data (e.g. auto-close comps).
 let _dataReady = false;
 const _readySet = new Set();
+
+// Safety-net: if Firebase takes more than 5s, dismiss the overlay anyway.
+setTimeout(() => {
+  const overlay = document.getElementById("app-loading");
+  if (overlay) { overlay.classList.add("ready"); setTimeout(() => overlay.remove(), 300); }
+}, 5000);
+
 function _markReady(name) {
   if (_readySet.has(name)) return;
   _readySet.add(name);
@@ -452,6 +459,7 @@ function startListeners() {
   onValue(dbRef.settings(), snap => {
     if (!snap.exists()) {
       set(dbRef.settings(), { accentColor: "#ff4fa3", rankingMetric: "sph" });
+      _markReady("settings");
       return;
     }
     state.settings = snap.val() || {};
