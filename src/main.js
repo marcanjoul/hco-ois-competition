@@ -393,22 +393,11 @@ function applySettings(s = {}) {
 let _dataReady = false;
 const _readySet = new Set();
 
-// Safety-net: if Firebase takes more than 5s, dismiss the overlay anyway.
-setTimeout(() => {
-  const overlay = document.getElementById("app-loading");
-  if (overlay) { overlay.classList.add("ready"); setTimeout(() => overlay.remove(), 300); }
-}, 5000);
-
 function _markReady(name) {
   if (_readySet.has(name)) return;
   _readySet.add(name);
   if (_readySet.size < 6) return;
   _dataReady = true;
-  const overlay = document.getElementById("app-loading");
-  if (overlay) {
-    overlay.classList.add("ready");
-    setTimeout(() => overlay.remove(), 300);
-  }
   checkAndAutoCloseComps();
   purgeExpiredDeletedComps();
 }
@@ -777,8 +766,11 @@ function renderPickScreen(filterText = "") {
   const compInfo = document.getElementById("pick-comp-info");
   const noCompsMsg = document.getElementById("no-comps-message");
 
+  const compSkeleton = document.getElementById("pick-comp-skeleton");
+
   if (!state.currentComp) {
     // No active competition - hide log form, show big message
+    if (compSkeleton) compSkeleton.classList.add("hidden");
     if (compInfo) compInfo.classList.add("hidden");
     if (noCompsMsg) noCompsMsg.classList.remove("hidden");
     const logCard = document.getElementById("pick-log-card");
@@ -786,6 +778,7 @@ function renderPickScreen(filterText = "") {
     if (state.currentScreen === "pick") maybeShowCompetitionEndedModal();
     return;
   } else if (compInfo && state.currentComp) {
+    if (compSkeleton) compSkeleton.classList.add("hidden");
     const logCard = document.getElementById("pick-log-card");
     if (logCard) logCard.style.display = "block";
     if (noCompsMsg) noCompsMsg.classList.add("hidden");
