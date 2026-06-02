@@ -134,7 +134,7 @@
   border: 0;
   box-shadow: none;
   font-family: var(--type-label-family);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: var(--type-label-weight);
   letter-spacing: 0.8px;
   text-transform: uppercase;
@@ -172,7 +172,7 @@
 .pick-countdown-kicker,
 .pick-countdown-end {
   font-family: var(--type-label-family);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   color: var(--text3);
@@ -185,7 +185,7 @@
 
 .pick-countdown-status {
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -204,7 +204,7 @@
   overflow: hidden;
   white-space: nowrap;
   font-family: var(--type-label-family);
-  font-size: 8px;
+  font-size: 11px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   color: var(--text3);
@@ -240,7 +240,7 @@
 
 .pick-countdown-day-name {
   font-family: var(--type-label-family);
-  font-size: 8px;
+  font-size: 10px;
   font-weight: var(--type-label-weight);
   letter-spacing: 0.7px;
   text-transform: uppercase;
@@ -276,7 +276,7 @@
   transform: translateY(-50%);
   z-index: 2;
   font-family: var(--type-label-family);
-  font-size: 8px;
+  font-size: 11px;
   font-weight: var(--type-label-weight);
   letter-spacing: 0.8px;
   color: var(--text3);
@@ -315,7 +315,7 @@
 
 .pick-countdown-label {
   font-family: var(--type-label-family);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   color: var(--text2);
@@ -387,7 +387,7 @@
   background: transparent;
   color: #3d5573;
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1.2px;
   text-transform: uppercase;
@@ -423,7 +423,7 @@
   align-items: center;
   gap: var(--space-2);
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: var(--type-label-weight);
   color: var(--gold);
   letter-spacing: 1px;
@@ -614,7 +614,7 @@
   background: rgba(26,111,244,0.14);
   color: var(--accent);
   font-family: var(--type-label-family);
-  font-size: 7px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -964,7 +964,7 @@
   position: relative;
 }
 
-.day-btn-dayname { font-size: 8px; font-weight: 800; text-transform: uppercase; }
+.day-btn-dayname { font-size: 9px; font-weight: 800; text-transform: uppercase; }
 .day-btn-date { font-size: 12px; font-weight: 900; line-height: 1; }
 .day-btn-checkmark {
   position: absolute;
@@ -1228,7 +1228,7 @@ select.log-input:focus { background-color: var(--surface); }
 
 .pick-success-stat-label {
   font-family: var(--type-label-family);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   color: var(--text3);
