@@ -364,7 +364,7 @@
 .board-name {
   font-family: var(--type-body-family);
   font-weight: 900;
-  font-size: 30px;
+  font-size: 18px;
   min-width: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -374,9 +374,9 @@
   align-items: center;
   gap: var(--space-1);
 }
-.board-card.rank-1 .board-name { font-size: 34px; }
-.board-card.rank-2 .board-name { font-size: 32px; }
-.board-card.rank-3 .board-name { font-size: 31px; }
+.board-card.rank-1 .board-name { font-size: 22px; }
+.board-card.rank-2 .board-name { font-size: 20px; }
+.board-card.rank-3 .board-name { font-size: 19px; }
 
 .winner-label {
   font-family: var(--type-label-family);
