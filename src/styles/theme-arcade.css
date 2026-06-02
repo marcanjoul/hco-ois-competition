@@ -3212,18 +3212,28 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   animation: boot-ready-flash 0.32s steps(1, end) 5;
 }
 
-/* PRESS START — reuses .welcome-start-btn styling from earlier in this file */
-.welcome-boot-panel .welcome-start-btn {
-  min-width: 210px;
-  font-size: 11px !important;
-  letter-spacing: 2px;
-  padding: 16px 24px;
-  opacity: 0;
-  pointer-events: none;
-  /* fade-up, then blink infinitely after a short pause */
-  animation:
-    boot-fade-up    0.25s ease           2.92s both,
-    boot-start-blink 0.95s step-end infinite 3.18s;
+/* ── HOME SCREEN CARD ENTRANCES ──
+   Each card on the pick screen powers on like the boot panel, staggered.
+   Triggered by .screen.active so it replays every time you enter the screen.
+*/
+#screen-pick.active .pick-comp-info,
+#screen-pick.active .pick-comp-skeleton,
+#screen-pick.active #pick-log-card {
+  animation: card-crt-on 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Log card enters slightly after the competition card */
+#screen-pick.active #pick-log-card {
+  animation-delay: 0.15s;
+}
+
+@keyframes card-crt-on {
+  0%   { transform: scaleY(0.006); filter: brightness(6) saturate(0); }
+  10%  { transform: scaleY(0.006); }
+  36%  { transform: scaleY(1);     filter: brightness(2) saturate(0.8); }
+  54%  { transform: scaleY(0.986); filter: brightness(1.4) saturate(1); }
+  72%  { transform: scaleY(1.005); filter: brightness(1.06); }
+  100% { transform: scaleY(1);     filter: brightness(1); }
 }
 
 @media (max-width: 400px) {

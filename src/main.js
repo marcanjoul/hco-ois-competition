@@ -3466,19 +3466,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (readyEl) readyEl.style.display = "inline";
   }, 2680);
 
-  // Enable PRESS START tap after it appears, auto-advance shortly after
-  setTimeout(() => {
-    const btn = document.getElementById("welcome-start-btn");
-    if (btn) btn.style.pointerEvents = "auto";
-  }, 2920);
-  setTimeout(advanceFromBoot, 3800);
+  setTimeout(advanceFromBoot, 3400);
 
   // Tap anywhere to skip
   document.getElementById("screen-welcome")
     ?.addEventListener("click", advanceFromBoot, { once: true });
-
-  const welcomeStartBtn = document.getElementById("welcome-start-btn");
-  if (welcomeStartBtn) welcomeStartBtn.onclick = advanceFromBoot;
 
   const searchInput = document.getElementById("input-search-employees");
   if (searchInput) {
