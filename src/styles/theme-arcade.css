@@ -2928,6 +2928,66 @@ button.btn-disabled:hover,
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
+   BUTTON HIERARCHY — 3 tiers, applied last so they override earlier rules.
+
+   TIER 1 — GOLD  : one primary CTA per screen (ADD OIS, OPEN GATE, SAVE,
+                     PRESS START, competition-ended board btn). Full gold fill.
+   TIER 2 — BLUE  : all secondary / nav / browse actions. Dark bg, cyan border.
+   TIER 3 — GHOST : disabled / locked states. Dim, no interaction.
+   DANGER — RED   : destructive only (delete, remove).
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* TIER 1 — Gold primary actions */
+.log-btn:not(.btn-ghost):not(.btn-locked):not(.btn-disabled):not(.admin-danger-btn),
+.welcome-start-btn,
+.board-empty-cta,
+.competition-ended-board-btn,
+.pick-success-cta {
+  background: linear-gradient(180deg, #ffe56f 0%, #ffd84d 52%, #e8960c 100%) !important;
+  border-color: #fff2a8 !important;
+  color: #06102b !important;
+  text-shadow: none !important;
+  box-shadow:
+    4px 4px 0 #050816,
+    inset 2px 2px 0 rgba(255, 255, 255, 0.28),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.22) !important;
+}
+.log-btn:not(.btn-ghost):not(.btn-locked):not(.btn-disabled):not(.admin-danger-btn):hover,
+.welcome-start-btn:hover,
+.board-empty-cta:hover,
+.competition-ended-board-btn:hover,
+.pick-success-cta:hover {
+  filter: brightness(1.1) saturate(1.1) !important;
+  animation: none !important;
+}
+
+/* TIER 2 — Blue secondary (everything else interactive) */
+.name-btn,
+.week-nav-btn,
+.day-btn:not(.active):not(.logged):not(.disabled),
+.nav-btn:not(.active),
+.pick-emp-selector,
+.comp-select,
+.del-btn:not(.danger),
+.mini-btn:not(.btn-ghost),
+.collapsible-toggle,
+.app-back-btn,
+.admin-tab-btn:not(.active),
+.pick-selected-clear-btn,
+.btn-secondary,
+.admin-log-player-card:not(.active):not(.has-log),
+.admin-action-edit {
+  background: linear-gradient(180deg, #152870, #0a1641) !important;
+  border-color: #2b6dff !important;
+  color: #8fd7ff !important;
+  text-shadow: 1px 1px 0 #050816 !important;
+  box-shadow:
+    4px 4px 0 #050816,
+    inset 2px 2px 0 rgba(255, 255, 255, 0.06),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
    TOUCH PRESS FEEDBACK
    JS adds .touching on touchstart — mirrors :active for reliable mobile press.
    ════════════════════════════════════════════════════════════════════════════ */
