@@ -3439,13 +3439,34 @@ document.addEventListener("DOMContentLoaded", () => {
   // Show the welcome screen right away; data arrives in the background.
   showScreen(state.currentScreen);
 
-  const welcomeStartBtn = document.getElementById("welcome-start-btn");
-  if (welcomeStartBtn) {
-    welcomeStartBtn.onclick = () => {
-      showScreen("pick");
-      maybeShowCompetitionEndedModal({ force: true });
-    };
+  // Boot sequence — auto-advances to pick screen after animation completes.
+  // Tapping anywhere on the welcome screen skips immediately.
+  function advanceFromBoot() {
+    if (state.currentScreen !== "welcome") return;
+    showScreen("pick");
+    maybeShowCompetitionEndedModal({ force: true });
   }
+
+  // Swap LOADING → READY when bar finishes filling (1.18s delay + 1.5s fill)
+  setTimeout(() => {
+    document.getElementById("boot-loading-text")?.style.setProperty("display", "none");
+    const readyEl = document.getElementById("boot-ready-text");
+    if (readyEl) readyEl.style.display = "inline";
+  }, 2680);
+
+  // Enable PRESS START tap after it appears, auto-advance shortly after
+  setTimeout(() => {
+    const btn = document.getElementById("welcome-start-btn");
+    if (btn) btn.style.pointerEvents = "auto";
+  }, 2920);
+  setTimeout(advanceFromBoot, 3800);
+
+  // Tap anywhere to skip
+  document.getElementById("screen-welcome")
+    ?.addEventListener("click", advanceFromBoot, { once: true });
+
+  const welcomeStartBtn = document.getElementById("welcome-start-btn");
+  if (welcomeStartBtn) welcomeStartBtn.onclick = advanceFromBoot;
 
   const searchInput = document.getElementById("input-search-employees");
   if (searchInput) {

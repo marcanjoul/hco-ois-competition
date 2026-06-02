@@ -56,22 +56,25 @@
     </button>
   </nav>
 
-  <!-- SCREEN: Welcome
-       Example on the website: the first screen with "Wiregrass OIS Competition"
-       and the "Get Started" button.
-  -->
+  <!-- SCREEN: Welcome / Boot sequence -->
   <div id="screen-welcome" class="screen active">
-    <div class="welcome-screen">
-      <div class="welcome-orb welcome-orb-left"></div>
-      <div class="welcome-orb welcome-orb-right"></div>
-      <div class="welcome-inner">
-        <div class="welcome-copy-group">
-          <h1 class="welcome-title">Wiregrass OIS Competition</h1>
-          <p class="welcome-copy">
-            Track your orders, and climb the leaderboard!
-          </p>
-          <button class="welcome-start-btn" id="welcome-start-btn">Get Started</button>
+    <div class="welcome-boot">
+      <div class="welcome-boot-panel">
+        <div class="boot-scanline" aria-hidden="true"></div>
+        <div class="welcome-boot-eyebrow">WIREGRASS</div>
+        <div class="welcome-boot-title-group">
+          <div class="welcome-boot-ois">OIS</div>
+          <div class="welcome-boot-subtitle">COMPETITION</div>
         </div>
+        <div class="welcome-boot-rule"></div>
+        <div class="welcome-boot-bar-wrap">
+          <div class="welcome-boot-bar-fill"></div>
+        </div>
+        <div class="welcome-boot-status-wrap">
+          <span id="boot-loading-text" class="boot-loading-text">LOADING</span>
+          <span id="boot-ready-text" class="boot-ready-text" style="display:none">READY!</span>
+        </div>
+        <button class="welcome-start-btn" id="welcome-start-btn">PRESS START</button>
       </div>
     </div>
   </div>

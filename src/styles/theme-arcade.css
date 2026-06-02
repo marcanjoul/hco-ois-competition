@@ -2926,3 +2926,238 @@ button.btn-disabled:hover,
     padding: 6px 8px !important;
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   WELCOME BOOT SCREEN
+   Replaces the static welcome card with an arcade cabinet startup sequence.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.welcome-boot {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* The cabinet panel — all content lives inside here */
+.welcome-boot-panel {
+  width: min(100%, 360px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 44px 28px 52px;
+  gap: 0;
+  background: linear-gradient(180deg, #0d1b56 0%, #060c27 100%);
+  border: 4px solid #47d7ff;
+  box-shadow:
+    0 0 0 3px #050816,
+    0 0 0 7px var(--maze-blue),
+    12px 12px 0 rgba(0, 0, 0, 0.78),
+    0 0 60px rgba(71, 215, 255, 0.24),
+    inset 0 1px 0 rgba(71, 215, 255, 0.18);
+  position: relative;
+  /* CRT power-on — expands from a single horizontal line */
+  animation: boot-crt-on 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  overflow: hidden;
+}
+
+/* Gold corner brackets — top-left and bottom-right */
+.welcome-boot-panel::before,
+.welcome-boot-panel::after {
+  content: "";
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-style: solid;
+  border-color: #ffd84d;
+  opacity: 0;
+  animation: boot-appear 0.2s ease forwards 0.5s;
+}
+.welcome-boot-panel::before { top: 14px;    left: 14px;    border-width: 3px 0 0 3px; }
+.welcome-boot-panel::after  { bottom: 14px; right: 14px;   border-width: 0 3px 3px 0; }
+
+/* Horizontal scanline sweep across the panel on startup */
+.welcome-boot-panel .boot-scanline {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(71, 215, 255, 0.04) 3px,
+    rgba(71, 215, 255, 0.04) 4px
+  );
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0.6;
+}
+
+/* ── Keyframes ── */
+
+@keyframes boot-crt-on {
+  0%   { transform: scaleY(0.004) scaleX(1.12); filter: brightness(8) saturate(0); }
+  8%   { transform: scaleY(0.004) scaleX(1.12); filter: brightness(6); }
+  32%  { transform: scaleY(1)     scaleX(1);    filter: brightness(2.2) saturate(0.7); }
+  48%  { transform: scaleY(0.984) scaleX(1);    filter: brightness(1.6) saturate(1); }
+  66%  { transform: scaleY(1.006);              filter: brightness(1.1); }
+  100% { transform: scaleY(1);                  filter: brightness(1); }
+}
+
+@keyframes boot-appear {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes boot-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes boot-title-in {
+  0%   { opacity: 0; transform: scale(0.86) translateY(4px); filter: blur(4px); }
+  52%  { opacity: 0.9; transform: scale(1.04) translateY(-2px); filter: blur(0.5px); }
+  76%  { opacity: 1; transform: scale(0.99); filter: none; }
+  100% { opacity: 1; transform: scale(1); filter: none; }
+}
+
+@keyframes boot-bar-fill {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+@keyframes boot-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
+
+@keyframes boot-ready-flash {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes boot-start-blink {
+  0%, 55%, 100% { opacity: 1; }
+  28%           { opacity: 0.1; }
+}
+
+/* ── Content elements ── */
+
+.welcome-boot-eyebrow {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  letter-spacing: 5px;
+  color: #47d7ff;
+  text-shadow: 2px 2px 0 #050816, 0 0 18px rgba(71, 215, 255, 0.55);
+  margin-bottom: 14px;
+  opacity: 0;
+  animation: boot-fade-up 0.3s ease 0.58s both;
+}
+
+.welcome-boot-title-group {
+  margin-bottom: 22px;
+  opacity: 0;
+  animation: boot-title-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.74s both;
+}
+
+.welcome-boot-ois {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(46px, 12vw, 58px);
+  line-height: 0.92;
+  color: #ffd84d;
+  text-shadow:
+    3px 3px 0 #b84e00,
+    7px 7px 0 #050816,
+    0 0 32px rgba(255, 216, 77, 0.38);
+}
+
+.welcome-boot-subtitle {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(11px, 3vw, 14px);
+  letter-spacing: 3px;
+  color: #ffd84d;
+  text-shadow: 2px 2px 0 #8e5f00, 4px 4px 0 #050816;
+  margin-top: 10px;
+}
+
+.welcome-boot-rule {
+  width: 68%;
+  height: 3px;
+  background: repeating-linear-gradient(90deg, #2b6dff 0 10px, transparent 10px 18px);
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: boot-fade-up 0.25s ease 1.08s both;
+}
+
+.welcome-boot-bar-wrap {
+  width: 68%;
+  height: 16px;
+  background: #020813;
+  border: 3px solid #1e3a8f;
+  box-shadow: inset 0 0 0 2px #050816, 3px 3px 0 #050816;
+  overflow: hidden;
+  margin-bottom: 12px;
+  opacity: 0;
+  animation: boot-fade-up 0.25s ease 1.08s both;
+}
+
+.welcome-boot-bar-fill {
+  height: 100%;
+  width: 0;
+  /* Segmented fill — steps makes it jump like old arcade loading bars */
+  background: repeating-linear-gradient(
+    90deg,
+    #ffd84d  0 13px,
+    #ff9a3c 13px 15px,
+    rgba(255, 255, 255, 0.18) 15px 16px
+  );
+  box-shadow: 0 0 22px rgba(255, 216, 77, 0.65), inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  animation: boot-bar-fill 1.5s steps(14, end) 1.18s forwards;
+}
+
+.welcome-boot-status-wrap {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  min-height: 14px;
+  margin-bottom: 30px;
+  opacity: 0;
+  animation: boot-fade-up 0.25s ease 1.08s both;
+}
+
+.boot-loading-text {
+  color: #47d7ff;
+  text-shadow: 2px 2px 0 #050816;
+  animation: boot-cursor-blink 0.75s step-end infinite;
+}
+
+.boot-ready-text {
+  color: #52ff98;
+  text-shadow: 0 0 16px rgba(82, 255, 152, 0.75), 2px 2px 0 #050816;
+  animation: boot-ready-flash 0.32s steps(1, end) 5;
+}
+
+/* PRESS START — reuses .welcome-start-btn styling from earlier in this file */
+.welcome-boot-panel .welcome-start-btn {
+  min-width: 210px;
+  font-size: 11px !important;
+  letter-spacing: 2px;
+  padding: 16px 24px;
+  opacity: 0;
+  pointer-events: none;
+  /* fade-up, then blink infinitely after a short pause */
+  animation:
+    boot-fade-up    0.25s ease           2.92s both,
+    boot-start-blink 0.95s step-end infinite 3.18s;
+}
+
+@media (max-width: 400px) {
+  .welcome-boot-panel {
+    padding: 36px 20px 44px;
+    width: 100%;
+  }
+  .welcome-boot-ois {
+    font-size: 40px;
+  }
+}
