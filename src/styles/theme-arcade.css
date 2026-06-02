@@ -2928,6 +2928,21 @@ button.btn-disabled:hover,
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
+   TOUCH PRESS FEEDBACK
+   JS adds .touching on touchstart — mirrors :active for reliable mobile press.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disabled) {
+  transform: translate(2px, 2px) !important;
+  filter: brightness(0.88) !important;
+  box-shadow:
+    1px 1px 0 #050816,
+    inset 2px 2px 0 rgba(0, 0, 0, 0.32),
+    inset -1px -1px 0 rgba(255, 255, 255, 0.05) !important;
+  transition: none !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
    WELCOME BOOT SCREEN
    Replaces the static welcome card with an arcade cabinet startup sequence.
    ════════════════════════════════════════════════════════════════════════════ */
