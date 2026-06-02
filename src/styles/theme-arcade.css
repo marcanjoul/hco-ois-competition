@@ -3040,7 +3040,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
     inset 0 1px 0 rgba(71, 215, 255, 0.18);
   position: relative;
   /* CRT power-on — expands from a single horizontal line */
-  animation: boot-crt-on 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: boot-crt-on 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
   overflow: hidden;
 }
 
@@ -3133,13 +3133,13 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   text-shadow: 2px 2px 0 #050816, 0 0 18px rgba(71, 215, 255, 0.55);
   margin-bottom: 14px;
   opacity: 0;
-  animation: boot-fade-up 0.3s ease 0.58s both;
+  animation: boot-fade-up 0.25s ease 0.32s both;
 }
 
 .welcome-boot-title-group {
   margin-bottom: 22px;
   opacity: 0;
-  animation: boot-title-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.74s both;
+  animation: boot-title-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.44s both;
 }
 
 .welcome-boot-ois {
@@ -3168,7 +3168,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   background: repeating-linear-gradient(90deg, #2b6dff 0 10px, transparent 10px 18px);
   margin-bottom: 16px;
   opacity: 0;
-  animation: boot-fade-up 0.25s ease 1.08s both;
+  animation: boot-fade-up 0.22s ease 0.62s both;
 }
 
 .welcome-boot-bar-wrap {
@@ -3180,13 +3180,15 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   overflow: hidden;
   margin-bottom: 12px;
   opacity: 0;
-  animation: boot-fade-up 0.25s ease 1.08s both;
+  animation: boot-fade-up 0.22s ease 0.62s both;
 }
 
 .welcome-boot-bar-fill {
   height: 100%;
   width: 0;
-  /* Segmented fill — steps makes it jump like old arcade loading bars */
+  /* steps(12, start) — first jump is instant so bar is never stuck at 0,
+     and 100% is reached at 11/12 of duration (~70ms before end) so the
+     bar is visually full before the JS ready-swap fires. */
   background: repeating-linear-gradient(
     90deg,
     #ffd84d  0 13px,
@@ -3194,7 +3196,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
     rgba(255, 255, 255, 0.18) 15px 16px
   );
   box-shadow: 0 0 22px rgba(255, 216, 77, 0.65), inset 0 2px 0 rgba(255, 255, 255, 0.3);
-  animation: boot-bar-fill 1.5s steps(14, end) 1.18s forwards;
+  animation: boot-bar-fill 0.85s steps(12, start) 0.70s forwards;
 }
 
 .welcome-boot-status-wrap {
@@ -3204,7 +3206,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   min-height: 14px;
   margin-bottom: 30px;
   opacity: 0;
-  animation: boot-fade-up 0.25s ease 1.08s both;
+  animation: boot-fade-up 0.22s ease 0.62s both;
 }
 
 .boot-loading-text {
