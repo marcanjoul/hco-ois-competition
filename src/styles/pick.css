@@ -555,7 +555,6 @@
   padding: 8px;
   margin-bottom: var(--space-2);
   max-height: 360px;
-  overflow: hidden;
 }
 .pick-emp-grid.hidden { display: none; }
 
