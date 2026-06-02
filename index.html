@@ -88,6 +88,12 @@
       <!-- Competition Info Card
            Example on the website: the card with competition name, days left, and progress.
       -->
+      <div id="pick-comp-skeleton" class="pick-comp-skeleton">
+        <div class="sk sk-title"></div>
+        <div class="sk sk-sub"></div>
+        <div class="sk sk-num"></div>
+      </div>
+
       <div id="pick-comp-info" class="pick-comp-info hidden">
         <div id="pick-comp-name" class="pick-comp-name"></div>
         <div id="pick-comp-dates" class="pick-comp-dates"></div>
@@ -255,7 +261,11 @@
         </div>
       </div>
       <div id="board-no-comps" style="display:none"></div>
-      <div class="board-body" id="board-body"></div>
+      <div class="board-body" id="board-body">
+        <div class="sk-card"><div class="sk sk-name"></div><div class="sk sk-score"></div></div>
+        <div class="sk-card"><div class="sk sk-name"></div><div class="sk sk-score"></div></div>
+        <div class="sk-card"><div class="sk sk-name"></div><div class="sk sk-score"></div></div>
+      </div>
     </div>
   </div>
 
@@ -286,12 +296,6 @@
     <div class="screen-inner">
       <div id="admin-tab-bar" class="admin-tab-bar"></div>
       <div id="admin-tab-content" class="admin-tab-content"></div>
-    </div>
-  </div>
-
-  <div id="app-loading" class="app-loading" aria-label="Loading" role="status">
-    <div class="app-loading-dots">
-      <span></span><span></span><span></span>
     </div>
   </div>
 

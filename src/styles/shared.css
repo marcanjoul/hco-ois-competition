@@ -141,46 +141,60 @@
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
-   13. LOADING OVERLAY
-   Example on the website: the animated dots shown while Firebase data loads.
+   13. SKELETON
+   Shimmer placeholders shown in the competition card and leaderboard
+   while Firebase data is still arriving.
    ──────────────────────────────────────────────────────────────────────────── */
 
-.app-loading {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
+@keyframes sk-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.sk {
+  border-radius: var(--radius-xs);
+  background: linear-gradient(
+    90deg,
+    var(--surface2) 25%,
+    var(--border)   50%,
+    var(--surface2) 75%
+  );
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.4s ease infinite;
+}
+
+/* Pick screen competition card skeleton */
+.pick-comp-skeleton {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: var(--shadow);
+}
+.pick-comp-skeleton.hidden { display: none; }
+
+.sk-title  { height: 20px; width: 65%; }
+.sk-sub    { height: 12px; width: 45%; }
+.sk-num    { height: 34px; width: 35%; }
+
+/* Leaderboard skeleton cards */
+.sk-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 900;
-  transition: opacity 0.28s ease;
+  justify-content: space-between;
+  gap: var(--space-3);
+  box-shadow: var(--shadow-elevation-1);
 }
 
-.app-loading.ready {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.app-loading-dots {
-  display: flex;
-  gap: 8px;
-}
-
-.app-loading-dots span {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: loading-bounce 1s ease-in-out infinite;
-}
-
-.app-loading-dots span:nth-child(2) { animation-delay: 0.15s; }
-.app-loading-dots span:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes loading-bounce {
-  0%, 100% { opacity: 0.3; transform: translateY(0); }
-  50%       { opacity: 1;   transform: translateY(-6px); }
-}
+.sk-name  { height: 16px; width: 50%; }
+.sk-score { height: 16px; width: 18%; flex-shrink: 0; }
 
 /* ────────────────────────────────────────────────────────────────────────────
    14. UTILITIES
