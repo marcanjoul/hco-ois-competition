@@ -1119,7 +1119,7 @@ select.log-input:focus {
 }
 
 .board-card.zero-sph {
-  filter: saturate(0.28) brightness(0.82);
+  filter: saturate(0.28) brightness(0.82) !important;
 }
 
 .board-card.zero-sph .board-rank-num {
