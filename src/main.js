@@ -3439,6 +3439,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // Show the welcome screen right away; data arrives in the background.
   showScreen(state.currentScreen);
 
+  // Mobile touch press feedback — iOS/Android don't fire :active reliably.
+  // A global touchstart/end handler adds .touching so every button responds instantly.
+  document.addEventListener("touchstart", e => {
+    e.target.closest("button")?.classList.add("touching");
+  }, { passive: true });
+  ["touchend", "touchcancel"].forEach(evt =>
+    document.addEventListener(evt, e => {
+      const btn = e.target.closest("button");
+      if (btn) setTimeout(() => btn.classList.remove("touching"), 80);
+    }, { passive: true })
+  );
+
   // Boot sequence — auto-advances to pick screen after animation completes.
   // Tapping anywhere on the welcome screen skips immediately.
   function advanceFromBoot() {
