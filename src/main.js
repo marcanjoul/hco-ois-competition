@@ -109,6 +109,11 @@ function shiftLocalDate(dateStr, daysToAdd) {
   return formatLocalDate(date);
 }
 
+// Optimistic local updates: after writing to Firebase we immediately patch
+// state.logs so the UI reflects the change without waiting for the onValue
+// listener to re-fire. The listener will still fire and overwrite with the
+// server value, but the patch prevents a visible flicker between write and
+// confirmation. If Firebase rejects the write the listener restores truth.
 function upsertLocalLog(compId, empId, date, log) {
   if (!compId || !empId || !date) return;
   if (!state.logs[compId]) state.logs[compId] = {};
