@@ -53,14 +53,16 @@
   --type-label-family: "Press Start 2P", monospace;
   --type-caption-family: "VT323", monospace;
   --type-small-family: "VT323", monospace;
-  --type-display-size: 38px;
-  --type-heading-size: 20px;
-  --type-subheading-size: 18px;
-  --type-title-size: 16px;
-  --type-body-size: 26px;
-  --type-label-size: 10px;
-  --type-caption-size: 22px;
-  --type-small-size: 18px;
+  /* Press Start 2P scale: 20 → 13 → 10 → 9px */
+  --type-display-size:    20px;
+  --type-heading-size:    20px;
+  --type-subheading-size: 13px;
+  --type-title-size:      13px;
+  --type-label-size:      10px;
+  /* VT323 scale: 26 → 22 → 18px */
+  --type-body-size:       26px;
+  --type-caption-size:    22px;
+  --type-small-size:      18px;
   --type-heading-letter-spacing: 1.5px;
   --type-subheading-letter-spacing: 1.2px;
   --type-title-letter-spacing: 1px;
