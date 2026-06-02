@@ -28,3 +28,6 @@ dist-ssr
 
 #MD Files
 src/styling.md
+
+#Claude Skills
+*.claude
