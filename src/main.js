@@ -3473,14 +3473,14 @@ document.addEventListener("DOMContentLoaded", () => {
     maybeShowCompetitionEndedModal({ force: true });
   }
 
-  // Swap LOADING → READY when bar finishes filling (1.18s delay + 1.5s fill)
+  // Swap LOADING → READY when bar finishes filling (0.70s delay + 0.85s fill = 1.55s)
   setTimeout(() => {
     document.getElementById("boot-loading-text")?.style.setProperty("display", "none");
     const readyEl = document.getElementById("boot-ready-text");
     if (readyEl) readyEl.style.display = "inline";
-  }, 2680);
+  }, 1560);
 
-  setTimeout(advanceFromBoot, 3400);
+  setTimeout(advanceFromBoot, 2100);
 
   // Tap anywhere to skip
   document.getElementById("screen-welcome")
