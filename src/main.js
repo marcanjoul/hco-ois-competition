@@ -138,6 +138,12 @@ function countUp(el, target, { prefix = '', suffix = '', decimals = 0, duration 
 
 let statRowAnimated = false;
 
+function makeBtn(label, className, onclick) {
+  const btn = document.createElement("button");
+  btn.className = className; btn.textContent = label; btn.onclick = onclick;
+  return btn;
+}
+
 function focusElementSoon(el, options = {}) {
   if (!el) return;
   window.requestAnimationFrame(() => el.focus(options));
@@ -3376,11 +3382,6 @@ function renderAdminLogEdit(empId, compId, date, log, target = null) {
 // ══════════════════════════════════════════════════════
 // Utility
 // ══════════════════════════════════════════════════════
-function makeBtn(label, className, onclick) {
-  const btn = document.createElement("button");
-  btn.className = className; btn.textContent = label; btn.onclick = onclick;
-  return btn;
-}
 
 let toastTimer;
 function showToast(msg, duration = 2200) {
