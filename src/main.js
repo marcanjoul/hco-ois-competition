@@ -138,6 +138,22 @@ function countUp(el, target, { prefix = '', suffix = '', decimals = 0, duration 
 
 let statRowAnimated = false;
 
+// Batches render calls that fire within the same animation frame.
+// Multiple listeners can all request 'pick' and it only renders once.
+const _renderQueue = new Map();
+let _renderRaf = null;
+function scheduleRender(key, fn) {
+  _renderQueue.set(key, fn);
+  if (!_renderRaf) {
+    _renderRaf = requestAnimationFrame(() => {
+      _renderRaf = null;
+      const fns = Array.from(_renderQueue.values());
+      _renderQueue.clear();
+      fns.forEach(f => f());
+    });
+  }
+}
+
 function makeBtn(label, className, onclick) {
   const btn = document.createElement("button");
   btn.className = className; btn.textContent = label; btn.onclick = onclick;
@@ -426,27 +442,33 @@ function startListeners() {
       state.boardComp = state.currentComp;
     }
     if (_dataReady) checkAndAutoCloseComps();
-    renderPickScreen();
-    renderBoardCompSelect();
-    if (state.currentScreen === "board") renderBoard();
-    if (state.admin.tab === "competitions") renderAdminTab();
+    scheduleRender("pick", renderPickScreen);
+    scheduleRender("boardCompSelect", renderBoardCompSelect);
+    if (state.currentScreen === "board") scheduleRender("board", renderBoard);
+    if (state.admin.tab === "competitions") scheduleRender("admin", renderAdminTab);
     _markReady("comps");
   });
 
   onValue(dbRef.emps(), snap => {
     state.employees = snap.val() || {};
-    renderPickScreen();
-    if (state.currentUser) { renderDash(); renderBoard(); }
-    if (state.admin.tab === "employees") renderAdminTab();
-    if (state.admin.tab === "logs") renderAdminTab();
+    scheduleRender("pick", renderPickScreen);
+    if (state.currentUser) {
+      scheduleRender("dash", renderDash);
+      scheduleRender("board", renderBoard);
+    }
+    if (state.admin.tab === "employees") scheduleRender("admin", renderAdminTab);
+    if (state.admin.tab === "logs") scheduleRender("admin", renderAdminTab);
     _markReady("emps");
   });
 
   onValue(dbRef.logs(), snap => {
     state.logs = snap.val() || {};
-    renderPickScreen();
-    if (state.currentUser) { renderDash(); renderBoard(); }
-    if (state.admin.tab === "logs" && state.admin.selectedEmp) refreshAdminDayView();
+    scheduleRender("pick", renderPickScreen);
+    if (state.currentUser) {
+      scheduleRender("dash", renderDash);
+      scheduleRender("board", renderBoard);
+    }
+    if (state.admin.tab === "logs" && state.admin.selectedEmp) scheduleRender("adminDay", refreshAdminDayView);
     _markReady("logs");
   });
 
@@ -462,15 +484,15 @@ function startListeners() {
 
   onValue(dbRef.goals(), snap => {
     state.goals = snap.val() || {};
-    if (state.currentUser) renderDash();
-    renderPickScreen();
-    if (state.admin.tab === "competitions") renderAdminTab();
+    if (state.currentUser) scheduleRender("dash", renderDash);
+    scheduleRender("pick", renderPickScreen);
+    if (state.admin.tab === "competitions") scheduleRender("admin", renderAdminTab);
     _markReady("goals");
   });
 
   onValue(dbRef.deletedComps(), snap => {
     state.deletedCompetitions = snap.val() || {};
-    if (state.admin.tab === "competitions") renderAdminTab();
+    if (state.admin.tab === "competitions") scheduleRender("admin", renderAdminTab);
     _markReady("deletedComps");
   });
 }
