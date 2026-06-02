@@ -3354,91 +3354,82 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   to   { opacity: 1; }
 }
 
-/* ── Leaderboard cards ── */
+/* ════════════════════════════════════════════════════════════════════════════
+   SOFT SNAP — used for all in-app card entrances.
+   Starts at 78% height (not a single line), expands to full with a gentle
+   brightness tick. Reminiscent of CRT without the full line-flash drama.
+   Full `card-crt-on` is kept only for the competition podium reveal.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@keyframes card-soft-in {
+  0%   { opacity: 0; transform: scaleY(0.78); }
+  52%  { opacity: 1; transform: scaleY(1.016); filter: brightness(1.18); }
+  100% { opacity: 1; transform: scaleY(1);     filter: brightness(1); }
+}
+
+/* All base-layer entrance keyframes get the soft version */
 @keyframes board-card-in {
-  0%   { opacity: 0; }
-  2%   { opacity: 1; transform: scaleY(0.005); filter: brightness(6) saturate(0); }
-  12%  { transform: scaleY(0.005); }
-  38%  { transform: scaleY(1);     filter: brightness(2) saturate(0.8); }
-  56%  { transform: scaleY(0.987); filter: brightness(1.4); }
-  74%  { transform: scaleY(1.005); filter: brightness(1.06); }
-  100% { opacity: 1; transform: scaleY(1); filter: brightness(1); }
+  0%   { opacity: 0; transform: scaleY(0.78); }
+  52%  { opacity: 1; transform: scaleY(1.016); filter: brightness(1.18); }
+  100% { opacity: 1; transform: scaleY(1);     filter: brightness(1); }
 }
-
-/* ── Tie groups ── */
 @keyframes tie-group-in {
-  0%   { opacity: 0; }
-  2%   { opacity: 1; transform: scaleY(0.005); filter: brightness(5) saturate(0); }
-  12%  { transform: scaleY(0.005); }
-  38%  { transform: scaleY(1);     filter: brightness(1.9) saturate(0.8); }
-  56%  { transform: scaleY(0.988); filter: brightness(1.35); }
-  74%  { transform: scaleY(1.004); }
-  100% { opacity: 1; transform: scaleY(1); filter: brightness(1); }
+  0%   { opacity: 0; transform: scaleY(0.78); }
+  52%  { opacity: 1; transform: scaleY(1.016); filter: brightness(1.15); }
+  100% { opacity: 1; transform: scaleY(1);     filter: brightness(1); }
 }
-
-/* ── Order history items ── */
 @keyframes history-item-in {
-  0%   { opacity: 0; }
-  2%   { opacity: 1; transform: scaleY(0.005); filter: brightness(5) saturate(0); }
-  12%  { transform: scaleY(0.005); }
-  38%  { transform: scaleY(1);     filter: brightness(1.8) saturate(0.8); }
-  56%  { transform: scaleY(0.988); filter: brightness(1.3); }
-  74%  { transform: scaleY(1.004); }
-  100% { opacity: 1; transform: scaleY(1); filter: brightness(1); }
+  0%   { opacity: 0; transform: scaleY(0.78); }
+  52%  { opacity: 1; transform: scaleY(1.016); filter: brightness(1.14); }
+  100% { opacity: 1; transform: scaleY(1);     filter: brightness(1); }
 }
-
-/* ── Form steps after employee pick ── */
 @keyframes slide-reveal {
-  0%   { opacity: 0; }
-  2%   { opacity: 1; transform: scaleY(0.1); filter: brightness(4) saturate(0); }
-  16%  { transform: scaleY(0.1); }
-  42%  { transform: scaleY(1);   filter: brightness(1.6); }
-  64%  { transform: scaleY(0.99); filter: brightness(1.1); }
-  100% { opacity: 1; transform: scaleY(1); filter: brightness(1); }
+  0%   { opacity: 0; transform: scaleY(0.82); }
+  55%  { opacity: 1; transform: scaleY(1.012); filter: brightness(1.12); }
+  100% { opacity: 1; transform: scaleY(1);     filter: brightness(1); }
 }
-
-/* ── Success-state stat cards ── */
 @keyframes stat-pop-in {
-  0%   { opacity: 0; }
-  2%   { opacity: 1; transform: scaleY(0.005); filter: brightness(5) saturate(0); }
-  12%  { transform: scaleY(0.005); }
-  38%  { transform: scaleY(1);     filter: brightness(1.8) saturate(0.8); }
-  56%  { transform: scaleY(0.988); filter: brightness(1.3); }
-  74%  { transform: scaleY(1.004); }
-  100% { opacity: 1; transform: scaleY(1); filter: brightness(1); }
+  0%   { opacity: 0; transform: scaleY(0.78); }
+  52%  { opacity: 1; transform: scaleY(1.016); filter: brightness(1.16); }
+  100% { opacity: 1; transform: scaleY(1);     filter: brightness(1); }
 }
-
-/* ── Employee edit sheet (replaces slide-from-bottom) ── */
 @keyframes sheet-slide-up {
-  0%   { opacity: 0; }
-  2%   { opacity: 1; transform: scaleY(0.005); filter: brightness(6) saturate(0); }
-  12%  { transform: scaleY(0.005); }
-  38%  { transform: scaleY(1);     filter: brightness(2) saturate(0.8); }
-  56%  { transform: scaleY(0.988); filter: brightness(1.4); }
-  74%  { transform: scaleY(1.004); filter: brightness(1.06); }
-  100% { opacity: 1; transform: scaleY(1); filter: brightness(1); }
+  0%   { opacity: 0; transform: scaleY(0.78); }
+  52%  { opacity: 1; transform: scaleY(1.016); filter: brightness(1.18); }
+  100% { opacity: 1; transform: scaleY(1);     filter: brightness(1); }
 }
-
-/* ── Info modal and confirm dialogs (replaces scale-bounce) ── */
 @keyframes modal-scale-in {
-  0%   { opacity: 0; }
-  2%   { opacity: 1; transform: scaleY(0.005); filter: brightness(6) saturate(0); }
-  12%  { transform: scaleY(0.005); }
-  38%  { transform: scaleY(1);     filter: brightness(2) saturate(0.8); }
-  56%  { transform: scaleY(0.988); filter: brightness(1.4); }
-  74%  { transform: scaleY(1.004); filter: brightness(1.06); }
-  100% { opacity: 1; transform: scaleY(1); filter: brightness(1); }
+  0%   { opacity: 0; transform: scaleY(0.78); }
+  52%  { opacity: 1; transform: scaleY(1.016); filter: brightness(1.18); }
+  100% { opacity: 1; transform: scaleY(1);     filter: brightness(1); }
 }
 
-/* ── Dynamic elements: CRT plays on DOM insertion ── */
+/* ── Dynamic list elements (soft snap on DOM insertion) ── */
 .admin-item {
-  animation: card-crt-on 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: card-soft-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .admin-log-player-card {
-  animation: card-crt-on 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: card-soft-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.ended-rank-row {
+  animation: card-soft-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* ── Ended-competition podium: places power on sequentially ── */
+/* ── Pick screen main cards ── */
+#screen-pick.active .pick-comp-info,
+#screen-pick.active .pick-comp-skeleton,
+#screen-pick.active #pick-log-card {
+  animation: card-soft-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+#screen-pick.active #pick-log-card { animation-delay: 0.12s; }
+
+/* ── Admin gate main panel ── */
+#screen-admin-gate.active .admin-gate-body {
+  animation: card-soft-in 0.34s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
+}
+
+/* ── Competition podium: FULL CRT reserved here only ──
+   This is a celebration moment — the drama is earned. ── */
 .ended-podium-place {
   animation: card-crt-on 0.44s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -3446,64 +3437,12 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 .ended-podium-place:nth-child(2) { animation-delay: 0.14s; }
 .ended-podium-place:nth-child(3) { animation-delay: 0.28s; }
 
-/* Full-ranking rows below the podium */
-.ended-rank-row {
-  animation: card-crt-on 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-/* ── Screen-revisit: suppress static animations on screens already seen ──
-   Dynamic content (board cards, history items, admin items) is always
-   freshly created so it keeps its animation regardless. ── */
+/* ── Screen-revisit: suppress static container animations on return visits.
+   Dynamic content (board cards, history rows, admin items) always re-animates
+   since those elements are freshly created by render functions each time. ── */
 .screen-revisit #pick-log-card,
 .screen-revisit .pick-comp-info,
 .screen-revisit .pick-comp-skeleton,
-.screen-revisit .stat-card,
-.screen-revisit .dash-comp-info,
-.screen-revisit .winner-banner,
-.screen-revisit .dash-goals,
-.screen-revisit .dash-profile-card,
-.screen-revisit .history-wrap,
-.screen-revisit .screen-top-bar,
-.screen-revisit .admin-gate-body,
-.screen-revisit .admin-tab-bar,
-.screen-revisit .admin-tab-content {
+.screen-revisit .admin-gate-body {
   animation: none !important;
-}
-
-/* ── Dashboard static elements ── */
-#screen-dash.active .dash-comp-info:not(.hidden),
-#screen-dash.active .winner-banner:not(.hidden),
-#screen-dash.active .dash-goals:not(.hidden),
-#screen-dash.active .dash-profile-card:not(.hidden) {
-  animation: card-crt-on 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
-}
-
-#screen-dash.active .stat-card {
-  animation: card-crt-on 0.40s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-#screen-dash.active .stat-row .stat-card:nth-child(1) { animation-delay: 0.04s; }
-#screen-dash.active .stat-row .stat-card:nth-child(2) { animation-delay: 0.12s; }
-#screen-dash.active .stat-row .stat-card:nth-child(3) { animation-delay: 0.20s; }
-#screen-dash.active .stat-row .stat-card:nth-child(4) { animation-delay: 0.28s; }
-
-#screen-dash.active .history-wrap {
-  animation: card-crt-on 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.32s both;
-}
-
-/* ── Leaderboard top bar ── */
-#screen-board.active .screen-top-bar {
-  animation: card-crt-on 0.40s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-/* ── Admin gate ── */
-#screen-admin-gate.active .admin-gate-body {
-  animation: card-crt-on 0.44s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
-}
-
-/* ── Admin panel ── */
-#screen-admin.active .admin-tab-bar {
-  animation: card-crt-on 0.40s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-#screen-admin.active .admin-tab-content {
-  animation: card-crt-on 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.10s both;
 }
