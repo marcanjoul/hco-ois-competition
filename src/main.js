@@ -593,24 +593,6 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
 // ══════════════════════════════════════════════════════
 // Vibe phrases
 // ══════════════════════════════════════════════════════
-function getVibe(sph, total, hasLogs, name = "") {
-  const greeting = name ? name : "You";
-  if (!hasLogs) return `Hey ${greeting}! Log your first OIS. You got this! 🚀`;
-  if (sph >= 25) return `You're crushing it ${greeting}!!!`;
-  if (sph >= 20) return `Yo ${greeting}, you're on another level today. Keep it going!`;
-  if (sph >= 15) return `You're killing it ${greeting}.`;
-  if (sph >= 10) return `Let's go ${greeting}! `;
-  if (sph >= 5)  return `Nice ${greeting}! Keep that energy and you'll be unstoppable.`;
-  return                `Keep pushing ${greeting}!`;
-}
-
-function getBigOrderReaction(amount) {
-  if (amount >= 500) return `$${amount.toFixed(0)} ORDER?! They said take their whole wallet!`;
-  if (amount >= 300) return `$${amount.toFixed(0)}! Okay you did NOT have to go that hard!`;
-  if (amount >= 200) return `$${amount.toFixed(0)}! You're out here COLLECTING.`;
-  if (amount >= 100) return `$${amount.toFixed(0)} order just dropped. Keep stacking!`;
-  return null;
-}
 
 async function logEntryFromPick() {
   const sales = parseFloat(document.getElementById("pick-input-sales").value);
@@ -1257,10 +1239,6 @@ function renderDash() {
     }
   }
 
-  const vibe = getVibe(sph, totalSales, hasLogs, emp.name);
-  document.getElementById("vibe-emoji").textContent = "🔥";
-  document.getElementById("vibe-text").textContent  = vibe;
-
   const winner = comp?.winner;
   const winnerBanner = document.getElementById("winner-banner");
   if (winnerBanner) {
@@ -1283,70 +1261,6 @@ function renderDash() {
     }
     goalsEl.innerHTML = goalsHtml;
     goalsEl.style.display = goalsHtml && !isProfileView ? "flex" : "none";
-  }
-
-  const vibeCard = document.querySelector(".vibe-card");
-  if (vibeCard) vibeCard.style.display = isProfileView ? "none" : "flex";
-
-  const dashLogCard = document.getElementById("dash-log-card");
-  if (dashLogCard) {
-    dashLogCard.classList.toggle("hidden", isProfileView);
-  }
-
-  // Week view with dates
-  const week = getWeekForDate(state.selectedDate);
-  const dayRow = document.getElementById("day-row");
-  dayRow.innerHTML = `<button class="week-nav-btn" id="prev-week-btn">←</button>`;
-
-  const todayStr = getTodayDate();
-  week.days.forEach(dayInfo => {
-    const hasEntry = myLogs[dayInfo.date] && (myLogs[dayInfo.date].sales > 0 || myLogs[dayInfo.date].hours > 0);
-    const isFutureDate = dayInfo.date > todayStr;
-    const isToday = dayInfo.date === todayStr;
-    const isSelected = state.selectedDate === dayInfo.date;
-    const classes = ["day-btn"];
-    if (isToday && !isSelected) classes.push("today");
-    if (isSelected) classes.push("active");
-    if (hasEntry) classes.push("logged");
-    if (isFutureDate) classes.push("disabled");
-    const btn = document.createElement("button");
-    btn.className = classes.join(" ");
-    btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>`;
-
-    if (!isFutureDate) {
-      btn.onclick = () => { state.selectedDate = dayInfo.date; renderDash(); };
-    } else {
-      btn.disabled = true;
-    }
-    dayRow.appendChild(btn);
-  });
-
-  dayRow.appendChild(makeBtn("→", "week-nav-btn", () => { state.selectedDate = nextWeek(state.selectedDate); renderDash(); }));
-  document.getElementById("prev-week-btn").onclick = () => { state.selectedDate = prevWeek(state.selectedDate); renderDash(); };
-
-  const existing = myLogs[state.selectedDate];
-  const isLocked = !!(existing && (existing.sales > 0 || existing.hours > 0));
-  const salesInput = document.getElementById("input-sales");
-  const hoursInput = document.getElementById("input-hours");
-  const logBtn = document.getElementById("btn-log");
-
-  salesInput.value = existing ? existing.sales || "" : "";
-  hoursInput.value = existing ? existing.hours || "" : "";
-
-  if (isLocked) {
-    salesInput.readOnly = true; hoursInput.readOnly = true;
-    salesInput.classList.add("input-locked"); hoursInput.classList.add("input-locked");
-    logBtn.disabled = true;
-    logBtn.classList.remove("btn-disabled");
-    logBtn.classList.add("btn-locked");
-    logBtn.textContent = "OIS ADDED";
-  } else {
-    salesInput.readOnly = false; hoursInput.readOnly = false;
-    salesInput.classList.remove("input-locked"); hoursInput.classList.remove("input-locked");
-    logBtn.disabled = false;
-    logBtn.classList.remove("btn-locked");
-    logBtn.classList.remove("btn-disabled");
-    logBtn.textContent = "ADD OIS";
   }
 
   const historyList = document.getElementById("history-list");
@@ -1918,32 +1832,6 @@ function getLeaderboardMovement(compId) {
   );
 }
 
-// ══════════════════════════════════════════════════════
-// Log entry
-// ══════════════════════════════════════════════════════
-async function logEntry() {
-  const sales = parseFloat(document.getElementById("input-sales").value);
-  const hours = parseFloat(document.getElementById("input-hours").value);
-  if (isNaN(sales) || sales < 0) { showToast("Enter a valid sales amount 💸"); return; }
-  if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked ⏱️"); return; }
-  if (isCompEnded(state.competitions[state.currentComp])) { showToast("This competition has ended 🔒"); return; }
-
-  const today = getTodayDate();
-  if (state.selectedDate > today) { showToast("Can't log orders in the future 🔮"); return; }
-
-  // Block overwriting an existing log
-  const existingLog = (state.logs[state.currentComp] || {})[state.currentUser]?.[state.selectedDate];
-  if (existingLog && (existingLog.sales > 0 || existingLog.hours > 0)) {
-    showToast("OIS Already Added - Manager Can Edit"); return;
-  }
-
-  await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
-  upsertLocalLog(state.currentComp, state.currentUser, state.selectedDate, { sales, hours });
-  if (sales > 0) launchConfetti(Math.min(Math.sqrt(sales / 200), 1));
-  showToast("Score captured.");
-  renderDash();
-  renderBoard();
-}
 
 // ══════════════════════════════════════════════════════
 // ADMIN — Tab system
@@ -3558,8 +3446,6 @@ document.addEventListener("DOMContentLoaded", () => {
       maybeShowCompetitionEndedModal({ force: true });
     };
   }
-
-  document.getElementById("btn-log").onclick = logEntry;
 
   const searchInput = document.getElementById("input-search-employees");
   if (searchInput) {
