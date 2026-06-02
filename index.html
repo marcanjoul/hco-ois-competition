@@ -257,7 +257,23 @@
   -->
   <div id="screen-admin-gate" class="screen">
     <div class="admin-gate-body">
-      <div class="admin-gate-icon">🔐</div>
+      <div class="admin-gate-icon" role="img" aria-label="Manager gate">
+        <svg class="gate-lock-svg" viewBox="0 0 32 38" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <!-- shackle -->
+          <path d="M8 17V12C8 7.58 11.58 4 16 4C20.42 4 24 7.58 24 12V17"
+                stroke="#47d7ff" stroke-width="4" stroke-linejoin="miter" stroke-linecap="square"/>
+          <!-- body -->
+          <rect x="1" y="17" width="30" height="20" fill="#47d7ff"/>
+          <!-- top edge shadow line -->
+          <rect x="1" y="17" width="30" height="3" fill="#2a9ec6"/>
+          <!-- left edge highlight -->
+          <rect x="1" y="17" width="2" height="20" fill="#6ee4ff"/>
+          <!-- keyhole circle -->
+          <circle cx="16" cy="26" r="4" fill="#050816"/>
+          <!-- keyhole slot -->
+          <rect x="14" y="28" width="4" height="5" fill="#050816"/>
+        </svg>
+      </div>
       <div class="admin-gate-title">MANAGER GATE</div>
       <p class="admin-gate-sub">Enter PIN to continue</p>
       <div class="pin-input-wrap">

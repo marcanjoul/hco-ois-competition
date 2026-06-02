@@ -3252,7 +3252,58 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
    Because theme-arcade.css loads last, these override the originals.
    ════════════════════════════════════════════════════════════════════════════ */
 
-/* Shared utility — keep scaleY origin at center so cards expand from the middle */
+/* ════════════════════════════════════════════════════════════════════════════
+   INSERT OIS — STEP HIERARCHY TWEAKS
+   Step badges and labels grow slightly; input elements shrink slightly
+   so the hierarchy reads: title > step header > content.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.pick-step-num {
+  width: 22px !important;
+  height: 22px !important;
+  font-size: 11px !important;
+}
+
+.pick-step-label {
+  font-size: 12px !important;
+  letter-spacing: 1.5px !important;
+}
+
+/* Shrink player selector slightly */
+.pick-emp-selector {
+  font-size: 20px !important;
+  min-height: 46px !important;
+  padding: 9px 44px 9px 12px !important;
+}
+
+/* Shrink all log inputs so they sit below the step headers visually */
+.log-input,
+.comp-select,
+#input-pin {
+  font-size: 24px !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   MANAGER GATE LOCK ICON
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.admin-gate-icon {
+  font-size: 0 !important; /* hide any fallback text */
+  line-height: 0 !important;
+}
+
+.gate-lock-svg {
+  width: 56px;
+  height: 56px;
+  display: block;
+  margin: 0 auto;
+  filter:
+    drop-shadow(3px 3px 0 #050816)
+    drop-shadow(0 0 18px rgba(71, 215, 255, 0.55));
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   Shared utility — keep scaleY origin at center so cards expand from the middle */
 .admin-item,
 .admin-log-player-card {
   transform-origin: center;
