@@ -597,18 +597,23 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
 async function logEntryFromPick() {
   const sales = parseFloat(document.getElementById("pick-input-sales").value);
   const hours = parseFloat(document.getElementById("pick-input-hours").value);
-  if (isNaN(sales) || sales < 0) { showToast("Enter a valid sales amount 💸"); return; }
-  if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked ⏱️"); return; }
-  if (!state.currentUser) { showToast("Select your name first 👤"); return; }
-  if (isCompEnded(state.competitions[state.currentComp])) { showToast("This competition has ended 🔒"); return; }
+  if (isNaN(sales) || sales < 0) { showToast("Enter a valid sales amount"); return; }
+  if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked"); return; }
+  if (!state.currentUser) { showToast("Select your name first"); return; }
+  if (isCompEnded(state.competitions[state.currentComp])) { showToast("This competition has ended"); return; }
 
   const today = getTodayDate();
-  if (state.selectedDate > today) { showToast("Can't log orders in the future 🔮"); return; }
+  if (state.selectedDate > today) { showToast("Can't log orders in the future"); return; }
 
   const existingLog = (state.logs[state.currentComp] || {})[state.currentUser]?.[state.selectedDate];
   if (existingLog && (existingLog.sales > 0 || existingLog.hours > 0)) {
     showToast("OIS Already Added - Manager Can Edit"); return;
   }
+
+  // Loading state + haptic
+  const logBtn = document.getElementById("pick-btn-log");
+  if (logBtn) { logBtn.textContent = "LOGGING..."; logBtn.disabled = true; }
+  if (navigator.vibrate) navigator.vibrate(40);
 
   await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
   upsertLocalLog(state.currentComp, state.currentUser, state.selectedDate, { sales, hours });
@@ -623,11 +628,14 @@ async function logEntryFromPick() {
   const allPlayers = getRankedPlayers(state.currentComp);
   const rank = allPlayers.findIndex(p => p.id === state.currentUser) + 1;
 
-  // Show success state — flip the log card
+  // Fade out form, then reveal success panel
   const formSteps = document.getElementById("pick-form-steps");
   const successState = document.getElementById("pick-success-state");
   const successStats = document.getElementById("pick-success-stats");
-  if (formSteps) formSteps.style.display = "none";
+  if (formSteps) {
+    formSteps.classList.add("hiding");
+    setTimeout(() => { formSteps.style.display = "none"; formSteps.classList.remove("hiding"); }, 140);
+  }
   if (successStats) {
     const rankDisplay = rank > 0 ? `#${rank}` : "—";
     successStats.innerHTML = `
@@ -636,7 +644,7 @@ async function logEntryFromPick() {
       ${sph > 0 ? `<div class="pick-success-stat"><div class="pick-success-stat-label">RANK</div><div class="pick-success-stat-value pick-success-stat-gold">${rankDisplay}</div></div>` : ""}
     `;
   }
-  if (successState) successState.classList.add("visible");
+  if (successState) setTimeout(() => successState.classList.add("visible"), 120);
 
   // Flip the logged day chip to green immediately
   renderPickDayRow();
@@ -1001,7 +1009,7 @@ function showSelectedEmployeeProfile(empId, emp) {
       <div class="pick-selected-emp-copy">
         <div class="pick-selected-emp-name">${escapeHtml(emp.name)}</div>
       </div>
-      <button class="pick-selected-clear-btn" id="pick-clear-emp-btn" type="button" title="Choose a different employee" aria-label="Choose a different employee">✕</button>
+      <button class="pick-selected-clear-btn" id="pick-clear-emp-btn" type="button" title="Choose a different employee" aria-label="Choose a different employee">X</button>
     </div>
   `;
 
@@ -1488,7 +1496,7 @@ function renderBoard() {
   if (!compId || !state.competitions[compId]) {
     body.innerHTML = `
       <div class="board-empty-state">
-        <div class="board-empty-icon">🏆</div>
+        <div class="board-empty-icon board-empty-pixel-icon">★</div>
         <div class="board-empty-title">NO COMPETITION YET</div>
         <div class="board-empty-sub">Ask your manager to set up a competition.</div>
       </div>
@@ -1505,7 +1513,7 @@ function renderBoard() {
   if (!hasLogs) {
     body.innerHTML = `
       <div class="board-empty-state">
-        <div class="board-empty-icon">🏁</div>
+        <div class="board-empty-icon board-empty-pixel-icon">▶</div>
         <div class="board-empty-title">COMPETITION STARTS NOW</div>
         <div class="board-empty-sub">Be the first to log an order and claim the top spot!</div>
         <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()">+ LOG AN ORDER</button>
@@ -1518,7 +1526,7 @@ function renderBoard() {
   if (players.length === 0) {
     body.innerHTML = `
       <div class="board-empty-state">
-        <div class="board-empty-icon">🏁</div>
+        <div class="board-empty-icon board-empty-pixel-icon">▶</div>
         <div class="board-empty-title">NO ORDERS YET</div>
         <div class="board-empty-sub">The scoreboard is empty. Log your first OIS and lead the pack!</div>
         <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()">+ LOG AN ORDER</button>
@@ -1539,7 +1547,7 @@ function renderBoard() {
     renderBoardEndedPodium(compId, body);
     if (ranked.length > 0) {
       const rankDivider = document.createElement("div");
-      rankDivider.className = "board-zero-divider";
+      rankDivider.className = "board-section-header";
       rankDivider.innerHTML = `<span>FULL RANKINGS</span>`;
       body.appendChild(rankDivider);
     }
@@ -1577,6 +1585,7 @@ function renderBoard() {
       <div class="board-score">
         <div class="board-sph">$${player.sph.toFixed(2)}</div>
         <div class="board-sph-label">/HR</div>
+        <div class="board-card-arrow">→</div>
       </div>
     `;
     card.onclick = () => {

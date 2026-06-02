@@ -1,0 +1,52 @@
+- generic [ref=e1]:
+  - navigation [ref=e14]:
+    - button "Home" [ref=e15] [cursor=pointer]:
+      - generic [ref=e17]: Home
+    - button "Leaderboard" [active] [ref=e18] [cursor=pointer]:
+      - generic [ref=e20]: Leaderboard
+    - button "MANAGER" [ref=e21] [cursor=pointer]:
+      - generic [ref=e23]: MANAGER
+  - text: ▼
+  - generic [ref=e52]:
+    - generic [ref=e53]:
+      - generic [ref=e54]: LEADERBOARD
+      - button "June-July ▼" [ref=e56] [cursor=pointer]
+    - generic [ref=e57]:
+      - generic [ref=e58] [cursor=pointer]:
+        - generic [ref=e59]:
+          - generic [ref=e60]: "#1"
+          - generic [ref=e61]: —
+        - generic [ref=e62]:
+          - img "Top player crown" [ref=e64]
+          - generic [ref=e66]: C
+        - generic [ref=e69]: Chloe
+        - generic [ref=e70]:
+          - generic [ref=e71]: $34.67
+          - generic [ref=e72]: /HR
+          - generic [ref=e73]: →
+      - generic [ref=e75]: NO SALES
+      - generic [ref=e76] [cursor=pointer]:
+        - generic [ref=e78]: —
+        - generic [ref=e81]: D
+        - generic [ref=e84]: Dom
+        - generic [ref=e85]:
+          - generic [ref=e86]: $0.00
+          - generic [ref=e87]: /HR
+          - generic [ref=e88]: →
+      - generic [ref=e89] [cursor=pointer]:
+        - generic [ref=e91]: —
+        - generic [ref=e94]: E
+        - generic [ref=e97]: Ethan
+        - generic [ref=e98]:
+          - generic [ref=e99]: $0.00
+          - generic [ref=e100]: /HR
+          - generic [ref=e101]: →
+      - generic [ref=e102] [cursor=pointer]:
+        - generic [ref=e104]: —
+        - generic [ref=e107]: G
+        - generic [ref=e110]: Gabriella
+        - generic [ref=e111]:
+          - generic [ref=e112]: $0.00
+          - generic [ref=e113]: /HR
+          - generic [ref=e114]: →
+  - text: • • •
