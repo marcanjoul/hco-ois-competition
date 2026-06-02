@@ -3537,7 +3537,6 @@ document.addEventListener("DOMContentLoaded", () => {
       empSelectorBtn.classList.toggle("open", isOpening);
       if (isOpening) {
         renderPickEmpGrid();
-        document.getElementById("pick-emp-search")?.focus();
       }
     };
     empSelectorBtn.onkeydown = (e) => {
