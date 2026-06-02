@@ -678,7 +678,6 @@ function renderPickDayRow() {
         state.selectedDate = dayInfo.date;
         renderPickDayRow();
         updatePickLogBtnState();
-        focusFirstEditablePickInput();
       };
     } else {
       btn.disabled = true;
@@ -935,7 +934,6 @@ function enterAsDashboard(empId) {
   showSelectedEmployeeProfile(empId, emp);
   renderPickDayRow();
   updatePickLogBtnState();
-  focusFirstEditablePickInput();
 }
 
 function resetPickEmployeeSelection({ openGrid = false } = {}) {
