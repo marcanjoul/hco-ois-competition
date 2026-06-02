@@ -704,6 +704,9 @@ body::after {
 
 .day-btn.today {
   border-color: var(--accent) !important;
+  box-shadow:
+    0 0 10px rgba(255, 216, 77, 0.45),
+    4px 4px 0 #050816 !important;
 }
 
 .bottom-nav {
@@ -1059,6 +1062,17 @@ select.log-input:focus {
   inset: 0 auto 0 0;
   width: 8px;
   background: linear-gradient(180deg, var(--accent), var(--accent-alt), var(--accent2));
+}
+
+.board-card.rank-1::before {
+  width: 14px;
+  background: linear-gradient(180deg, #ffe56f, var(--accent), var(--accent-alt));
+  box-shadow: 0 0 14px rgba(255, 216, 77, 0.5);
+}
+
+.board-card.rank-1 {
+  background:
+    linear-gradient(180deg, rgba(255, 216, 77, 0.09) 0%, rgba(7, 15, 41, 0.99) 100%) !important;
 }
 
 .board-card.rank-2 {
@@ -2189,21 +2203,18 @@ body::after {
   min-width: 260px;
   min-height: 66px;
   padding: 18px 28px;
-  background:
-    linear-gradient(180deg, #47d7ff 0%, #2b6dff 100%) !important;
-  border: 4px solid #fff2a8 !important;
-  color: #ffffff !important;
+  /* inherits yellow gradient from .log-btn group above */
+  border: 4px solid #f5bf1f !important;
+  color: #06102b !important;
   font-size: 18px;
   line-height: 1.25;
   letter-spacing: 1.2px;
-  text-shadow:
-    2px 2px 0 #050816,
-    0 0 10px rgba(255, 255, 255, 0.18) !important;
+  text-shadow: none !important;
   box-shadow:
     5px 5px 0 #050816,
     inset 2px 2px 0 rgba(255, 255, 255, 0.22),
     inset -3px -3px 0 rgba(0, 0, 0, 0.28),
-    0 0 18px rgba(71, 215, 255, 0.25) !important;
+    0 0 18px rgba(255, 216, 77, 0.35) !important;
 }
 
 .welcome-start-btn::after {
@@ -2211,10 +2222,7 @@ body::after {
 }
 
 .welcome-start-btn:hover {
-  background:
-    linear-gradient(180deg, #fff2a8 0%, #ffd84d 100%) !important;
-  color: #06102b !important;
-  text-shadow: none !important;
+  filter: brightness(1.1) saturate(1.15);
 }
 
 .day-btn.active,
@@ -3447,4 +3455,87 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 .screen-revisit .pick-comp-skeleton,
 .screen-revisit .admin-gate-body {
   animation: none !important;
+}
+
+/* ── FULL RANKINGS section header — distinct from NO SALES divider ── */
+.board-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 6px;
+  color: var(--accent);
+  font-family: "Press Start 2P", monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 0 #8e5f00, 0 0 10px rgba(255, 216, 77, 0.28);
+}
+
+.board-section-header::before,
+.board-section-header::after {
+  content: "";
+  flex: 1;
+  height: 3px;
+  background: repeating-linear-gradient(90deg, var(--accent) 0 8px, transparent 8px 14px);
+  opacity: 0.7;
+}
+
+/* ── Board card tap affordance: pixel arrow ── */
+.board-card-arrow {
+  font-family: "Press Start 2P", monospace;
+  font-size: 9px;
+  color: var(--text3);
+  margin-top: 4px;
+  letter-spacing: 0;
+  transition: color 0.12s steps(2), transform 0.12s steps(2);
+}
+
+.board-card:hover .board-card-arrow,
+.board-card:focus-visible .board-card-arrow {
+  color: var(--accent2);
+  transform: translateX(3px);
+}
+
+/* ── Empty state pixel icons ── */
+.board-empty-pixel-icon {
+  font-family: "Press Start 2P", monospace;
+  font-size: 22px;
+  color: var(--accent);
+  text-shadow: 3px 3px 0 #8e5f00, 0 0 12px rgba(255, 216, 77, 0.3);
+  line-height: 1;
+}
+
+/* ── Clear button: pixel font X ── */
+.pick-selected-clear-btn {
+  font-family: "Press Start 2P", monospace !important;
+  font-size: 11px !important;
+  color: #8fd7ff !important;
+}
+
+/* ── Success checkmark: pixel green ── */
+.pick-success-checkmark {
+  font-family: "Press Start 2P", monospace;
+  font-size: 28px !important;
+  color: var(--green);
+  text-shadow: 3px 3px 0 #071a10, 0 0 16px rgba(82, 255, 152, 0.45);
+  letter-spacing: 2px;
+}
+
+/* ── Success state fade-in ── */
+.pick-success-state.visible {
+  animation: success-panel-in 0.22s ease both !important;
+}
+
+@keyframes success-panel-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Form steps fade-out ── */
+#pick-form-steps {
+  transition: opacity 0.14s ease;
+}
+
+#pick-form-steps.hiding {
+  opacity: 0;
+  pointer-events: none;
 }
