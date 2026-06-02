@@ -169,6 +169,13 @@ textarea {
 .detail-label,
 .nav-label {
   text-transform: uppercase;
+}
+.dash-name,
+.screen-top-title,
+.log-card-title,
+.admin-gate-title,
+.info-modal-title,
+.history-title {
   text-shadow: 2px 2px 0 #09153a;
 }
 
@@ -1942,10 +1949,10 @@ body::after {
   z-index: 0;
   pointer-events: none;
   background:
-    linear-gradient(rgba(255, 255, 255, 0.035) 50%, rgba(0, 0, 0, 0.06) 50%);
+    linear-gradient(rgba(255, 255, 255, 0.018) 50%, rgba(0, 0, 0, 0.03) 50%);
   background-size: 100% 4px;
   mix-blend-mode: screen;
-  opacity: 0.45;
+  opacity: 0.35;
 }
 
 .welcome-orb {
@@ -1999,17 +2006,7 @@ body::after {
 .pick-comp-info::after,
 .history-wrap::after,
 .admin-tab-content::after {
-  content: "";
-  display: block;
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 10px;
-  height: 5px;
-  background:
-    radial-gradient(circle, var(--pellet) 0 3px, transparent 4px) 0 0 / 22px 5px repeat-x;
-  opacity: 0.8;
-  pointer-events: none;
+  display: none !important;
 }
 
 .welcome-inner {
