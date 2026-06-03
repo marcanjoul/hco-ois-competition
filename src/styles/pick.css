@@ -78,9 +78,7 @@
   border: 1px solid rgba(26,111,244,0.18);
   border-radius: var(--radius-sm);
   overflow: hidden;
-  box-shadow:
-    0 24px 50px rgba(26,111,244,0.10),
-    0 6px 18px rgba(15,25,35,0.08);
+  box-shadow: var(--shadow-card);
   position: relative;
   padding: 10px 10px 0;
 }
@@ -644,9 +642,9 @@
 .pick-avatar-upload-modal {
   position: fixed;
   inset: 0;
-  background: rgba(15,25,35,0.45);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--modal-overlay-bg);
+  backdrop-filter: var(--modal-blur);
+  -webkit-backdrop-filter: var(--modal-blur);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -666,8 +664,8 @@
   width: min(100%, 460px);
   background: var(--surface);
   border: 1px solid rgba(15,25,35,0.08);
-  border-radius: 24px;
-  box-shadow: 0 20px 50px rgba(15,25,35,0.22);
+  border-radius: var(--radius-sheet);
+  box-shadow: var(--shadow-card);
   padding: var(--space-4);
   transform: translateY(18px);
   transition: transform 0.18s ease;
@@ -728,7 +726,7 @@
   gap: var(--space-3);
   text-align: left;
   padding: 14px 16px;
-  border-radius: 18px;
+  border-radius: var(--radius-option);
   background: linear-gradient(180deg, rgba(26,111,244,0.08) 0%, rgba(26,111,244,0.03) 100%);
   border: 1px solid rgba(26,111,244,0.14);
   transition: all 0.18s ease;
@@ -780,7 +778,7 @@
 .pick-selected-clear-btn {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: var(--surface);
   border: 1px solid rgba(15,25,35,0.08);
   color: var(--text2);
@@ -861,7 +859,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: var(--space-3);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-card);
 }
 
 #pick-log-card {
@@ -1110,19 +1108,20 @@ select.log-input:focus { background-color: var(--surface); }
   overflow: hidden;
 }
 
-/* Active pulse — draws eye to the ready button */
+/* Active pulse — GPU-composited via filter (not box-shadow) */
 .log-btn:not(:disabled):not(.btn-ghost):not(.btn-locked) {
+  will-change: filter;
   animation: btn-glow-pulse 2.5s ease-in-out infinite;
 }
 
 @keyframes btn-glow-pulse {
-  0%, 100% { box-shadow: var(--glow-accent); }
-  50% { box-shadow: 0 0 30px rgba(26,111,244,0.5); }
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(26,111,244,0.4)); }
+  50%       { filter: drop-shadow(0 0 18px rgba(26,111,244,0.7)); }
 }
 
 .log-btn:hover:not(:disabled):not(.btn-ghost):not(.btn-locked) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(26,111,244,0.5);
+  filter: drop-shadow(0 8px 16px rgba(26,111,244,0.55));
   animation: none;
 }
 .log-btn:active:not(:disabled) { transform: scale(0.97); }
@@ -1352,10 +1351,10 @@ select.log-input:focus { background-color: var(--surface); }
   flex-direction: column;
   gap: 10px;
   padding: 14px;
-  border-radius: 22px;
+  border-radius: var(--radius-option);
   background: linear-gradient(180deg, rgba(255,255,255,0.82) 0%, rgba(236,244,255,0.72) 100%);
   border: 1px solid rgba(26,111,244,0.10);
-  box-shadow: 0 12px 24px rgba(26,111,244,0.06);
+  box-shadow: var(--shadow-card);
 }
 .detail-label {
   font-family: var(--type-label-family);

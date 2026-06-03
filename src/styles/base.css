@@ -86,6 +86,20 @@
   --shadow-elevation-2: 0 4px 16px rgba(15,25,35,0.12);
   --shadow-elevation-3: 0 12px 40px rgba(15,25,35,0.18);
 
+  /* ── Card shadow — set themed variant in :root override ── */
+  --shadow-card: var(--shadow);
+
+  /* ── Modal overlays ── */
+  --modal-overlay-bg:    rgba(15,25,35,0.50);
+  --modal-overlay-heavy: rgba(15,25,35,0.62);
+  --modal-blur:          blur(8px);
+
+  /* ── Radius tokens for shapes outside the standard scale ── */
+  --radius-pill:   99px;
+  --radius-sheet:  24px;
+  --radius-option: 18px;
+  --radius-circle: 50%;
+
   /* ── Chrome ── */
   --header-bg:  rgba(255,255,255,0.92);
   --nav-bg:     rgba(255,255,255,0.95);

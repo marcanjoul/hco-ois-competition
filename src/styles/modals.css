@@ -17,11 +17,11 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(15,25,35,0.5);
+  background: var(--modal-overlay-bg);
   z-index: 100;
   overflow-y: auto;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: var(--modal-blur);
+  -webkit-backdrop-filter: var(--modal-blur);
 }
 .admin-edit-emp-modal.active {
   display: flex;
@@ -85,12 +85,12 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(15,25,35,0.5);
+  background: var(--modal-overlay-bg);
   z-index: 100;
   overflow-y: auto;
   padding: var(--space-4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: var(--modal-blur);
+  -webkit-backdrop-filter: var(--modal-blur);
 }
 .info-modal.active {
   display: flex;
@@ -156,9 +156,9 @@
   z-index: 120;
   overflow-y: auto;
   padding: var(--space-4);
-  background: rgba(15,25,35,0.62);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: var(--modal-overlay-heavy);
+  backdrop-filter: var(--modal-blur);
+  -webkit-backdrop-filter: var(--modal-blur);
 }
 
 .competition-ended-modal.active {
