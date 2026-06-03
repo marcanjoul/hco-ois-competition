@@ -97,6 +97,17 @@ textarea {
   image-rendering: pixelated;
 }
 
+/* Elements with hardcoded px border-radius in base CSS — all others get 0
+   from :root { --radius: 0; --radius-sm: 0; --radius-xs: 0 } via cascade. */
+.toast,
+.pick-avatar-upload-sheet,
+.comp-detail,
+.pick-avatar-upload-option,
+.pick-selected-clear-btn {
+  border-radius: 0 !important;
+}
+
+/* Box-shadow reset for components with hardcoded shadows in base CSS */
 .app-header,
 .bottom-nav,
 .pick-comp-info,
@@ -128,17 +139,7 @@ textarea {
 .admin-card,
 .admin-list-card,
 .admin-top-row {
-  border-radius: 0 !important;
   box-shadow: var(--shadow) !important;
-}
-
-.app-header,
-.bottom-nav {
-  background:
-    linear-gradient(180deg, rgba(7, 16, 46, 0.98), rgba(8, 18, 53, 0.98));
-  border-color: #2b6dff;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
 }
 
 .app-header {
@@ -415,6 +416,9 @@ body::after {
   font-size: 12px;
 }
 
+/* border-radius: 0 is redundant here — :root sets --radius-sm: 0 and --radius-xs: 0,
+   which these elements use in base CSS. color: var(--text) is also handled by :root.
+   Only border, background, and box-shadow genuinely differ from base. */
 .name-btn,
 .log-btn,
 .week-nav-btn,
@@ -435,7 +439,6 @@ body::after {
 .collapsible-toggle,
 .admin-lock-btn,
 .btn-secondary {
-  border-radius: 0 !important;
   border: 3px solid #2b6dff !important;
   background: var(--surface-card) !important;
   color: var(--text) !important;
@@ -1926,6 +1929,10 @@ select.log-input:focus {
   --surface-mid:  #0b1540;
   --surface-lift: #13266c;
   --surface-card: #101e55;
+  /* Chrome — drives header/nav background and blur without overrides */
+  --header-bg: linear-gradient(180deg, rgba(7,16,46,0.98), rgba(8,18,53,0.98));
+  --nav-bg:    linear-gradient(180deg, rgba(7,16,46,0.98), rgba(8,18,53,0.98));
+  --ui-blur:   none;
 }
 
 html,
