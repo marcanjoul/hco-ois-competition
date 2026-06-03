@@ -3546,6 +3546,20 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   pointer-events: none;
 }
 
+/* ── Admin gate: square card centered on screen (matches welcome-boot-panel) ── */
+#screen-admin-gate {
+  align-items: center;
+  justify-content: center;
+  padding: 24px 24px calc(var(--nav-height) + 24px);
+}
+
+.admin-gate-body {
+  flex: unset !important;
+  width: min(100%, 380px) !important;
+  max-width: 380px !important;
+  padding: 44px 32px 48px !important;
+}
+
 /* ── Global focus-visible: keyboard navigation ring ──
    Shows only for keyboard navigation (not mouse clicks).
    Inputs already show a custom glow on :focus, so suppress there. ── */
