@@ -86,6 +86,11 @@
   --shadow-elevation-2: 0 4px 16px rgba(15,25,35,0.12);
   --shadow-elevation-3: 0 12px 40px rgba(15,25,35,0.18);
 
+  /* ── Chrome ── */
+  --header-bg:  rgba(255,255,255,0.92);
+  --nav-bg:     rgba(255,255,255,0.95);
+  --ui-blur:    blur(20px);
+
   /* ── Layout ── */
   --header-height: 52px;
   --header-h:      52px;
@@ -396,14 +401,14 @@ input[type="number"] { -moz-appearance: textfield; }
   top: 0; left: 0; right: 0;
   z-index: 50;
   height: var(--header-height);
-  background: rgba(255,255,255,0.92);
+  background: var(--header-bg);
   border-bottom: 1px solid var(--border);
   padding: 0 var(--space-4);
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: var(--ui-blur);
+  -webkit-backdrop-filter: var(--ui-blur);
 }
 .app-header.hidden { display: none; }
 
@@ -456,12 +461,12 @@ input[type="number"] { -moz-appearance: textfield; }
   bottom: 0; left: 0; right: 0;
   z-index: 50;
   height: var(--nav-height);
-  background: rgba(255,255,255,0.95);
+  background: var(--nav-bg);
   border-top: 1px solid var(--border);
   display: flex;
   padding-bottom: env(safe-area-inset-bottom);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: var(--ui-blur);
+  -webkit-backdrop-filter: var(--ui-blur);
 }
 .bottom-nav.hidden { display: none; }
 
