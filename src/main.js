@@ -566,7 +566,7 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
   container.classList.add("pick-comp-info");
   container.classList.remove("hidden");
   container.innerHTML = `
-    <div class="pick-comp-name">${escapeHtml(comp.name)}</div>
+    <h2 class="pick-comp-name">${escapeHtml(comp.name)}</h2>
     <div class="pick-comp-dates">${comp.startDate && comp.endDate ? escapeHtml(`${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}`) : ""}</div>
     <div class="pick-comp-hero-row">
       <div class="pick-countdown">
@@ -1813,7 +1813,9 @@ function renderCompetitionEndedModal(compId) {
   `;
 
   modal.dataset.compId = compId;
+  setModalInert(true);
   modal.classList.add("active");
+  focusElementSoon(document.getElementById("competition-ended-close"), { preventScroll: true });
 
   document.getElementById("competition-ended-board-btn")?.addEventListener("click", () => {
     closeCompetitionEndedModal();
@@ -1828,6 +1830,7 @@ function closeCompetitionEndedModal() {
   if (!modal) return;
   if (modal.dataset.compId) state.endedRevealDismissedCompId = modal.dataset.compId;
   modal.classList.remove("active");
+  setModalInert(false);
 }
 
 function maybeShowCompetitionEndedModal({ force = false } = {}) {
@@ -3365,6 +3368,7 @@ function showAppConfirm({
 
     const close = (result) => {
       modal.classList.remove("active");
+      setModalInert(false);
       focusElementSoon(returnFocusEl, { preventScroll: true });
       resolve(result);
     };
@@ -3388,6 +3392,7 @@ function showAppConfirm({
     modal.querySelector(".app-confirm-close")?.addEventListener("click", () => close(false));
     modal.querySelector(".app-confirm-cancel")?.addEventListener("click", () => close(false));
     modal.querySelector(".app-confirm-confirm")?.addEventListener("click", () => close(true));
+    setModalInert(true);
     modal.classList.add("active");
     focusElementSoon(modal.querySelector(".app-confirm-cancel") || modal.querySelector(".app-confirm-confirm"), { preventScroll: true });
   });
@@ -3414,6 +3419,7 @@ function showAppAlert({
 
     const close = () => {
       modal.classList.remove("active");
+      setModalInert(false);
       focusElementSoon(returnFocusEl, { preventScroll: true });
       resolve(true);
     };
@@ -3435,6 +3441,7 @@ function showAppAlert({
 
     modal.querySelector(".app-confirm-close")?.addEventListener("click", close);
     modal.querySelector(".app-confirm-confirm")?.addEventListener("click", close);
+    setModalInert(true);
     modal.classList.add("active");
     focusElementSoon(modal.querySelector(".app-confirm-confirm"), { preventScroll: true });
   });
@@ -3474,11 +3481,24 @@ function launchConfetti(intensity = 1) {
 // ══════════════════════════════════════════════════════
 // Info Modal
 // ══════════════════════════════════════════════════════
+function setModalInert(active) {
+  [
+    document.getElementById("main-content"),
+    document.getElementById("app-header"),
+    document.getElementById("bottom-nav"),
+  ].forEach(el => {
+    if (!el) return;
+    if (active) el.setAttribute("inert", "");
+    else el.removeAttribute("inert");
+  });
+}
+
 let infoModalReturnFocusEl = null;
 function openInfoModal(returnFocusEl = document.activeElement) {
   const modal = document.getElementById("info-modal");
   if (!modal) return;
   infoModalReturnFocusEl = returnFocusEl;
+  setModalInert(true);
   modal.classList.add("active");
   focusElementSoon(document.getElementById("btn-close-info"), { preventScroll: true });
 }
@@ -3486,6 +3506,7 @@ function openInfoModal(returnFocusEl = document.activeElement) {
 function closeInfoModal() {
   const modal = document.getElementById("info-modal");
   if (modal) modal.classList.remove("active");
+  setModalInert(false);
   focusElementSoon(infoModalReturnFocusEl, { preventScroll: true });
   infoModalReturnFocusEl = null;
 }
