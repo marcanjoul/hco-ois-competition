@@ -86,6 +86,16 @@
   --shadow-elevation-2: 0 4px 16px rgba(15,25,35,0.12);
   --shadow-elevation-3: 0 12px 40px rgba(15,25,35,0.18);
 
+  /* ── Card surface — background and border-color for all card-like surfaces ── */
+  --card-bg:           var(--surface);
+  --card-border-color: var(--border);
+  /* Specific card backgrounds that differ from the generic card surface */
+  --pick-comp-bg:
+    radial-gradient(circle at top right, rgba(77,158,250,0.22) 0%, rgba(77,158,250,0.08) 18%, transparent 42%),
+    radial-gradient(circle at 0% 100%, rgba(26,111,244,0.12) 0%, transparent 32%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  --admin-tools-bg:    linear-gradient(180deg, rgba(255,255,255,0.82), rgba(245,249,255,0.9));
+
   /* ── Card shadow — set themed variant in :root override ── */
   --shadow-card: var(--shadow);
 
@@ -265,8 +275,8 @@ input[type="number"] { -moz-appearance: textfield; }
   align-items: center;
   justify-content: center;
   border-radius: var(--radius);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
   box-shadow: var(--shadow-lg);
   text-align: center;
   overflow: hidden;

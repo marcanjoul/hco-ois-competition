@@ -71,11 +71,8 @@
    Example on the website: the card showing the current competition details.
 */
 .pick-comp-info {
-  background:
-    radial-gradient(circle at top right, rgba(77,158,250,0.22) 0%, rgba(77,158,250,0.08) 18%, transparent 42%),
-    radial-gradient(circle at 0% 100%, rgba(26,111,244,0.12) 0%, transparent 32%),
-    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-  border: 1px solid rgba(26,111,244,0.18);
+  background: var(--pick-comp-bg);
+  border: 1px solid var(--card-border-color);
   border-radius: var(--radius-sm);
   overflow: hidden;
   box-shadow: var(--shadow-card);
@@ -855,8 +852,8 @@
    Example on the website: the large "INSERT OIS" card.
 */
 .log-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
   border-radius: var(--radius-sm);
   padding: var(--space-3);
   box-shadow: var(--shadow-card);

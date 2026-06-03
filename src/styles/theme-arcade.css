@@ -1912,6 +1912,11 @@ select.log-input:focus {
   --header-bg: linear-gradient(180deg, rgba(7,16,46,0.98), rgba(8,18,53,0.98));
   --nav-bg:    linear-gradient(180deg, rgba(7,16,46,0.98), rgba(8,18,53,0.98));
   --ui-blur:   none;
+  /* Card surface — all card surfaces collapse to the same dark cabinet gradient */
+  --card-bg:           linear-gradient(180deg, rgba(18,38,108,0.98), rgba(7,15,41,0.99));
+  --card-border-color: var(--maze-blue-bright);
+  --pick-comp-bg:      var(--card-bg);
+  --admin-tools-bg:    var(--card-bg);
   /* Card shadow — the full double-ring cabinet treatment */
   --shadow-card:
     0 0 0 4px var(--surface-deep),
@@ -1999,10 +2004,8 @@ body::after {
 .goal-day-card,
 .dash-profile-card {
   position: relative;
-  background:
-    linear-gradient(180deg, rgba(18, 38, 108, 0.98), rgba(7, 15, 41, 0.99)) !important;
-  border-color: var(--maze-blue-bright) !important;
-  /* box-shadow handled by --shadow-card in :root — no !important needed */
+  /* background, border-color, and box-shadow all handled by CSS variables
+     (--card-bg, --card-border-color, --shadow-card) in :root — no !important needed */
 }
 
 .welcome-inner::after,

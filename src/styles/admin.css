@@ -26,6 +26,8 @@
   width: 100%;
   text-align: center;
   gap: var(--space-4);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
 }
 
 .admin-gate-icon { font-size: 56px; line-height: 1; }
@@ -241,6 +243,8 @@
   flex: 1;
   padding: var(--space-4);
   overflow-y: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
 }
 
 .admin-back-top {
@@ -496,6 +500,8 @@
   flex-direction: column;
   gap: 12px;
   margin-bottom: var(--space-3);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
 }
 
 .admin-list-empty-state {
@@ -534,9 +540,9 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--card-border-color);
   min-height: 64px;
-  background: transparent;
+  background: var(--card-bg);
 }
 
 .admin-emp-item {
@@ -743,8 +749,8 @@
 .admin-new-row .log-input { flex: 1; }
 
 .admin-team-tools {
-  background: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(245,249,255,0.9));
-  border: 1px solid rgba(165, 191, 228, 0.45);
+  background: var(--admin-tools-bg);
+  border: 1px solid var(--card-border-color);
   border-radius: 28px;
   padding: 12px;
   margin-bottom: 12px;
@@ -1195,9 +1201,9 @@
   justify-content: space-between;
   gap: 12px;
   padding: 12px 14px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--card-border-color);
   border-radius: var(--radius-sm);
-  background: var(--surface2);
+  background: var(--card-bg);
   color: var(--text);
   cursor: pointer;
   text-align: left;
@@ -1409,9 +1415,9 @@
   flex-direction: column;
   gap: 8px;
   padding: 10px 12px;
-  border: 2px solid var(--border);
+  border: 2px solid var(--card-border-color);
   border-radius: 12px;
-  background: var(--surface);
+  background: var(--card-bg);
 }
 .goal-day-meta {
   min-width: 0;

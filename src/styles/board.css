@@ -145,8 +145,8 @@
    Example on the website: the first-place player card.
 */
 .board-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
   border-radius: var(--radius-sm);
   padding: var(--space-3) var(--space-4);
   display: flex;
@@ -169,14 +169,10 @@
 
 .board-card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-elevation-2);
   border-color: var(--accent);
 }
 .board-card.rank-1:hover {
   border-color: var(--accent);
-  box-shadow:
-    0 0 14px rgba(245,166,35,0.10),
-    var(--shadow-elevation-2);
 }
 .board-card.is-you:not(.rank-1) {
   border-color: var(--accent2);
