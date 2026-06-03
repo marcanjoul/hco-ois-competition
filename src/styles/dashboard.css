@@ -389,6 +389,12 @@
   text-transform: uppercase;
 }
 
+@media (max-width: 400px) {
+  .stat-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 640px) {
   .dash-profile-hero {
     grid-template-columns: 1fr;
