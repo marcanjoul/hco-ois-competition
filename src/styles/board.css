@@ -152,8 +152,9 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  box-shadow: 0 1px 4px rgba(15,25,35,0.08), 0 4px 12px rgba(15,25,35,0.05);
+  box-shadow: var(--shadow-card);
   cursor: pointer;
+  will-change: transform;
   transition: all 0.18s cubic-bezier(0.34,1.2,0.64,1);
   animation: board-card-in 0.4s both;
   opacity: 0;

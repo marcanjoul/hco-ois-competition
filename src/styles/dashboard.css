@@ -55,7 +55,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: var(--space-4);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-card);
 }
 .dash-comp-info.hidden { display: none; }
 
@@ -64,7 +64,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: var(--space-4);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-card);
 }
 .dash-profile-card.hidden { display: none; }
 
@@ -253,7 +253,7 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-card);
 }
 .stat-card.accent {
   border-color: var(--accent);

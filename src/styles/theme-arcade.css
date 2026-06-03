@@ -97,35 +97,18 @@ textarea {
   image-rendering: pixelated;
 }
 
-/* Elements with hardcoded px border-radius in base CSS — all others get 0
-   from :root { --radius: 0; --radius-sm: 0; --radius-xs: 0 } via cascade. */
-.toast,
-.pick-avatar-upload-sheet,
-.comp-detail,
-.pick-avatar-upload-option,
-.pick-selected-clear-btn {
-  border-radius: 0 !important;
-}
+/* Border-radius overrides are no longer needed here.
+   --radius-pill, --radius-sheet, --radius-option, --radius-circle are all set
+   to 0 in :root above, so the base CSS variables cascade correctly. */
 
-/* Box-shadow reset for components with hardcoded shadows in base CSS */
+/* Box-shadow for minor surfaces not covered by the REFRESH group's --shadow-card.
+   REFRESH group elements (.pick-comp-info, .board-card, .stat-card, etc.)
+   get their shadow from --shadow-card in :root — no !important needed there. */
 .app-header,
 .bottom-nav,
-.pick-comp-info,
-.log-card,
-.dash-comp-info,
-.stat-card,
-.vibe-card,
-.history-wrap,
-.board-card,
-.admin-team-tools,
 .admin-team-input-shell,
-.admin-list,
-.admin-item,
-.admin-gate-body,
 .admin-summary-bar,
 .admin-tab-bar,
-.admin-tab-content,
-.info-modal-content,
 .pick-avatar-upload-sheet,
 .toast,
 .no-comps-message,
@@ -1121,12 +1104,8 @@ select.log-input:focus {
   border-color: #f5bf1f !important;
 }
 
-.info-modal,
-.pick-avatar-upload-modal {
-  background: rgba(2, 6, 18, 0.82);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-}
+/* Modal overlay background and blur are now driven by
+   --modal-overlay-bg, --modal-overlay-heavy, and --modal-blur in :root. */
 
 .app-confirm-content {
   border: 4px solid #2b6dff !important;
@@ -1933,6 +1912,21 @@ select.log-input:focus {
   --header-bg: linear-gradient(180deg, rgba(7,16,46,0.98), rgba(8,18,53,0.98));
   --nav-bg:    linear-gradient(180deg, rgba(7,16,46,0.98), rgba(8,18,53,0.98));
   --ui-blur:   none;
+  /* Card shadow — the full double-ring cabinet treatment */
+  --shadow-card:
+    0 0 0 4px var(--surface-deep),
+    0 0 0 7px var(--maze-blue),
+    8px 8px 0 rgba(0,0,0,0.62),
+    0 0 24px rgba(71,215,255,0.18);
+  /* Modal overlays — dark arcade tint, minimal blur */
+  --modal-overlay-bg:    rgba(2,6,18,0.82);
+  --modal-overlay-heavy: rgba(3,7,22,0.78);
+  --modal-blur:          blur(2px);
+  /* All non-standard radii collapse to square in the cabinet */
+  --radius-pill:   0;
+  --radius-sheet:  0;
+  --radius-option: 0;
+  --radius-circle: 0;
 }
 
 html,
@@ -2008,11 +2002,7 @@ body::after {
   background:
     linear-gradient(180deg, rgba(18, 38, 108, 0.98), rgba(7, 15, 41, 0.99)) !important;
   border-color: var(--maze-blue-bright) !important;
-  box-shadow:
-    0 0 0 4px var(--surface-deep),
-    0 0 0 7px var(--maze-blue),
-    8px 8px 0 rgba(0, 0, 0, 0.62),
-    0 0 24px rgba(71, 215, 255, 0.18) !important;
+  /* box-shadow handled by --shadow-card in :root — no !important needed */
 }
 
 .welcome-inner::after,
@@ -2683,10 +2673,7 @@ button.btn-disabled:hover,
   filter: none !important;
 }
 
-/* Competition ended reveal */
-.competition-ended-modal {
-  background: rgba(3, 7, 22, 0.78) !important;
-}
+/* Competition ended reveal — background now driven by --modal-overlay-heavy in :root */
 
 .competition-ended-content {
   background:
@@ -3575,3 +3562,11 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
     8px 8px 0 rgba(0, 0, 0, 0.62),
     0 0 24px rgba(71, 215, 255, 0.45) !important;
 }
+
+/* btn-glow-pulse in arcade uses gold glow instead of blue — override the keyframes */
+@keyframes btn-glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(255,216,77,0.45)); }
+  50%       { filter: drop-shadow(0 0 20px rgba(255,216,77,0.8)); }
+}
+
+/* ── Admin gate: square card centered on screen (matches welcome-boot-panel) ──
