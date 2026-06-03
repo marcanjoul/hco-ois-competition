@@ -1229,7 +1229,7 @@ function renderDash() {
           <div class="dash-profile-copy">
             <div class="dash-profile-kicker">Player Profile</div>
             <div class="dash-profile-name-row">
-              <div class="dash-profile-name">${escapeHtml(emp.name)}</div>
+              <h1 class="dash-profile-name">${escapeHtml(emp.name)}</h1>
               ${myRank > 0 ? `<div class="dash-profile-rank-badge">#${myRank}</div>` : ""}
             </div>
             <div class="dash-profile-stats">
@@ -1800,7 +1800,7 @@ function renderCompetitionEndedModal(compId) {
 
   body.innerHTML = `
     <div class="competition-ended-kicker">Competition Ended</div>
-    <div class="competition-ended-title">${escapeHtml(comp.name || "Competition")}</div>
+    <div class="competition-ended-title" id="competition-ended-title">${escapeHtml(comp.name || "Competition")}</div>
     <div class="competition-ended-winner">
       <span class="competition-ended-winner-label">${winnerGroup?.players?.length > 1 ? "Winners" : "Winner"}</span>
       <span class="competition-ended-winner-name">${escapeHtml(winnerNames)}</span>
@@ -3374,9 +3374,9 @@ function showAppConfirm({
     };
 
     modal.innerHTML = `
-      <div class="info-modal-content app-confirm-content">
+      <div class="info-modal-content app-confirm-content" role="dialog" aria-modal="true" aria-labelledby="app-confirm-title">
         <div class="info-modal-header app-confirm-header">
-          <div class="info-modal-title app-confirm-title">${escapeHtml(title)}</div>
+          <div class="info-modal-title app-confirm-title" id="app-confirm-title">${escapeHtml(title)}</div>
           <button class="info-modal-close app-confirm-close" type="button" aria-label="Close">✕</button>
         </div>
         <div class="info-modal-body app-confirm-body">
@@ -3425,9 +3425,9 @@ function showAppAlert({
     };
 
     modal.innerHTML = `
-      <div class="info-modal-content app-confirm-content">
+      <div class="info-modal-content app-confirm-content" role="dialog" aria-modal="true" aria-labelledby="app-alert-title">
         <div class="info-modal-header app-confirm-header">
-          <div class="info-modal-title app-confirm-title">${escapeHtml(title)}</div>
+          <div class="info-modal-title app-confirm-title" id="app-alert-title">${escapeHtml(title)}</div>
           <button class="info-modal-close app-confirm-close" type="button" aria-label="Close">✕</button>
         </div>
         <div class="info-modal-body app-confirm-body">
