@@ -29,5 +29,9 @@ dist-ssr
 #MD Files
 src/styling.md
 
+# Impeccable design context (local only — not for version control)
+PRODUCT.md
+DESIGN.md
+
 #Claude Skills
 *.claude
