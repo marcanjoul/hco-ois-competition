@@ -56,6 +56,8 @@
     </button>
   </nav>
 
+  <main id="main-content">
+
   <!-- SCREEN: Welcome / Boot sequence -->
   <div id="screen-welcome" class="screen active">
     <div class="welcome-boot">
@@ -85,7 +87,7 @@
     <div class="pick-bg-stripe"></div>
     <div class="pick-inner">
 
-      <button class="pick-info-btn" id="btn-info" title="Rules">i</button>
+      <button class="pick-info-btn" id="btn-info" title="Rules" aria-label="Competition rules">i</button>
 
       <!-- Competition Info Card
            Example on the website: the card with competition name, days left, and progress.
@@ -113,7 +115,7 @@
           <div class="pick-goals-content" id="pick-goals-content"></div>
         </div>
         <div id="pick-winner-row" class="pick-winner-row" style="display:none">
-          🏆 <span id="pick-winner-text"></span>
+          <span aria-hidden="true">🏆</span> <span id="pick-winner-text"></span>
         </div>
       </div>
 
@@ -234,7 +236,7 @@
   <div id="screen-board" class="screen">
     <div class="screen-inner">
       <div class="screen-top-bar">
-        <div class="screen-top-title" id="board-screen-title">LEADERBOARD</div>
+        <h1 class="screen-top-title" id="board-screen-title">LEADERBOARD</h1>
         <div class="board-comp-picker" id="board-comp-picker">
           <button class="comp-select board-comp-trigger" id="board-comp-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
             Select...
@@ -273,7 +275,7 @@
           <rect x="14" y="28" width="4" height="5" fill="#050816"/>
         </svg>
       </div>
-      <div class="admin-gate-title">MANAGER GATE</div>
+      <h1 class="admin-gate-title">MANAGER GATE</h1>
       <p class="admin-gate-sub">Enter PIN to continue</p>
       <div class="pin-input-wrap">
         <input type="password" id="input-pin" class="log-input" placeholder="•••••••" maxlength="7" inputmode="numeric" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="manager-pin" />
@@ -296,6 +298,8 @@
       <div id="admin-tab-content" class="admin-tab-content"></div>
     </div>
   </div>
+
+  </main>
 
   <div id="toast" class="toast hidden"></div>
   <canvas id="confetti-canvas" class="confetti-canvas"></canvas>

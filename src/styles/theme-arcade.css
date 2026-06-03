@@ -1935,6 +1935,12 @@ select.log-input:focus {
   --power-pellet: #ffd84d;
   --ghost-pink: #ff4fa3;
   --ghost-orange: #ff9a3c;
+  /* Surface depth scale — use these instead of raw hex in new components */
+  --shadow-ink:   #09153a;
+  --surface-deep: #07102d;
+  --surface-mid:  #0b1540;
+  --surface-lift: #13266c;
+  --surface-card: #101e55;
 }
 
 html,
@@ -3538,4 +3544,28 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 #pick-form-steps.hiding {
   opacity: 0;
   pointer-events: none;
+}
+
+/* ── Global focus-visible: keyboard navigation ring ──
+   Shows only for keyboard navigation (not mouse clicks).
+   Inputs already show a custom glow on :focus, so suppress there. ── */
+:focus-visible {
+  outline: 3px solid var(--maze-blue-bright);
+  outline-offset: 3px;
+}
+
+.log-input:focus-visible,
+.comp-select:focus-visible,
+#input-pin:focus-visible {
+  outline: none;
+}
+
+.board-card:focus-visible {
+  outline: 3px solid var(--maze-blue-bright);
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 4px var(--surface-deep),
+    0 0 0 7px var(--maze-blue),
+    8px 8px 0 rgba(0, 0, 0, 0.62),
+    0 0 24px rgba(71, 215, 255, 0.45) !important;
 }

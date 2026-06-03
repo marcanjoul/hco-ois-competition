@@ -33,6 +33,18 @@ function getTodayDate() {
 // In-memory app state.
 // Think of this as "everything the app currently remembers".
 // Example on the website: which screen is open, who is selected, and which comp is active.
+let _autoSelectAttempted = false;
+
+function tryAutoSelectPlayer() {
+  if (_autoSelectAttempted || state.currentUser) return;
+  if (Object.keys(state.employees).length === 0) return;
+  _autoSelectAttempted = true;
+  const lastId = localStorage.getItem("lastPlayer");
+  if (lastId && state.employees[lastId] && !state.employees[lastId].inactive) {
+    enterAsDashboard(lastId);
+  }
+}
+
 let state = {
   competitions: {},
   deletedCompetitions: {},
@@ -615,6 +627,9 @@ async function logEntryFromPick() {
   if (logBtn) { logBtn.textContent = "LOGGING..."; logBtn.disabled = true; }
   if (navigator.vibrate) navigator.vibrate(40);
 
+  const prevPlayers = getRankedPlayers(state.currentComp);
+  const prevRank = prevPlayers.findIndex(p => p.id === state.currentUser) + 1;
+
   await set(dbRef.dateLog(state.currentComp, state.currentUser, state.selectedDate), { sales, hours });
   upsertLocalLog(state.currentComp, state.currentUser, state.selectedDate, { sales, hours });
 
@@ -637,11 +652,28 @@ async function logEntryFromPick() {
     setTimeout(() => { formSteps.style.display = "none"; formSteps.classList.remove("hiding"); }, 140);
   }
   if (successStats) {
-    const rankDisplay = rank > 0 ? `#${rank}` : "—";
+    let rankHtml = "";
+    if (sph > 0 && rank > 0) {
+      let rankLabel, rankClass;
+      if (prevRank === 0) {
+        rankLabel = `#${rank} NEW`;
+        rankClass = "pick-success-stat-accent";
+      } else if (rank < prevRank) {
+        rankLabel = `↑ #${rank}`;
+        rankClass = "pick-success-stat-gold";
+      } else if (rank > prevRank) {
+        rankLabel = `#${rank} ↓`;
+        rankClass = "";
+      } else {
+        rankLabel = `#${rank} HELD`;
+        rankClass = "pick-success-stat-gold";
+      }
+      rankHtml = `<div class="pick-success-stat"><div class="pick-success-stat-label">RANK</div><div class="pick-success-stat-value ${rankClass}">${rankLabel}</div></div>`;
+    }
     successStats.innerHTML = `
       <div class="pick-success-stat"><div class="pick-success-stat-label">SALES</div><div class="pick-success-stat-value">$${sales.toFixed(2)}</div></div>
       <div class="pick-success-stat"><div class="pick-success-stat-label">$/HR</div><div class="pick-success-stat-value pick-success-stat-accent">$${sph.toFixed(2)}</div></div>
-      ${sph > 0 ? `<div class="pick-success-stat"><div class="pick-success-stat-label">RANK</div><div class="pick-success-stat-value pick-success-stat-gold">${rankDisplay}</div></div>` : ""}
+      ${rankHtml}
     `;
   }
   if (successState) setTimeout(() => successState.classList.add("visible"), 120);
@@ -748,6 +780,7 @@ function updatePickLogBtnState() {
 }
 // ══════════════════════════════════════════════════════
 function renderPickScreen(filterText = "") {
+  tryAutoSelectPlayer();
   const searchInput = document.getElementById("input-search-employees");
   if (searchInput && searchInput.value !== filterText) searchInput.value = filterText;
 
@@ -894,6 +927,7 @@ function showScreen(name) {
 
 function enterAsDashboard(empId) {
   state.currentUser = empId;
+  localStorage.setItem("lastPlayer", empId);
   state.dashView = "logging";
   state.selectedDate = getTodayDate();
 
@@ -1586,11 +1620,16 @@ function renderBoard() {
         <div class="board-card-arrow">→</div>
       </div>
     `;
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
     card.onclick = () => {
       state.currentUser = player.id;
       state.dashView = "profile";
       renderDash();
       showScreen("dash");
+    };
+    card.onkeydown = (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); card.click(); }
     };
     return card;
   }
