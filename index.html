@@ -308,10 +308,10 @@
        Example on the website: the popup titled "Competition Rules".
   -->
   <div id="info-modal" class="info-modal">
-    <div class="info-modal-content">
+    <div class="info-modal-content" role="dialog" aria-modal="true" aria-labelledby="info-modal-title">
       <div class="info-modal-header">
-        <div class="info-modal-title">Competition Rules</div>
-        <button class="info-modal-close" id="btn-close-info">✕</button>
+        <div class="info-modal-title" id="info-modal-title">Competition Rules</div>
+        <button class="info-modal-close" id="btn-close-info" aria-label="Close competition rules">✕</button>
       </div>
       <div class="info-modal-body">
         <div class="info-section">
@@ -352,8 +352,8 @@
        Example on the website: the winner reveal shown after a competition closes.
   -->
   <div id="competition-ended-modal" class="competition-ended-modal">
-    <div class="competition-ended-content">
-      <button class="competition-ended-close" id="competition-ended-close" type="button">✕</button>
+    <div class="competition-ended-content" role="dialog" aria-modal="true" aria-labelledby="competition-ended-title">
+      <button class="competition-ended-close" id="competition-ended-close" type="button" aria-label="Close competition results">✕</button>
       <div id="competition-ended-body"></div>
     </div>
   </div>
