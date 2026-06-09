@@ -59,13 +59,13 @@
   <main id="main-content">
 
   <!-- SCREEN: Welcome / Boot sequence -->
-  <div id="screen-welcome" class="screen active">
+  <section id="screen-welcome" class="screen active">
     <div class="welcome-boot">
       <div class="welcome-boot-panel">
         <div class="boot-scanline" aria-hidden="true"></div>
         <div class="welcome-boot-eyebrow">WIREGRASS</div>
         <div class="welcome-boot-title-group">
-          <div class="welcome-boot-ois">OIS</div>
+          <h1 class="welcome-boot-ois">OIS</h1>
           <div class="welcome-boot-subtitle">COMPETITION</div>
         </div>
         <div class="welcome-boot-rule"></div>
@@ -78,12 +78,12 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- SCREEN: Home / Pick
        Example on the website: the main logging page with "INSERT OIS".
   -->
-  <div id="screen-pick" class="screen">
+  <section id="screen-pick" class="screen">
     <div class="pick-bg-stripe"></div>
     <div class="pick-inner">
 
@@ -99,8 +99,8 @@
       </div>
 
       <div id="pick-comp-info" class="pick-comp-info hidden">
-        <div id="pick-comp-name" class="pick-comp-name"></div>
-        <div id="pick-comp-dates" class="pick-comp-dates"></div>
+        <h2 id="pick-comp-name" class="pick-comp-name"></h2>
+        <p id="pick-comp-dates" class="pick-comp-dates"></p>
         <div class="pick-comp-hero-row">
           <div class="pick-countdown">
             <span id="pick-countdown-num" class="pick-countdown-num">—</span>
@@ -114,35 +114,35 @@
           </button>
           <div class="pick-goals-content" id="pick-goals-content"></div>
         </div>
-        <div id="pick-winner-row" class="pick-winner-row" style="display:none">
+        <p id="pick-winner-row" class="pick-winner-row" style="display:none">
           <span aria-hidden="true">🏆</span> <span id="pick-winner-text"></span>
-        </div>
+        </p>
       </div>
 
       <!-- No competition -->
-      <div id="no-comps-message" class="no-comps-message hidden">
+      <p id="no-comps-message" class="no-comps-message hidden">
         No active maze right now.<br>Check back soon for the next round.
-      </div>
+      </p>
 
       <div id="site-banner" class="site-banner" style="display:none"></div>
 
       <!-- LOG CARD
            Example on the website: the large "INSERT OIS" card.
       -->
-      <div class="log-card" id="pick-log-card">
+      <article class="log-card" id="pick-log-card">
         <h2 class="log-card-title">INSERT OIS</h2>
 
         <!-- Step 1: Name -->
-        <div class="pick-step-header pick-step-header-first">
-          <div class="pick-step-num">1</div>
-          <div class="pick-step-label">Who are you?</div>
-        </div>
+        <h3 class="pick-step-header pick-step-header-first">
+          <span class="pick-step-num">1</span>
+          <span class="pick-step-label">Who are you?</span>
+        </h3>
         <div class="pick-emp-selector-wrap">
           <button class="pick-emp-selector" id="pick-emp-selector">Choose player</button>
         </div>
         <div id="pick-emp-grid" class="pick-emp-grid hidden">
           <div class="search-wrap">
-            <input type="text" id="pick-emp-search" class="log-input" placeholder="Search players" autocomplete="off" />
+            <input type="text" id="pick-emp-search" class="log-input" placeholder="Search players" autocomplete="off" aria-label="Search players" />
             <div id="pick-search-info" class="search-results-info hidden"></div>
           </div>
           <div id="pick-emp-list"></div>
@@ -151,41 +151,41 @@
       <!-- Steps 2-4: revealed after name selection
            Example on the website: day picker, Sales field, Hours field, and "ADD OIS".
       -->
-        <div id="pick-form-steps">
-          <div class="pick-step-header pick-step-header-form">
-            <div class="pick-step-num">2</div>
-            <div class="pick-step-label">Pick the day</div>
-          </div>
+        <form id="pick-form-steps" novalidate>
+          <h3 class="pick-step-header pick-step-header-form">
+            <span class="pick-step-num">2</span>
+            <span class="pick-step-label">Pick the day</span>
+          </h3>
           <div class="day-row" id="pick-day-row"></div>
 
-          <div class="pick-step-header pick-step-header-form">
-            <div class="pick-step-num">3</div>
-            <div class="pick-step-label">Enter Sales & Hours</div>
-          </div>
+          <h3 class="pick-step-header pick-step-header-form">
+            <span class="pick-step-num">3</span>
+            <span class="pick-step-label">Enter Sales & Hours</span>
+          </h3>
           <div class="log-fields">
             <div class="log-field-wrap">
-              <label class="field-label">SALES($)</label>
+              <label class="field-label" for="pick-input-sales">SALES($)</label>
               <input type="number" id="pick-input-sales" class="log-input" placeholder="0.00" min="0" step="0.01" inputmode="decimal" />
             </div>
             <div class="log-field-wrap">
-              <label class="field-label">HOURS WORKED</label>
+              <label class="field-label" for="pick-input-hours">HOURS WORKED</label>
               <input type="number" id="pick-input-hours" class="log-input" placeholder="0.0" min="0" step="0.5" inputmode="decimal" />
             </div>
           </div>
-          <button class="log-btn btn-ghost" id="pick-btn-log" disabled>ADD OIS</button>
-          <div id="pick-log-locked-msg" class="log-locked-note">ASK A MANAGER TO EDIT</div>
-        </div>
+          <button type="button" class="log-btn btn-ghost" id="pick-btn-log" disabled>ADD OIS</button>
+          <p id="pick-log-locked-msg" class="log-locked-note">ASK A MANAGER TO EDIT</p>
+        </form>
 
       <!-- Success state
            Example on the website: the "LOGGED!" confirmation area.
       -->
-        <div id="pick-success-state" class="pick-success-state">
-          <div class="pick-success-title">OIS ADDED!</div>
+        <section id="pick-success-state" class="pick-success-state">
+          <h3 class="pick-success-title">OIS ADDED!</h3>
           <div id="pick-success-stats" class="pick-success-stats"></div>
           <button class="pick-success-cta" id="pick-success-board-btn">VIEW LEADERBOARD →</button>
-        </div>
+        </section>
 
-      </div>
+      </article>
 
       <!-- Legacy hidden elements -->
       <div class="search-wrap hidden">
@@ -195,45 +195,45 @@
       <div id="name-grid" class="hidden"></div>
 
     </div>
-  </div>
+  </section>
 
   <!-- SCREEN: Dashboard
        Example on the website: the personal stats page with "SALES / HR", "TOTAL SALES", and "RANK".
   -->
-  <div id="screen-dash" class="screen">
+  <section id="screen-dash" class="screen">
     <div class="dash-body">
       <div id="winner-banner" class="winner-banner hidden"></div>
       <div id="dash-comp-info" class="dash-comp-info hidden"></div>
-      <div class="stat-row">
+      <dl class="stat-row">
         <div class="stat-card accent">
-          <div class="stat-label">SALES / HR</div>
-          <div class="stat-value" id="stat-sph">—</div>
+          <dt class="stat-label">SALES / HR</dt>
+          <dd class="stat-value" id="stat-sph">—</dd>
         </div>
         <div class="stat-card">
-          <div class="stat-label">TOTAL SALES</div>
-          <div class="stat-value" id="stat-total">—</div>
+          <dt class="stat-label">TOTAL SALES</dt>
+          <dd class="stat-value" id="stat-total">—</dd>
         </div>
         <div class="stat-card">
-          <div class="stat-label">HOURS WORKED</div>
-          <div class="stat-value" id="stat-hours">—</div>
+          <dt class="stat-label">HOURS WORKED</dt>
+          <dd class="stat-value" id="stat-hours">—</dd>
         </div>
         <div class="stat-card">
-          <div class="stat-label">RANK</div>
-          <div class="stat-value" id="stat-rank">—</div>
+          <dt class="stat-label">RANK</dt>
+          <dd class="stat-value" id="stat-rank">—</dd>
         </div>
-      </div>
+      </dl>
       <div id="dash-goals" class="dash-goals hidden"></div>
       <div class="history-wrap">
-        <div class="history-title">ORDERS</div>
+        <h2 class="history-title">ORDERS</h2>
         <div id="history-list" class="history-list"></div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- SCREEN: Leaderboard
        Example on the website: the ranked list of players.
   -->
-  <div id="screen-board" class="screen">
+  <section id="screen-board" class="screen">
     <div class="screen-inner">
       <div class="screen-top-bar">
         <h1 class="screen-top-title" id="board-screen-title">LEADERBOARD</h1>
@@ -251,12 +251,12 @@
         <div class="sk-card"><div class="sk sk-name"></div><div class="sk sk-score"></div></div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- SCREEN: Admin Gate
        Example on the website: the PIN page with "MANAGER GATE".
   -->
-  <div id="screen-admin-gate" class="screen">
+  <section id="screen-admin-gate" class="screen">
     <div class="admin-gate-body">
       <div class="admin-gate-icon" role="img" aria-label="Manager gate">
         <svg class="gate-lock-svg" viewBox="0 0 32 38" xmlns="http://www.w3.org/2000/svg" fill="none">
@@ -277,31 +277,34 @@
       </div>
       <h1 class="admin-gate-title">MANAGER GATE</h1>
       <p class="admin-gate-sub">Enter PIN to continue</p>
-      <div class="pin-input-wrap">
-        <input type="password" id="input-pin" class="log-input" placeholder="•••••••" maxlength="7" inputmode="numeric" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="manager-pin" />
-        <button id="btn-pin-reveal" type="button" aria-label="Toggle PIN visibility">
-          <svg id="icon-eye-open" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          <svg id="icon-eye-closed" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-        </button>
-      </div>
-      <button class="log-btn" id="btn-pin-submit" disabled>OPEN GATE</button>
+      <form id="pin-form" novalidate>
+        <div class="pin-input-wrap">
+          <label for="input-pin" class="visually-hidden">Manager PIN</label>
+          <input type="password" id="input-pin" class="log-input" placeholder="•••••••" maxlength="7" inputmode="numeric" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="manager-pin" />
+          <button id="btn-pin-reveal" type="button" aria-label="Toggle PIN visibility">
+            <svg id="icon-eye-open" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="icon-eye-closed" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+        <button type="button" class="log-btn" id="btn-pin-submit" disabled>OPEN GATE</button>
+      </form>
       <p class="pin-error hidden" id="pin-error">Wrong code - try again</p>
     </div>
-  </div>
+  </section>
 
   <!-- SCREEN: Admin Panel
        Example on the website: the management area after entering the correct PIN.
   -->
-  <div id="screen-admin" class="screen">
+  <section id="screen-admin" class="screen">
     <div class="screen-inner">
-      <div id="admin-tab-bar" class="admin-tab-bar"></div>
-      <div id="admin-tab-content" class="admin-tab-content"></div>
+      <nav id="admin-tab-bar" class="admin-tab-bar" role="tablist"></nav>
+      <div id="admin-tab-content" class="admin-tab-content" role="tabpanel"></div>
     </div>
-  </div>
+  </section>
 
   </main>
 
-  <div id="toast" class="toast hidden"></div>
+  <div id="toast" class="toast hidden" role="status" aria-live="polite" aria-atomic="true"></div>
   <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
 
   <!-- Info Modal
@@ -310,40 +313,40 @@
   <div id="info-modal" class="info-modal">
     <div class="info-modal-content" role="dialog" aria-modal="true" aria-labelledby="info-modal-title">
       <div class="info-modal-header">
-        <div class="info-modal-title" id="info-modal-title">Competition Rules</div>
+        <h2 class="info-modal-title" id="info-modal-title">Competition Rules</h2>
         <button class="info-modal-close" id="btn-close-info" aria-label="Close competition rules">✕</button>
       </div>
       <div class="info-modal-body">
-        <div class="info-section">
-          <div class="info-section-title">🎯 The Competition</div>
+        <section class="info-section">
+          <h3 class="info-section-title">🎯 The Competition</h3>
           <p>Compete against other players to log the most OIS and earn the best sales-per-hour ratio. Track progress in real-time on the leaderboard!</p>
-        </div>
-        <div class="info-section">
-          <div class="info-section-title">📋 Adding OIS</div>
+        </section>
+        <section class="info-section">
+          <h3 class="info-section-title">📋 Adding OIS</h3>
           <p>After each shift, log your sales amount and hours worked. You can only log once per day, see a manager to edit your order if needed.</p>
-        </div>
-        <div class="info-section">
-          <div class="info-section-title">📊 The Metrics</div>
+        </section>
+        <section class="info-section">
+          <h3 class="info-section-title">📊 The Metrics</h3>
           <ul class="info-list">
             <li><strong>Total Sales:</strong> Sum of all orders logged</li>
             <li><strong>Hours Worked:</strong> Total hours for the competition</li>
             <li><strong>$/HR:</strong> Sales divided by hours</li>
           </ul>
-        </div>
-        <div class="info-section">
-          <div class="info-section-title">🏅 Winning</div>
+        </section>
+        <section class="info-section">
+          <h3 class="info-section-title">🏅 Winning</h3>
           <p>The competition ends on the specified date. The player with the highest $/hr ratio wins!</p>
-        </div>
-        <div class="info-section">
-          <div class="info-section-title">⚙️ Your Profile</div>
+        </section>
+        <section class="info-section">
+          <h3 class="info-section-title">⚙️ Your Profile</h3>
           <p>Tap your avatar to edit your profile photo.</p>
-        </div>
-        <div class="info-section credits-section">
-          <div class="info-section-title">Credits</div>
+        </section>
+        <section class="info-section credits-section">
+          <h3 class="info-section-title">Credits</h3>
           <p>
             <a href="https://www.flaticon.com/free-icons/pixel" title="pixel icons" target="_blank" rel="noopener noreferrer">Pixel icons created by Freepik - Flaticon</a>
           </p>
-        </div>
+        </section>
       </div>
     </div>
   </div>
