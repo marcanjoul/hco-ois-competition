@@ -567,7 +567,7 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
   container.classList.remove("hidden");
   container.innerHTML = `
     <h2 class="pick-comp-name">${escapeHtml(comp.name)}</h2>
-    <div class="pick-comp-dates">${comp.startDate && comp.endDate ? escapeHtml(`${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}`) : ""}</div>
+    <p class="pick-comp-dates">${comp.startDate && comp.endDate ? escapeHtml(`${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}`) : ""}</p>
     <div class="pick-comp-hero-row">
       <div class="pick-countdown">
         <span class="${countdownClass}" style="${countdownStyle}">${countdownNum}</span>
@@ -587,7 +587,7 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
         `}
       </div>
     ` : ""}
-    ${ended && winner ? `<div class="pick-winner-row" style="display:flex">🏆 <span>${escapeHtml(`${winner.name} won!`)}</span></div>` : ""}
+    ${ended && winner ? `<p class="pick-winner-row" style="display:flex">🏆 <span>${escapeHtml(`${winner.name} won!`)}</span></p>` : ""}
   `;
 
   if (collapsibleGoals && hasGoals) {
