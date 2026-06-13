@@ -33,7 +33,7 @@
   --text3: #9db8dd;
   --green: #52ff98;
   --red: #ff5d73;
-  --shadow: 0 0 0 3px #1436a1, 0 0 0 6px #06102b;
+  --shadow: 0 3px 12px rgba(0,0,0,0.40);
   --shadow-lg: 0 0 0 4px #235dff, 0 0 36px rgba(71, 215, 255, 0.24);
   --glow-accent: 0 0 20px rgba(255, 216, 77, 0.42);
   --glow-green: 0 0 20px rgba(82, 255, 152, 0.34);
@@ -159,7 +159,7 @@ textarea {
 .admin-gate-title,
 .info-modal-title,
 .history-title {
-  text-shadow: 2px 2px 0 var(--shadow-ink);
+  text-shadow: none;
 }
 
 .dash-name,
@@ -210,7 +210,7 @@ textarea {
 .toast {
   background:
     linear-gradient(180deg, rgba(12, 25, 70, 0.98), rgba(7, 15, 41, 0.98));
-  border: 4px solid #2b6dff !important;
+  border: 2px solid #2b6dff !important;
   color: var(--text);
 }
 
@@ -228,7 +228,7 @@ body::after {
   max-width: 100%;
   font-size: 30px;
   line-height: 1.05;
-  text-shadow: 4px 4px 0 var(--surface-mid);
+  text-shadow: none;
 }
 
 .pick-comp-hero-row {
@@ -244,7 +244,7 @@ body::after {
 .status-badge,
 .admin-log-header-badge {
   border-radius: 0 !important;
-  border: 3px solid currentColor;
+  border: 2px solid currentColor;
   box-shadow: none !important;
 }
 
@@ -261,12 +261,12 @@ body::after {
 .pick-countdown-num {
   color: var(--accent);
   font-size: 46px;
-  text-shadow: 1px 1px 0 #8e5f00;
+  text-shadow: none;
 }
 
 .pick-countdown-num.urgent {
   color: var(--red);
-  text-shadow: 1px 1px 0 #6e1525;
+  text-shadow: none;
 }
 
 .pick-countdown-num.last-day {
@@ -319,7 +319,7 @@ body::after {
   flex-basis: 58px;
   line-height: 1;
   text-align: right;
-  text-shadow: 2px 2px 0 #050816;
+  text-shadow: none;
 }
 
 .goal-target {
@@ -330,7 +330,7 @@ body::after {
   font-size: 18px;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  text-shadow: 2px 2px 0 #050816;
+  text-shadow: none;
 }
 
 .goal-target-hit {
@@ -343,12 +343,12 @@ body::after {
   font-size: 12px !important;
   color: #ffd84d !important;
   text-align: right;
-  text-shadow: 2px 2px 0 #050816 !important;
+  text-shadow: none !important;
 }
 
 .goal-current.goal-hit {
   color: #52ff98 !important;
-  text-shadow: 4px 4px 0 #145a34;
+  text-shadow: none;
 }
 
 .goal-bar-bg,
@@ -362,7 +362,7 @@ body::after {
   background:
     repeating-linear-gradient(90deg, rgba(71, 215, 255, 0.1) 0 16px, transparent 16px 22px),
     #07122f;
-  border: 3px solid #2348b3 !important;
+  border: 2px solid #2348b3 !important;
   box-shadow:
     inset 0 0 0 2px #050816,
     0 0 12px rgba(71, 215, 255, 0.12) !important;
@@ -417,7 +417,7 @@ body::after {
 .collapsible-toggle,
 .admin-lock-btn,
 .btn-secondary {
-  border: 3px solid #2b6dff !important;
+  border: 2px solid #2b6dff !important;
   background: var(--surface-card) !important;
   color: var(--text) !important;
   box-shadow: 4px 4px 0 var(--shadow-ink) !important;
@@ -494,7 +494,7 @@ body::after {
   background: var(--red) !important;
   color: #fff2f4 !important;
   border-color: #ff8b9a !important;
-  text-shadow: 2px 2px 0 #7a1022;
+  text-shadow: none;
 }
 
 .pick-info-btn {
@@ -506,13 +506,7 @@ body::after {
   font-weight: 900;
   line-height: 1;
   text-transform: none !important;
-  text-shadow:
-    -1px -1px 0 #2763e6,
-    1px -1px 0 #2561e3,
-    -1px 1px 0 #1a45a1,
-    1px 1px 0 #12337a,
-    0 0 6px rgba(24, 66, 154, 0.45),
-    3px 3px 0 rgba(8, 20, 62, 0.8);
+  text-shadow: none;
 }
 
 .pick-info-btn:hover {
@@ -523,13 +517,7 @@ body::after {
   background: #2b6dff !important;
   border-color: #47d7ff !important;
   color: #fff6a3 !important;
-  text-shadow:
-    -1px -1px 0 rgba(255, 252, 214, 0.9),
-    1px -1px 0 rgba(255, 252, 214, 0.9),
-    -1px 1px 0 rgba(255, 252, 214, 0.9),
-    1px 1px 0 rgba(255, 252, 214, 0.9),
-    0 0 8px rgba(255, 247, 150, 0.8),
-    3px 3px 0 var(--surface-mid);
+  text-shadow: none;
 }
 
 .btn-ghost,
@@ -574,7 +562,7 @@ body::after {
 .admin-log-week-display,
 .admin-log-player-wrap,
 .admin-log-player-card {
-  border: 3px solid #2b6dff !important;
+  border: 2px solid #2b6dff !important;
   background: var(--surface-card) !important;
   box-shadow: 4px 4px 0 var(--shadow-ink) !important;
 }
@@ -584,7 +572,7 @@ body::after {
   font-family: "VT323", monospace;
   font-size: 24px;
   letter-spacing: 0.5px;
-  text-shadow: 2px 2px 0 #8e5f00;
+  text-shadow: none;
 }
 
 .admin-log-week-input-wrap:hover .admin-log-week-display,
@@ -595,12 +583,12 @@ body::after {
 
 .admin-log-player-title {
   color: var(--accent);
-  text-shadow: 2px 2px 0 var(--shadow-ink);
+  text-shadow: none;
 }
 
 .admin-log-player-section-title {
   color: #fff2a8;
-  text-shadow: 2px 2px 0 var(--shadow-ink);
+  text-shadow: none;
 }
 
 .admin-log-player-status,
@@ -612,7 +600,7 @@ body::after {
 
 .admin-log-player-toggle {
   border-radius: 0 !important;
-  border: 3px solid #2348b3 !important;
+  border: 2px solid #2348b3 !important;
   background: #0f1f56 !important;
   box-shadow: 4px 4px 0 var(--shadow-ink) !important;
 }
@@ -643,7 +631,7 @@ body::after {
 
 .admin-log-inline-detail {
   margin-top: -3px;
-  border: 3px solid var(--accent-alt) !important;
+  border: 2px solid var(--accent-alt) !important;
   border-top: 0 !important;
   border-radius: 0 !important;
   background: #07122f !important;
@@ -678,7 +666,7 @@ body::after {
 
 .admin-log-empty-state,
 .ui-empty-state {
-  border: 3px dashed #2348b3 !important;
+  border: 2px dashed #2348b3 !important;
   background: rgba(11, 21, 64, 0.55) !important;
   color: var(--text2);
 }
@@ -723,7 +711,7 @@ body::after {
 
 .nav-label {
   color: var(--text2);
-  text-shadow: 2px 2px 0 var(--shadow-ink);
+  text-shadow: none;
 }
 
 .nav-btn.active {
@@ -805,7 +793,7 @@ body::after {
 .comp-select,
 #input-pin {
   border-radius: 0 !important;
-  border: 3px solid #2b6dff !important;
+  border: 2px solid #2b6dff !important;
   background: #050d27 !important;
   color: var(--accent) !important;
   box-shadow: inset 0 0 0 2px var(--surface-mid);
@@ -826,14 +814,14 @@ body::after {
 .board-comp-menu {
   background:
     linear-gradient(180deg, rgba(12, 25, 70, 0.98), rgba(7, 15, 41, 0.98));
-  border: 3px solid #2b6dff !important;
+  border: 2px solid #2b6dff !important;
   box-shadow: 4px 4px 0 var(--shadow-ink) !important;
   padding: 6px;
 }
 
 .board-comp-option {
   border-radius: 0 !important;
-  border: 3px solid transparent !important;
+  border: 2px solid transparent !important;
   color: var(--text) !important;
   background: var(--surface-card) !important;
   box-shadow: 3px 3px 0 var(--shadow-ink);
@@ -860,7 +848,7 @@ body::after {
   font-family: "Press Start 2P", monospace;
   font-size: 10px;
   color: var(--accent);
-  text-shadow: 2px 2px 0 #8e5f00;
+  text-shadow: none;
   pointer-events: none;
 }
 
@@ -885,7 +873,7 @@ select.log-input {
   color: #fff2a8 !important;
   min-height: 52px;
   padding: 10px 44px 10px 12px !important;
-  text-shadow: 2px 2px 0 var(--surface-mid);
+  text-shadow: none;
 }
 
 .pick-player-selector.has-selection {
@@ -906,7 +894,7 @@ select.log-input:focus {
 .board-comp-picker.open .board-comp-trigger::after,
 .pick-player-selector.open::after {
   color: var(--text2);
-  text-shadow: 2px 2px 0 #073a4a;
+  text-shadow: none;
   transform: translateY(-50%) rotate(180deg);
 }
 
@@ -931,7 +919,7 @@ select.log-input:focus {
 .pick-success-state.visible {
   background:
     linear-gradient(180deg, rgba(255, 216, 77, 0.18), rgba(16, 30, 85, 0.98)) !important;
-  border: 4px solid var(--accent) !important;
+  border: 2px solid var(--accent) !important;
 }
 
 .stat-value,
@@ -939,7 +927,7 @@ select.log-input:focus {
 .board-rank,
 .pick-success-stat-value {
   color: var(--accent);
-  text-shadow: 3px 3px 0 #8e5f00;
+  text-shadow: none;
 }
 
 .vibe-card {
@@ -959,19 +947,19 @@ select.log-input:focus {
 .dash-profile-card {
   background:
     linear-gradient(180deg, rgba(16, 30, 85, 0.98), rgba(7, 15, 41, 0.98)) !important;
-  border: 4px solid #2b6dff !important;
+  border: 2px solid #2b6dff !important;
 }
 
 .admin-edit-group {
   background:
     linear-gradient(180deg, rgba(16, 30, 85, 0.98), rgba(7, 15, 41, 0.98)) !important;
-  border: 4px solid #2b6dff !important;
+  border: 2px solid #2b6dff !important;
   box-shadow: var(--shadow) !important;
 }
 
 .admin-edit-group-title {
   color: var(--accent);
-  text-shadow: 2px 2px 0 var(--shadow-ink);
+  text-shadow: none;
 }
 
 .admin-edit-group-sub {
@@ -984,18 +972,18 @@ select.log-input:focus {
 
 .dash-profile-name {
   color: var(--accent);
-  text-shadow: 3px 3px 0 #8e5f00;
+  text-shadow: none;
 }
 
 .dash-profile-stat {
   background: var(--surface-card) !important;
-  border: 3px solid #2348b3 !important;
+  border: 2px solid #2348b3 !important;
   box-shadow: 4px 4px 0 var(--shadow-ink) !important;
 }
 
 .dash-profile-stat-value {
   color: var(--accent);
-  text-shadow: 2px 2px 0 #8e5f00;
+  text-shadow: none;
 }
 
 .dash-profile-stat-value-total {
@@ -1004,7 +992,7 @@ select.log-input:focus {
 }
 
 .app-back-btn {
-  border: 3px solid #2b6dff !important;
+  border: 2px solid #2b6dff !important;
   background: var(--surface-lift) !important;
   color: #fff2a8 !important;
   box-shadow: 4px 4px 0 var(--shadow-ink) !important;
@@ -1012,7 +1000,7 @@ select.log-input:focus {
 
 .avatar {
   border-radius: 0 !important;
-  border: 3px solid #47d7ff;
+  border: 2px solid #47d7ff;
   background:
     linear-gradient(180deg, #17307d, #0c173c);
   box-shadow: 3px 3px 0 var(--shadow-ink);
@@ -1022,7 +1010,7 @@ select.log-input:focus {
   font-family: "Press Start 2P", monospace;
   font-size: 18px;
   color: var(--accent);
-  text-shadow: 2px 2px 0 #8e5f00;
+  text-shadow: none;
 }
 
 .rank-pip,
@@ -1061,7 +1049,7 @@ select.log-input:focus {
   color: #7fdcff;
   font-size: 15px;
   letter-spacing: 0.5px;
-  text-shadow: 1px 1px 0 var(--surface-mid);
+  text-shadow: none;
 }
 
 .board-zero-divider {
@@ -1073,7 +1061,7 @@ select.log-input:focus {
   font-family: "Press Start 2P", monospace;
   font-size: 8px;
   letter-spacing: 2px;
-  text-shadow: 1px 1px 0 #05102a, 0 0 12px rgba(71, 143, 232, 0.4);
+  text-shadow: none;
 }
 
 .board-zero-divider::before,
@@ -1103,7 +1091,7 @@ select.log-input:focus {
    --modal-overlay-bg, --modal-overlay-heavy, and --modal-blur in :root. */
 
 .app-confirm-content {
-  border: 4px solid #2b6dff !important;
+  border: 2px solid #2b6dff !important;
   background:
     linear-gradient(180deg, rgba(16, 30, 85, 0.98), rgba(7, 15, 41, 0.98)) !important;
   box-shadow: var(--shadow) !important;
@@ -1111,7 +1099,7 @@ select.log-input:focus {
 
 .app-confirm-title {
   color: var(--accent);
-  text-shadow: 2px 2px 0 var(--shadow-ink);
+  text-shadow: none;
 }
 
 .app-confirm-message {
@@ -1131,7 +1119,7 @@ select.log-input:focus {
 .status-badge.active {
   background: var(--accent2) !important;
   color: #07122f !important;
-  border: 3px solid #47d7ff !important;
+  border: 2px solid #47d7ff !important;
   border-radius: 0 !important;
   box-shadow: 3px 3px 0 var(--shadow-ink) !important;
 }
@@ -1139,7 +1127,7 @@ select.log-input:focus {
 .site-banner {
   background: #2c184d;
   color: #ffd6ef;
-  border: 3px solid var(--accent-alt);
+  border: 2px solid var(--accent-alt);
 }
 
 .admin-team-tools,
@@ -1148,7 +1136,7 @@ select.log-input:focus {
 .admin-team-input-shell {
   background:
     linear-gradient(180deg, rgba(10, 22, 60, 0.98), rgba(6, 13, 36, 0.98)) !important;
-  border: 3px solid #2b6dff !important;
+  border: 2px solid #2b6dff !important;
 }
 
 .admin-team-tools {
@@ -1175,7 +1163,7 @@ select.log-input:focus {
   font-size: 11px !important;
   line-height: 1;
   color: #ffd84d !important;
-  text-shadow: 2px 2px 0 #050816;
+  text-shadow: none;
 }
 
 .admin-team-tools-count {
@@ -1193,7 +1181,7 @@ select.log-input:focus {
   font-size: 8px;
   line-height: 1.1;
   color: var(--text2) !important;
-  text-shadow: 2px 2px 0 #050816;
+  text-shadow: none;
 }
 
 .admin-team-tools .admin-team-input {
@@ -1238,7 +1226,7 @@ select.log-input:focus {
 }
 
 .admin-comp-filter-bar {
-  border: 3px solid var(--maze-blue) !important;
+  border: 2px solid var(--maze-blue) !important;
   background:
     linear-gradient(180deg, rgba(10, 22, 60, 0.98), rgba(6, 13, 36, 0.98)) !important;
   box-shadow:
@@ -1247,12 +1235,12 @@ select.log-input:focus {
 }
 
 .admin-comp-filter-btn {
-  border: 3px solid transparent !important;
+  border: 2px solid transparent !important;
   color: var(--text2) !important;
   font-family: "Press Start 2P", monospace !important;
   font-size: 9px !important;
   line-height: 1.2;
-  text-shadow: 2px 2px 0 #050816;
+  text-shadow: none;
 }
 
 .admin-comp-filter-btn:hover {
@@ -1279,14 +1267,14 @@ select.log-input:focus {
 }
 
 .history-rate {
-  border: 3px solid #52ff98;
+  border: 2px solid #52ff98;
   background: #0f3925;
   box-shadow: 3px 3px 0 var(--shadow-ink);
 }
 
 .history-rate-value {
   color: #52ff98;
-  text-shadow: 2px 2px 0 #071a10;
+  text-shadow: none;
 }
 
 .history-rate-label {
@@ -1302,7 +1290,7 @@ select.log-input:focus {
   border-radius: 0;
   background: transparent;
   color: #fff2a8;
-  text-shadow: 2px 2px 0 #8e5f00;
+  text-shadow: none;
 }
 
 .admin-date-input {
@@ -1310,7 +1298,7 @@ select.log-input:focus {
 }
 
 .goal-day-card {
-  border: 3px solid #2b6dff;
+  border: 2px solid #2b6dff;
   border-radius: 0;
   background:
     linear-gradient(180deg, rgba(14, 28, 78, 0.98), rgba(8, 16, 46, 0.98));
@@ -1320,7 +1308,7 @@ select.log-input:focus {
 .goal-day-name {
   color: var(--text2);
   font-size: 16px;
-  text-shadow: 2px 2px 0 var(--shadow-ink);
+  text-shadow: none;
 }
 
 .goal-day-date {
@@ -1335,15 +1323,13 @@ select.log-input:focus {
 }
 
 .goal-day-currency {
-  border: 3px solid #2348b3;
+  border: 2px solid #2348b3;
   border-right: 0;
   border-radius: 0;
   background:
     linear-gradient(180deg, rgba(6, 14, 40, 0.96), rgba(3, 8, 24, 0.96));
   color: #5f86f3;
-  text-shadow:
-    1px 1px 0 #02102d,
-    -1px -1px 0 rgba(255,255,255,0.05);
+  text-shadow: none;
   box-shadow:
     inset 2px 2px 0 rgba(255,255,255,0.04),
     inset -2px -2px 0 rgba(0,0,0,0.35);
@@ -1354,7 +1340,7 @@ select.log-input:focus {
   border-radius: 0 !important;
   border-left-width: 0 !important;
   color: #ffd84d !important;
-  text-shadow: 2px 2px 0 #8e5f00;
+  text-shadow: none;
 }
 
 .goal-day-input:focus {
@@ -1912,11 +1898,7 @@ select.log-input:focus {
   --pick-comp-bg:      var(--card-bg);
   --admin-tools-bg:    var(--card-bg);
   /* Card shadow — the full double-ring cabinet treatment */
-  --shadow-card:
-    0 0 0 4px var(--surface-deep),
-    0 0 0 7px var(--maze-blue),
-    8px 8px 0 rgba(0,0,0,0.62),
-    0 0 24px rgba(71,215,255,0.18);
+  --shadow-card: 0 4px 16px rgba(0,0,0,0.45);
   /* Modal overlays — dark arcade tint, minimal blur */
   --modal-overlay-bg:    rgba(2,6,18,0.82);
   --modal-overlay-heavy: rgba(3,7,22,0.78);
@@ -2015,15 +1997,12 @@ body::after {
 
 .welcome-title {
   color: var(--power-pellet);
-  text-shadow:
-    3px 3px 0 #ff8f1a,
-    6px 6px 0 #08143d,
-    0 0 18px rgba(255, 216, 77, 0.28);
+  text-shadow: none;
 }
 
 .welcome-copy {
   color: var(--text2);
-  text-shadow: 2px 2px 0 #06102b;
+  text-shadow: none;
 }
 
 .welcome-copy-group::after {
@@ -2098,7 +2077,7 @@ body::after {
 
 .screen-top-bar {
   margin: 10px 10px 0;
-  border: 3px solid var(--maze-blue) !important;
+  border: 2px solid var(--maze-blue) !important;
   background:
     linear-gradient(90deg, rgba(255, 216, 77, 0.16), transparent 22%),
     linear-gradient(180deg, #102260, #08143d);
@@ -2123,10 +2102,7 @@ body::after {
 .log-card-title,
 .history-title,
 .admin-section-title {
-  text-shadow:
-    2px 2px 0 #ff8f1a,
-    4px 4px 0 #06102b,
-    0 0 4.5px rgba(255, 216, 77, 0.105) !important;
+  text-shadow: none !important;
 }
 
 .name-btn,
@@ -2179,7 +2155,7 @@ body::after {
   min-height: 66px;
   padding: 18px 28px;
   /* inherits yellow gradient from .log-btn group above */
-  border: 4px solid #f5bf1f !important;
+  border: 2px solid #f5bf1f !important;
   color: #06102b !important;
   font-size: 18px;
   line-height: 1.25;
@@ -2255,10 +2231,7 @@ body::after {
 .board-sph,
 .board-rank,
 .pick-success-stat-value {
-  text-shadow:
-    2px 2px 0 #ff8f1a,
-    4px 4px 0 #050816,
-    0 0 12px rgba(255, 216, 77, 0.26) !important;
+  text-shadow: none !important;
 }
 
 .board-card {
@@ -2302,7 +2275,7 @@ body::after {
 }
 
 .credits-section {
-  border-top: 3px dashed var(--maze-blue) !important;
+  border-top: 2px dashed var(--maze-blue) !important;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -2437,7 +2410,7 @@ body::after {
     linear-gradient(180deg, rgba(255, 93, 115, 0.28), rgba(87, 13, 31, 0.98)) !important;
   border-color: #ff5d73 !important;
   color: #fff2f4 !important;
-  text-shadow: 2px 2px 0 #5a0c1b !important;
+  text-shadow: none !important;
   box-shadow:
     4px 4px 0 #050816,
     inset 2px 2px 0 rgba(255, 255, 255, 0.08),
@@ -2488,7 +2461,7 @@ button.btn-disabled,
     linear-gradient(180deg, #14204b, #07112d) !important;
   border-color: #263c7e !important;
   color: #6f86c7 !important;
-  text-shadow: 2px 2px 0 #050816 !important;
+  text-shadow: none !important;
   box-shadow:
     2px 2px 0 #050816,
     inset 2px 2px 0 rgba(255, 255, 255, 0.03),
@@ -2534,11 +2507,8 @@ button.btn-disabled:hover,
 .board-card.rank-1 {
   border-color: var(--maze-blue-bright) !important;
   box-shadow:
-    0 0 0 4px var(--surface-deep),
-    0 0 0 7px var(--maze-blue),
-    8px 8px 0 rgba(0, 0, 0, 0.62),
-    0 0 24px rgba(71, 215, 255, 0.18),
-    0 0 18px rgba(255, 216, 77, 0.10) !important;
+    0 6px 20px rgba(0, 0, 0, 0.50),
+    0 0 14px rgba(255, 216, 77, 0.12) !important;
 }
 
 .board-card.rank-1::before {
@@ -2581,14 +2551,11 @@ button.btn-disabled:hover,
 .board-tie-group {
   padding: 18px 14px 14px !important;
   border-radius: 0 !important;
-  border: 4px dashed #ffd84d !important;
+  border: 2px dashed #ffd84d !important;
   background:
     repeating-linear-gradient(90deg, rgba(255, 216, 77, 0.08) 0 14px, transparent 14px 22px),
     linear-gradient(180deg, rgba(18, 38, 108, 0.98), rgba(7, 15, 41, 0.99)) !important;
-  box-shadow:
-    0 0 0 4px var(--surface-deep),
-    7px 7px 0 rgba(0, 0, 0, 0.62),
-    0 0 18px rgba(255, 216, 77, 0.18) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
 }
 
 .board-tie-group-label {
@@ -2597,7 +2564,7 @@ button.btn-disabled:hover,
   padding: 7px 12px !important;
   border-radius: 0 !important;
   background: #ffd84d !important;
-  border: 3px solid #fff2a8 !important;
+  border: 2px solid #fff2a8 !important;
   color: #050816 !important;
   font-family: "Press Start 2P", monospace !important;
   font-size: 9px !important;
@@ -2609,9 +2576,7 @@ button.btn-disabled:hover,
 
 .board-card.tie-card {
   border-color: #ffd84d !important;
-  box-shadow:
-    inset 0 0 0 2px rgba(255, 216, 77, 0.12),
-    4px 4px 0 rgba(0, 0, 0, 0.52) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
 }
 
 .board-card.tie-card::before {
@@ -2645,9 +2610,7 @@ button.btn-disabled:hover,
 }
 
 #screen-pick .pick-comp-name {
-  text-shadow:
-    3px 3px 0 #050816,
-    0 0 10px rgba(255, 216, 77, 0.16) !important;
+  text-shadow: none !important;
 }
 
 #screen-pick .pick-comp-dates {
@@ -2660,7 +2623,7 @@ button.btn-disabled:hover,
 .competition-ended-content {
   background:
     linear-gradient(180deg, #12266c 0%, var(--surface-deep) 100%) !important;
-  border: 4px solid #47d7ff !important;
+  border: 2px solid #47d7ff !important;
   border-radius: 0 !important;
   box-shadow:
     0 0 0 4px #050816,
@@ -2681,7 +2644,7 @@ button.btn-disabled:hover,
   font-family: "Press Start 2P", monospace;
   font-size: 9px;
   letter-spacing: 1px;
-  text-shadow: 2px 2px 0 #050816;
+  text-shadow: none;
 }
 
 .competition-ended-title {
@@ -2689,7 +2652,7 @@ button.btn-disabled:hover,
   font-family: "Press Start 2P", monospace;
   font-size: 18px;
   line-height: 1.4;
-  text-shadow: 3px 3px 0 #050816;
+  text-shadow: none;
 }
 
 .competition-ended-winner-name {
@@ -2697,15 +2660,13 @@ button.btn-disabled:hover,
   font-family: "Press Start 2P", monospace;
   font-size: 28px;
   line-height: 1.3;
-  text-shadow:
-    3px 3px 0 #8e5f00,
-    5px 5px 0 #050816;
+  text-shadow: none;
 }
 
 .ended-podium-place {
   border-radius: 0;
   background: #08133b;
-  border: 3px solid #2348b3;
+  border: 2px solid #2348b3;
   box-shadow: 4px 4px 0 #050816;
 }
 
@@ -2719,7 +2680,7 @@ button.btn-disabled:hover,
 
 .ended-podium-tie .ended-podium-player {
   padding-top: 10px;
-  border-top: 3px dashed #2348b3;
+  border-top: 2px dashed #2348b3;
 }
 
 .ended-podium-tie .ended-podium-player:first-child {
@@ -2762,7 +2723,7 @@ button.btn-disabled:hover,
   color: var(--text2);
   font-family: "Press Start 2P", monospace;
   font-size: 14px;
-  text-shadow: 2px 2px 0 #050816;
+  text-shadow: none;
 }
 
 .ended-podium-place-1 .ended-podium-rank,
@@ -2775,7 +2736,7 @@ button.btn-disabled:hover,
   font-family: "VT323", monospace;
   font-size: 24px;
   line-height: 1;
-  text-shadow: 2px 2px 0 #050816;
+  text-shadow: none;
 }
 
 .ended-podium-score {
@@ -2793,7 +2754,7 @@ button.btn-disabled:hover,
 .ended-rank-row {
   border-radius: 0;
   background: #07122f;
-  border: 3px solid #2348b3;
+  border: 2px solid #2348b3;
   box-shadow: 3px 3px 0 #050816;
 }
 
@@ -2814,7 +2775,7 @@ button.btn-disabled:hover,
   border-radius: 0;
   background: #ffd84d;
   color: #050816;
-  border: 3px solid #fff2a8;
+  border: 2px solid #fff2a8;
   box-shadow: 4px 4px 0 #8e5f00;
   font-family: "Press Start 2P", monospace;
   font-size: 10px;
@@ -2862,10 +2823,7 @@ button.btn-disabled:hover,
   .pick-success-stat-value {
     font-size: 13px;
     letter-spacing: 0;
-    text-shadow:
-      1px 1px 0 #ff8f1a,
-      3px 3px 0 #050816,
-      0 0 10px rgba(255, 216, 77, 0.22) !important;
+    text-shadow: none !important;
   }
 
   .pick-success-cta {
@@ -2961,7 +2919,7 @@ button.btn-disabled:hover,
   background: #11215c !important;
   border-color: #2b6dff !important;
   color: var(--text2) !important;
-  text-shadow: 1px 1px 0 #050816 !important;
+  text-shadow: none !important;
   box-shadow:
     4px 4px 0 #050816,
     inset 2px 2px 0 rgba(255, 255, 255, 0.06),
@@ -3006,7 +2964,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   padding: 44px 28px 52px;
   gap: 0;
   background: linear-gradient(180deg, #0d1b56 0%, #060c27 100%);
-  border: 4px solid #47d7ff;
+  border: 2px solid #47d7ff;
   box-shadow:
     0 0 0 3px #050816,
     0 0 0 7px var(--maze-blue),
@@ -3031,7 +2989,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   opacity: 0;
   animation: boot-appear 0.2s ease forwards 0.5s;
 }
-.welcome-boot-panel::before { top: 14px;    left: 14px;    border-width: 3px 0 0 3px; }
+.welcome-boot-panel::before { top: 14px;    left: 14px;    border-width: 2px 0 0 3px; }
 .welcome-boot-panel::after  { bottom: 14px; right: 14px;   border-width: 0 3px 3px 0; }
 
 /* Horizontal scanline sweep across the panel on startup */
@@ -3105,7 +3063,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   font-size: 9px;
   letter-spacing: 5px;
   color: var(--text2);
-  text-shadow: 2px 2px 0 #050816, 0 0 18px rgba(71, 215, 255, 0.55);
+  text-shadow: none;
   margin-bottom: 14px;
   opacity: 0;
   animation: boot-fade-up 0.25s ease 0.32s both;
@@ -3122,10 +3080,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   font-size: clamp(46px, 12vw, 58px);
   line-height: 0.92;
   color: #ffd84d;
-  text-shadow:
-    3px 3px 0 #b84e00,
-    7px 7px 0 #050816,
-    0 0 32px rgba(255, 216, 77, 0.38);
+  text-shadow: none;
 }
 
 .welcome-boot-subtitle {
@@ -3133,7 +3088,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   font-size: clamp(11px, 3vw, 14px);
   letter-spacing: 3px;
   color: #ffd84d;
-  text-shadow: 2px 2px 0 #8e5f00, 4px 4px 0 #050816;
+  text-shadow: none;
   margin-top: 10px;
 }
 
@@ -3150,7 +3105,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   width: 68%;
   height: 16px;
   background: #020813;
-  border: 3px solid #1e3a8f;
+  border: 2px solid #1e3a8f;
   box-shadow: inset 0 0 0 2px #050816, 3px 3px 0 #050816;
   overflow: hidden;
   margin-bottom: 12px;
@@ -3186,13 +3141,13 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 
 .boot-loading-text {
   color: var(--text2);
-  text-shadow: 2px 2px 0 #050816;
+  text-shadow: none;
   animation: boot-cursor-blink 0.75s step-end infinite;
 }
 
 .boot-ready-text {
   color: #52ff98;
-  text-shadow: 0 0 16px rgba(82, 255, 152, 0.75), 2px 2px 0 #050816;
+  text-shadow: none;
   animation: boot-ready-flash 0.32s steps(1, end) 5;
 }
 
@@ -3434,7 +3389,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   font-family: "Press Start 2P", monospace;
   font-size: 9px;
   letter-spacing: 2px;
-  text-shadow: 2px 2px 0 #8e5f00, 0 0 10px rgba(255, 216, 77, 0.28);
+  text-shadow: none;
 }
 
 .board-section-header::before,
@@ -3467,7 +3422,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   font-family: "Press Start 2P", monospace;
   font-size: 22px;
   color: var(--accent);
-  text-shadow: 3px 3px 0 #8e5f00, 0 0 12px rgba(255, 216, 77, 0.3);
+  text-shadow: none;
   line-height: 1;
 }
 
@@ -3483,7 +3438,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   font-family: "Press Start 2P", monospace;
   font-size: 28px !important;
   color: var(--green);
-  text-shadow: 3px 3px 0 #071a10, 0 0 16px rgba(82, 255, 152, 0.45);
+  text-shadow: none;
   letter-spacing: 2px;
 }
 
