@@ -293,7 +293,7 @@
   }
 
   .pick-comp-info {
-    border-radius: 22px;
+    border-radius: 0;
     padding: 12px 12px 0;
   }
 
@@ -320,7 +320,7 @@
   .pick-countdown {
     gap: 6px;
     padding: 6px 9px 7px;
-    border-radius: 18px;
+    border-radius: 0;
   }
 
   .pick-countdown-num {
@@ -337,7 +337,7 @@
     font-size: 11px;
     padding: 0;
     margin-bottom: 8px;
-    border-radius: 12px;
+    border-radius: 0;
   }
 
   .pick-comp-goals,
@@ -367,7 +367,7 @@
   .comp-detail {
     gap: 7px;
     padding: 10px;
-    border-radius: 18px;
+    border-radius: 0;
   }
 
   .detail-label {

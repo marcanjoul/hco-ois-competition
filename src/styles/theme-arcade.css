@@ -2087,7 +2087,7 @@ body::after {
 }
 
 .nav-pixel-icon-maze {
-  border-radius: 50%;
+  border-radius: 0;
   background: conic-gradient(from 42deg, transparent 0 84deg, var(--power-pellet) 85deg 360deg);
 }
 

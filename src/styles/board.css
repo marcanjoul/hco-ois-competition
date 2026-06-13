@@ -217,7 +217,7 @@
 .board-tie-group-label {
   align-self: flex-start;
   padding: 5px 10px;
-  border-radius: 999px;
+  border-radius: 0;
   background: rgba(26,111,244,0.12);
   color: var(--accent);
   font-family: var(--type-label-family);
@@ -326,7 +326,7 @@
   min-width: 34px;
   padding: 3px 7px;
   border: 0;
-  border-radius: 999px;
+  border-radius: 0;
   font-family: var(--type-body-family);
   font-size: 13px;
   font-weight: 800;
@@ -383,7 +383,7 @@
   background: var(--gold);
   color: var(--bg);
   padding: 2px 5px;
-  border-radius: 3px;
+  border-radius: 0;
   margin-left: var(--space-1);
   vertical-align: middle;
 }
@@ -397,7 +397,7 @@
   background: rgba(255,255,255,0.12);
   color: var(--text3);
   padding: 2px 5px;
-  border-radius: 3px;
+  border-radius: 0;
   margin-left: var(--space-1);
   vertical-align: middle;
 }
