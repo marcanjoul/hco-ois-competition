@@ -1930,15 +1930,27 @@ select.log-input:focus {
 
 html,
 body {
-  background: #0b1740;
+  background:
+    repeating-linear-gradient(0deg, rgba(120,180,255,0.035) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse 110% 75% at 50% 36%, #0a1738 0%, #060c24 56%, #03061a 100%)
+    #03061a;
+  background-attachment: fixed;
 }
 
 body::before {
   background: none;
 }
 
+/* Subtle grain — breaks up the flat background without a visible pattern */
 body::after {
-  background: none;
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+  opacity: 0.08;
 }
 
 .welcome-orb {
@@ -2367,10 +2379,7 @@ body::after {
 
 @media (max-width: 720px) {
   body::before {
-    background:
-      radial-gradient(circle, rgba(255, 241, 166, 0.55) 0 1.5px, transparent 2.5px) 13px 13px / 26px 26px,
-      linear-gradient(90deg, transparent 0 10px, rgba(71, 215, 255, 0.07) 10px 12px, transparent 12px 100%) 0 0 / 52px 52px,
-      linear-gradient(transparent 0 10px, rgba(71, 215, 255, 0.07) 10px 12px, transparent 12px 100%) 0 0 / 52px 52px;
+    background: none;
   }
 
   .welcome-inner {
