@@ -408,7 +408,7 @@ body::after {
 .day-btn,
 .admin-day-btn,
 .nav-btn,
-.pick-emp-selector,
+.pick-player-selector,
 .pick-info-btn,
 .comp-select,
 .app-header-info-btn,
@@ -435,7 +435,7 @@ body::after {
 .day-btn:hover,
 .admin-day-btn:hover,
 .nav-btn:hover,
-.pick-emp-selector:hover,
+.pick-player-selector:hover,
 .pick-info-btn:hover,
 .pick-success-cta:hover,
 .admin-action-edit:hover,
@@ -455,7 +455,7 @@ body::after {
 .day-btn:active,
 .admin-day-btn:active,
 .nav-btn:active,
-.pick-emp-selector:active,
+.pick-player-selector:active,
 .pick-info-btn:active,
 .pick-success-cta:active,
 .admin-action-edit:active,
@@ -745,28 +745,28 @@ body::after {
   color: #ffd6ef;
 }
 
-#pick-emp-list .name-btn,
+#pick-player-list .name-btn,
 #name-grid .name-btn {
   min-height: 50px;
   padding: 8px 10px;
   gap: 10px;
 }
 
-#pick-emp-list .name-btn > span:last-child,
-#pick-emp-list .name-btn > div,
+#pick-player-list .name-btn > span:last-child,
+#pick-player-list .name-btn > div,
 #name-grid .name-btn > span:last-child,
 #name-grid .name-btn > div {
   font-size: 20px;
   line-height: 1.05;
 }
 
-#pick-emp-list .avatar-small,
+#pick-player-list .avatar-small,
 #name-grid .avatar-small {
   width: 38px;
   height: 38px;
 }
 
-#pick-emp-list .board-avatar-stack,
+#pick-player-list .board-avatar-stack,
 #name-grid .board-avatar-stack {
   width: 44px;
   min-width: 44px;
@@ -774,19 +774,19 @@ body::after {
   padding-bottom: 7px;
 }
 
-#pick-emp-list .board-avatar-stack.rank-1,
+#pick-player-list .board-avatar-stack.rank-1,
 #name-grid .board-avatar-stack.rank-1 {
   padding-top: 11px;
 }
 
-#pick-emp-list .avatar-board,
+#pick-player-list .avatar-board,
 #name-grid .avatar-board {
   width: 36px;
   height: 36px;
   font-size: 16px;
 }
 
-#pick-emp-list .board-avatar-crown,
+#pick-player-list .board-avatar-crown,
 #name-grid .board-avatar-crown {
   top: -4px;
   left: 50%;
@@ -795,13 +795,13 @@ body::after {
   height: 16px;
 }
 
-#pick-emp-list .board-avatar-medal,
+#pick-player-list .board-avatar-medal,
 #name-grid .board-avatar-medal {
   bottom: 1px;
   font-size: 14px;
 }
 
-#pick-emp-list .avatar-small .avatar-placeholder,
+#pick-player-list .avatar-small .avatar-placeholder,
 #name-grid .avatar-small .avatar-placeholder {
   font-size: 17px;
 }
@@ -856,7 +856,7 @@ body::after {
 
 /* ── Unified dropdown arrow ── */
 .board-comp-trigger::after,
-.pick-emp-selector::after {
+.pick-player-selector::after {
   content: "▼";
   position: absolute;
   right: 14px;
@@ -885,7 +885,7 @@ select.log-input {
   background-color: #050d27 !important;
 }
 
-.pick-emp-selector {
+.pick-player-selector {
   font-size: 24px !important;
   color: #fff2a8 !important;
   min-height: 52px;
@@ -893,7 +893,7 @@ select.log-input {
   text-shadow: 2px 2px 0 var(--surface-mid);
 }
 
-.pick-emp-selector.has-selection {
+.pick-player-selector.has-selection {
   font-size: 20px !important;
   color: var(--text) !important;
   text-shadow: none;
@@ -901,7 +901,7 @@ select.log-input {
 
 /* ── Dropdown open/focus state — shared across all three ── */
 .board-comp-picker.open .board-comp-trigger,
-.pick-emp-selector.open,
+.pick-player-selector.open,
 select.log-input:focus {
   border-color: var(--accent2) !important;
   background: #0d2060 !important;
@@ -909,7 +909,7 @@ select.log-input:focus {
 }
 
 .board-comp-picker.open .board-comp-trigger::after,
-.pick-emp-selector.open::after {
+.pick-player-selector.open::after {
   color: var(--accent2);
   text-shadow: 2px 2px 0 #073a4a;
   transform: translateY(-50%) rotate(180deg);
@@ -925,7 +925,7 @@ select.log-input:focus {
   color: #87a8ff;
 }
 
-#pick-emp-grid .log-input {
+#pick-player-grid .log-input {
   min-height: 42px;
   padding: 7px 10px;
   font-size: 20px;
@@ -1214,7 +1214,7 @@ select.log-input:focus {
   font-size: 10px;
 }
 
-.admin-emp-list {
+.admin-player-list {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
@@ -1756,7 +1756,7 @@ select.log-input:focus {
     font-size: 7px;
   }
 
-  .pick-emp-selector {
+  .pick-player-selector {
     min-height: 42px;
     padding: 7px 9px !important;
     font-size: 18px !important;
@@ -1768,7 +1768,7 @@ select.log-input:focus {
     font-size: 20px;
   }
 
-  #pick-emp-grid .log-input {
+  #pick-player-grid .log-input {
     min-height: 36px;
     padding: 6px 8px;
     font-size: 17px;
@@ -1797,27 +1797,27 @@ select.log-input:focus {
     font-size: 20px;
   }
 
-  #pick-emp-list .name-btn,
+  #pick-player-list .name-btn,
   #name-grid .name-btn {
     min-height: 48px;
     padding: 7px 9px;
     gap: 9px;
   }
 
-  #pick-emp-list .name-btn > span:last-child,
-  #pick-emp-list .name-btn > div,
+  #pick-player-list .name-btn > span:last-child,
+  #pick-player-list .name-btn > div,
   #name-grid .name-btn > span:last-child,
   #name-grid .name-btn > div {
     font-size: 18px;
   }
 
-  #pick-emp-list .avatar-small,
+  #pick-player-list .avatar-small,
   #name-grid .avatar-small {
     width: 36px;
     height: 36px;
   }
 
-  #pick-emp-list .board-avatar-stack,
+  #pick-player-list .board-avatar-stack,
   #name-grid .board-avatar-stack {
     width: 42px;
     min-width: 42px;
@@ -1825,19 +1825,19 @@ select.log-input:focus {
     padding-bottom: 6px;
   }
 
-  #pick-emp-list .board-avatar-stack.rank-1,
+  #pick-player-list .board-avatar-stack.rank-1,
   #name-grid .board-avatar-stack.rank-1 {
     padding-top: 10px;
   }
 
-  #pick-emp-list .avatar-board,
+  #pick-player-list .avatar-board,
   #name-grid .avatar-board {
     width: 34px;
     height: 34px;
     font-size: 15px;
   }
 
-  #pick-emp-list .board-avatar-crown,
+  #pick-player-list .board-avatar-crown,
   #name-grid .board-avatar-crown {
     top: -3px;
     left: 50%;
@@ -1846,7 +1846,7 @@ select.log-input:focus {
     height: 14px;
   }
 
-  #pick-emp-list .board-avatar-medal,
+  #pick-player-list .board-avatar-medal,
   #name-grid .board-avatar-medal {
     bottom: 0;
     font-size: 13px;
@@ -2150,7 +2150,7 @@ body::after {
 .day-btn,
 .admin-day-btn,
 .nav-btn,
-.pick-emp-selector,
+.pick-player-selector,
 .pick-info-btn,
 .comp-select,
 .app-header-info-btn,
@@ -2968,7 +2968,7 @@ button.btn-disabled:hover,
 .week-nav-btn,
 .day-btn:not(.active):not(.logged):not(.disabled),
 .nav-btn:not(.active),
-.pick-emp-selector,
+.pick-player-selector,
 .comp-select,
 .del-btn:not(.danger),
 .mini-btn:not(.btn-ghost),
@@ -3275,7 +3275,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 }
 
 /* Shrink player selector slightly */
-.pick-emp-selector {
+.pick-player-selector {
   font-size: 20px !important;
   min-height: 46px !important;
   padding: 9px 44px 9px 12px !important;
@@ -3291,7 +3291,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 
 /* Shrink the selected-player card (avatar, name, edit-photo pill) */
 .avatar-pick-large,
-.pick-selected-emp-card .avatar {
+.pick-selected-player-card .avatar {
   width: 40px !important;
   height: 40px !important;
   font-size: 16px !important;
@@ -3299,7 +3299,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 .avatar-pick-large .avatar-placeholder {
   font-size: 16px !important;
 }
-.pick-selected-emp-name {
+.pick-selected-player-name {
   font-size: 20px !important;
 }
 .pick-avatar-edit-pill {

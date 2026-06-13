@@ -37,10 +37,10 @@ let _autoSelectAttempted = false;
 
 function tryAutoSelectPlayer() {
   if (_autoSelectAttempted || state.currentUser) return;
-  if (Object.keys(state.employees).length === 0) return;
+  if (Object.keys(state.players).length === 0) return;
   _autoSelectAttempted = true;
   const lastId = localStorage.getItem("lastPlayer");
-  if (lastId && state.employees[lastId] && !state.employees[lastId].inactive) {
+  if (lastId && state.players[lastId] && !state.players[lastId].inactive) {
     enterAsDashboard(lastId);
   }
 }
@@ -48,7 +48,7 @@ function tryAutoSelectPlayer() {
 let state = {
   competitions: {},
   deletedCompetitions: {},
-  employees: {},
+  players: {},
   logs: {},
   settings: {},
   goals: {},
@@ -63,28 +63,29 @@ let state = {
   endedRevealDismissedCompId: null,
   admin: {
     showAllComps: false,
-    showAllEmps: false,
+    showAllPlayers: false,
     showUnloggedPlayers: false,
-    selectedEmp: null,
+    selectedPlayer: null,
     selectedComp: null,
     editingCompId: null,
     compFilter: "all",
     selectedDate: getTodayDate(),
-    empSearch: "",
+    playerSearch: "",
     tab: "competitions",
   },
 };
 
 // Firebase database shortcuts.
-// Example: `dbRef.emps()` points to the employees collection in the database.
+// Example: `dbRef.players()` points to the players collection in the database.
 const dbRef = {
   comps:    ()              => ref(db, "competitions"),
   comp:     (id)            => ref(db, `competitions/${id}`),
-  emps:     ()              => ref(db, "employees"),
-  emp:      (id)            => ref(db, `employees/${id}`),
+  // Note: the DB path stays "employees" for backward compatibility with existing data.
+  players:     ()              => ref(db, "employees"),
+  player:      (id)            => ref(db, `employees/${id}`),
   logs:     ()              => ref(db, "logs"),
   compLogs: (cId)           => ref(db, `logs/${cId}`),
-  dateLog:  (cId, eId, date) => ref(db, `logs/${cId}/${eId}/${date}`),
+  dateLog:  (cId, pId, date) => ref(db, `logs/${cId}/${pId}/${date}`),
   settings: ()              => ref(db, "settings"),
   goals:    ()              => ref(db, "goals"),
   deletedComps: ()         => ref(db, "deleted_competitions"),
@@ -104,19 +105,19 @@ const dbRef = {
 // listener to re-fire. The listener will still fire and overwrite with the
 // server value, but the patch prevents a visible flicker between write and
 // confirmation. If Firebase rejects the write the listener restores truth.
-function upsertLocalLog(compId, empId, date, log) {
-  if (!compId || !empId || !date) return;
+function upsertLocalLog(compId, playerId, date, log) {
+  if (!compId || !playerId || !date) return;
   if (!state.logs[compId]) state.logs[compId] = {};
-  if (!state.logs[compId][empId]) state.logs[compId][empId] = {};
-  state.logs[compId][empId][date] = log;
+  if (!state.logs[compId][playerId]) state.logs[compId][playerId] = {};
+  state.logs[compId][playerId][date] = log;
 }
 
-function removeLocalLog(compId, empId, date) {
-  if (!compId || !empId || !date) return;
-  const empLogs = state.logs[compId]?.[empId];
-  if (!empLogs) return;
-  delete empLogs[date];
-  if (Object.keys(empLogs).length === 0) delete state.logs[compId][empId];
+function removeLocalLog(compId, playerId, date) {
+  if (!compId || !playerId || !date) return;
+  const playerLogs = state.logs[compId]?.[playerId];
+  if (!playerLogs) return;
+  delete playerLogs[date];
+  if (Object.keys(playerLogs).length === 0) delete state.logs[compId][playerId];
   if (Object.keys(state.logs[compId] || {}).length === 0) delete state.logs[compId];
 }
 
@@ -171,39 +172,39 @@ function focusFirstEditablePickInput() {
   focusElementSoon(target, { preventScroll: true });
 }
 
-function closePickEmployeeGrid() {
-  const empGrid = document.getElementById("pick-emp-grid");
-  const empSelectorBtn = document.getElementById("pick-emp-selector");
-  if (!empGrid || empGrid.classList.contains("hidden")) return;
-  empGrid.classList.add("hidden");
-  empSelectorBtn?.classList.remove("open");
+function closePickPlayerGrid() {
+  const playerGrid = document.getElementById("pick-player-grid");
+  const playerSelectorBtn = document.getElementById("pick-player-selector");
+  if (!playerGrid || playerGrid.classList.contains("hidden")) return;
+  playerGrid.classList.add("hidden");
+  playerSelectorBtn?.classList.remove("open");
 }
 
 // ══════════════════════════════════════════════════════
 // Avatar helpers
 // Example on the website: the player photo or letter icon shown beside names.
 // ══════════════════════════════════════════════════════
-function getAvatarPlaceholder(empIdOrStr) {
-  const str = (empIdOrStr || "").toString().trim();
+function getAvatarPlaceholder(playerIdOrStr) {
+  const str = (playerIdOrStr || "").toString().trim();
   if (!str) return "?";
   return str.charAt(0).toUpperCase();
 }
 
-function getAvatarHtml(emp, size = "", empId = "") {
+function getAvatarHtml(player, size = "", playerId = "") {
   const sizeClass = size ? ` avatar-${size}` : "";
-  const safeName = escapeHtml(emp?.name || empId || "Employee");
-  if (emp.avatar && emp.avatar.startsWith("data:image/")) {
-    return `<div class="avatar${sizeClass}"><img class="avatar-img" src="${emp.avatar}" alt="${safeName}" /></div>`;
+  const safeName = escapeHtml(player?.name || playerId || "Player");
+  if (player.avatar && player.avatar.startsWith("data:image/")) {
+    return `<div class="avatar${sizeClass}"><img class="avatar-img" src="${player.avatar}" alt="${safeName}" /></div>`;
   }
-  const placeholder = getAvatarPlaceholder(emp.name || empId || emp.id);
+  const placeholder = getAvatarPlaceholder(player.name || playerId || player.id);
   return `<div class="avatar${sizeClass}"><span class="avatar-placeholder">${placeholder}</span></div>`;
 }
 
-function getBoardAvatarHtml(emp, playerId, displayRank) {
+function getBoardAvatarHtml(player, playerId, displayRank) {
   return `
     <div class="board-avatar-stack${displayRank === 1 ? " rank-1" : ""}">
       ${displayRank === 1 ? `<div class="board-avatar-crown"><img class="board-avatar-crown-icon" src="${CROWN_ICON_URL}" alt="Top player crown" /></div>` : ""}
-      ${getAvatarHtml(emp || { name: playerId }, "board", playerId)}
+      ${getAvatarHtml(player || { name: playerId }, "board", playerId)}
     </div>
   `;
 }
@@ -434,16 +435,16 @@ function startListeners() {
     _markReady("comps");
   });
 
-  onValue(dbRef.emps(), snap => {
-    state.employees = snap.val() || {};
+  onValue(dbRef.players(), snap => {
+    state.players = snap.val() || {};
     scheduleRender("pick", renderPickScreen);
     if (state.currentUser) {
       scheduleRender("dash", renderDash);
       scheduleRender("board", renderBoard);
     }
-    if (state.admin.tab === "employees") scheduleRender("admin", renderAdminTab);
+    if (state.admin.tab === "players") scheduleRender("admin", renderAdminTab);
     if (state.admin.tab === "logs") scheduleRender("admin", renderAdminTab);
-    _markReady("emps");
+    _markReady("players");
   });
 
   onValue(dbRef.logs(), snap => {
@@ -453,7 +454,7 @@ function startListeners() {
       scheduleRender("dash", renderDash);
       scheduleRender("board", renderBoard);
     }
-    if (state.admin.tab === "logs" && state.admin.selectedEmp) scheduleRender("adminDay", refreshAdminDayView);
+    if (state.admin.tab === "logs" && state.admin.selectedPlayer) scheduleRender("adminDay", refreshAdminDayView);
     _markReady("logs");
   });
 
@@ -497,8 +498,8 @@ async function purgeExpiredDeletedComps() {
 // ══════════════════════════════════════════════════════
 function getCompGoals(compId) { return state.goals[compId] || {}; }
 
-function getPlayerSph(empId, compId) {
-  const logs = (state.logs[compId] || {})[empId] || {};
+function getPlayerSph(playerId, compId) {
+  const logs = (state.logs[compId] || {})[playerId] || {};
   let total = 0, hours = 0;
   Object.values(logs).forEach(l => { total += l.sales || 0; hours += l.hours || 0; });
   return { total, hours, sph: hours > 0 ? total / hours : 0 };
@@ -531,8 +532,8 @@ function getCompetitionGoalMarkup(compId) {
   const compLogs = state.logs[compId] || {};
   let storeTotalSales = 0;
 
-  Object.values(compLogs).forEach(empLogs => {
-    Object.values(empLogs || {}).forEach(log => {
+  Object.values(compLogs).forEach(playerLogs => {
+    Object.values(playerLogs || {}).forEach(log => {
       storeTotalSales += log.sales || 0;
     });
   });
@@ -555,7 +556,7 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
 
   const ended = isCompEnded(comp);
   const days = daysRemaining(comp);
-  const winner = comp.winner ? state.employees[comp.winner] : null;
+  const winner = comp.winner ? state.players[comp.winner] : null;
   const goalsHtml = getCompetitionGoalMarkup(compId);
   const hasGoals = !!goalsHtml;
   const countdownNum = ended ? "END" : (days !== null ? (days <= 0 ? "0" : String(days)) : "—");
@@ -728,7 +729,7 @@ function updatePickLogBtnState() {
   const hoursInput = document.getElementById("pick-input-hours");
   if (!btn) return;
 
-  // Check if the selected date already has a log for this employee
+  // Check if the selected date already has a log for this player
   const existingLog = state.currentUser
     ? (state.logs[state.currentComp] || {})[state.currentUser]?.[state.selectedDate]
     : null;
@@ -772,8 +773,8 @@ function updatePickLogBtnState() {
     const sales = parseFloat(salesInput?.value);
     const hours = parseFloat(hoursInput?.value);
     const hasValues = !isNaN(sales) && sales >= 0 && !isNaN(hours) && hours > 0;
-    const hasEmployee = !!state.currentUser;
-    const ready = hasEmployee && hasValues;
+    const hasPlayer = !!state.currentUser;
+    const ready = hasPlayer && hasValues;
     btn.disabled = !ready;
     btn.classList.toggle("btn-ghost", !ready);
   }
@@ -781,7 +782,7 @@ function updatePickLogBtnState() {
 // ══════════════════════════════════════════════════════
 function renderPickScreen(filterText = "") {
   tryAutoSelectPlayer();
-  const searchInput = document.getElementById("input-search-employees");
+  const searchInput = document.getElementById("input-search-players");
   if (searchInput && searchInput.value !== filterText) searchInput.value = filterText;
 
   // Competition info card — show only active comp
@@ -813,9 +814,9 @@ function renderPickScreen(filterText = "") {
 
   const hasLogs = hasLogsInComp(state.currentComp);
   const players = hasLogs ? getRankedPlayers(state.currentComp) : getAlphabeticalPlayers(state.currentComp);
-  const activeEmps = Object.entries(state.employees).filter(([, emp]) => !emp.inactive);
-  const filtered = activeEmps
-    .filter(([, emp]) => emp.name.toLowerCase().includes(filterText.toLowerCase()));
+  const activePlayers = Object.entries(state.players).filter(([, player]) => !player.inactive);
+  const filtered = activePlayers
+    .filter(([, player]) => player.name.toLowerCase().includes(filterText.toLowerCase()));
 
   if (filtered.length === 0) {
     grid.classList.add("empty");
@@ -828,22 +829,22 @@ function renderPickScreen(filterText = "") {
   const resultsInfo = document.getElementById("search-results-info");
   if (resultsInfo) {
     if (filterText) {
-      resultsInfo.textContent = `${filtered.length} of ${activeEmps.length} employees`;
+      resultsInfo.textContent = `${filtered.length} of ${activePlayers.length} players`;
       resultsInfo.classList.remove("hidden");
     } else {
       resultsInfo.classList.add("hidden");
     }
   }
 
-  filtered.forEach(([id, emp]) => {
+  filtered.forEach(([id, player]) => {
     const rank = players.findIndex(p => p.id === id);
     const isTopThree = hasLogs && rank >= 0 && rank < 3;
     const isWinner = state.competitions[state.currentComp]?.winner === id;
-    const safeName = escapeHtml(emp.name);
+    const safeName = escapeHtml(player.name);
     const btn = document.createElement("button");
     btn.className = `name-btn${isWinner ? " name-btn-winner" : ""}`;
     btn.innerHTML = `
-      ${isTopThree ? getBoardAvatarHtml(emp, id, rank + 1) : getAvatarHtml(emp, "small", id)}
+      ${isTopThree ? getBoardAvatarHtml(player, id, rank + 1) : getAvatarHtml(player, "small", id)}
       <div>
         ${isWinner ? "🏆 " : ""}${safeName}
       </div>
@@ -912,8 +913,8 @@ function showScreen(name) {
       headerName.textContent = "LEADERBOARD";
       headerComp.textContent = state.competitions[state.boardComp]?.name || "";
     } else if (name === "dash") {
-      const emp = state.employees[state.currentUser];
-      if (emp) headerName.textContent = emp.name.toUpperCase();
+      const player = state.players[state.currentUser];
+      if (player) headerName.textContent = player.name.toUpperCase();
       headerComp.textContent = state.competitions[state.currentComp]?.name || "";
     } else if (name === "admin") {
       headerName.textContent = "ADMIN";
@@ -925,34 +926,34 @@ function showScreen(name) {
   }
 }
 
-function enterAsDashboard(empId) {
-  state.currentUser = empId;
-  localStorage.setItem("lastPlayer", empId);
+function enterAsDashboard(playerId) {
+  state.currentUser = playerId;
+  localStorage.setItem("lastPlayer", playerId);
   state.dashView = "logging";
   state.selectedDate = getTodayDate();
 
-  // Always start fresh when switching employees.
+  // Always start fresh when switching players.
   // (If the selected day already has a log, updatePickLogBtnState will refill and lock these.)
   const salesInput = document.getElementById("pick-input-sales");
   const hoursInput = document.getElementById("pick-input-hours");
   if (salesInput) salesInput.value = "";
   if (hoursInput) hoursInput.value = "";
 
-  const emp = state.employees[empId];
+  const player = state.players[playerId];
 
   // Update selector button to show name (collapsed style)
-  const selectorWrap = document.querySelector(".pick-emp-selector-wrap");
-  const selectorBtn = document.getElementById("pick-emp-selector");
+  const selectorWrap = document.querySelector(".pick-player-selector-wrap");
+  const selectorBtn = document.getElementById("pick-player-selector");
   if (selectorWrap) selectorWrap.classList.add("hidden");
   if (selectorBtn) {
-    selectorBtn.textContent = "👤 " + (emp?.name || "");
+    selectorBtn.textContent = "👤 " + (player?.name || "");
     selectorBtn.classList.add("has-selection");
     selectorBtn.classList.remove("open");
   }
 
-  // Hide employee grid
-  const empGrid = document.getElementById("pick-emp-grid");
-  if (empGrid) empGrid.classList.add("hidden");
+  // Hide player grid
+  const playerGrid = document.getElementById("pick-player-grid");
+  if (playerGrid) playerGrid.classList.add("hidden");
 
   // Hide success state if showing from a previous log
   const successState = document.getElementById("pick-success-state");
@@ -965,31 +966,31 @@ function enterAsDashboard(empId) {
     formSteps.classList.add("revealed");
   }
 
-  showSelectedEmployeeProfile(empId, emp);
+  showSelectedPlayerProfile(playerId, player);
   renderPickDayRow();
   updatePickLogBtnState();
 }
 
-function resetPickEmployeeSelection({ openGrid = false } = {}) {
+function resetPickPlayerSelection({ openGrid = false } = {}) {
   state.currentUser = null;
   state.selectedDate = getTodayDate();
 
-  const selectorWrap = document.querySelector(".pick-emp-selector-wrap");
+  const selectorWrap = document.querySelector(".pick-player-selector-wrap");
   if (selectorWrap) selectorWrap.classList.remove("hidden");
 
-  const selectorBtn = document.getElementById("pick-emp-selector");
+  const selectorBtn = document.getElementById("pick-player-selector");
   if (selectorBtn) {
     selectorBtn.textContent = "Choose player";
     selectorBtn.classList.remove("has-selection", "open");
   }
 
-  const empGrid = document.getElementById("pick-emp-grid");
-  if (empGrid) empGrid.classList.toggle("hidden", !openGrid);
+  const playerGrid = document.getElementById("pick-player-grid");
+  if (playerGrid) playerGrid.classList.toggle("hidden", !openGrid);
 
-  const searchEl = document.getElementById("pick-emp-search");
+  const searchEl = document.getElementById("pick-player-search");
   if (searchEl) searchEl.value = "";
   if (openGrid) {
-    renderPickEmpGrid();
+    renderPickPlayerGrid();
     focusElementSoon(searchEl, { preventScroll: true });
   }
 
@@ -1015,17 +1016,17 @@ function resetPickEmployeeSelection({ openGrid = false } = {}) {
   const successState = document.getElementById("pick-success-state");
   if (successState) successState.classList.remove("visible");
 
-  hideSelectedEmployeeProfile();
+  hideSelectedPlayerProfile();
   updatePickLogBtnState();
 }
 
-function showSelectedEmployeeProfile(empId, emp) {
-  let profileCard = document.getElementById("pick-emp-profile");
+function showSelectedPlayerProfile(playerId, player) {
+  let profileCard = document.getElementById("pick-player-profile");
   if (!profileCard) {
     profileCard = document.createElement("div");
-    profileCard.id = "pick-emp-profile";
+    profileCard.id = "pick-player-profile";
     // Insert right after the selector wrap div
-    const selectorWrap = document.querySelector(".pick-emp-selector-wrap");
+    const selectorWrap = document.querySelector(".pick-player-selector-wrap");
     if (selectorWrap && selectorWrap.parentElement) {
       selectorWrap.parentElement.insertBefore(profileCard, selectorWrap.nextSibling);
     }
@@ -1033,32 +1034,32 @@ function showSelectedEmployeeProfile(empId, emp) {
   profileCard.style.display = "block";
 
   profileCard.innerHTML = `
-    <div class="pick-selected-emp-card">
-      <button class="pick-selected-avatar-btn" id="pick-emp-avatar-btn" type="button" title="Tap to edit avatar">
-        ${getAvatarHtml(emp, "pick-large avatar-interactive", empId)}
+    <div class="pick-selected-player-card">
+      <button class="pick-selected-avatar-btn" id="pick-player-avatar-btn" type="button" title="Tap to edit avatar">
+        ${getAvatarHtml(player, "pick-large avatar-interactive", playerId)}
         <span class="pick-avatar-edit-pill">Edit photo</span>
       </button>
-      <div class="pick-selected-emp-copy">
-        <div class="pick-selected-emp-name">${escapeHtml(emp.name)}</div>
+      <div class="pick-selected-player-copy">
+        <div class="pick-selected-player-name">${escapeHtml(player.name)}</div>
       </div>
-      <button class="pick-selected-clear-btn" id="pick-clear-emp-btn" type="button" title="Choose a different employee" aria-label="Choose a different employee">X</button>
+      <button class="pick-selected-clear-btn" id="pick-clear-player-btn" type="button" title="Choose a different player" aria-label="Choose a different player">X</button>
     </div>
   `;
 
-  // Make avatar clickable to edit (employees can only edit avatar)
-  document.getElementById("pick-emp-avatar-btn").onclick = (e) => {
+  // Make avatar clickable to edit (players can only edit avatar)
+  document.getElementById("pick-player-avatar-btn").onclick = (e) => {
     e.stopPropagation();
-    promptPickAvatarUpload(empId);
+    promptPickAvatarUpload(playerId);
   };
 
-  document.getElementById("pick-clear-emp-btn").onclick = (e) => {
+  document.getElementById("pick-clear-player-btn").onclick = (e) => {
     e.stopPropagation();
-    resetPickEmployeeSelection({ openGrid: true });
+    resetPickPlayerSelection({ openGrid: true });
   };
 }
 
-function hideSelectedEmployeeProfile() {
-  const profileCard = document.getElementById("pick-emp-profile");
+function hideSelectedPlayerProfile() {
+  const profileCard = document.getElementById("pick-player-profile");
   if (profileCard) profileCard.style.display = "none";
 }
 
@@ -1069,8 +1070,8 @@ function isIOSDevice() {
   return /iPhone|iPad|iPod/i.test(ua) || (platform === "MacIntel" && touchPoints > 1);
 }
 
-function promptPickAvatarUpload(empId) {
-  triggerAvatarFileInput(empId, { accept: "image/*,.heic,.heif,.png,.jpg,.jpeg,.webp" });
+function promptPickAvatarUpload(playerId) {
+  triggerAvatarFileInput(playerId, { accept: "image/*,.heic,.heif,.png,.jpg,.jpeg,.webp" });
 }
 
 function closePickAvatarUploadModal() {
@@ -1082,7 +1083,7 @@ function getAdminLogEmptyState(message) {
   return `<div class="admin-log-empty-state admin-log-detail-empty">${escapeHtml(message)}</div>`;
 }
 
-function triggerAvatarFileInput(empId, { accept = "image/*", capture } = {}) {
+function triggerAvatarFileInput(playerId, { accept = "image/*", capture } = {}) {
   const fileInput = document.createElement("input");
   fileInput.type = "file";
   fileInput.accept = accept;
@@ -1102,31 +1103,31 @@ function triggerAvatarFileInput(empId, { accept = "image/*", capture } = {}) {
     }
 
     const base64 = await fileToBase64(file);
-    await update(dbRef.emp(empId), { avatar: base64 });
+    await update(dbRef.player(playerId), { avatar: base64 });
     showToast("Photo updated ✅");
 
-    const updatedEmp = state.employees[empId];
-    if (updatedEmp && state.currentUser === empId) {
-      showSelectedEmployeeProfile(empId, updatedEmp);
+    const updatedPlayer = state.players[playerId];
+    if (updatedPlayer && state.currentUser === playerId) {
+      showSelectedPlayerProfile(playerId, updatedPlayer);
     }
   };
 
   fileInput.click();
 }
 
-function renderPickEmpGrid(filterText = "") {
-  const list = document.getElementById("pick-emp-list");
+function renderPickPlayerGrid(filterText = "") {
+  const list = document.getElementById("pick-player-list");
   const searchInfo = document.getElementById("pick-search-info");
   if (!list) return;
 
-  const activeEmps = Object.entries(state.employees).filter(([, emp]) => !emp.inactive);
-  const filtered = activeEmps
-    .filter(([, emp]) => emp.name.toLowerCase().includes(filterText.toLowerCase()))
+  const activePlayers = Object.entries(state.players).filter(([, player]) => !player.inactive);
+  const filtered = activePlayers
+    .filter(([, player]) => player.name.toLowerCase().includes(filterText.toLowerCase()))
     .sort(([, a], [, b]) => a.name.localeCompare(b.name));
 
   if (searchInfo) {
     if (filterText) {
-      searchInfo.textContent = `${filtered.length} of ${activeEmps.length} employees`;
+      searchInfo.textContent = `${filtered.length} of ${activePlayers.length} players`;
       searchInfo.classList.remove("hidden");
     } else {
       searchInfo.classList.add("hidden");
@@ -1136,17 +1137,17 @@ function renderPickEmpGrid(filterText = "") {
   list.innerHTML = "";
   const hasLogs = hasLogsInComp(state.currentComp);
   const players = hasLogs ? getRankedPlayers(state.currentComp) : [];
-  filtered.forEach(([id, emp]) => {
+  filtered.forEach(([id, player]) => {
     const rankIdx = players.findIndex(p => p.id === id);
     const isTopThree = hasLogs && rankIdx >= 0 && rankIdx < 3;
     const isWinner = state.competitions[state.currentComp]?.winner === id;
-    const safeName = escapeHtml(emp.name);
+    const safeName = escapeHtml(player.name);
     const btn = document.createElement("button");
     btn.className = `name-btn${isWinner ? " name-btn-winner" : ""}`;
-    btn.innerHTML = `${isTopThree ? getBoardAvatarHtml(emp, id, rankIdx + 1) : getAvatarHtml(emp, "small", id)} <span>${isWinner ? "🏆 " : ""}${safeName}</span>`;
+    btn.innerHTML = `${isTopThree ? getBoardAvatarHtml(player, id, rankIdx + 1) : getAvatarHtml(player, "small", id)} <span>${isWinner ? "🏆 " : ""}${safeName}</span>`;
     btn.onclick = () => {
       // Close the grid before entering dashboard
-      const grid = document.getElementById("pick-emp-grid");
+      const grid = document.getElementById("pick-player-grid");
       if (grid) grid.classList.add("hidden");
       enterAsDashboard(id);
     };
@@ -1158,8 +1159,8 @@ function renderPickEmpGrid(filterText = "") {
 // Dashboard
 // ══════════════════════════════════════════════════════
 function renderDash() {
-  const emp = state.employees[state.currentUser];
-  if (!emp) return;
+  const player = state.players[state.currentUser];
+  if (!player) return;
   const isProfileView = state.dashView === "profile";
   const header = document.getElementById("app-header");
   const dashBody = document.querySelector("#screen-dash .dash-body");
@@ -1171,7 +1172,7 @@ function renderDash() {
     dashBody.classList.toggle("dash-body-profile", isProfileView);
   }
 
-  document.getElementById("dash-name").textContent = emp.name.toUpperCase();
+  document.getElementById("dash-name").textContent = player.name.toUpperCase();
   const viewingCompId = isProfileView ? (state.boardComp || state.currentComp) : state.currentComp;
   const comp = state.competitions[viewingCompId];
   document.getElementById("dash-comp-name").textContent = comp ? comp.name : "";
@@ -1222,14 +1223,14 @@ function renderDash() {
         <div class="dash-profile-hero">
           <div class="dash-profile-avatar">
             <button class="dash-profile-avatar-btn pick-selected-avatar-btn" id="dash-profile-avatar-btn" type="button" title="Tap to edit avatar">
-              ${getBoardAvatarHtml(emp, state.currentUser, displayRank)}
+              ${getBoardAvatarHtml(player, state.currentUser, displayRank)}
               <span class="pick-avatar-edit-pill">Edit photo</span>
             </button>
           </div>
           <div class="dash-profile-copy">
             <div class="dash-profile-kicker">Player Profile</div>
             <div class="dash-profile-name-row">
-              <h1 class="dash-profile-name">${escapeHtml(emp.name)}</h1>
+              <h1 class="dash-profile-name">${escapeHtml(player.name)}</h1>
               ${myRank > 0 ? `<div class="dash-profile-rank-badge">#${myRank}</div>` : ""}
             </div>
             <div class="dash-profile-stats">
@@ -1296,8 +1297,8 @@ function renderDash() {
   const winner = comp?.winner;
   const winnerBanner = document.getElementById("winner-banner");
   if (winnerBanner) {
-    if (!isProfileView && winner && state.employees[winner]) {
-      winnerBanner.innerHTML = `🏆 <strong>${escapeHtml(state.employees[winner].name)}</strong> won!`;
+    if (!isProfileView && winner && state.players[winner]) {
+      winnerBanner.innerHTML = `🏆 <strong>${escapeHtml(state.players[winner].name)}</strong> won!`;
       winnerBanner.style.display = "block";
     } else {
       winnerBanner.style.display = "none";
@@ -1492,12 +1493,12 @@ function renderBoardEndedPodium(compId, body) {
     playersEl.className = "ended-podium-players";
 
     group.players.forEach(player => {
-      const emp = state.employees[player.id] || { name: player.name };
+      const playerRecord = state.players[player.id] || { name: player.name };
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "ended-podium-player board-ended-podium-player";
       btn.innerHTML = `
-        ${getBoardAvatarHtml(emp, player.id, rank)}
+        ${getBoardAvatarHtml(playerRecord, player.id, rank)}
         <div class="ended-podium-name">${escapeHtml(player.name)}</div>
         <div class="ended-podium-score">${scoreValue(player)} <span>${scoreLabel}</span></div>
       `;
@@ -1588,7 +1589,7 @@ function renderBoard() {
   function makeBoardCard(player, index, tieGroupSize = 1, isZero = false) {
     const displayRank = isZero ? null : getLeaderboardDisplayRank(ranked, index, metric);
     const isWinner = winner === player.id;
-    const emp = state.employees[player.id];
+    const playerRecord = state.players[player.id];
     const card = document.createElement("div");
     const isCurrentUser = state.currentUser === player.id;
     const movement = movementById.get(player.id) || { type: "same", label: "HOLD" };
@@ -1606,11 +1607,11 @@ function renderBoard() {
         <div class="board-rank-num">${isZero ? "—" : `#${displayRank}`}</div>
         ${isZero ? "" : `<div class="board-trend board-trend-${movement.type}">${movement.label}</div>`}
       </div>
-      ${getBoardAvatarHtml(emp || { name: player.name }, player.id, isZero ? 99 : displayRank)}
+      ${getBoardAvatarHtml(playerRecord || { name: player.name }, player.id, isZero ? 99 : displayRank)}
       <div class="board-info">
         <div class="board-name-row">
           <div class="board-name">
-            ${safePlayerName}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}${emp?.inactive ? " <span class='past-emp-label'>PAST</span>" : ""}
+            ${safePlayerName}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}${playerRecord?.inactive ? " <span class='past-player-label'>PAST</span>" : ""}
           </div>
         </div>
       </div>
@@ -1681,21 +1682,21 @@ function renderAllTime() {
 // ══════════════════════════════════════════════════════
 function hasLogsInComp(compId) {
   const compLogs = state.logs[compId] || {};
-  return Object.keys(compLogs).some(empId => {
-    const empLogs = compLogs[empId];
-    return Object.keys(empLogs || {}).length > 0;
+  return Object.keys(compLogs).some(playerId => {
+    const playerLogs = compLogs[playerId];
+    return Object.keys(playerLogs || {}).length > 0;
   });
 }
 
 function getAlphabeticalPlayers(compId) {
   const compLogs = state.logs[compId] || {};
-  return Object.entries(state.employees)
-    .filter(([, emp]) => !emp.inactive)
-    .map(([id, emp]) => {
-      const empLogs = compLogs[id] || {};
+  return Object.entries(state.players)
+    .filter(([, player]) => !player.inactive)
+    .map(([id, player]) => {
+      const playerLogs = compLogs[id] || {};
       let total = 0, hours = 0;
-      Object.values(empLogs).forEach(log => { total += log.sales || 0; hours += log.hours || 0; });
-      return { id, name: emp.name, total, hours, sph: hours > 0 ? total / hours : 0 };
+      Object.values(playerLogs).forEach(log => { total += log.sales || 0; hours += log.hours || 0; });
+      return { id, name: player.name, total, hours, sph: hours > 0 ? total / hours : 0 };
     })
     .sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -1703,12 +1704,12 @@ function getAlphabeticalPlayers(compId) {
 function getRankedPlayers(compId, logsSource = state.logs) {
   const compLogs = logsSource[compId] || {};
   const metric = state.settings.rankingMetric || "sph";
-  return Object.entries(state.employees)
-    .map(([id, emp]) => {
-      const empLogs = compLogs[id] || {};
+  return Object.entries(state.players)
+    .map(([id, player]) => {
+      const playerLogs = compLogs[id] || {};
       let total = 0, hours = 0;
-      Object.values(empLogs).forEach(log => { total += log.sales || 0; hours += log.hours || 0; });
-      return { id, name: emp.name, total, hours, sph: hours > 0 ? total / hours : 0 };
+      Object.values(playerLogs).forEach(log => { total += log.sales || 0; hours += log.hours || 0; });
+      return { id, name: player.name, total, hours, sph: hours > 0 ? total / hours : 0 };
     })
     .filter(player => player.total > 0 || player.hours > 0)
     .sort((a, b) => metric === "sph" ? b.sph - a.sph : b.total - a.total);
@@ -1754,7 +1755,7 @@ function renderCompetitionEndedModal(compId) {
   const metric = state.settings.rankingMetric || "sph";
   const rankGroups = getLeaderboardRankGroups(players, metric);
   const winnerGroup = rankGroups.find(group => group.rank === 1);
-  const storedWinner = comp.winner ? state.employees[comp.winner] : null;
+  const storedWinner = comp.winner ? state.players[comp.winner] : null;
   const winnerNames = winnerGroup?.players?.length
     ? winnerGroup.players.map(player => player.name).join(" + ")
     : (storedWinner?.name || "No winner");
@@ -1771,10 +1772,10 @@ function renderCompetitionEndedModal(compId) {
     const rank = group.rank;
     const tied = group.players.length > 1;
     const playerHtml = group.players.map((player) => {
-      const emp = state.employees[player.id] || { name: player.name };
+      const playerRecord = state.players[player.id] || { name: player.name };
       return `
         <div class="ended-podium-player">
-          ${getBoardAvatarHtml(emp, player.id, rank)}
+          ${getBoardAvatarHtml(playerRecord, player.id, rank)}
           <div class="ended-podium-name">${escapeHtml(player.name)}</div>
           <div class="ended-podium-score">${scoreValue(player)} <span>${scoreLabel}</span></div>
         </div>
@@ -1849,8 +1850,8 @@ function maybeShowCompetitionEndedModal({ force = false } = {}) {
 function getCompetitionLogDates(compId, logsSource = state.logs) {
   const compLogs = logsSource[compId] || {};
   const dates = new Set();
-  Object.values(compLogs).forEach(empLogs => {
-    Object.keys(empLogs || {}).forEach(date => dates.add(date));
+  Object.values(compLogs).forEach(playerLogs => {
+    Object.keys(playerLogs || {}).forEach(date => dates.add(date));
   });
   return Array.from(dates).sort();
 }
@@ -1858,9 +1859,9 @@ function getCompetitionLogDates(compId, logsSource = state.logs) {
 function buildCompetitionLogsSnapshot(compId, cutoffDate, logsSource = state.logs) {
   const snapshot = { ...logsSource, [compId]: {} };
   const compLogs = logsSource[compId] || {};
-  Object.entries(compLogs).forEach(([empId, empLogs]) => {
-    snapshot[compId][empId] = Object.fromEntries(
-      Object.entries(empLogs || {}).filter(([date]) => date <= cutoffDate)
+  Object.entries(compLogs).forEach(([playerId, playerLogs]) => {
+    snapshot[compId][playerId] = Object.fromEntries(
+      Object.entries(playerLogs || {}).filter(([date]) => date <= cutoffDate)
     );
   });
   return snapshot;
@@ -1902,13 +1903,13 @@ function getLeaderboardMovement(compId) {
 function renderAdminSummaryBar() {
   const bar = document.getElementById("admin-summary-bar");
   if (!bar) return;
-  const empCount = Object.keys(state.employees).length;
+  const playerCount = Object.keys(state.players).length;
   const today = getTodayDate();
   const compId = state.currentComp;
   let logsToday = 0;
   if (compId && state.logs[compId]) {
-    Object.values(state.logs[compId]).forEach(empLogs => {
-      if (empLogs[today]) logsToday++;
+    Object.values(state.logs[compId]).forEach(playerLogs => {
+      if (playerLogs[today]) logsToday++;
     });
   }
   const comp = compId ? state.competitions[compId] : null;
@@ -1926,7 +1927,7 @@ function openAdminPanel() {
 function renderAdminTabBar() {
   const tabs = [
     { id: "competitions", label: "Competitions" },
-    { id: "employees",    label: "Players" },
+    { id: "players",    label: "Players" },
     { id: "logs",         label: "Orders" },
   ];
   const bar = document.getElementById("admin-tab-bar");
@@ -1950,7 +1951,7 @@ function renderAdminTab() {
   content.classList.toggle("admin-tab-content-compact", state.admin.tab === "competitions");
   switch (state.admin.tab) {
     case "competitions": renderAdminComps(content); break;
-    case "employees":    renderAdminEmps(content); break;
+    case "players":    renderAdminPlayers(content); break;
     case "logs":         renderAdminLogs(content); break;
   }
 }
@@ -2334,7 +2335,7 @@ function renderCompEditForm(compId, comp, editForm, { onDone = null } = {}) {
     ${isCompEnded(comp) ? `
       <div class="admin-form-field-offset">
         <label class="field-label">WINNER</label>
-        <div class="admin-readonly-field">${escapeHtml((comp.winner && state.employees[comp.winner]?.name) ? state.employees[comp.winner].name : "No winner set")}</div>
+        <div class="admin-readonly-field">${escapeHtml((comp.winner && state.players[comp.winner]?.name) ? state.players[comp.winner].name : "No winner set")}</div>
       </div>
     ` : ""}
     <div class="admin-form-field-offset">
@@ -2538,8 +2539,8 @@ function renderCompEditPanel(compId, comp) {
   updateDateRangeUI();
 
   if (isCompEnded(comp)) {
-    const winnerDisplayText = (comp.winner && state.employees[comp.winner]?.name)
-      ? state.employees[comp.winner].name
+    const winnerDisplayText = (comp.winner && state.players[comp.winner]?.name)
+      ? state.players[comp.winner].name
       : "No winner set";
 
     const winnerWrap = document.createElement("div");
@@ -2618,47 +2619,47 @@ function renderCompEditPanel(compId, comp) {
 }
 
 // ══════════════════════════════════════════════════════
-// ADMIN — Employees
+// ADMIN — Players
 // ══════════════════════════════════════════════════════
 
-function renderAdminEmpsList() {
-  const listContainer = document.getElementById("admin-emp-list-container");
+function renderAdminPlayersList() {
+  const listContainer = document.getElementById("admin-player-list-container");
   if (!listContainer) return;
 
-  const search = state.admin.empSearch.toLowerCase();
-  const allActive = Object.entries(state.employees)
-    .filter(([, emp]) => !emp.inactive)
+  const search = state.admin.playerSearch.toLowerCase();
+  const allActive = Object.entries(state.players)
+    .filter(([, player]) => !player.inactive)
     .sort(([, a], [, b]) => a.name.localeCompare(b.name));
-  const allPast = Object.entries(state.employees)
-    .filter(([, emp]) => emp.inactive)
+  const allPast = Object.entries(state.players)
+    .filter(([, player]) => player.inactive)
     .sort(([, a], [, b]) => a.name.localeCompare(b.name));
 
-  const filtered = search ? allActive.filter(([, emp]) => emp.name.toLowerCase().includes(search)) : allActive;
-  const toShow = state.admin.showAllEmps ? filtered : filtered.slice(0, PREVIEW_COUNT);
+  const filtered = search ? allActive.filter(([, player]) => player.name.toLowerCase().includes(search)) : allActive;
+  const toShow = state.admin.showAllPlayers ? filtered : filtered.slice(0, PREVIEW_COUNT);
 
   listContainer.innerHTML = "";
   const list = document.createElement("div");
-  list.className = "admin-list admin-emp-list";
+  list.className = "admin-list admin-player-list";
 
   if (toShow.length === 0) {
-    list.innerHTML = `<div class="ui-empty-state admin-list-empty-state">No employees found</div>`;
+    list.innerHTML = `<div class="ui-empty-state admin-list-empty-state">No players found</div>`;
   } else {
-    toShow.forEach(([id, emp]) => {
+    toShow.forEach(([id, player]) => {
       const item = document.createElement("div");
-      item.className = "admin-item admin-emp-item";
-      item.id = `admin-emp-item-${id}`;
+      item.className = "admin-item admin-player-item";
+      item.id = `admin-player-item-${id}`;
 
       const leftPart = document.createElement("div");
       leftPart.className = "admin-item-left";
-      leftPart.innerHTML = `${getAvatarHtml(emp, "small", id)} <span class="admin-item-name">${escapeHtml(emp.name)}</span>`;
+      leftPart.innerHTML = `${getAvatarHtml(player, "small", id)} <span class="admin-item-name">${escapeHtml(player.name)}</span>`;
       item.appendChild(leftPart);
 
       const rightPart = document.createElement("div");
       rightPart.className = "admin-item-actions";
-      rightPart.appendChild(makeBtn("Edit", "del-btn", () => openEditEmpModal(id, emp)));
+      rightPart.appendChild(makeBtn("Edit", "del-btn", () => openEditPlayerModal(id, player)));
       rightPart.appendChild(makeBtn("✕", "del-btn danger", async () => {
-        if (confirm(`Remove "${emp.name}"? They'll move to Past Players.`)) {
-          await update(dbRef.emp(id), { inactive: true, removedAt: Date.now() });
+        if (confirm(`Remove "${player.name}"? They'll move to Past Players.`)) {
+          await update(dbRef.player(id), { inactive: true, removedAt: Date.now() });
         }
       }));
       item.appendChild(rightPart);
@@ -2670,16 +2671,16 @@ function renderAdminEmpsList() {
 
   if (filtered.length > PREVIEW_COUNT) {
     listContainer.appendChild(makeBtn(
-      state.admin.showAllEmps ? "Show less ▲" : `View all ${filtered.length} employees ▼`,
+      state.admin.showAllPlayers ? "Show less ▲" : `View all ${filtered.length} players ▼`,
       "view-all-btn",
-      () => { state.admin.showAllEmps = !state.admin.showAllEmps; renderAdminEmpsList(); }
+      () => { state.admin.showAllPlayers = !state.admin.showAllPlayers; renderAdminPlayersList(); }
     ));
   }
 
   // Past Players section
   if (allPast.length > 0) {
     const pastSection = document.createElement("div");
-    pastSection.className = "goal-admin-block admin-past-emps-section";
+    pastSection.className = "goal-admin-block admin-past-players-section";
 
     const pastToggle = document.createElement("button");
     pastToggle.className = "collapsible-toggle";
@@ -2689,20 +2690,20 @@ function renderAdminEmpsList() {
     pastContent.style.display = "none";
 
     const pastList = document.createElement("div");
-    pastList.className = "admin-list admin-emp-list";
-    allPast.forEach(([id, emp]) => {
+    pastList.className = "admin-list admin-player-list";
+    allPast.forEach(([id, player]) => {
       const item = document.createElement("div");
-      item.className = "admin-item admin-emp-item";
+      item.className = "admin-item admin-player-item";
 
       const leftPart = document.createElement("div");
       leftPart.className = "admin-item-left";
-      leftPart.innerHTML = `${getAvatarHtml(emp, "small", id)} <span class="admin-item-name">${escapeHtml(emp.name)}</span>`;
+      leftPart.innerHTML = `${getAvatarHtml(player, "small", id)} <span class="admin-item-name">${escapeHtml(player.name)}</span>`;
       item.appendChild(leftPart);
 
       const rightPart = document.createElement("div");
       rightPart.className = "admin-item-actions";
       rightPart.appendChild(makeBtn("Restore", "del-btn", async () => {
-        await update(dbRef.emp(id), { inactive: false, removedAt: null });
+        await update(dbRef.player(id), { inactive: false, removedAt: null });
       }));
       item.appendChild(rightPart);
 
@@ -2722,9 +2723,9 @@ function renderAdminEmpsList() {
   }
 }
 
-function renderAdminEmps(container) {
+function renderAdminPlayers(container) {
   container.innerHTML = `<div class="admin-section-title">MANAGE PLAYERS</div>`;
-  const employeeCount = Object.values(state.employees || {}).filter(e => !e.inactive).length;
+  const playerCount = Object.values(state.players || {}).filter(e => !e.inactive).length;
 
   const toolsWrap = document.createElement("div");
   toolsWrap.className = "admin-team-tools";
@@ -2732,63 +2733,63 @@ function renderAdminEmps(container) {
     <div class="admin-team-tools-header">
       <div class="admin-team-tools-title-row">
         <div class="admin-team-tools-title">Players</div>
-        <div class="admin-team-tools-count">${employeeCount} active</div>
+        <div class="admin-team-tools-count">${playerCount} active</div>
       </div>
     </div>
     <div class="admin-team-controls">
       <label class="admin-team-field admin-team-search-wrap">
         <span class="admin-team-field-label">Search players</span>
         <div class="admin-team-input-shell">
-          <input type="text" id="admin-emp-search" class="log-input admin-team-input" placeholder="Search..." />
+          <input type="text" id="admin-player-search" class="log-input admin-team-input" placeholder="Search..." />
         </div>
       </label>
       <label class="admin-team-field admin-team-add-wrap">
         <span class="admin-team-field-label">Quick add</span>
         <div class="admin-new-row admin-new-row-top">
-          <input type="text" id="input-new-emp" class="log-input admin-team-input" placeholder="Add a new player..." oninput="updateBtnState('input-new-emp','btn-add-emp')" />
-          <button class="mini-btn btn-ghost" id="btn-add-emp" disabled>Add</button>
+          <input type="text" id="input-new-player" class="log-input admin-team-input" placeholder="Add a new player..." oninput="updateBtnState('input-new-player','btn-add-player')" />
+          <button class="mini-btn btn-ghost" id="btn-add-player" disabled>Add</button>
         </div>
       </label>
     </div>
   `;
   container.appendChild(toolsWrap);
 
-  const searchInput = document.getElementById("admin-emp-search");
-  searchInput.value = state.admin.empSearch;
+  const searchInput = document.getElementById("admin-player-search");
+  searchInput.value = state.admin.playerSearch;
   searchInput.oninput = (e) => {
-    state.admin.empSearch = e.target.value;
-    state.admin.showAllEmps = false;
-    renderAdminEmpsList();
+    state.admin.playerSearch = e.target.value;
+    state.admin.showAllPlayers = false;
+    renderAdminPlayersList();
   };
 
-  // Create container for list (will be updated by renderAdminEmpsList)
+  // Create container for list (will be updated by renderAdminPlayersList)
   const listContainer = document.createElement("div");
-  listContainer.id = "admin-emp-list-container";
+  listContainer.id = "admin-player-list-container";
   container.appendChild(listContainer);
   
   // Render the list
-  renderAdminEmpsList();
-  document.getElementById("btn-add-emp").onclick = async () => {
-    const name = document.getElementById("input-new-emp").value.trim();
+  renderAdminPlayersList();
+  document.getElementById("btn-add-player").onclick = async () => {
+    const name = document.getElementById("input-new-player").value.trim();
     if (!name) return;
-    if (findDuplicateEmpName(name)) {
+    if (findDuplicatePlayerName(name)) {
       showToast(`We already have someone named ${name} — try adding a last name initial`);
       return;
     }
     const id = `${slugify(name)}_${Date.now()}`;
-    await set(dbRef.emp(id), { name, active: true });
-    document.getElementById("input-new-emp").value = "";
-    updateBtnState("input-new-emp", "btn-add-emp");
+    await set(dbRef.player(id), { name, active: true });
+    document.getElementById("input-new-player").value = "";
+    updateBtnState("input-new-player", "btn-add-player");
     showToast(`${name} added!`);
   };
 }
 
-// Returns the id of an existing employee whose name matches (case-insensitive),
-// or null if none. Pass excludeId to skip the employee currently being edited.
-function findDuplicateEmpName(name, excludeId = null) {
+// Returns the id of an existing player whose name matches (case-insensitive),
+// or null if none. Pass excludeId to skip the player currently being edited.
+function findDuplicatePlayerName(name, excludeId = null) {
   const target = name.trim().toLowerCase();
-  const match = Object.entries(state.employees).find(
-    ([id, emp]) => id !== excludeId && !emp.inactive && (emp.name || "").trim().toLowerCase() === target
+  const match = Object.entries(state.players).find(
+    ([id, player]) => id !== excludeId && !player.inactive && (player.name || "").trim().toLowerCase() === target
   );
   return match ? match[0] : null;
 }
@@ -2797,31 +2798,31 @@ function findDuplicateEmpName(name, excludeId = null) {
 // ADMIN — Edit Players Modal
 // ══════════════════════════════════════════════════════
 
-// Employees can only edit their own avatar
-function openEditAvatarModal(empId, emp) {
-  let modal = document.getElementById("edit-avatar-employee-modal");
+// Players can only edit their own avatar
+function openEditAvatarModal(playerId, player) {
+  let modal = document.getElementById("edit-avatar-player-modal");
   if (!modal) {
     modal = document.createElement("div");
-    modal.id = "edit-avatar-employee-modal";
-    modal.className = "admin-edit-emp-modal";
+    modal.id = "edit-avatar-player-modal";
+    modal.className = "admin-edit-player-modal";
     document.body.appendChild(modal);
     modal.addEventListener("click", (e) => {
       if (e.target === modal) closeEditAvatarModal();
     });
   }
 
-  const isCustomAvatar = emp.avatar && emp.avatar.startsWith("data:");
+  const isCustomAvatar = player.avatar && player.avatar.startsWith("data:");
 
   modal.innerHTML = `
-    <div class="admin-edit-emp-modal-content">
-      <div class="admin-edit-emp-modal-header">
+    <div class="admin-edit-player-modal-content">
+      <div class="admin-edit-player-modal-header">
         <div>Edit Your Avatar</div>
-        <button class="admin-edit-emp-modal-close">✕</button>
+        <button class="admin-edit-player-modal-close">✕</button>
       </div>
 
-      <div class="admin-edit-emp-avatar-section">
-        <div id="edit-avatar-preview" class="admin-edit-emp-avatar-large">
-          ${getAvatarHtml(emp, "large", empId)}
+      <div class="admin-edit-player-avatar-section">
+        <div id="edit-avatar-preview" class="admin-edit-player-avatar-large">
+          ${getAvatarHtml(player, "large", playerId)}
         </div>
         <div class="avatar-upload">
           <input type="file" id="edit-avatar-file-input" accept="image/*" />
@@ -2840,7 +2841,7 @@ function openEditAvatarModal(empId, emp) {
   modal.classList.add("active");
 
   // Close button handler
-  modal.querySelector(".admin-edit-emp-modal-close").onclick = closeEditAvatarModal;
+  modal.querySelector(".admin-edit-player-modal-close").onclick = closeEditAvatarModal;
 
   // Upload button
   const uploadBtn = modal.querySelector(".avatar-upload-btn");
@@ -2865,7 +2866,7 @@ function openEditAvatarModal(empId, emp) {
       if (confirm("Remove your avatar?")) {
         window.editAvatarData = null;
         const preview = modal.querySelector("#edit-avatar-preview");
-        if (preview) preview.innerHTML = `<div class="avatar avatar-large">${getAvatarPlaceholder(empId)}</div>`;
+        if (preview) preview.innerHTML = `<div class="avatar avatar-large">${getAvatarPlaceholder(playerId)}</div>`;
       }
     };
   }
@@ -2876,12 +2877,12 @@ function openEditAvatarModal(empId, emp) {
       closeEditAvatarModal();
       return;
     }
-    await update(dbRef.emp(empId), { avatar: window.editAvatarData || null });
+    await update(dbRef.player(playerId), { avatar: window.editAvatarData || null });
     showToast("Avatar updated ✅");
     closeEditAvatarModal();
-    const updatedEmp = state.employees[empId];
-    if (updatedEmp && state.currentUser === empId) {
-      showSelectedEmployeeProfile(empId, updatedEmp);
+    const updatedPlayer = state.players[playerId];
+    if (updatedPlayer && state.currentUser === playerId) {
+      showSelectedPlayerProfile(playerId, updatedPlayer);
     }
   };
 
@@ -2890,52 +2891,52 @@ function openEditAvatarModal(empId, emp) {
 }
 
 function closeEditAvatarModal() {
-  const modal = document.getElementById("edit-avatar-employee-modal");
+  const modal = document.getElementById("edit-avatar-player-modal");
   if (modal) modal.classList.remove("active");
   window.editAvatarData = undefined;
 }
 
 // Managers can edit both name and avatar
-function openEditEmpModal(empId, emp) {
-  let modal = document.getElementById("admin-edit-emp-modal");
+function openEditPlayerModal(playerId, player) {
+  let modal = document.getElementById("admin-edit-player-modal");
   if (!modal) {
     modal = document.createElement("div");
-    modal.id = "admin-edit-emp-modal";
-    modal.className = "admin-edit-emp-modal";
+    modal.id = "admin-edit-player-modal";
+    modal.className = "admin-edit-player-modal";
     document.body.appendChild(modal);
     modal.addEventListener("click", (e) => {
-      if (e.target === modal) closeEditEmpModal();
+      if (e.target === modal) closeEditPlayerModal();
     });
   }
 
-  const isCustomAvatar = emp.avatar && emp.avatar.startsWith("data:");
+  const isCustomAvatar = player.avatar && player.avatar.startsWith("data:");
 
   modal.innerHTML = `
-    <div class="admin-edit-emp-modal-content">
-      <div class="admin-edit-emp-modal-header">
-        <div>Edit Employee</div>
-        <button class="admin-edit-emp-modal-close">✕</button>
+    <div class="admin-edit-player-modal-content">
+      <div class="admin-edit-player-modal-header">
+        <div>Edit Player</div>
+        <button class="admin-edit-player-modal-close">✕</button>
       </div>
 
-      <div class="admin-edit-emp-section">
+      <div class="admin-edit-player-section">
         <label class="field-label">NAME</label>
-        <input type="text" id="edit-emp-name" class="log-input" value="${escapeHtml(emp.name)}" placeholder="Employee name" />
+        <input type="text" id="edit-player-name" class="log-input" value="${escapeHtml(player.name)}" placeholder="Player name" />
       </div>
 
-      <div class="admin-edit-emp-avatar-section">
-        <div id="edit-emp-avatar-preview" class="admin-edit-emp-avatar-large">
-          ${getAvatarHtml(emp, "large", empId)}
+      <div class="admin-edit-player-avatar-section">
+        <div id="edit-player-avatar-preview" class="admin-edit-player-avatar-large">
+          ${getAvatarHtml(player, "large", playerId)}
         </div>
         <div class="avatar-upload">
-          <input type="file" id="edit-emp-avatar-input" accept="image/*" />
+          <input type="file" id="edit-player-avatar-input" accept="image/*" />
           <button class="avatar-upload-btn">📸 Upload Photo</button>
         </div>
         ${isCustomAvatar ? `<button class="mini-btn del-btn danger">Remove Avatar</button>` : ""}
       </div>
 
       <div class="admin-btn-row">
-        <button class="log-btn" id="emp-save-btn">SAVE CHANGES</button>
-        <button class="btn-secondary" id="emp-cancel-btn">CANCEL</button>
+        <button class="log-btn" id="player-save-btn">SAVE CHANGES</button>
+        <button class="btn-secondary" id="player-cancel-btn">CANCEL</button>
       </div>
     </div>
   `;
@@ -2943,11 +2944,11 @@ function openEditEmpModal(empId, emp) {
   modal.classList.add("active");
 
   // Close button handler
-  modal.querySelector(".admin-edit-emp-modal-close").onclick = closeEditEmpModal;
+  modal.querySelector(".admin-edit-player-modal-close").onclick = closeEditPlayerModal;
 
   // Upload button
   const uploadBtn = modal.querySelector(".avatar-upload-btn");
-  const fileInput = modal.querySelector("#edit-emp-avatar-input");
+  const fileInput = modal.querySelector("#edit-player-avatar-input");
   uploadBtn.onclick = () => fileInput.click();
 
   // File input change
@@ -2956,61 +2957,61 @@ function openEditEmpModal(empId, emp) {
     if (!file) return;
     if (file.size > 5000000) { showToast("Image too large (max 5MB)"); return; }
     const base64 = await fileToBase64(file);
-    const preview = modal.querySelector("#edit-emp-avatar-preview");
+    const preview = modal.querySelector("#edit-player-avatar-preview");
     preview.innerHTML = `<div class="avatar avatar-large"><img class="avatar-img" src="${base64}" alt="preview" /></div>`;
-    window.editEmpAvatarData = base64;
+    window.editPlayerAvatarData = base64;
   };
 
   // Remove avatar button
   const removeBtn = modal.querySelector(".mini-btn.del-btn.danger");
   if (removeBtn) {
     removeBtn.onclick = () => {
-      if (confirm("Remove avatar for this employee?")) {
-        window.editEmpAvatarData = null;
-        const preview = modal.querySelector("#edit-emp-avatar-preview");
-        if (preview) preview.innerHTML = `<div class="avatar avatar-large">${getAvatarPlaceholder(empId)}</div>`;
+      if (confirm("Remove avatar for this player?")) {
+        window.editPlayerAvatarData = null;
+        const preview = modal.querySelector("#edit-player-avatar-preview");
+        if (preview) preview.innerHTML = `<div class="avatar avatar-large">${getAvatarPlaceholder(playerId)}</div>`;
       }
     };
   }
 
   // Save button
-  modal.querySelector("#emp-save-btn").onclick = async () => {
-    const newName = modal.querySelector("#edit-emp-name").value.trim();
+  modal.querySelector("#player-save-btn").onclick = async () => {
+    const newName = modal.querySelector("#edit-player-name").value.trim();
     if (!newName) { showToast("Enter a name"); return; }
-    if (findDuplicateEmpName(newName, empId)) {
+    if (findDuplicatePlayerName(newName, playerId)) {
       showToast(`We already have someone named ${newName} — try adding a last name initial`);
       return;
     }
 
     const updates = { name: newName };
-    if (window.editEmpAvatarData !== undefined) {
-      updates.avatar = window.editEmpAvatarData || null;
+    if (window.editPlayerAvatarData !== undefined) {
+      updates.avatar = window.editPlayerAvatarData || null;
     }
 
-    await update(dbRef.emp(empId), updates);
-    showToast("Employee updated ✅");
-    closeEditEmpModal();
+    await update(dbRef.player(playerId), updates);
+    showToast("Player updated ✅");
+    closeEditPlayerModal();
 
-    const updatedEmp = state.employees[empId];
-    if (updatedEmp && state.currentUser === empId) {
-      showSelectedEmployeeProfile(empId, updatedEmp);
+    const updatedPlayer = state.players[playerId];
+    if (updatedPlayer && state.currentUser === playerId) {
+      showSelectedPlayerProfile(playerId, updatedPlayer);
     }
 
     renderAdminTab();
   };
 
   // Cancel button
-  modal.querySelector("#emp-cancel-btn").onclick = closeEditEmpModal;
+  modal.querySelector("#player-cancel-btn").onclick = closeEditPlayerModal;
 }
 
-function closeEditEmpModal() {
-  const modal = document.getElementById("admin-edit-emp-modal");
+function closeEditPlayerModal() {
+  const modal = document.getElementById("admin-edit-player-modal");
   if (modal) modal.classList.remove("active");
-  window.editEmpAvatarData = undefined;
+  window.editPlayerAvatarData = undefined;
 }
 
-function inlineRenameEmp(empId, currentName) {
-  openEditEmpModal(empId, state.employees[empId]);
+function inlineRenamePlayer(playerId, currentName) {
+  openEditPlayerModal(playerId, state.players[playerId]);
 }
 
 // ══════════════════════════════════════════════════════
@@ -3036,7 +3037,7 @@ function renderAdminLogs(container) {
   });
   compSel.onchange = () => {
     state.admin.selectedComp = compSel.value;
-    state.admin.selectedEmp = null;
+    state.admin.selectedPlayer = null;
     refreshAdminDayView();
   };
   compWrap.appendChild(compSel);
@@ -3090,7 +3091,7 @@ function refreshAdminDayView() {
   dayContainer.innerHTML = `<button class="week-nav-btn" id="admin-prev-week-btn">←</button>`;
 
   week.days.forEach(dayInfo => {
-    const logsForDay = Object.values((state.logs[compId] || {})).filter(empLogs => !!empLogs?.[dayInfo.date]);
+    const logsForDay = Object.values((state.logs[compId] || {})).filter(playerLogs => !!playerLogs?.[dayInfo.date]);
     const hasLog = logsForDay.length > 0;
     const isFutureDate = dayInfo.date > getTodayDate();
     const isOutOfComp = (comp.startDate && dayInfo.date < comp.startDate) || (comp.endDate && dayInfo.date > comp.endDate);
@@ -3106,7 +3107,7 @@ function refreshAdminDayView() {
     if (!isFutureDate && !isOutOfComp) {
       btn.onclick = () => {
         state.admin.selectedDate = dayInfo.date;
-        state.admin.selectedEmp = null;
+        state.admin.selectedPlayer = null;
         refreshAdminDayView();
       };
     } else {
@@ -3118,12 +3119,12 @@ function refreshAdminDayView() {
 
   dayContainer.appendChild(makeBtn("→", "week-nav-btn", () => {
     state.admin.selectedDate = clampCompetitionDate(nextWeek(state.admin.selectedDate));
-    state.admin.selectedEmp = null;
+    state.admin.selectedPlayer = null;
     refreshAdminDayView();
   }));
   document.getElementById("admin-prev-week-btn").onclick = () => {
     state.admin.selectedDate = clampCompetitionDate(prevWeek(state.admin.selectedDate));
-    state.admin.selectedEmp = null;
+    state.admin.selectedPlayer = null;
     refreshAdminDayView();
   };
 
@@ -3132,11 +3133,11 @@ function refreshAdminDayView() {
   if (autoBtn) autoBtn.classList.add("active");
 
   const selectedDate = state.admin.selectedDate;
-  const playersForDay = Object.entries(state.employees)
+  const playersForDay = Object.entries(state.players)
     .sort(([, a], [, b]) => a.name.localeCompare(b.name))
-    .map(([id, emp]) => {
+    .map(([id, player]) => {
       const log = (state.logs[compId] || {})[id]?.[selectedDate] || null;
-      return { id, emp, log };
+      return { id, player, log };
     });
   const loggedCount = playersForDay.filter(p => p.log).length;
   playerStatus.textContent = loggedCount === 0 ? "No players logged" : "";
@@ -3147,31 +3148,31 @@ function refreshAdminDayView() {
     return;
   }
 
-  if (!playersForDay.some(p => p.id === state.admin.selectedEmp)) {
-    state.admin.selectedEmp = null;
+  if (!playersForDay.some(p => p.id === state.admin.selectedPlayer)) {
+    state.admin.selectedPlayer = null;
   }
 
   const loggedPlayers = playersForDay.filter(p => p.log);
   const unloggedPlayers = playersForDay.filter(p => !p.log);
   playerList.innerHTML = "";
-  const renderPlayerCard = ({ id, emp, log }) => {
+  const renderPlayerCard = ({ id, player, log }) => {
     const wrap = document.createElement("div");
-    wrap.className = `admin-log-player-card-wrap${state.admin.selectedEmp === id ? " active" : ""}`;
+    wrap.className = `admin-log-player-card-wrap${state.admin.selectedPlayer === id ? " active" : ""}`;
 
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = `admin-log-player-card${log ? " has-log" : ""}${state.admin.selectedEmp === id ? " active" : ""}`;
+    btn.className = `admin-log-player-card${log ? " has-log" : ""}${state.admin.selectedPlayer === id ? " active" : ""}`;
     btn.innerHTML = `
       <div class="admin-log-player-main">
-        <div class="admin-log-player-name">${escapeHtml(emp.name)}</div>
+        <div class="admin-log-player-name">${escapeHtml(player.name)}</div>
         <div class="admin-log-player-meta">${log ? `$${log.sales.toFixed(2)} · ${log.hours.toFixed(1)} hrs` : "No log yet"}</div>
       </div>
-      ${state.admin.selectedEmp === id ? '<div class="admin-log-player-badge close">Close</div>' : (log ? '<div class="admin-log-player-badge edit">Edit</div>' : '<div class="admin-log-player-badge open">Add</div>')}
+      ${state.admin.selectedPlayer === id ? '<div class="admin-log-player-badge close">Close</div>' : (log ? '<div class="admin-log-player-badge edit">Edit</div>' : '<div class="admin-log-player-badge open">Add</div>')}
     `;
     btn.onclick = () => {
-      state.admin.selectedEmp = state.admin.selectedEmp === id ? null : id;
+      state.admin.selectedPlayer = state.admin.selectedPlayer === id ? null : id;
       refreshAdminDayView();
-      if (state.admin.selectedEmp) {
+      if (state.admin.selectedPlayer) {
         requestAnimationFrame(() => {
           document.querySelector(".admin-log-player-card-wrap.active")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
         });
@@ -3179,7 +3180,7 @@ function refreshAdminDayView() {
     };
     wrap.appendChild(btn);
 
-    if (state.admin.selectedEmp === id) {
+    if (state.admin.selectedPlayer === id) {
       const inlineDetail = document.createElement("div");
       inlineDetail.className = "admin-log-inline-detail";
       wrap.appendChild(inlineDetail);
@@ -3230,7 +3231,7 @@ function refreshAdminDayView() {
   }
 }
 
-function renderAdminLogDetail(empId, compId, date, log) {
+function renderAdminLogDetail(playerId, compId, date, log) {
   const detail = document.getElementById("admin-logs-detail");
   if (!detail) return;
   const sph = log.hours > 0 ? (log.sales / log.hours).toFixed(2) : "—";
@@ -3239,7 +3240,7 @@ function renderAdminLogDetail(empId, compId, date, log) {
   detail.innerHTML = `
     <div class="admin-log-header">
       <div class="admin-log-header-info">
-        <div class="admin-log-header-name">${escapeHtml(state.employees[empId]?.name || "")}</div>
+        <div class="admin-log-header-name">${escapeHtml(state.players[playerId]?.name || "")}</div>
         <div class="admin-log-header-sub">${escapeHtml(`${dayName} ${date} · ${state.competitions[compId]?.name || ""}`)}</div>
       </div>
       <div class="admin-log-header-badge logged">Logged</div>
@@ -3254,29 +3255,29 @@ function renderAdminLogDetail(empId, compId, date, log) {
       <button class="admin-action-delete" id="admin-delete-log-btn">🗑️ Delete</button>
     </div>
   `;
-  document.getElementById("admin-edit-log-btn").onclick = () => renderAdminLogEdit(empId, compId, date, log);
-  document.getElementById("admin-delete-log-btn").onclick = () => confirmAndDeleteAdminLog(empId, compId, date);
+  document.getElementById("admin-edit-log-btn").onclick = () => renderAdminLogEdit(playerId, compId, date, log);
+  document.getElementById("admin-delete-log-btn").onclick = () => confirmAndDeleteAdminLog(playerId, compId, date);
 }
 
-async function confirmAndDeleteAdminLog(empId, compId, date) {
-  const empName = state.employees[empId]?.name || "this player";
+async function confirmAndDeleteAdminLog(playerId, compId, date) {
+  const playerName = state.players[playerId]?.name || "this player";
   const confirmed = await showAppConfirm({
     title: "Delete Order",
-    message: `Delete ${empName}'s order for ${date}?`,
+    message: `Delete ${playerName}'s order for ${date}?`,
     confirmLabel: "DELETE",
     confirmClassName: "log-btn admin-danger-btn",
   });
   if (!confirmed) return;
 
-  await remove(dbRef.dateLog(compId, empId, date));
-  removeLocalLog(compId, empId, date);
-  state.admin.selectedEmp = null;
+  await remove(dbRef.dateLog(compId, playerId, date));
+  removeLocalLog(compId, playerId, date);
+  state.admin.selectedPlayer = null;
   showToast("Order deleted");
   refreshAdminDayView();
-  if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
+  if (state.currentUser === playerId) { renderDash(); renderBoard(); renderAllTime(); }
 }
 
-function renderAdminLogCreate(empId, compId, date, target = null) {
+function renderAdminLogCreate(playerId, compId, date, target = null) {
   const detail = target || document.getElementById("admin-logs-detail");
   if (!detail) return;
   const d = new Date(date + "T00:00:00");
@@ -3284,7 +3285,7 @@ function renderAdminLogCreate(empId, compId, date, target = null) {
   detail.innerHTML = `
     <div class="admin-log-header">
       <div class="admin-log-header-info">
-        <div class="admin-log-header-name">${escapeHtml(state.employees[empId]?.name || "")}</div>
+        <div class="admin-log-header-name">${escapeHtml(state.players[playerId]?.name || "")}</div>
         <div class="admin-log-header-sub">${escapeHtml(`${dayName} ${date} · ${state.competitions[compId]?.name || ""}`)}</div>
       </div>
       <div class="admin-log-header-badge not-logged">✗ No Log Yet</div>
@@ -3309,16 +3310,16 @@ function renderAdminLogCreate(empId, compId, date, target = null) {
     if (isNaN(sales) || sales < 0) { showToast("Enter valid sales amount"); return; }
     if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked"); return; }
     if (date > getTodayDate()) { showToast("Can't create logs for future dates 🔮"); return; }
-    await set(dbRef.dateLog(compId, empId, date), { sales, hours });
-    upsertLocalLog(compId, empId, date, { sales, hours });
-    state.admin.selectedEmp = null;
+    await set(dbRef.dateLog(compId, playerId, date), { sales, hours });
+    upsertLocalLog(compId, playerId, date, { sales, hours });
+    state.admin.selectedPlayer = null;
     showToast("Log created ✅");
     refreshAdminDayView();
-    if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
+    if (state.currentUser === playerId) { renderDash(); renderBoard(); renderAllTime(); }
   };
 }
 
-function renderAdminLogEdit(empId, compId, date, log, target = null) {
+function renderAdminLogEdit(playerId, compId, date, log, target = null) {
   const detail = target || document.getElementById("admin-logs-detail");
   if (!detail) return;
   detail.innerHTML = `
@@ -3336,15 +3337,15 @@ function renderAdminLogEdit(empId, compId, date, log, target = null) {
     const hours = parseFloat(detail.querySelector("#admin-edit-hours").value);
     if (isNaN(sales) || sales < 0) { showToast("Enter valid sales amount"); return; }
     if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked"); return; }
-    await set(dbRef.dateLog(compId, empId, date), { sales, hours });
-    upsertLocalLog(compId, empId, date, { sales, hours });
-    state.admin.selectedEmp = null;
+    await set(dbRef.dateLog(compId, playerId, date), { sales, hours });
+    upsertLocalLog(compId, playerId, date, { sales, hours });
+    state.admin.selectedPlayer = null;
     showToast("Log updated ✅");
     refreshAdminDayView();
-    if (state.currentUser === empId) { renderDash(); renderBoard(); renderAllTime(); }
+    if (state.currentUser === playerId) { renderDash(); renderBoard(); renderAllTime(); }
   };
   detail.querySelector("#admin-delete-edit-btn").onclick = async () => {
-    await confirmAndDeleteAdminLog(empId, compId, date);
+    await confirmAndDeleteAdminLog(playerId, compId, date);
   };
 }
 
@@ -3571,7 +3572,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("screen-welcome")
     ?.addEventListener("click", advanceFromBoot, { once: true });
 
-  const searchInput = document.getElementById("input-search-employees");
+  const searchInput = document.getElementById("input-search-players");
   if (searchInput) {
     searchInput.oninput = () => {
       clearTimeout(state.searchDebounceTimer);
@@ -3601,38 +3602,38 @@ document.addEventListener("DOMContentLoaded", () => {
   const successResetBtn = document.getElementById("pick-success-reset-btn");
   if (successResetBtn) {
     successResetBtn.onclick = () => {
-      resetPickEmployeeSelection();
+      resetPickPlayerSelection();
     };
   }
 
-  // Pick screen employee selector
-  const empSelectorBtn = document.getElementById("pick-emp-selector");
-  const empGrid = document.getElementById("pick-emp-grid");
-  if (empSelectorBtn && empGrid) {
-    empSelectorBtn.onclick = () => {
-      const isOpening = empGrid.classList.contains("hidden");
-      empGrid.classList.toggle("hidden");
-      empSelectorBtn.classList.toggle("open", isOpening);
+  // Pick screen player selector
+  const playerSelectorBtn = document.getElementById("pick-player-selector");
+  const playerGrid = document.getElementById("pick-player-grid");
+  if (playerSelectorBtn && playerGrid) {
+    playerSelectorBtn.onclick = () => {
+      const isOpening = playerGrid.classList.contains("hidden");
+      playerGrid.classList.toggle("hidden");
+      playerSelectorBtn.classList.toggle("open", isOpening);
       if (isOpening) {
-        renderPickEmpGrid();
+        renderPickPlayerGrid();
       }
     };
-    empSelectorBtn.onkeydown = (e) => {
+    playerSelectorBtn.onkeydown = (e) => {
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        if (empGrid.classList.contains("hidden")) empSelectorBtn.click();
-        focusElementSoon(document.getElementById("pick-emp-search"), { preventScroll: true });
+        if (playerGrid.classList.contains("hidden")) playerSelectorBtn.click();
+        focusElementSoon(document.getElementById("pick-player-search"), { preventScroll: true });
       }
     };
   }
 
-  // Pick screen employee search
-  const pickEmpSearch = document.getElementById("pick-emp-search");
-  if (pickEmpSearch) {
-    pickEmpSearch.oninput = () => {
+  // Pick screen player search
+  const pickPlayerSearch = document.getElementById("pick-player-search");
+  if (pickPlayerSearch) {
+    pickPlayerSearch.oninput = () => {
       clearTimeout(state.searchDebounceTimer);
       state.searchDebounceTimer = setTimeout(() => {
-        renderPickEmpGrid(pickEmpSearch.value);
+        renderPickPlayerGrid(pickPlayerSearch.value);
       }, 150);
     };
   }
@@ -3707,22 +3708,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const picker = document.getElementById("board-comp-picker");
     if (picker && !picker.contains(e.target)) closeBoardCompMenu();
 
-    const empSelectorWrap = document.querySelector(".pick-emp-selector-wrap");
-    const empGrid = document.getElementById("pick-emp-grid");
+    const playerSelectorWrap = document.querySelector(".pick-player-selector-wrap");
+    const playerGrid = document.getElementById("pick-player-grid");
     if (
-      empGrid &&
-      !empGrid.classList.contains("hidden") &&
-      !empGrid.contains(e.target) &&
-      !empSelectorWrap?.contains(e.target)
+      playerGrid &&
+      !playerGrid.classList.contains("hidden") &&
+      !playerGrid.contains(e.target) &&
+      !playerSelectorWrap?.contains(e.target)
     ) {
-      closePickEmployeeGrid();
+      closePickPlayerGrid();
     }
   });
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       closeBoardCompMenu();
-      closePickEmployeeGrid();
+      closePickPlayerGrid();
       closeInfoModal();
       closeCompetitionEndedModal();
     }
@@ -3741,10 +3742,10 @@ document.addEventListener("DOMContentLoaded", () => {
       state.adminUnlocked = true;
       sessionStorage.setItem("adminUnlocked", "1");
       state.admin.showAllComps = false;
-      state.admin.showAllEmps = false;
-      state.admin.selectedEmp = null;
+      state.admin.showAllPlayers = false;
+      state.admin.selectedPlayer = null;
       state.admin.selectedComp = state.currentComp;
-      state.admin.empSearch = "";
+      state.admin.playerSearch = "";
       openAdminPanel();
     } else {
       document.getElementById("pin-error").classList.remove("hidden");

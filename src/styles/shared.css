@@ -36,7 +36,7 @@
 .avatar-interactive:active { transform: scale(0.95); }
 
 @media (max-width: 480px) {
-  .pick-selected-emp-card {
+  .pick-selected-player-card {
     grid-template-columns: auto 1fr;
     align-items: start;
     gap: 10px;
@@ -56,7 +56,7 @@
     font-size: 18px;
   }
 
-  .pick-selected-emp-name {
+  .pick-selected-player-name {
     font-size: 26px;
     line-height: 1;
   }
@@ -219,12 +219,12 @@
 .search-results-info { font-family: var(--type-small-family); font-size: var(--type-small-size); font-weight: var(--type-small-weight); color: var(--text3); text-align: center; }
 .search-results-info.hidden { display: none; }
 
-/* Pick screen employee search */
+/* Pick screen player search */
 #pick-search-info { font-family: var(--type-small-family); font-size: var(--type-small-size); color: var(--text3); text-align: center; }
 #pick-search-info.hidden { display: none; }
 
-/* Pick emp list grid */
-#pick-emp-list {
+/* Pick player list grid */
+#pick-player-list {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-1);
@@ -246,8 +246,8 @@
   border: 0;
 }
 
-/* pick-emp-grid legacy ID styles */
-#pick-emp-grid {
+/* pick-player-grid legacy ID styles */
+#pick-player-grid {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);

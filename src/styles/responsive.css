@@ -416,7 +416,7 @@
     padding-top: var(--space-3);
   }
 
-  .pick-emp-selector {
+  .pick-player-selector {
     font-size: 18px;
     min-height: 50px;
     padding: var(--space-3);
@@ -431,7 +431,7 @@
     font-size: 22px;
   }
 
-  .pick-selected-emp-card {
+  .pick-selected-player-card {
     gap: var(--space-2);
     padding: 10px;
   }
@@ -441,7 +441,7 @@
     font-size: 7px;
   }
 
-  .pick-selected-emp-name {
+  .pick-selected-player-name {
     font-size: 18px;
   }
 
@@ -651,11 +651,11 @@
     font-size: 22px;
   }
 
-  .pick-selected-emp-name {
+  .pick-selected-player-name {
     font-size: 16px;
   }
 
-  .pick-emp-selector {
+  .pick-player-selector {
     font-size: 16px;
     min-height: 46px;
   }
