@@ -40,8 +40,8 @@
 
 .pick-info-btn {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 22px;
+  right: 22px;
   background: var(--accent) !important;
   border: 3px solid #f5bf1f !important;
   border-radius: 0;
