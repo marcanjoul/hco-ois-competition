@@ -2771,12 +2771,26 @@ function renderAdminEmps(container) {
   document.getElementById("btn-add-emp").onclick = async () => {
     const name = document.getElementById("input-new-emp").value.trim();
     if (!name) return;
+    if (findDuplicateEmpName(name)) {
+      showToast(`We already have someone named ${name} — try adding a last name initial`);
+      return;
+    }
     const id = `${slugify(name)}_${Date.now()}`;
     await set(dbRef.emp(id), { name, active: true });
     document.getElementById("input-new-emp").value = "";
     updateBtnState("input-new-emp", "btn-add-emp");
     showToast(`${name} added!`);
   };
+}
+
+// Returns the id of an existing employee whose name matches (case-insensitive),
+// or null if none. Pass excludeId to skip the employee currently being edited.
+function findDuplicateEmpName(name, excludeId = null) {
+  const target = name.trim().toLowerCase();
+  const match = Object.entries(state.employees).find(
+    ([id, emp]) => id !== excludeId && !emp.inactive && (emp.name || "").trim().toLowerCase() === target
+  );
+  return match ? match[0] : null;
 }
 
 // ══════════════════════════════════════════════════════
@@ -2963,6 +2977,10 @@ function openEditEmpModal(empId, emp) {
   modal.querySelector("#emp-save-btn").onclick = async () => {
     const newName = modal.querySelector("#edit-emp-name").value.trim();
     if (!newName) { showToast("Enter a name"); return; }
+    if (findDuplicateEmpName(newName, empId)) {
+      showToast(`We already have someone named ${newName} — try adding a last name initial`);
+      return;
+    }
 
     const updates = { name: newName };
     if (window.editEmpAvatarData !== undefined) {
