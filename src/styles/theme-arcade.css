@@ -28,8 +28,9 @@
   --silver: #47d7ff;
   --bronze: #ff9a3c;
   --text: #f7f3d7;
-  --text2: #8fd7ff;
-  --text3: #5e8df8;
+  /* Single calm secondary-text tone — unifies former bright cyans into one quiet color */
+  --text2: #9db8dd;
+  --text3: #9db8dd;
   --green: #52ff98;
   --red: #ff5d73;
   --shadow: 0 0 0 3px #1436a1, 0 0 0 6px #06102b;
@@ -173,7 +174,7 @@ textarea {
 .detail-label,
 .nav-label,
 .pick-countdown-label {
-  color: var(--accent2);
+  color: var(--text2);
 }
 
 .pick-bg-stripe {
@@ -286,7 +287,7 @@ body::after {
   margin: -2px 0 10px;
   padding: 0;
   background: transparent;
-  color: #47d7ff;
+  color: var(--text2);
   border: 0 !important;
   box-shadow: none !important;
   font-family: "VT323", monospace;
@@ -311,7 +312,7 @@ body::after {
 }
 
 .goal-percent-inline {
-  color: #47d7ff;
+  color: var(--text2);
   font-family: "Press Start 2P", monospace;
   font-size: 9px;
   letter-spacing: 1px;
@@ -322,7 +323,7 @@ body::after {
 }
 
 .goal-target {
-  color: #47d7ff;
+  color: var(--text2);
   background: transparent;
   border: 0 !important;
   font-family: "VT323", monospace;
@@ -606,7 +607,7 @@ body::after {
 .admin-log-player-meta,
 .admin-log-player-section-count,
 .admin-log-player-toggle-meta {
-  color: #8ad7ff;
+  color: var(--text2);
 }
 
 .admin-log-player-toggle {
@@ -663,7 +664,7 @@ body::after {
 }
 
 .admin-log-player-badge.open {
-  color: #47d7ff;
+  color: var(--text2);
 }
 
 .admin-log-player-badge.close {
@@ -679,7 +680,7 @@ body::after {
 .ui-empty-state {
   border: 3px dashed #2348b3 !important;
   background: rgba(11, 21, 64, 0.55) !important;
-  color: #8ad7ff;
+  color: var(--text2);
 }
 
 .day-btn.today {
@@ -721,7 +722,7 @@ body::after {
 }
 
 .nav-label {
-  color: #8ad7ff;
+  color: var(--text2);
   text-shadow: 2px 2px 0 var(--shadow-ink);
 }
 
@@ -904,7 +905,7 @@ select.log-input:focus {
 
 .board-comp-picker.open .board-comp-trigger::after,
 .pick-player-selector.open::after {
-  color: var(--accent2);
+  color: var(--text2);
   text-shadow: 2px 2px 0 #073a4a;
   transform: translateY(-50%) rotate(180deg);
 }
@@ -974,11 +975,11 @@ select.log-input:focus {
 }
 
 .admin-edit-group-sub {
-  color: #8ad7ff;
+  color: var(--text2);
 }
 
 .dash-profile-kicker {
-  color: var(--accent2);
+  color: var(--text2);
 }
 
 .dash-profile-name {
@@ -1183,7 +1184,7 @@ select.log-input:focus {
   border: 2px solid #47d7ff;
   border-radius: 0;
   background: #07122f;
-  color: #8ad7ff;
+  color: var(--text2);
   font-size: 8px;
   box-shadow: 2px 2px 0 #050816;
 }
@@ -1191,7 +1192,7 @@ select.log-input:focus {
 .admin-team-field-label {
   font-size: 8px;
   line-height: 1.1;
-  color: #47d7ff !important;
+  color: var(--text2) !important;
   text-shadow: 2px 2px 0 #050816;
 }
 
@@ -1247,7 +1248,7 @@ select.log-input:focus {
 
 .admin-comp-filter-btn {
   border: 3px solid transparent !important;
-  color: #8ad7ff !important;
+  color: var(--text2) !important;
   font-family: "Press Start 2P", monospace !important;
   font-size: 9px !important;
   line-height: 1.2;
@@ -1289,7 +1290,7 @@ select.log-input:focus {
 }
 
 .history-rate-label {
-  color: #8ad7ff;
+  color: var(--text2);
 }
 
 .admin-date-range-summary {
@@ -1317,7 +1318,7 @@ select.log-input:focus {
 }
 
 .goal-day-name {
-  color: #8ad7ff;
+  color: var(--text2);
   font-size: 16px;
   text-shadow: 2px 2px 0 var(--shadow-ink);
 }
@@ -1373,7 +1374,7 @@ select.log-input:focus {
 }
 
 .comp-status-chip.comp-status-archived {
-  color: var(--accent2) !important;
+  color: var(--text2) !important;
 }
 
 .admin-team-tools-count,
@@ -1383,7 +1384,7 @@ select.log-input:focus {
 .search-results-info,
 .pick-success-stat-label,
 .admin-team-tools-eyebrow {
-  color: var(--accent2) !important;
+  color: var(--text2) !important;
 }
 
 .admin-team-tools-count,
@@ -2023,7 +2024,7 @@ body::after {
 }
 
 .welcome-copy {
-  color: #8ad7ff;
+  color: var(--text2);
   text-shadow: 2px 2px 0 #06102b;
 }
 
@@ -2674,14 +2675,14 @@ button.btn-disabled:hover,
 }
 
 .competition-ended-close {
-  color: #47d7ff;
+  color: var(--text2);
   font-family: "Press Start 2P", monospace;
   font-size: 12px;
 }
 
 .competition-ended-kicker,
 .competition-ended-winner-label {
-  color: #47d7ff;
+  color: var(--text2);
   font-family: "Press Start 2P", monospace;
   font-size: 9px;
   letter-spacing: 1px;
@@ -2763,7 +2764,7 @@ button.btn-disabled:hover,
 }
 
 .ended-podium-rank {
-  color: #47d7ff;
+  color: var(--text2);
   font-family: "Press Start 2P", monospace;
   font-size: 14px;
   text-shadow: 2px 2px 0 #050816;
@@ -2783,13 +2784,13 @@ button.btn-disabled:hover,
 }
 
 .ended-podium-score {
-  color: #47d7ff;
+  color: var(--text2);
   font-family: "Press Start 2P", monospace;
   font-size: 13px;
 }
 
 .ended-podium-score span {
-  color: #8ad7ff;
+  color: var(--text2);
   font-family: "VT323", monospace;
   font-size: 14px;
 }
@@ -2803,7 +2804,7 @@ button.btn-disabled:hover,
 
 .ended-rank-num,
 .ended-rank-score {
-  color: #47d7ff;
+  color: var(--text2);
   font-family: "Press Start 2P", monospace;
   font-size: 11px;
 }
@@ -2830,7 +2831,7 @@ button.btn-disabled:hover,
 }
 
 .ended-empty {
-  color: #8ad7ff;
+  color: var(--text2);
   font-family: "VT323", monospace;
   font-size: 22px;
 }
@@ -2964,7 +2965,7 @@ button.btn-disabled:hover,
 .admin-action-edit {
   background: #11215c !important;
   border-color: #2b6dff !important;
-  color: #8fd7ff !important;
+  color: var(--text2) !important;
   text-shadow: 1px 1px 0 #050816 !important;
   box-shadow:
     4px 4px 0 #050816,
@@ -3108,7 +3109,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   font-family: 'Press Start 2P', monospace;
   font-size: 9px;
   letter-spacing: 5px;
-  color: #47d7ff;
+  color: var(--text2);
   text-shadow: 2px 2px 0 #050816, 0 0 18px rgba(71, 215, 255, 0.55);
   margin-bottom: 14px;
   opacity: 0;
@@ -3189,7 +3190,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 }
 
 .boot-loading-text {
-  color: #47d7ff;
+  color: var(--text2);
   text-shadow: 2px 2px 0 #050816;
   animation: boot-cursor-blink 0.75s step-end infinite;
 }
@@ -3462,7 +3463,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 
 .board-card:hover .board-card-arrow,
 .board-card:focus-visible .board-card-arrow {
-  color: var(--accent2);
+  color: var(--text2);
   transform: translateX(3px);
 }
 
@@ -3479,7 +3480,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 .pick-selected-clear-btn {
   font-family: "Press Start 2P", monospace !important;
   font-size: 11px !important;
-  color: #8fd7ff !important;
+  color: var(--text2) !important;
 }
 
 /* ── Success checkmark: pixel green ── */
