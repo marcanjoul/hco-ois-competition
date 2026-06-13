@@ -4,16 +4,16 @@
 
   Website examples:
   - The "Competition Rules" popup
-  - The admin employee edit popup
+  - The admin player edit popup
 */
 /* ────────────────────────────────────────────────────────────────────────────
    9. MODALS
    ──────────────────────────────────────────────────────────────────────────── */
 
-/* Admin employee edit popup
-   Example on the website: the admin popup for editing an employee/profile.
+/* Admin player edit popup
+   Example on the website: the admin popup for editing an player/profile.
 */
-.admin-edit-emp-modal {
+.admin-edit-player-modal {
   display: none;
   position: fixed;
   inset: 0;
@@ -23,7 +23,7 @@
   backdrop-filter: var(--modal-blur);
   -webkit-backdrop-filter: var(--modal-blur);
 }
-.admin-edit-emp-modal.active {
+.admin-edit-player-modal.active {
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -31,7 +31,7 @@
   animation: overlay-fade-in 0.24s ease both;
 }
 
-.admin-edit-emp-modal-content {
+.admin-edit-player-modal-content {
   background: var(--surface);
   border-radius: var(--radius) var(--radius) 0 0;
   border: 1px solid var(--border);
@@ -53,7 +53,7 @@
   to   { transform: translateY(0);    opacity: 1; }
 }
 
-.admin-edit-emp-modal-header {
+.admin-edit-player-modal-header {
   font-family: var(--type-title-family);
   font-size: var(--type-title-size);
   letter-spacing: 1px;
@@ -64,19 +64,19 @@
   color: var(--text);
 }
 
-.admin-edit-emp-modal-close {
+.admin-edit-player-modal-close {
   background: none; border: none; color: var(--text2); font-size: 20px; cursor: pointer; padding: 0;
   width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
   transition: all 0.2s;
 }
-.admin-edit-emp-modal-close:hover { color: var(--text); transform: scale(1.1); }
+.admin-edit-player-modal-close:hover { color: var(--text); transform: scale(1.1); }
 
-.admin-edit-emp-section { display: flex; flex-direction: column; gap: var(--space-3); margin-bottom: var(--space-4); }
-.admin-edit-emp-avatar-section {
+.admin-edit-player-section { display: flex; flex-direction: column; gap: var(--space-3); margin-bottom: var(--space-4); }
+.admin-edit-player-avatar-section {
   display: flex; flex-direction: column; align-items: center; gap: var(--space-3);
   padding: var(--space-3); background: var(--bg); border-radius: var(--radius-sm);
 }
-.admin-edit-emp-avatar-large { width: 120px; height: 120px; }
+.admin-edit-player-avatar-large { width: 120px; height: 120px; }
 
 /* Info modal
    Example on the website: the popup opened from the little "i" rules button.

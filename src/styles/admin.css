@@ -522,7 +522,7 @@
   border-radius: var(--radius-sm);
 }
 
-.admin-emp-list {
+.admin-player-list {
   gap: 14px;
   width: calc(100% - 12px);
   margin: 0 auto var(--space-4);
@@ -545,7 +545,7 @@
   background: var(--card-bg);
 }
 
-.admin-emp-item {
+.admin-player-item {
   padding: var(--space-3) var(--space-4);
   min-height: 70px;
   border-bottom: none;
@@ -578,7 +578,7 @@
   white-space: nowrap;
 }
 
-.admin-emp-item .admin-item-name {
+.admin-player-item .admin-item-name {
   font-size: calc(var(--type-body-size) - 1px);
 }
 
@@ -676,7 +676,7 @@
 .del-btn.danger:hover { background: var(--color-feedback-error-light); }
 
 @media (max-width: 640px) {
-  .admin-emp-list {
+  .admin-player-list {
     gap: 12px;
     width: calc(100% - 8px);
   }
@@ -686,7 +686,7 @@
     align-items: start;
   }
 
-  .admin-emp-item {
+  .admin-player-item {
     padding: var(--space-2) var(--space-3);
     min-height: 64px;
   }
@@ -960,7 +960,7 @@
 }
 
 /* Admin log detail
-   Example on the website: the panel showing one employee's numbers for a day.
+   Example on the website: the panel showing one player's numbers for a day.
 */
 .admin-log-detail-wrap {
   background: var(--surface);
