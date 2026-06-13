@@ -70,11 +70,11 @@
   --space-16: 64px;
 
   /* ── Radius ── */
-  --radius:    16px;
-  --radius-sm: 10px;
-  --radius-xs: 6px;
-  --radius-md: 10px;  /* alias */
-  --radius-lg: 16px;  /* alias */
+  --radius:    0;
+  --radius-sm: 0;
+  --radius-xs: 0;
+  --radius-md: 0;  /* alias */
+  --radius-lg: 0;  /* alias */
 
   /* ── Shadows ── */
   --shadow:         0 2px 16px rgba(15,25,35,0.10);
@@ -105,10 +105,10 @@
   --modal-blur:          blur(8px);
 
   /* ── Radius tokens for shapes outside the standard scale ── */
-  --radius-pill:   99px;
-  --radius-sheet:  24px;
-  --radius-option: 18px;
-  --radius-circle: 50%;
+  --radius-pill:   0;
+  --radius-sheet:  0;
+  --radius-option: 0;
+  --radius-circle: 0;
 
   /* ── Chrome ── */
   --header-bg:  rgba(255,255,255,0.92);
@@ -375,7 +375,7 @@ input[type="number"] { -moz-appearance: textfield; }
 
 .welcome-orb {
   position: absolute;
-  border-radius: 50%;
+  border-radius: 0;
   opacity: 0.5;
   pointer-events: none;
 }
@@ -515,7 +515,7 @@ input[type="number"] { -moz-appearance: textfield; }
   top: 0; left: 20%; right: 20%;
   height: 2px;
   background: var(--accent);
-  border-radius: 0 0 2px 2px;
+  border-radius: 0;
   opacity: 0;
   transition: opacity 0.2s;
 }
