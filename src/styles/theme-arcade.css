@@ -1930,11 +1930,7 @@ select.log-input:focus {
 
 html,
 body {
-  background:
-    linear-gradient(90deg, rgba(23, 75, 255, 0.16) 2px, transparent 2px 30px),
-    linear-gradient(rgba(23, 75, 255, 0.12) 2px, transparent 2px 30px),
-    linear-gradient(180deg, #020510 0%, #050816 30%, #0a1433 70%, #122050 100%);
-  background-size: 60px 60px, 60px 60px, auto;
+  background: #0b1740;
 }
 
 body::before {
@@ -1942,17 +1938,7 @@ body::before {
 }
 
 body::after {
-  content: "";
-  display: block;
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.018) 50%, rgba(0, 0, 0, 0.03) 50%);
-  background-size: 100% 4px;
-  mix-blend-mode: screen;
-  opacity: 0.35;
+  background: none;
 }
 
 .welcome-orb {
