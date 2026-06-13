@@ -20,7 +20,7 @@
   --bg: #050816;
   --surface: #081235;
   --surface2: #0f1d4f;
-  --border: #2b6dff;
+  --border: #2e4d80;
   --accent: #ffd84d;
   --accent-alt: #ff4fa3;
   --accent2: #47d7ff;
@@ -420,7 +420,7 @@ body::after {
   border: 2px solid #2b6dff !important;
   background: var(--surface-card) !important;
   color: var(--text) !important;
-  box-shadow: 4px 4px 0 var(--shadow-ink) !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
   transition: transform 0.12s steps(2), background-color 0.12s steps(2), border-color 0.12s steps(2);
 }
 
@@ -475,7 +475,7 @@ body::after {
   background: #050d27 !important;
   color: #7a8fb8 !important;
   border-color: #2b3f6a !important;
-  box-shadow: 3px 3px 0 var(--shadow-ink) !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
 }
 
 .del-btn.danger {
@@ -562,9 +562,9 @@ body::after {
 .admin-log-week-display,
 .admin-log-player-wrap,
 .admin-log-player-card {
-  border: 2px solid #2b6dff !important;
+  border: 2px solid var(--card-border-color) !important;
   background: var(--surface-card) !important;
-  box-shadow: 4px 4px 0 var(--shadow-ink) !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
 }
 
 .admin-log-week-display {
@@ -602,7 +602,7 @@ body::after {
   border-radius: 0 !important;
   border: 2px solid #2348b3 !important;
   background: #0f1f56 !important;
-  box-shadow: 4px 4px 0 var(--shadow-ink) !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
 }
 
 .admin-log-player-toggle.expanded {
@@ -635,7 +635,7 @@ body::after {
   border-top: 0 !important;
   border-radius: 0 !important;
   background: #07122f !important;
-  box-shadow: 4px 4px 0 var(--shadow-ink) !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
 }
 
 .admin-log-player-name {
@@ -675,7 +675,7 @@ body::after {
   border-color: var(--accent) !important;
   box-shadow:
     0 0 10px rgba(255, 216, 77, 0.45),
-    4px 4px 0 #050816 !important;
+    2px 2px 0 #050816 !important;
 }
 
 .bottom-nav {
@@ -814,8 +814,8 @@ body::after {
 .board-comp-menu {
   background:
     linear-gradient(180deg, rgba(12, 25, 70, 0.98), rgba(7, 15, 41, 0.98));
-  border: 2px solid #2b6dff !important;
-  box-shadow: 4px 4px 0 var(--shadow-ink) !important;
+  border: 2px solid var(--card-border-color) !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
   padding: 6px;
 }
 
@@ -824,7 +824,7 @@ body::after {
   border: 2px solid transparent !important;
   color: var(--text) !important;
   background: var(--surface-card) !important;
-  box-shadow: 3px 3px 0 var(--shadow-ink);
+  box-shadow: 2px 2px 0 var(--shadow-ink);
   font-family: "VT323", monospace;
   font-size: 24px;
   letter-spacing: 0.8px;
@@ -888,7 +888,7 @@ select.log-input {
 select.log-input:focus {
   border-color: var(--accent2) !important;
   background: #0d2060 !important;
-  box-shadow: 4px 4px 0 var(--shadow-ink), 0 0 0 2px rgba(71, 215, 255, 0.22) !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink), 0 0 0 2px rgba(71, 215, 255, 0.22) !important;
 }
 
 .board-comp-picker.open .board-comp-trigger::after,
@@ -947,13 +947,13 @@ select.log-input:focus {
 .dash-profile-card {
   background:
     linear-gradient(180deg, rgba(16, 30, 85, 0.98), rgba(7, 15, 41, 0.98)) !important;
-  border: 2px solid #2b6dff !important;
+  border: 2px solid var(--card-border-color) !important;
 }
 
 .admin-edit-group {
   background:
     linear-gradient(180deg, rgba(16, 30, 85, 0.98), rgba(7, 15, 41, 0.98)) !important;
-  border: 2px solid #2b6dff !important;
+  border: 2px solid var(--card-border-color) !important;
   box-shadow: var(--shadow) !important;
 }
 
@@ -978,7 +978,7 @@ select.log-input:focus {
 .dash-profile-stat {
   background: var(--surface-card) !important;
   border: 2px solid #2348b3 !important;
-  box-shadow: 4px 4px 0 var(--shadow-ink) !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
 }
 
 .dash-profile-stat-value {
@@ -995,7 +995,7 @@ select.log-input:focus {
   border: 2px solid #2b6dff !important;
   background: var(--surface-lift) !important;
   color: #fff2a8 !important;
-  box-shadow: 4px 4px 0 var(--shadow-ink) !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
 }
 
 .avatar {
@@ -1003,7 +1003,7 @@ select.log-input:focus {
   border: 2px solid #47d7ff;
   background:
     linear-gradient(180deg, #17307d, #0c173c);
-  box-shadow: 3px 3px 0 var(--shadow-ink);
+  box-shadow: 2px 2px 0 var(--shadow-ink);
 }
 
 .avatar-placeholder {
@@ -1091,7 +1091,7 @@ select.log-input:focus {
    --modal-overlay-bg, --modal-overlay-heavy, and --modal-blur in :root. */
 
 .app-confirm-content {
-  border: 2px solid #2b6dff !important;
+  border: 2px solid var(--card-border-color) !important;
   background:
     linear-gradient(180deg, rgba(16, 30, 85, 0.98), rgba(7, 15, 41, 0.98)) !important;
   box-shadow: var(--shadow) !important;
@@ -1121,7 +1121,7 @@ select.log-input:focus {
   color: #07122f !important;
   border: 2px solid #47d7ff !important;
   border-radius: 0 !important;
-  box-shadow: 3px 3px 0 var(--shadow-ink) !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
 }
 
 .site-banner {
@@ -1230,7 +1230,7 @@ select.log-input:focus {
   background:
     linear-gradient(180deg, rgba(10, 22, 60, 0.98), rgba(6, 13, 36, 0.98)) !important;
   box-shadow:
-    4px 4px 0 #050816,
+    2px 2px 0 #050816,
     inset 0 0 0 2px var(--surface-deep) !important;
 }
 
@@ -1254,9 +1254,9 @@ select.log-input:focus {
   border-color: #ffd6ef !important;
   color: #fff7fb !important;
   box-shadow:
-    3px 3px 0 #050816,
-    inset 2px 2px 0 rgba(255, 255, 255, 0.14),
-    inset -2px -2px 0 rgba(0, 0, 0, 0.32) !important;
+    2px 2px 0 #050816,
+    inset 1px 1px 0 rgba(255, 255, 255, 0.14),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.32) !important;
 }
 
 .admin-comp-filter-count {
@@ -1269,7 +1269,7 @@ select.log-input:focus {
 .history-rate {
   border: 2px solid #52ff98;
   background: #0f3925;
-  box-shadow: 3px 3px 0 var(--shadow-ink);
+  box-shadow: 2px 2px 0 var(--shadow-ink);
 }
 
 .history-rate-value {
@@ -1298,11 +1298,11 @@ select.log-input:focus {
 }
 
 .goal-day-card {
-  border: 2px solid #2b6dff;
+  border: 2px solid var(--card-border-color);
   border-radius: 0;
   background:
     linear-gradient(180deg, rgba(14, 28, 78, 0.98), rgba(8, 16, 46, 0.98));
-  box-shadow: 3px 3px 0 var(--shadow-ink);
+  box-shadow: 2px 2px 0 var(--shadow-ink);
 }
 
 .goal-day-name {
@@ -1331,8 +1331,8 @@ select.log-input:focus {
   color: #5f86f3;
   text-shadow: none;
   box-shadow:
-    inset 2px 2px 0 rgba(255,255,255,0.04),
-    inset -2px -2px 0 rgba(0,0,0,0.35);
+    inset 1px 1px 0 rgba(255,255,255,0.04),
+    inset -1px -1px 0 rgba(0,0,0,0.35);
 }
 
 .goal-day-input {
@@ -1378,7 +1378,7 @@ select.log-input:focus {
 .admin-tab-btn {
   background: var(--surface-lift) !important;
   border: 2px solid #2b6dff !important;
-  box-shadow: 3px 3px 0 var(--shadow-ink) !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
 }
 
 .admin-tab-bar {
@@ -1413,7 +1413,7 @@ select.log-input:focus {
 
 .admin-tab-btn:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 4px 4px 0 var(--shadow-ink) !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
 }
 
 .admin-tab-btn:active {
@@ -1425,7 +1425,7 @@ select.log-input:focus {
   background: #2c184d !important;
   border-color: var(--accent-alt) !important;
   color: #ffd6ef !important;
-  box-shadow: 4px 4px 0 var(--shadow-ink) !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
 }
 
 @media (max-width: 640px) {
@@ -1453,7 +1453,7 @@ select.log-input:focus {
   .goal-day-card {
     gap: 8px;
     padding: 7px 8px;
-    box-shadow: 3px 3px 0 var(--shadow-ink);
+    box-shadow: 2px 2px 0 var(--shadow-ink);
   }
 
   .goal-day-name {
@@ -1894,7 +1894,7 @@ select.log-input:focus {
   --ui-blur:   none;
   /* Card surface — all card surfaces share one flat dark cabinet color */
   --card-bg:           #0f1f54;
-  --card-border-color: var(--maze-blue-bright);
+  --card-border-color: #2e4d80;
   --pick-comp-bg:      var(--card-bg);
   --admin-tools-bg:    var(--card-bg);
   /* Card shadow — the full double-ring cabinet treatment */
@@ -2081,7 +2081,7 @@ body::after {
   background:
     linear-gradient(90deg, rgba(255, 216, 77, 0.16), transparent 22%),
     linear-gradient(180deg, #102260, #08143d);
-  box-shadow: 5px 5px 0 #050816;
+  box-shadow: 2px 2px 0 #050816;
   /* Ensures the dropdown escapes the leaderboard cards below */
   position: relative;
   z-index: 20;
@@ -2123,16 +2123,16 @@ body::after {
 .btn-secondary,
 .admin-tab-btn {
   box-shadow:
-    4px 4px 0 #050816,
-    inset 2px 2px 0 rgba(255, 255, 255, 0.08),
-    inset -2px -2px 0 rgba(0, 0, 0, 0.32) !important;
+    2px 2px 0 #050816,
+    inset 1px 1px 0 rgba(255, 255, 255, 0.08),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.32) !important;
 }
 
 .week-nav-btn {
   box-shadow:
-    3px 3px 0 #050816,
-    inset 2px 2px 0 rgba(255, 255, 255, 0.08),
-    inset -2px -2px 0 rgba(0, 0, 0, 0.32) !important;
+    2px 2px 0 #050816,
+    inset 1px 1px 0 rgba(255, 255, 255, 0.08),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.32) !important;
 }
 
 .log-btn,
@@ -2162,9 +2162,9 @@ body::after {
   letter-spacing: 1.2px;
   text-shadow: none !important;
   box-shadow:
-    5px 5px 0 #050816,
-    inset 2px 2px 0 rgba(255, 255, 255, 0.22),
-    inset -3px -3px 0 rgba(0, 0, 0, 0.28),
+    2px 2px 0 #050816,
+    inset 1px 1px 0 rgba(255, 255, 255, 0.22),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.28),
     0 0 18px rgba(255, 216, 77, 0.35) !important;
 }
 
@@ -2206,8 +2206,8 @@ body::after {
     linear-gradient(180deg, #030716, #07122f) !important;
   box-shadow:
     inset 0 0 0 2px #050816,
-    inset 4px 4px 0 rgba(0, 0, 0, 0.38),
-    3px 3px 0 #050816 !important;
+    inset 1px 1px 0 rgba(0, 0, 0, 0.38),
+    2px 2px 0 #050816 !important;
 }
 
 .log-input:focus,
@@ -2258,7 +2258,7 @@ body::after {
 
 .avatar {
   box-shadow:
-    3px 3px 0 #050816,
+    2px 2px 0 #050816,
     0 0 0 3px var(--surface-mid),
     0 0 14px rgba(71, 215, 255, 0.2);
 }
@@ -2394,11 +2394,7 @@ body::after {
   .admin-log-player-card,
   .goal-day-card,
   .dash-profile-card {
-    box-shadow:
-      0 0 0 3px var(--surface-deep),
-      0 0 0 5px var(--maze-blue),
-      5px 5px 0 rgba(0, 0, 0, 0.62),
-      0 0 18px rgba(71, 215, 255, 0.14) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
   }
 }
 
@@ -2412,9 +2408,9 @@ body::after {
   color: #fff2f4 !important;
   text-shadow: none !important;
   box-shadow:
-    4px 4px 0 #050816,
-    inset 2px 2px 0 rgba(255, 255, 255, 0.08),
-    inset -2px -2px 0 rgba(0, 0, 0, 0.34),
+    2px 2px 0 #050816,
+    inset 1px 1px 0 rgba(255, 255, 255, 0.08),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.34),
     0 0 12px rgba(255, 93, 115, 0.18) !important;
 }
 
@@ -2433,7 +2429,7 @@ body::after {
   transform: translate(2px, 2px);
   box-shadow:
     1px 1px 0 #050816,
-    inset 2px 2px 0 rgba(0, 0, 0, 0.28) !important;
+    inset 1px 1px 0 rgba(0, 0, 0, 0.28) !important;
 }
 
 button:disabled,
@@ -2464,8 +2460,8 @@ button.btn-disabled,
   text-shadow: none !important;
   box-shadow:
     2px 2px 0 #050816,
-    inset 2px 2px 0 rgba(255, 255, 255, 0.03),
-    inset -2px -2px 0 rgba(0, 0, 0, 0.38) !important;
+    inset 1px 1px 0 rgba(255, 255, 255, 0.03),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.38) !important;
 }
 
 button:disabled:hover,
@@ -2494,7 +2490,7 @@ button.btn-disabled:hover,
 }
 
 .board-card {
-  border-color: var(--maze-blue-bright) !important;
+  border-color: var(--card-border-color) !important;
 }
 
 .board-card::before {
@@ -2505,10 +2501,8 @@ button.btn-disabled:hover,
 }
 
 .board-card.rank-1 {
-  border-color: var(--maze-blue-bright) !important;
-  box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.50),
-    0 0 14px rgba(255, 216, 77, 0.12) !important;
+  border-color: var(--card-border-color) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
 }
 
 .board-card.rank-1::before {
@@ -2519,7 +2513,7 @@ button.btn-disabled:hover,
 }
 
 .board-card.rank-2 {
-  border-color: var(--maze-blue-bright) !important;
+  border-color: var(--card-border-color) !important;
 }
 
 .board-card.rank-2::before {
@@ -2529,7 +2523,7 @@ button.btn-disabled:hover,
 }
 
 .board-card.rank-3 {
-  border-color: var(--maze-blue-bright) !important;
+  border-color: var(--card-border-color) !important;
 }
 
 .board-card.rank-3::before {
@@ -2571,7 +2565,7 @@ button.btn-disabled:hover,
   line-height: 1.25;
   letter-spacing: 0.8px !important;
   text-align: center;
-  box-shadow: 4px 4px 0 #8e5f00 !important;
+  box-shadow: 2px 2px 0 #8e5f00 !important;
 }
 
 .board-card.tie-card {
@@ -2627,7 +2621,7 @@ button.btn-disabled:hover,
   border-radius: 0 !important;
   box-shadow:
     0 0 0 4px #050816,
-    8px 8px 0 rgba(0, 0, 0, 0.7),
+    2px 2px 0 rgba(0, 0, 0, 0.7),
     0 0 28px rgba(71, 215, 255, 0.18) !important;
   color: #d8e7ff;
 }
@@ -2667,7 +2661,7 @@ button.btn-disabled:hover,
   border-radius: 0;
   background: #08133b;
   border: 2px solid #2348b3;
-  box-shadow: 4px 4px 0 #050816;
+  box-shadow: 2px 2px 0 #050816;
 }
 
 .ended-podium-players {
@@ -2755,7 +2749,7 @@ button.btn-disabled:hover,
   border-radius: 0;
   background: #07122f;
   border: 2px solid #2348b3;
-  box-shadow: 3px 3px 0 #050816;
+  box-shadow: 2px 2px 0 #050816;
 }
 
 .ended-rank-num,
@@ -2776,7 +2770,7 @@ button.btn-disabled:hover,
   background: #ffd84d;
   color: #050816;
   border: 2px solid #fff2a8;
-  box-shadow: 4px 4px 0 #8e5f00;
+  box-shadow: 2px 2px 0 #8e5f00;
   font-family: "Press Start 2P", monospace;
   font-size: 10px;
 }
@@ -2887,9 +2881,9 @@ button.btn-disabled:hover,
   color: #06102b !important;
   text-shadow: none !important;
   box-shadow:
-    4px 4px 0 #050816,
-    inset 2px 2px 0 rgba(255, 255, 255, 0.28),
-    inset -2px -2px 0 rgba(0, 0, 0, 0.22) !important;
+    2px 2px 0 #050816,
+    inset 1px 1px 0 rgba(255, 255, 255, 0.28),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.22) !important;
 }
 .log-btn:not(.btn-ghost):not(.btn-locked):not(.btn-disabled):not(.admin-danger-btn):hover,
 .welcome-start-btn:hover,
@@ -2921,9 +2915,9 @@ button.btn-disabled:hover,
   color: var(--text2) !important;
   text-shadow: none !important;
   box-shadow:
-    4px 4px 0 #050816,
-    inset 2px 2px 0 rgba(255, 255, 255, 0.06),
-    inset -2px -2px 0 rgba(0, 0, 0, 0.3) !important;
+    2px 2px 0 #050816,
+    inset 1px 1px 0 rgba(255, 255, 255, 0.06),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.3) !important;
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -2936,7 +2930,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   filter: brightness(0.88) !important;
   box-shadow:
     1px 1px 0 #050816,
-    inset 2px 2px 0 rgba(0, 0, 0, 0.32),
+    inset 1px 1px 0 rgba(0, 0, 0, 0.32),
     inset -1px -1px 0 rgba(255, 255, 255, 0.05) !important;
   transition: none !important;
 }
@@ -3106,7 +3100,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   height: 16px;
   background: #020813;
   border: 2px solid #1e3a8f;
-  box-shadow: inset 0 0 0 2px #050816, 3px 3px 0 #050816;
+  box-shadow: inset 0 0 0 2px #050816, 2px 2px 0 #050816;
   overflow: hidden;
   margin-bottom: 12px;
   opacity: 0;
@@ -3267,7 +3261,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   display: block;
   margin: 0 auto;
   filter:
-    drop-shadow(3px 3px 0 #050816)
+    drop-shadow(2px 2px 0 #050816)
     drop-shadow(0 0 18px rgba(71, 215, 255, 0.55));
 }
 
@@ -3496,7 +3490,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   box-shadow:
     0 0 0 4px var(--surface-deep),
     0 0 0 7px var(--maze-blue),
-    8px 8px 0 rgba(0, 0, 0, 0.62),
+    2px 2px 0 rgba(0, 0, 0, 0.62),
     0 0 24px rgba(71, 215, 255, 0.45) !important;
 }
 
