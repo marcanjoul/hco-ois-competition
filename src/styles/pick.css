@@ -604,9 +604,11 @@
   align-items: center;
   justify-content: center;
   min-width: 52px;
-  padding: 3px 5px;
-  border-radius: 0;
-  background: rgba(26,111,244,0.14);
+  padding: 3px 8px;
+  border: 2px solid var(--accent);
+  border-radius: 4px;
+  background: var(--surface-card, var(--surface));
+  box-shadow: 2px 2px 0 var(--shadow-ink, rgba(15,25,35,0.18));
   color: var(--accent);
   font-family: var(--type-label-family);
   font-size: 9px;
