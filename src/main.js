@@ -2708,18 +2708,29 @@ function renderAdminPlayersList() {
       rightPart.appendChild(makeBtn("Delete", "del-btn danger", async () => {
         const confirmed = await showAppConfirm({
           title: "Delete Player Permanently",
-          message: `Permanently delete "${player.name}"? This erases their logged history and removes them from all leaderboards. This cannot be undone.`,
-          confirmLabel: "Delete Permanently",
+          message: `Permanently delete "${player.name}"? This removes them from all leaderboards and competition history. This cannot be undone.`,
+          confirmLabel: "Delete",
           confirmClassName: "log-btn admin-danger-btn",
         });
         if (!confirmed) return;
-        // Wipe the player's logs across every competition so they leave all
-        // leaderboards and no orphaned data is left behind, then delete the player.
-        await Promise.all(
-          Object.keys(state.logs || {}).map(compId => remove(ref(db, `logs/${compId}/${id}`)))
+        // Best-effort: try to wipe the player's logs in every competition,
+        // one date-leaf at a time (the backend may restrict broader writes to
+        // the logs tree). This must not block the actual delete (allSettled).
+        await Promise.allSettled(
+          Object.keys(state.logs || {}).flatMap(compId => {
+            const dates = state.logs[compId]?.[id];
+            if (!dates) return [];
+            return Object.keys(dates).map(date => remove(ref(db, `logs/${compId}/${id}/${date}`)));
+          })
         );
-        await remove(dbRef.player(id));
-        showToast(`"${player.name}" deleted`);
+        // Removing the player record is what drops them from every leaderboard.
+        try {
+          await remove(dbRef.player(id));
+          showToast(`"${player.name}" deleted`);
+        } catch (err) {
+          console.error("Failed to delete player", err);
+          showToast("Couldn't delete player — check permissions");
+        }
       }));
       item.appendChild(rightPart);
 
