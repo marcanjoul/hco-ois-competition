@@ -80,13 +80,9 @@ body {
 
 body::before {
   background:
-    linear-gradient(90deg, rgba(71, 215, 255, 0.08) 0 2px, transparent 2px 100%),
-    linear-gradient(rgba(71, 215, 255, 0.08) 0 2px, transparent 2px 100%),
-    radial-gradient(circle at 15% 18%, rgba(255, 216, 77, 0.18) 0 8px, transparent 8px 100%),
-    radial-gradient(circle at 85% 24%, rgba(255, 79, 163, 0.14) 0 10px, transparent 10px 100%),
-    radial-gradient(circle at 26% 78%, rgba(82, 255, 152, 0.14) 0 8px, transparent 8px 100%),
-    radial-gradient(circle at 76% 76%, rgba(255, 154, 60, 0.13) 0 10px, transparent 10px 100%);
-  background-size: 32px 32px, 32px 32px, auto, auto, auto, auto;
+    linear-gradient(90deg, rgba(71, 215, 255, 0.04) 0 2px, transparent 2px 100%),
+    linear-gradient(rgba(71, 215, 255, 0.04) 0 2px, transparent 2px 100%);
+  background-size: 32px 32px, 32px 32px;
   opacity: 1;
 }
 
@@ -182,9 +178,7 @@ textarea {
 
 .pick-bg-stripe {
   height: 260px;
-  background:
-    radial-gradient(circle at center, rgba(255, 216, 77, 0.12), transparent 55%),
-    linear-gradient(180deg, rgba(43, 109, 255, 0.22), transparent);
+  background: none;
 }
 
 .pick-inner,
@@ -707,7 +701,7 @@ body::after {
   gap: 0;
   justify-content: center;
   border: 2px solid #2348b3 !important;
-  background: linear-gradient(180deg, #102260, #0a1641) !important;
+  background: #11215c !important;
   box-shadow: inset 0 -3px 0 rgba(0,0,0,0.24) !important;
 }
 
@@ -732,7 +726,7 @@ body::after {
 }
 
 .nav-btn.active {
-  background: linear-gradient(180deg, #2c184d, #180f33) !important;
+  background: #241340 !important;
   border-color: var(--accent-alt) !important;
   transform: none;
 }
@@ -1267,8 +1261,7 @@ select.log-input:focus {
 }
 
 .admin-comp-filter-btn.active {
-  background:
-    linear-gradient(180deg, #ff4fa3 0%, #8a2be8 100%) !important;
+  background: #b23ab5 !important;
   border-color: #ffd6ef !important;
   color: #fff7fb !important;
   box-shadow:
@@ -1909,11 +1902,11 @@ select.log-input:focus {
   --surface-lift: #13266c;
   --surface-card: #101e55;
   /* Chrome — drives header/nav background and blur without overrides */
-  --header-bg: linear-gradient(180deg, rgba(7,16,46,0.98), rgba(8,18,53,0.98));
-  --nav-bg:    linear-gradient(180deg, rgba(7,16,46,0.98), rgba(8,18,53,0.98));
+  --header-bg: #081232;
+  --nav-bg:    #081232;
   --ui-blur:   none;
-  /* Card surface — all card surfaces collapse to the same dark cabinet gradient */
-  --card-bg:           linear-gradient(180deg, rgba(18,38,108,0.98), rgba(7,15,41,0.99));
+  /* Card surface — all card surfaces share one flat dark cabinet color */
+  --card-bg:           #0f1f54;
   --card-border-color: var(--maze-blue-bright);
   --pick-comp-bg:      var(--card-bg);
   --admin-tools-bg:    var(--card-bg);
@@ -1937,21 +1930,14 @@ select.log-input:focus {
 html,
 body {
   background:
-    radial-gradient(circle at 20% 16%, rgba(255, 216, 77, 0.16) 0 5px, transparent 6px),
-    radial-gradient(circle at 80% 12%, rgba(255, 79, 163, 0.18) 0 6px, transparent 7px),
-    radial-gradient(circle at 16% 78%, rgba(71, 215, 255, 0.16) 0 5px, transparent 6px),
-    linear-gradient(90deg, rgba(23, 75, 255, 0.22) 2px, transparent 2px 30px),
-    linear-gradient(rgba(23, 75, 255, 0.18) 2px, transparent 2px 30px),
+    linear-gradient(90deg, rgba(23, 75, 255, 0.16) 2px, transparent 2px 30px),
+    linear-gradient(rgba(23, 75, 255, 0.12) 2px, transparent 2px 30px),
     linear-gradient(180deg, #020510 0%, #050816 30%, #0a1433 70%, #122050 100%);
-  background-size: auto, auto, auto, 60px 60px, 60px 60px, auto;
+  background-size: 60px 60px, 60px 60px, auto;
 }
 
 body::before {
-  background:
-    radial-gradient(circle, rgba(255, 241, 166, 0.72) 0 2px, transparent 3px) 15px 15px / 30px 30px,
-    linear-gradient(90deg, transparent 0 12px, rgba(71, 215, 255, 0.08) 12px 14px, transparent 14px 100%) 0 0 / 60px 60px,
-    linear-gradient(transparent 0 12px, rgba(71, 215, 255, 0.08) 12px 14px, transparent 14px 100%) 0 0 / 60px 60px;
-  opacity: 0.42;
+  background: none;
 }
 
 body::after {
@@ -2177,8 +2163,7 @@ body::after {
 .log-btn,
 .pick-success-cta,
 .welcome-start-btn {
-  background:
-    linear-gradient(180deg, #ffe56f 0%, #ffd84d 50%, #ff9a3c 100%) !important;
+  background: #ffd84d !important;
   color: #06102b !important;
   border-color: #fff2a8 !important;
   text-shadow: none !important;
@@ -2221,16 +2206,14 @@ body::after {
 .nav-btn.active,
 .name-btn-winner,
 .admin-tab-btn.active {
-  background:
-    linear-gradient(180deg, #ff4fa3 0%, #8a2be8 100%) !important;
+  background: #b23ab5 !important;
   border-color: #ffd6ef !important;
   color: #fff7fb !important;
 }
 
 .day-btn.logged,
 .btn-locked {
-  background:
-    linear-gradient(180deg, #0f5f3b, #0a2f20) !important;
+  background: #0d4f31 !important;
   border-color: #52ff98 !important;
 }
 
@@ -2945,7 +2928,7 @@ button.btn-disabled:hover,
 .board-empty-cta,
 .competition-ended-board-btn,
 .pick-success-cta {
-  background: linear-gradient(180deg, #ffe56f 0%, #ffd84d 52%, #e8960c 100%) !important;
+  background: #ffd84d !important;
   border-color: #fff2a8 !important;
   color: #06102b !important;
   text-shadow: none !important;
@@ -2979,7 +2962,7 @@ button.btn-disabled:hover,
 .btn-secondary,
 .admin-log-player-card:not(.active):not(.has-log),
 .admin-action-edit {
-  background: linear-gradient(180deg, #152870, #0a1641) !important;
+  background: #11215c !important;
   border-color: #2b6dff !important;
   color: #8fd7ff !important;
   text-shadow: 1px 1px 0 #050816 !important;
