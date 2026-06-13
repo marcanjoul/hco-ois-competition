@@ -2705,6 +2705,22 @@ function renderAdminPlayersList() {
       rightPart.appendChild(makeBtn("Restore", "del-btn", async () => {
         await update(dbRef.player(id), { inactive: false, removedAt: null });
       }));
+      rightPart.appendChild(makeBtn("Delete", "del-btn danger", async () => {
+        const confirmed = await showAppConfirm({
+          title: "Delete Player Permanently",
+          message: `Permanently delete "${player.name}"? This erases their logged history and removes them from all leaderboards. This cannot be undone.`,
+          confirmLabel: "Delete Permanently",
+          confirmClassName: "log-btn admin-danger-btn",
+        });
+        if (!confirmed) return;
+        // Wipe the player's logs across every competition so they leave all
+        // leaderboards and no orphaned data is left behind, then delete the player.
+        await Promise.all(
+          Object.keys(state.logs || {}).map(compId => remove(ref(db, `logs/${compId}/${id}`)))
+        );
+        await remove(dbRef.player(id));
+        showToast(`"${player.name}" deleted`);
+      }));
       item.appendChild(rightPart);
 
       pastList.appendChild(item);
