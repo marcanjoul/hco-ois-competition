@@ -1671,8 +1671,11 @@ select.log-input:focus {
   }
 
   .log-card-title {
-    margin-bottom: 20px;
     font-size: 20px;
+  }
+
+  .log-card-body-inner {
+    padding-top: 20px;
   }
 
   .screen-top-bar {
