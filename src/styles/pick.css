@@ -928,6 +928,42 @@
   line-height: 1;
 }
 
+/* Collapsible INSERT OIS card */
+.log-card-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.log-card-toggle-chevron {
+  font-size: 14px;
+  color: var(--text3);
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+#pick-log-card.collapsed .log-card-toggle-chevron {
+  transform: rotate(-90deg);
+}
+
+.log-card-body {
+  overflow: hidden;
+  max-height: 2000px;
+  opacity: 1;
+  transition: max-height 0.3s ease, opacity 0.25s ease;
+}
+
+#pick-log-card.collapsed .log-card-body {
+  max-height: 0;
+  opacity: 0;
+}
+
 /* Form steps — always visible; dimmed until a player is selected */
 #pick-form-steps {
   display: block;
