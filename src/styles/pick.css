@@ -48,7 +48,7 @@
   width: 40px;
   height: 40px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 20px;
+  font-size: 23px;
   font-weight: 900;
   color: var(--text) !important;
   font-family: var(--type-heading-family);
@@ -915,45 +915,134 @@
   box-shadow: var(--shadow-card);
 }
 
-#pick-log-card {
-  /* Initially only shows player selector, rest reveals after selection */
-}
-
-.log-card-title {
-  font-family: var(--type-heading-family);
-  font-size: 22px;
-  letter-spacing: 1px;
-  color: var(--text);
-  line-height: 1;
-}
-
-/* Collapsible INSERT OIS card */
-.log-card-toggle {
+/* ── OIS FLOW: trigger button + connector lines + step cards ── */
+.pick-ois-flow {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+}
+
+.ois-trigger-btn {
   width: 100%;
   min-height: 52px;
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  text-align: left;
-  line-height: 1;
-}
-
-.log-card-toggle-chevron {
-  font-size: 18px;
-  color: var(--text3);
-  transition: transform 280ms cubic-bezier(0.23, 1, 0.32, 1);
-  flex-shrink: 0;
-  line-height: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
+  padding: 0 var(--space-4);
+  background: var(--accent);
+  border: 1px solid var(--border);
+  color: #fff;
+  font-family: var(--type-heading-family);
+  font-weight: 1000;
+  font-size: 20px;
+  letter-spacing: 1px;
+  line-height: 1;
+  text-shadow: 0.5px 0 currentColor, -0.5px 0 currentColor;
+  cursor: pointer;
+  transition: transform 160ms ease-out;
 }
 
-#pick-log-card.collapsed .log-card-toggle-chevron {
-  transform: rotate(-90deg);
+.ois-trigger-btn:active {
+  transform: scale(0.98);
+}
+
+.pick-ois-flow:not(.collapsed) .ois-trigger-btn {
+  transform: translateY(2px);
+}
+
+.ois-step {
+  display: none;
+}
+
+.pick-ois-flow[data-ois-step="1"] .ois-step[data-ois-panel="1"],
+.pick-ois-flow[data-ois-step="2"] .ois-step[data-ois-panel="2"],
+.pick-ois-flow[data-ois-step="3"] .ois-step[data-ois-panel="3"] {
+  display: block;
+  animation: ois-step-enter 220ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.pick-ois-flow[data-ois-step="success"] .ois-step {
+  display: none;
+}
+
+@keyframes ois-step-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Vertical connector: glows from top down, dims when the step below is locked */
+.ois-connector {
+  width: 2px;
+  height: 28px;
+  margin: 0 auto;
+  background: linear-gradient(
+    to bottom,
+    rgba(71, 215, 255, 0.75) 0%,
+    rgba(71, 215, 255, 0.06) 100%
+  );
+}
+
+/* Step card: matches the base .log-card aesthetic */
+.ois-step-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  box-shadow: var(--shadow-card);
+}
+
+.ois-step-card .pick-step-header {
+  margin-bottom: var(--space-3);
+}
+
+.ois-step-shell {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 42px;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ois-step-arrow {
+  position: static;
+  width: 42px;
+  height: 52px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  z-index: 1;
+}
+
+.ois-step-arrow:disabled {
+  opacity: 0;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.ois-step-arrow-placeholder {
+  pointer-events: none;
+  opacity: 0;
+}
+
+@media (max-width: 560px) {
+  .ois-step-shell {
+    grid-template-columns: 34px minmax(0, 1fr) 34px;
+    gap: 6px;
+  }
+
+  .ois-step-card {
+    padding: var(--space-3);
+  }
+
+  .ois-step-arrow {
+    width: 34px;
+    height: 48px;
+    font-size: 18px;
+  }
 }
 
 /* Grid trick: animates actual content height, not a fake max-height.
@@ -971,7 +1060,6 @@
 .log-card-body-inner {
   overflow: hidden;
   min-height: 0;
-  padding-top: var(--space-4);
   opacity: 1;
   transition: opacity 200ms cubic-bezier(0.23, 1, 0.32, 1);
 }
@@ -980,7 +1068,8 @@
   opacity: 0;
 }
 
-/* Form steps — always visible; dimmed until a player is selected */
+/* Form logic remains locked until a player is selected. Hidden panels are still
+   controlled by data-ois-step above so users only see one step at a time. */
 #pick-form-steps {
   display: block;
   transition: opacity 0.2s ease;

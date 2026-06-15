@@ -126,77 +126,125 @@
 
       <div id="site-banner" class="site-banner" style="display:none"></div>
 
-      <!-- LOG CARD
-           Example on the website: the large "INSERT OIS" card.
+      <!-- OIS FLOW
+           The trigger button + stemmed step cards connected by a glowing line.
+           Starts collapsed; expands when user taps INSERT OIS.
       -->
-      <article class="log-card" id="pick-log-card">
-        <button class="log-card-title log-card-toggle" id="pick-card-toggle" type="button" aria-expanded="true">
-          <span>INSERT OIS</span>
-          <span class="log-card-toggle-chevron">▼</span>
+      <article id="pick-log-card" class="pick-ois-flow collapsed" data-ois-step="1">
+
+        <button class="ois-trigger-btn" id="pick-card-toggle" type="button" aria-expanded="false" aria-controls="pick-card-body">
+          INSERT OIS
         </button>
 
         <div class="log-card-body" id="pick-card-body">
           <div class="log-card-body-inner">
 
-          <!-- Step 1: Name -->
-          <h3 class="pick-step-header pick-step-header-first">
-            <span class="pick-step-num">1</span>
-            <span class="pick-step-label">Search Player</span>
-          </h3>
-          <div class="pick-search-wrap" id="pick-search-wrap">
-            <input
-              type="text"
-              id="pick-player-search"
-              class="log-input"
-              placeholder="Type your name..."
-              autocomplete="off"
-              autocorrect="off"
-              autocapitalize="words"
-              spellcheck="false"
-              aria-label="Search for your name"
-            />
-            <div id="pick-player-results" class="pick-player-results"></div>
-          </div>
-          <div id="pick-player-profile" style="display:none"></div>
+            <div class="ois-step" data-ois-panel="1">
+              <!-- Connector: trigger → step 1 -->
+              <div class="ois-connector" aria-hidden="true"></div>
 
-          <!-- Steps 2+3: revealed after name selection -->
-          <form id="pick-form-steps" class="steps-locked" novalidate>
-            <h3 class="pick-step-header pick-step-header-form">
-              <span class="pick-step-num">2</span>
-              <span class="pick-step-label">Pick the day</span>
-            </h3>
-            <div class="day-row" id="pick-day-row"></div>
+              <div class="ois-step-shell">
+                <span class="ois-step-arrow ois-step-arrow-placeholder" aria-hidden="true"></span>
 
-            <div id="pick-step-3" class="pick-step-3 step-3-locked">
-              <h3 class="pick-step-header pick-step-header-form">
-                <span class="pick-step-num">3</span>
-                <span class="pick-step-label">Enter Sales & Hours</span>
-              </h3>
-              <div class="log-fields">
-                <div class="log-field-wrap">
-                  <label class="field-label" for="pick-input-sales">SALES($)</label>
-                  <input type="number" id="pick-input-sales" class="log-input" placeholder="0.00" min="0" step="0.01" inputmode="decimal" />
+                <!-- Step 1 -->
+                <div class="ois-step-card">
+                  <h3 class="pick-step-header">
+                    <span class="pick-step-num">1</span>
+                    <span class="pick-step-label">Search Player</span>
+                  </h3>
+                  <div class="pick-search-wrap" id="pick-search-wrap">
+                    <input
+                      type="text"
+                      id="pick-player-search"
+                      class="log-input"
+                      placeholder="Type your name..."
+                      autocomplete="off"
+                      autocorrect="off"
+                      autocapitalize="words"
+                      spellcheck="false"
+                      aria-label="Search for your name"
+                    />
+                    <div id="pick-player-results" class="pick-player-results"></div>
+                  </div>
+                  <div id="pick-player-profile" style="display:none"></div>
                 </div>
-                <div class="log-field-wrap">
-                  <label class="field-label" for="pick-input-hours">HOURS WORKED</label>
-                  <input type="number" id="pick-input-hours" class="log-input" placeholder="0.0" min="0" step="0.5" inputmode="decimal" />
+
+                <button type="button" class="pick-info-btn ois-step-arrow ois-step-arrow-right" data-ois-next="2" aria-label="Go to day step">→</button>
+              </div>
+            </div>
+
+            <!-- Steps 2+3: unlocked after player selected -->
+            <form id="pick-form-steps" class="steps-locked" novalidate>
+
+              <div class="ois-step" data-ois-panel="2">
+                <!-- Connector: step 1 → step 2 (dims with form when locked) -->
+                <div class="ois-connector" aria-hidden="true"></div>
+
+                <div class="ois-step-shell">
+                  <button type="button" class="pick-info-btn ois-step-arrow ois-step-arrow-left" data-ois-back="1" aria-label="Go back to player step">←</button>
+
+                  <!-- Step 2 -->
+                  <div class="ois-step-card">
+                    <h3 class="pick-step-header">
+                      <span class="pick-step-num">2</span>
+                      <span class="pick-step-label">Pick the day</span>
+                    </h3>
+                    <div class="day-row" id="pick-day-row"></div>
+                  </div>
+
+                  <button type="button" class="pick-info-btn ois-step-arrow ois-step-arrow-right" data-ois-next="3" aria-label="Go to sales and hours step">→</button>
                 </div>
               </div>
-              <button type="button" class="log-btn btn-ghost" id="pick-btn-log" disabled>ADD OIS</button>
-              <p id="pick-log-locked-msg" class="log-locked-note">ASK A MANAGER TO EDIT</p>
-            </div>
-          </form>
 
-          <!-- Success state -->
-          <section id="pick-success-state" class="pick-success-state">
-            <h3 class="pick-success-title">OIS ADDED!</h3>
-            <div id="pick-success-stats" class="pick-success-stats"></div>
-            <button class="pick-success-cta" id="pick-success-board-btn">VIEW LEADERBOARD →</button>
-          </section>
+              <!-- Step 3: unlocked after day selected -->
+              <div id="pick-step-3" class="pick-step-3 step-3-locked">
+
+                <div class="ois-step" data-ois-panel="3">
+                  <!-- Connector: step 2 → step 3 (dims with step-3 when locked) -->
+                  <div class="ois-connector" aria-hidden="true"></div>
+
+                  <div class="ois-step-shell">
+                    <button type="button" class="pick-info-btn ois-step-arrow ois-step-arrow-left" data-ois-back="2" aria-label="Go back to day step">←</button>
+
+                    <!-- Step 3 -->
+                    <div class="ois-step-card">
+                      <h3 class="pick-step-header">
+                        <span class="pick-step-num">3</span>
+                        <span class="pick-step-label">Enter Sales & Hours</span>
+                      </h3>
+                      <div class="log-fields">
+                        <div class="log-field-wrap">
+                          <label class="field-label" for="pick-input-sales">SALES($)</label>
+                          <input type="number" id="pick-input-sales" class="log-input" placeholder="0.00" min="0" step="0.01" inputmode="decimal" />
+                        </div>
+                        <div class="log-field-wrap">
+                          <label class="field-label" for="pick-input-hours">HOURS WORKED</label>
+                          <input type="number" id="pick-input-hours" class="log-input" placeholder="0.0" min="0" step="0.5" inputmode="decimal" />
+                        </div>
+                      </div>
+                      <button type="button" class="log-btn btn-ghost" id="pick-btn-log" disabled>ADD OIS</button>
+                      <p id="pick-log-locked-msg" class="log-locked-note">ASK A MANAGER TO EDIT</p>
+                    </div>
+
+                    <span class="ois-step-arrow ois-step-arrow-placeholder" aria-hidden="true"></span>
+                  </div>
+                </div>
+
+              </div><!-- /#pick-step-3 -->
+
+            </form>
+
+            <!-- Success state -->
+            <section id="pick-success-state" class="pick-success-state">
+              <h3 class="pick-success-title">OIS ADDED!</h3>
+              <div id="pick-success-stats" class="pick-success-stats"></div>
+              <button class="pick-success-cta" id="pick-success-board-btn">VIEW LEADERBOARD →</button>
+            </section>
 
           </div><!-- /.log-card-body-inner -->
         </div><!-- /.log-card-body -->
-      </article>
+
+      </article><!-- /#pick-log-card -->
 
       <!-- Legacy hidden elements -->
       <div class="search-wrap hidden">
