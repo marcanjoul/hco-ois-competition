@@ -999,7 +999,7 @@ function resetPickPlayerSelection({ openGrid = false } = {}) {
 
   const selectorBtn = document.getElementById("pick-player-selector");
   if (selectorBtn) {
-    selectorBtn.textContent = "Choose player";
+    selectorBtn.textContent = "Select";
     selectorBtn.classList.remove("has-selection", "open");
   }
 
@@ -3163,16 +3163,31 @@ function refreshAdminDayView() {
     dayContainer.appendChild(btn);
   });
 
-  dayContainer.appendChild(makeBtn("→", "week-nav-btn", () => {
+  // Dim the week arrows at the competition bounds: can't go before the start,
+  // and can't go past today or the competition end (no loggable days there).
+  const adminToday = getTodayDate();
+  const upperBound = (comp.endDate && comp.endDate < adminToday) ? comp.endDate : adminToday;
+  const prevDisabled = !!comp.startDate && week.startDate <= comp.startDate;
+  const nextDisabled = week.endDate >= upperBound;
+
+  const nextBtn = makeBtn("→", "week-nav-btn", () => {
     state.admin.selectedDate = clampCompetitionDate(nextWeek(state.admin.selectedDate));
     state.admin.selectedPlayer = null;
     refreshAdminDayView();
-  }));
-  document.getElementById("admin-prev-week-btn").onclick = () => {
-    state.admin.selectedDate = clampCompetitionDate(prevWeek(state.admin.selectedDate));
-    state.admin.selectedPlayer = null;
-    refreshAdminDayView();
-  };
+  });
+  if (nextDisabled) nextBtn.disabled = true;
+  dayContainer.appendChild(nextBtn);
+
+  const adminPrevBtn = document.getElementById("admin-prev-week-btn");
+  if (prevDisabled) {
+    adminPrevBtn.disabled = true;
+  } else {
+    adminPrevBtn.onclick = () => {
+      state.admin.selectedDate = clampCompetitionDate(prevWeek(state.admin.selectedDate));
+      state.admin.selectedPlayer = null;
+      refreshAdminDayView();
+    };
+  }
 
   const autoBtnIndex = week.days.findIndex(d => d.date === state.admin.selectedDate) + 1;
   const autoBtn = dayContainer.children[autoBtnIndex];

@@ -499,8 +499,8 @@ body::after {
 
 .pick-info-btn {
   background: var(--accent) !important;
-  border-color: #9e7b14 !important;
-  color: #1054ae !important;
+  border-color: #2b6dff !important;
+  color: #4A5E78 !important;
   font-family: "VT323", monospace !important;
   font-size: 38px !important;
   font-weight: 900;
