@@ -621,8 +621,7 @@
 #pick-player-profile { margin-bottom: var(--space-3); }
 
 .pick-selected-player-card {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
   gap: 10px;
   padding: 8px 10px;
@@ -633,11 +632,12 @@
 }
 
 .pick-selected-avatar-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
   flex-shrink: 0;
+}
+
+.pick-selected-player-copy {
+  flex: 1;
+  min-width: 0;
 }
 
 .avatar-pick-large {
@@ -829,13 +829,13 @@
 }
 
 .pick-selected-clear-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-circle);
-  background: var(--surface);
-  border: 1px solid rgba(15,25,35,0.08);
+  width: 28px;
+  height: 28px;
+  border-radius: 0;
+  background: transparent;
+  border: 1px solid var(--border);
   color: var(--text2);
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 800;
   display: flex;
   align-items: center;
@@ -935,6 +935,16 @@
 }
 #pick-form-steps.steps-locked {
   opacity: 0.3;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Step 3 locked until a day is picked */
+.pick-step-3 {
+  transition: opacity 0.2s ease;
+}
+.pick-step-3.step-3-locked {
+  opacity: 0.35;
   pointer-events: none;
   user-select: none;
 }

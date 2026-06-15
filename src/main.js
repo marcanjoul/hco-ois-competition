@@ -716,6 +716,8 @@ function renderPickDayRow() {
         state.selectedDate = dayInfo.date;
         renderPickDayRow();
         updatePickLogBtnState();
+        const step3 = document.getElementById("pick-step-3");
+        if (step3) step3.classList.remove("step-3-locked");
       };
     } else {
       btn.disabled = true;
@@ -723,10 +725,13 @@ function renderPickDayRow() {
     dayRow.appendChild(btn);
   });
 
-  // Dim/disable the week arrows when there are no loggable days beyond the
-  // current week: can't go before the competition start, can't go past today.
+  // Dim prev when already at the competition start week.
+  // Dim next only when the entire next week falls outside the competition window.
+  const compEnd = state.competitions[state.currentComp]?.endDate;
+  const upperBound = compEnd || today;
+  const nextWeekStart = getWeekForDate(nextWeek(state.selectedDate)).startDate;
   const prevDisabled = !!compStart && week.startDate <= compStart;
-  const nextDisabled = week.endDate >= today;
+  const nextDisabled = nextWeekStart > upperBound;
 
   const nextBtn = makeBtn("→", "week-nav-btn", () => { state.selectedDate = nextWeek(state.selectedDate); renderPickDayRow(); updatePickLogBtnState(); });
   if (nextDisabled) nextBtn.disabled = true;
@@ -981,6 +986,9 @@ function resetPickPlayerSelection({ openGrid = false } = {}) {
   const searchEl = document.getElementById("pick-player-search");
   if (searchEl) searchEl.value = "";
   closePickPlayerResults();
+
+  const step3 = document.getElementById("pick-step-3");
+  if (step3) step3.classList.add("step-3-locked");
 
   const salesInput = document.getElementById("pick-input-sales");
   const hoursInput = document.getElementById("pick-input-hours");
