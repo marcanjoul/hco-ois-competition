@@ -1134,7 +1134,7 @@ select.log-input:focus {
 .admin-section-title,
 .admin-log-header-name,
 .pick-step-label {
-  color: var(#ffffff);
+  color: #ffffff;
   font-family: "Press Start 2P", monospace;
   text-transform: uppercase;
 }

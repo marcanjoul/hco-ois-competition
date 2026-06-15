@@ -3641,6 +3641,15 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
+  // INSERT OIS collapsible toggle
+  const cardToggle = document.getElementById("pick-card-toggle");
+  if (cardToggle) {
+    cardToggle.onclick = () => {
+      const card = document.getElementById("pick-log-card");
+      if (card) card.classList.toggle("collapsed");
+    };
+  }
+
   // Pick screen player search
   const pickPlayerSearch = document.getElementById("pick-player-search");
   if (pickPlayerSearch) {
