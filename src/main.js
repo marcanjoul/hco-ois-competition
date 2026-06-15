@@ -618,6 +618,9 @@ async function logEntryFromPick() {
   const today = getTodayDate();
   if (state.selectedDate > today) { showToast("Can't log orders in the future"); return; }
 
+  const compStart = state.competitions[state.currentComp]?.startDate;
+  if (compStart && state.selectedDate < compStart) { showToast("Competition hadn't started on that date"); return; }
+
   const existingLog = (state.logs[state.currentComp] || {})[state.currentUser]?.[state.selectedDate];
   if (existingLog && (existingLog.sales > 0 || existingLog.hours > 0)) {
     showToast("OIS Already Added - Manager Can Edit"); return;
@@ -692,21 +695,24 @@ function renderPickDayRow() {
   const myLogs = state.currentUser ? ((state.logs[state.currentComp] || {})[state.currentUser] || {}) : {};
 
   const today = getTodayDate();
+  const compStart = state.competitions[state.currentComp]?.startDate;
   week.days.forEach(dayInfo => {
     const hasEntry = myLogs[dayInfo.date] && (myLogs[dayInfo.date].sales > 0 || myLogs[dayInfo.date].hours > 0);
     const isFutureDate = dayInfo.date > today;
+    const isBeforeStart = compStart && dayInfo.date < compStart;
+    const isDisabled = isFutureDate || isBeforeStart;
     const isToday = dayInfo.date === today;
     const isSelected = state.selectedDate === dayInfo.date;
     const classes = ["day-btn"];
     if (isToday && !isSelected) classes.push("today");
     if (isSelected) classes.push("active");
     if (hasEntry) classes.push("logged");
-    if (isFutureDate) classes.push("disabled");
+    if (isDisabled) classes.push("disabled");
     const btn = document.createElement("button");
     btn.className = classes.join(" ");
     btn.innerHTML = `<div class="day-btn-dayname">${dayInfo.dayName}</div><div class="day-btn-date">${dayInfo.dayNum}</div>`;
 
-    if (!isFutureDate) {
+    if (!isDisabled) {
       btn.onclick = () => {
         state.selectedDate = dayInfo.date;
         renderPickDayRow();
@@ -718,8 +724,21 @@ function renderPickDayRow() {
     dayRow.appendChild(btn);
   });
 
-  dayRow.appendChild(makeBtn("→", "week-nav-btn", () => { state.selectedDate = nextWeek(state.selectedDate); renderPickDayRow(); updatePickLogBtnState(); }));
-  document.getElementById("pick-prev-week-btn").onclick = () => { state.selectedDate = prevWeek(state.selectedDate); renderPickDayRow(); updatePickLogBtnState(); };
+  // Dim/disable the week arrows when there are no loggable days beyond the
+  // current week: can't go before the competition start, can't go past today.
+  const prevDisabled = !!compStart && week.startDate <= compStart;
+  const nextDisabled = week.endDate >= today;
+
+  const nextBtn = makeBtn("→", "week-nav-btn", () => { state.selectedDate = nextWeek(state.selectedDate); renderPickDayRow(); updatePickLogBtnState(); });
+  if (nextDisabled) nextBtn.disabled = true;
+  dayRow.appendChild(nextBtn);
+
+  const prevBtn = document.getElementById("pick-prev-week-btn");
+  if (prevDisabled) {
+    prevBtn.disabled = true;
+  } else {
+    prevBtn.onclick = () => { state.selectedDate = prevWeek(state.selectedDate); renderPickDayRow(); updatePickLogBtnState(); };
+  }
 }
 
 function updatePickLogBtnState() {
