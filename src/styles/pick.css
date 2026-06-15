@@ -924,7 +924,6 @@
   font-size: 22px;
   letter-spacing: 1px;
   color: var(--text);
-  margin-bottom: var(--space-6);
   line-height: 1;
 }
 
@@ -934,33 +933,50 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  min-height: 52px;
   background: transparent;
   border: none;
   padding: 0;
   cursor: pointer;
   text-align: left;
+  line-height: 1;
 }
 
 .log-card-toggle-chevron {
-  font-size: 14px;
+  font-size: 18px;
   color: var(--text3);
-  transition: transform 0.25s ease;
+  transition: transform 280ms cubic-bezier(0.23, 1, 0.32, 1);
   flex-shrink: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 #pick-log-card.collapsed .log-card-toggle-chevron {
   transform: rotate(-90deg);
 }
 
+/* Grid trick: animates actual content height, not a fake max-height.
+   Easing applies to real pixel values so the curve feels correct. */
 .log-card-body {
-  overflow: hidden;
-  max-height: 2000px;
-  opacity: 1;
-  transition: max-height 0.3s ease, opacity 0.25s ease;
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 280ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 #pick-log-card.collapsed .log-card-body {
-  max-height: 0;
+  grid-template-rows: 0fr;
+}
+
+.log-card-body-inner {
+  overflow: hidden;
+  min-height: 0;
+  padding-top: var(--space-4);
+  opacity: 1;
+  transition: opacity 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+#pick-log-card.collapsed .log-card-body-inner {
   opacity: 0;
 }
 
