@@ -500,13 +500,13 @@ body::after {
 .pick-info-btn {
   background: var(--accent) !important;
   border-color: #2b6dff !important;
-  color: #4A5E78 !important;
+  color: #ffffff !important;
   font-family: "VT323", monospace !important;
   font-size: 38px !important;
   font-weight: 900;
   line-height: 1;
   text-transform: none !important;
-  text-shadow: none;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.75), 0 0 8px rgba(71, 215, 255, 0.6);
 }
 
 .pick-info-btn:hover {
@@ -1134,7 +1134,7 @@ select.log-input:focus {
 .admin-section-title,
 .admin-log-header-name,
 .pick-step-label {
-  color: var(--accent);
+  color: var(#ffffff);
   font-family: "Press Start 2P", monospace;
   text-transform: uppercase;
 }
@@ -3255,10 +3255,19 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 .pick-selected-player-name {
   font-size: 20px !important;
 }
+/* Edit-photo pill: hidden — avatar button itself is tappable to edit */
 .pick-avatar-edit-pill {
-  font-size: 8px !important;
-  padding: 2px 4px !important;
-  min-width: 40px !important;
+  display: none !important;
+}
+/* X button: small and minimal, not part of the big arcade button group styling */
+.pick-selected-clear-btn {
+  width: 28px !important;
+  height: 28px !important;
+  background: transparent !important;
+  border: 1px solid #2b6dff !important;
+  box-shadow: none !important;
+  font-size: 11px !important;
+  color: var(--text2) !important;
 }
 
 /* Shrink day-picker row */
