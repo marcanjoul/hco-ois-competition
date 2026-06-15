@@ -679,6 +679,7 @@ async function logEntryFromPick() {
       ${rankHtml}
     `;
   }
+  setOisStep("success");
   if (successState) setTimeout(() => successState.classList.add("visible"), 120);
 
   // Flip the logged day chip to green immediately
@@ -718,6 +719,8 @@ function renderPickDayRow() {
         updatePickLogBtnState();
         const step3 = document.getElementById("pick-step-3");
         if (step3) step3.classList.remove("step-3-locked");
+        updateOisArrowState();
+        setOisStep(3);
       };
     } else {
       btn.disabled = true;
@@ -743,6 +746,7 @@ function renderPickDayRow() {
   } else {
     prevBtn.onclick = () => { state.selectedDate = prevWeek(state.selectedDate); renderPickDayRow(); updatePickLogBtnState(); };
   }
+  syncPickStep3Lock();
 }
 
 function updatePickLogBtnState() {
@@ -801,6 +805,61 @@ function updatePickLogBtnState() {
     btn.disabled = !ready;
     btn.classList.toggle("btn-ghost", !ready);
   }
+}
+
+function setOisStep(step) {
+  const card = document.getElementById("pick-log-card");
+  const trigger = document.getElementById("pick-card-toggle");
+  const successState = document.getElementById("pick-success-state");
+  if (!card) return;
+
+  card.dataset.oisStep = String(step);
+  card.classList.remove("collapsed");
+  if (trigger) trigger.setAttribute("aria-expanded", "true");
+  if (successState && String(step) !== "success") successState.classList.remove("visible");
+  updateOisArrowState();
+}
+
+function collapseOisFlow() {
+  const card = document.getElementById("pick-log-card");
+  const trigger = document.getElementById("pick-card-toggle");
+  if (!card) return;
+
+  card.classList.add("collapsed");
+  if (trigger) trigger.setAttribute("aria-expanded", "false");
+  updateOisArrowState();
+}
+
+function canEnterOisStep(step) {
+  if (Number(step) === 2) return !!state.currentUser;
+  if (Number(step) === 3) {
+    const step3 = document.getElementById("pick-step-3");
+    return !!state.currentUser && !step3?.classList.contains("step-3-locked");
+  }
+  return true;
+}
+
+function isSelectedPickDateLoggable() {
+  const today = getTodayDate();
+  const comp = state.competitions[state.currentComp];
+  const selectedDate = state.selectedDate;
+  if (!selectedDate || selectedDate > today) return false;
+  if (comp?.startDate && selectedDate < comp.startDate) return false;
+  if (comp?.endDate && selectedDate > comp.endDate) return false;
+  return true;
+}
+
+function updateOisArrowState() {
+  document.querySelectorAll("[data-ois-next]").forEach(btn => {
+    btn.disabled = !canEnterOisStep(btn.dataset.oisNext);
+  });
+}
+
+function syncPickStep3Lock() {
+  const step3 = document.getElementById("pick-step-3");
+  if (!step3) return;
+  step3.classList.toggle("step-3-locked", !state.currentUser || !isSelectedPickDateLoggable());
+  updateOisArrowState();
 }
 // ══════════════════════════════════════════════════════
 function renderPickScreen(filterText = "") {
@@ -974,9 +1033,16 @@ function enterAsDashboard(playerId) {
     formSteps.classList.remove("steps-locked");
   }
 
+  const step3 = document.getElementById("pick-step-3");
+  if (step3) {
+    step3.classList.toggle("step-3-locked", !isSelectedPickDateLoggable());
+  }
+
   showSelectedPlayerProfile(playerId, player);
   renderPickDayRow();
   updatePickLogBtnState();
+  updateOisArrowState();
+  setOisStep(2);
 }
 
 function resetPickPlayerSelection({ openGrid = false } = {}) {
@@ -1014,6 +1080,8 @@ function resetPickPlayerSelection({ openGrid = false } = {}) {
 
   hideSelectedPlayerProfile();
   renderPickDayRow();
+  updateOisArrowState();
+  setOisStep(1);
   if (openGrid) focusElementSoon(searchEl, { preventScroll: true });
   updatePickLogBtnState();
 }
@@ -3662,9 +3730,30 @@ document.addEventListener("DOMContentLoaded", () => {
   if (cardToggle) {
     cardToggle.onclick = () => {
       const card = document.getElementById("pick-log-card");
-      if (card) card.classList.toggle("collapsed");
+      if (!card) return;
+      if (card.classList.contains("collapsed")) {
+        setOisStep(1);
+      } else {
+        collapseOisFlow();
+      }
     };
   }
+
+  document.querySelectorAll("[data-ois-back]").forEach(btn => {
+    btn.addEventListener("click", () => setOisStep(btn.dataset.oisBack));
+  });
+
+  document.querySelectorAll("[data-ois-next]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const nextStep = btn.dataset.oisNext;
+      if (canEnterOisStep(nextStep)) setOisStep(nextStep);
+    });
+  });
+
+  document.querySelectorAll("[data-ois-close]").forEach(btn => {
+    btn.addEventListener("click", collapseOisFlow);
+  });
+  updateOisArrowState();
 
   // Pick screen player search
   const pickPlayerSearch = document.getElementById("pick-player-search");
