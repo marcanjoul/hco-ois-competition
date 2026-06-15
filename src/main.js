@@ -978,11 +978,10 @@ function enterAsDashboard(playerId) {
   const successState = document.getElementById("pick-success-state");
   if (successState) successState.classList.remove("visible");
 
-  // Reveal form steps with animation
   const formSteps = document.getElementById("pick-form-steps");
   if (formSteps) {
-    formSteps.style.display = "block";
-    formSteps.classList.add("revealed");
+    formSteps.style.display = "";
+    formSteps.classList.remove("steps-locked");
   }
 
   showSelectedPlayerProfile(playerId, player);
@@ -1028,8 +1027,8 @@ function resetPickPlayerSelection({ openGrid = false } = {}) {
 
   const formSteps = document.getElementById("pick-form-steps");
   if (formSteps) {
-    formSteps.style.display = "none";
-    formSteps.classList.remove("revealed");
+    formSteps.style.display = "";
+    formSteps.classList.add("steps-locked");
   }
 
   const successState = document.getElementById("pick-success-state");

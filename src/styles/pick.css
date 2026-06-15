@@ -874,18 +874,15 @@
   line-height: 1;
 }
 
-/* Form fields that hide before name selection */
+/* Form steps — always visible; dimmed until a player is selected */
 #pick-form-steps {
-  display: none;
-}
-#pick-form-steps.revealed {
   display: block;
-  animation: slide-reveal 0.3s cubic-bezier(0.34,1.2,0.64,1);
+  transition: opacity 0.2s ease;
 }
-
-@keyframes slide-reveal {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+#pick-form-steps.steps-locked {
+  opacity: 0.3;
+  pointer-events: none;
+  user-select: none;
 }
 
 /* ── FIELD LABEL ── */
