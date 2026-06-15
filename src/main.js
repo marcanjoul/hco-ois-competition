@@ -172,12 +172,11 @@ function focusFirstEditablePickInput() {
   focusElementSoon(target, { preventScroll: true });
 }
 
-function closePickPlayerGrid() {
-  const playerGrid = document.getElementById("pick-player-grid");
-  const playerSelectorBtn = document.getElementById("pick-player-selector");
-  if (!playerGrid || playerGrid.classList.contains("hidden")) return;
-  playerGrid.classList.add("hidden");
-  playerSelectorBtn?.classList.remove("open");
+function closePickPlayerResults() {
+  const results = document.getElementById("pick-player-results");
+  if (!results || !results.classList.contains("has-results")) return;
+  results.innerHTML = "";
+  results.classList.remove("has-results");
 }
 
 // ══════════════════════════════════════════════════════
@@ -960,20 +959,6 @@ function enterAsDashboard(playerId) {
 
   const player = state.players[playerId];
 
-  // Update selector button to show name (collapsed style)
-  const selectorWrap = document.querySelector(".pick-player-selector-wrap");
-  const selectorBtn = document.getElementById("pick-player-selector");
-  if (selectorWrap) selectorWrap.classList.add("hidden");
-  if (selectorBtn) {
-    selectorBtn.textContent = "👤 " + (player?.name || "");
-    selectorBtn.classList.add("has-selection");
-    selectorBtn.classList.remove("open");
-  }
-
-  // Hide player grid
-  const playerGrid = document.getElementById("pick-player-grid");
-  if (playerGrid) playerGrid.classList.add("hidden");
-
   // Hide success state if showing from a previous log
   const successState = document.getElementById("pick-success-state");
   if (successState) successState.classList.remove("visible");
@@ -993,24 +978,9 @@ function resetPickPlayerSelection({ openGrid = false } = {}) {
   state.currentUser = null;
   state.selectedDate = getTodayDate();
 
-  const selectorWrap = document.querySelector(".pick-player-selector-wrap");
-  if (selectorWrap) selectorWrap.classList.remove("hidden");
-
-  const selectorBtn = document.getElementById("pick-player-selector");
-  if (selectorBtn) {
-    selectorBtn.textContent = "Select";
-    selectorBtn.classList.remove("has-selection", "open");
-  }
-
-  const playerGrid = document.getElementById("pick-player-grid");
-  if (playerGrid) playerGrid.classList.toggle("hidden", !openGrid);
-
   const searchEl = document.getElementById("pick-player-search");
   if (searchEl) searchEl.value = "";
-  if (openGrid) {
-    renderPickPlayerGrid();
-    focusElementSoon(searchEl, { preventScroll: true });
-  }
+  closePickPlayerResults();
 
   const salesInput = document.getElementById("pick-input-sales");
   const hoursInput = document.getElementById("pick-input-hours");
@@ -1035,20 +1005,18 @@ function resetPickPlayerSelection({ openGrid = false } = {}) {
   if (successState) successState.classList.remove("visible");
 
   hideSelectedPlayerProfile();
+  renderPickDayRow();
+  if (openGrid) focusElementSoon(searchEl, { preventScroll: true });
   updatePickLogBtnState();
 }
 
 function showSelectedPlayerProfile(playerId, player) {
-  let profileCard = document.getElementById("pick-player-profile");
-  if (!profileCard) {
-    profileCard = document.createElement("div");
-    profileCard.id = "pick-player-profile";
-    // Insert right after the selector wrap div
-    const selectorWrap = document.querySelector(".pick-player-selector-wrap");
-    if (selectorWrap && selectorWrap.parentElement) {
-      selectorWrap.parentElement.insertBefore(profileCard, selectorWrap.nextSibling);
-    }
-  }
+  const profileCard = document.getElementById("pick-player-profile");
+  if (!profileCard) return;
+
+  const searchWrap = document.getElementById("pick-search-wrap");
+  if (searchWrap) searchWrap.style.display = "none";
+
   profileCard.style.display = "block";
 
   profileCard.innerHTML = `
@@ -1079,6 +1047,8 @@ function showSelectedPlayerProfile(playerId, player) {
 function hideSelectedPlayerProfile() {
   const profileCard = document.getElementById("pick-player-profile");
   if (profileCard) profileCard.style.display = "none";
+  const searchWrap = document.getElementById("pick-search-wrap");
+  if (searchWrap) searchWrap.style.display = "";
 }
 
 function isIOSDevice() {
@@ -1133,43 +1103,40 @@ function triggerAvatarFileInput(playerId, { accept = "image/*", capture } = {}) 
   fileInput.click();
 }
 
-function renderPickPlayerGrid(filterText = "") {
-  const list = document.getElementById("pick-player-list");
-  const searchInfo = document.getElementById("pick-search-info");
-  if (!list) return;
+function renderPickSearchResults(filterText = "") {
+  const results = document.getElementById("pick-player-results");
+  if (!results) return;
 
-  const activePlayers = Object.entries(state.players).filter(([, player]) => !player.inactive);
-  const filtered = activePlayers
-    .filter(([, player]) => player.name.toLowerCase().includes(filterText.toLowerCase()))
-    .sort(([, a], [, b]) => a.name.localeCompare(b.name));
-
-  if (searchInfo) {
-    if (filterText) {
-      searchInfo.textContent = `${filtered.length} of ${activePlayers.length} players`;
-      searchInfo.classList.remove("hidden");
-    } else {
-      searchInfo.classList.add("hidden");
-    }
+  const trimmed = filterText.trim();
+  if (!trimmed) {
+    results.innerHTML = "";
+    results.classList.remove("has-results");
+    return;
   }
 
-  list.innerHTML = "";
-  const hasLogs = hasLogsInComp(state.currentComp);
-  const players = hasLogs ? getRankedPlayers(state.currentComp) : [];
-  filtered.forEach(([id, player]) => {
-    const rankIdx = players.findIndex(p => p.id === id);
-    const isTopThree = hasLogs && rankIdx >= 0 && rankIdx < 3;
-    const isWinner = state.competitions[state.currentComp]?.winner === id;
-    const safeName = escapeHtml(player.name);
+  const activePlayers = Object.entries(state.players)
+    .filter(([, player]) => !player.inactive)
+    .filter(([, player]) => player.name.toLowerCase().includes(trimmed.toLowerCase()))
+    .sort(([, a], [, b]) => a.name.localeCompare(b.name));
+
+  results.classList.add("has-results");
+
+  if (activePlayers.length === 0) {
+    results.innerHTML = `<div class="pick-search-no-results">No players found</div>`;
+    return;
+  }
+
+  results.innerHTML = "";
+  activePlayers.forEach(([id, player]) => {
     const btn = document.createElement("button");
-    btn.className = `name-btn${isWinner ? " name-btn-winner" : ""}`;
-    btn.innerHTML = `${isTopThree ? getBoardAvatarHtml(player, id, rankIdx + 1) : getAvatarHtml(player, "small", id)} <span>${isWinner ? "🏆 " : ""}${safeName}</span>`;
+    btn.type = "button";
+    btn.className = "pick-result-btn";
+    btn.innerHTML = `${getAvatarHtml(player, "small", id)}<span>${escapeHtml(player.name)}</span>`;
     btn.onclick = () => {
-      // Close the grid before entering dashboard
-      const grid = document.getElementById("pick-player-grid");
-      if (grid) grid.classList.add("hidden");
+      closePickPlayerResults();
       enterAsDashboard(id);
     };
-    list.appendChild(btn);
+    results.appendChild(btn);
   });
 }
 
@@ -3666,35 +3633,14 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // Pick screen player selector
-  const playerSelectorBtn = document.getElementById("pick-player-selector");
-  const playerGrid = document.getElementById("pick-player-grid");
-  if (playerSelectorBtn && playerGrid) {
-    playerSelectorBtn.onclick = () => {
-      const isOpening = playerGrid.classList.contains("hidden");
-      playerGrid.classList.toggle("hidden");
-      playerSelectorBtn.classList.toggle("open", isOpening);
-      if (isOpening) {
-        renderPickPlayerGrid();
-      }
-    };
-    playerSelectorBtn.onkeydown = (e) => {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        if (playerGrid.classList.contains("hidden")) playerSelectorBtn.click();
-        focusElementSoon(document.getElementById("pick-player-search"), { preventScroll: true });
-      }
-    };
-  }
-
   // Pick screen player search
   const pickPlayerSearch = document.getElementById("pick-player-search");
   if (pickPlayerSearch) {
     pickPlayerSearch.oninput = () => {
       clearTimeout(state.searchDebounceTimer);
       state.searchDebounceTimer = setTimeout(() => {
-        renderPickPlayerGrid(pickPlayerSearch.value);
-      }, 150);
+        renderPickSearchResults(pickPlayerSearch.value);
+      }, 120);
     };
   }
 
@@ -3768,22 +3714,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const picker = document.getElementById("board-comp-picker");
     if (picker && !picker.contains(e.target)) closeBoardCompMenu();
 
-    const playerSelectorWrap = document.querySelector(".pick-player-selector-wrap");
-    const playerGrid = document.getElementById("pick-player-grid");
-    if (
-      playerGrid &&
-      !playerGrid.classList.contains("hidden") &&
-      !playerGrid.contains(e.target) &&
-      !playerSelectorWrap?.contains(e.target)
-    ) {
-      closePickPlayerGrid();
+    const playerResults = document.getElementById("pick-player-results");
+    const searchWrap = document.getElementById("pick-search-wrap");
+    if (playerResults?.classList.contains("has-results") && !searchWrap?.contains(e.target)) {
+      closePickPlayerResults();
     }
   });
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       closeBoardCompMenu();
-      closePickPlayerGrid();
+      closePickPlayerResults();
       closeInfoModal();
       closeCompetitionEndedModal();
     }
