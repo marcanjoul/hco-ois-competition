@@ -3590,7 +3590,23 @@ document.addEventListener("DOMContentLoaded", () => {
   // Tapping anywhere on the welcome screen skips immediately.
   function advanceFromBoot() {
     if (state.currentScreen !== "welcome") return;
+
+    // Tag the pick screen so CSS plays the split entrance instead of card-soft-in.
+    const pickScreen = document.getElementById("screen-pick");
+    pickScreen?.classList.add("boot-entering");
+
     showScreen("pick");
+
+    // Stagger the bottom nav buttons up after the cards have landed.
+    const nav = document.getElementById("bottom-nav");
+    if (nav) {
+      nav.classList.add("boot-nav-enter");
+      setTimeout(() => nav.classList.remove("boot-nav-enter"), 1400);
+    }
+
+    // Remove boot-entering after all split animations have finished (~1s total).
+    setTimeout(() => pickScreen?.classList.remove("boot-entering"), 1100);
+
     maybeShowCompetitionEndedModal({ force: true });
   }
 

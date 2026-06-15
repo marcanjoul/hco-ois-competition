@@ -3386,6 +3386,67 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 }
 #screen-pick.active #pick-log-card { animation-delay: 0.12s; }
 
+/* ── Boot → pick split transition ────────────────────────────────────────────
+   Two-act sequence:
+   ACT 1 (0–600ms) — two cards split from the center point of the welcome
+     panel. comp-info unfurls upward (origin: bottom), log-card unfurls
+     downward (origin: top). Same keyframe; transform-origin carries direction.
+     Flash arcs from brightness 12 → 5 → 2 → 1.4 → 1 with full desaturation
+     for 28% of the animation — matches the CRT aesthetic of the boot screen.
+   ACT 2 (580ms+) — nav buttons rise one by one after cards have landed.
+     Crescendo gaps: 120ms then 140ms. Gentle spring so the bounce reads as
+     energy, not noise.
+   ──────────────────────────────────────────────────────────────────────────── */
+#screen-pick.boot-entering {
+  animation: none !important;
+}
+
+#screen-pick.boot-entering .pick-comp-info,
+#screen-pick.boot-entering .pick-comp-skeleton {
+  animation: boot-card-split 0.52s cubic-bezier(0.22, 1, 0.36, 1) both !important;
+  transform-origin: bottom center !important;
+}
+
+#screen-pick.boot-entering #pick-log-card {
+  animation: boot-card-split 0.52s cubic-bezier(0.22, 1, 0.36, 1) 0.09s both !important;
+  transform-origin: top center !important;
+}
+
+/* Info button flicks in as the final small detail of ACT 1 */
+#screen-pick.boot-entering .pick-info-btn {
+  animation: boot-detail-in 0.26s cubic-bezier(0.22, 1, 0.36, 1) 0.50s both !important;
+}
+
+@keyframes boot-card-split {
+  0%   { transform: scaleY(0.004); filter: brightness(12) saturate(0); opacity: 0; }
+  7%   { opacity: 1;               filter: brightness(5) saturate(0); }
+  28%  {                           filter: brightness(2) saturate(0.5); }
+  48%  { transform: scaleY(1.026); filter: brightness(1.4) saturate(1); }
+  72%  { transform: scaleY(0.992); filter: brightness(1); }
+  100% { transform: scaleY(1);     filter: brightness(1); opacity: 1; }
+}
+
+@keyframes boot-detail-in {
+  from { opacity: 0; transform: scale(0.62); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Nav buttons rise from the bottom one by one (crescendo) ──
+   Delayed until ACT 1 is done. Gaps increase (120ms → 140ms) for the build.
+   Spring coefficient 1.25 adds pop without clashing with the flat aesthetic. ── */
+.boot-nav-enter .nav-btn {
+  animation: nav-btn-rise 0.40s cubic-bezier(0.34, 1.25, 0.64, 1) both;
+}
+
+.boot-nav-enter .nav-btn:nth-child(1) { animation-delay: 0.56s; }
+.boot-nav-enter .nav-btn:nth-child(2) { animation-delay: 0.68s; }
+.boot-nav-enter .nav-btn:nth-child(3) { animation-delay: 0.82s; }
+
+@keyframes nav-btn-rise {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ── Admin gate main panel ── */
 #screen-admin-gate.active .admin-gate-body {
   animation: card-soft-in 0.34s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
