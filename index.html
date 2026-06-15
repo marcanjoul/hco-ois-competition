@@ -137,16 +137,21 @@
           <span class="pick-step-num">1</span>
           <span class="pick-step-label">Select Player</span>
         </h3>
-        <div class="pick-player-selector-wrap">
-          <button class="pick-player-selector" id="pick-player-selector">Players</button>
+        <div class="pick-search-wrap" id="pick-search-wrap">
+          <input
+            type="text"
+            id="pick-player-search"
+            class="log-input"
+            placeholder="Type your name..."
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="words"
+            spellcheck="false"
+            aria-label="Search for your name"
+          />
+          <div id="pick-player-results" class="pick-player-results"></div>
         </div>
-        <div id="pick-player-grid" class="pick-player-grid hidden">
-          <div class="search-wrap">
-            <input type="text" id="pick-player-search" class="log-input" placeholder="Search players" autocomplete="off" aria-label="Search players" />
-            <div id="pick-search-info" class="search-results-info hidden"></div>
-          </div>
-          <div id="pick-player-list"></div>
-        </div>
+        <div id="pick-player-profile" style="display:none"></div>
 
       <!-- Steps 2-4: revealed after name selection
            Example on the website: day picker, Sales field, Hours field, and "ADD OIS".

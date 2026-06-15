@@ -744,6 +744,7 @@ body::after {
 }
 
 #pick-player-list .avatar-small,
+#pick-player-results .avatar-small,
 #name-grid .avatar-small {
   width: 38px;
   height: 38px;
@@ -785,6 +786,7 @@ body::after {
 }
 
 #pick-player-list .avatar-small .avatar-placeholder,
+#pick-player-results .avatar-small .avatar-placeholder,
 #name-grid .avatar-small .avatar-placeholder {
   font-size: 17px;
 }
@@ -912,6 +914,28 @@ select.log-input:focus {
   min-height: 42px;
   padding: 7px 10px;
   font-size: 20px;
+}
+
+/* Player inline search results */
+#pick-player-results {
+  background: linear-gradient(180deg, rgba(12, 25, 70, 0.98), rgba(7, 15, 41, 0.98));
+  border: 2px solid #2b6dff !important;
+  border-top: none !important;
+}
+
+.pick-result-btn {
+  font-family: "VT323", monospace;
+  font-size: 24px;
+  letter-spacing: 0.8px;
+  color: var(--accent);
+  border-bottom-color: rgba(46, 77, 128, 0.4);
+  padding: 8px 12px;
+}
+
+.pick-result-btn:hover,
+.pick-result-btn:active {
+  background: rgba(255, 216, 77, 0.1);
+  color: var(--text);
 }
 
 .stat-card.accent,
@@ -1792,6 +1816,7 @@ select.log-input:focus {
   }
 
   #pick-player-list .avatar-small,
+  #pick-player-results .avatar-small,
   #name-grid .avatar-small {
     width: 36px;
     height: 36px;
