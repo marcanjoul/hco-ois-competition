@@ -34,6 +34,9 @@ function getTodayDate() {
 // Think of this as "everything the app currently remembers".
 // Example on the website: which screen is open, who is selected, and which comp is active.
 let _autoSelectAttempted = false;
+// Tracks whether the user has actually tapped a day in step 2 — until they
+// do, no day (including today) should appear pre-selected.
+let _dayExplicitlySelected = false;
 
 function tryAutoSelectPlayer() {
   if (_autoSelectAttempted || state.currentUser) return;
@@ -56,6 +59,7 @@ let state = {
   boardComp: null,        // comp selected on leaderboard
   currentUser: null,
   dashView: "logging",
+  profileReturnScreen: "board", // which screen the back button on a profile view returns to
   selectedDate: getTodayDate(),
   currentScreen: "welcome",
   adminUnlocked: false,
@@ -702,7 +706,7 @@ function renderPickDayRow() {
     const isBeforeStart = compStart && dayInfo.date < compStart;
     const isDisabled = isFutureDate || isBeforeStart;
     const isToday = dayInfo.date === today;
-    const isSelected = state.selectedDate === dayInfo.date;
+    const isSelected = _dayExplicitlySelected && state.selectedDate === dayInfo.date;
     const classes = ["day-btn"];
     if (isToday && !isSelected) classes.push("today");
     if (isSelected) classes.push("active");
@@ -715,12 +719,23 @@ function renderPickDayRow() {
     if (!isDisabled) {
       btn.onclick = () => {
         state.selectedDate = dayInfo.date;
+        _dayExplicitlySelected = true;
         renderPickDayRow();
         updatePickLogBtnState();
         const step3 = document.getElementById("pick-step-3");
         if (step3) step3.classList.remove("step-3-locked");
         updateOisArrowState();
         updateOisSummary(2, `${dayInfo.dayName} ${dayInfo.dayNum}`);
+        const summaryDate2 = document.getElementById("ois-summary-date-2");
+        if (summaryDate2) {
+          summaryDate2.innerHTML = `
+            <div class="day-btn ois-summary-day-btn">
+              <div class="day-btn-dayname">${dayInfo.dayName}</div>
+              <div class="day-btn-date">${dayInfo.dayNum}</div>
+              <span class="ois-summary-pencil" aria-hidden="true">×</span>
+            </div>
+          `;
+        }
         setOisStep(3);
       };
     } else {
@@ -1136,6 +1151,7 @@ function enterAsDashboard(playerId) {
   localStorage.setItem("lastPlayer", playerId);
   state.dashView = "logging";
   state.selectedDate = getTodayDate();
+  _dayExplicitlySelected = false;
 
   // Always start fresh when switching players.
   // (If the selected day already has a log, updatePickLogBtnState will refill and lock these.)
@@ -1167,6 +1183,21 @@ function enterAsDashboard(playerId) {
   updateOisArrowState();
   updateOisSummary(1, player?.name || playerId);
   updateOisSummary(2, "Pick the Day");
+  const summaryAvatar1 = document.getElementById("ois-summary-avatar-1");
+  if (summaryAvatar1) {
+    summaryAvatar1.innerHTML = `
+      <span class="ois-summary-avatar-frame">
+        ${getAvatarHtml(player || { name: playerId }, "small", playerId)}
+        <button type="button" class="ois-summary-clear" aria-label="Clear selected player" title="Clear selected player">×</button>
+      </span>
+      <button type="button" class="ois-summary-view-profile pick-avatar-edit-pill">View profile</button>
+    `;
+  }
+  // Mark step 1 visited directly — entering via auto-select (e.g. on page load)
+  // never passes through setOisStep(1), so its collapsed avatar would otherwise
+  // never become visible.
+  const panel1 = document.querySelector(".ois-step[data-ois-panel='1']");
+  if (panel1) panel1.classList.add("ois-visited");
   // Clear step 3 visited — new player means day+sales need to be re-entered
   const panel3 = document.querySelector(".ois-step[data-ois-panel='3']");
   if (panel3) panel3.classList.remove("ois-visited");
@@ -1176,6 +1207,7 @@ function enterAsDashboard(playerId) {
 function resetPickPlayerSelection({ openGrid = false } = {}) {
   state.currentUser = null;
   state.selectedDate = getTodayDate();
+  _dayExplicitlySelected = false;
 
   const searchEl = document.getElementById("pick-player-search");
   if (searchEl) searchEl.value = "";
@@ -1211,6 +1243,10 @@ function resetPickPlayerSelection({ openGrid = false } = {}) {
   updateOisArrowState();
   updateOisSummary(1, "Search Player");
   updateOisSummary(2, "Pick the Day");
+  const summaryAvatar1 = document.getElementById("ois-summary-avatar-1");
+  if (summaryAvatar1) summaryAvatar1.innerHTML = "";
+  const summaryDate2 = document.getElementById("ois-summary-date-2");
+  if (summaryDate2) summaryDate2.innerHTML = "";
   // Clear visited state for steps 2 and 3 (full reset)
   [2, 3].forEach(i => {
     const panel = document.querySelector(`.ois-step[data-ois-panel="${i}"]`);
@@ -1234,7 +1270,7 @@ function showSelectedPlayerProfile(playerId, player) {
     <div class="pick-selected-player-card">
       <button class="pick-selected-avatar-btn" id="pick-player-avatar-btn" type="button" title="Tap to edit avatar">
         ${getAvatarHtml(player, "pick-large avatar-interactive", playerId)}
-        <span class="pick-avatar-edit-pill">Edit photo</span>
+        <span class="pick-avatar-edit-pill">Edit Avatar</span>
       </button>
       <div class="pick-selected-player-copy">
         <div class="pick-selected-player-name">${escapeHtml(player.name)}</div>
@@ -1389,7 +1425,6 @@ function renderDash() {
     profileBackBtn.id = "dash-profile-back-top";
     profileBackBtn.className = "app-back-btn dash-profile-back-top hidden";
     profileBackBtn.type = "button";
-    profileBackBtn.textContent = "← Back to Leaderboard";
     dashCompInfoEl.parentElement.insertBefore(profileBackBtn, dashCompInfoEl);
   }
   if (!profileCard && dashCompInfoEl?.parentElement) {
@@ -1413,6 +1448,16 @@ function renderDash() {
   if (profileCard) {
     if (isProfileView) {
       const displayRank = myRank > 0 ? myRank : ranked.length + 1;
+      const profileReturn = state.profileReturnScreen === "pick"
+        ? { label: "← Back to Home", screen: "pick" }
+        : { label: "← Back to Leaderboard", screen: "board" };
+      if (profileBackBtn) {
+        profileBackBtn.textContent = profileReturn.label;
+        profileBackBtn.onclick = () => {
+          state.dashView = "logging";
+          showScreen(profileReturn.screen);
+        };
+      }
       profileBackBtn?.classList.remove("hidden");
       profileCard.classList.remove("hidden");
       profileCard.innerHTML = `
@@ -1420,7 +1465,7 @@ function renderDash() {
           <div class="dash-profile-avatar">
             <button class="dash-profile-avatar-btn pick-selected-avatar-btn" id="dash-profile-avatar-btn" type="button" title="Tap to edit avatar">
               ${getBoardAvatarHtml(player, state.currentUser, displayRank)}
-              <span class="pick-avatar-edit-pill">Edit photo</span>
+              <span class="pick-avatar-edit-pill">Edit Avatar</span>
             </button>
           </div>
           <div class="dash-profile-copy">
@@ -1443,17 +1488,13 @@ function renderDash() {
                 <div class="dash-profile-stat-value">${totalHours.toFixed(1)}</div>
               </div>
               <div class="dash-profile-stat">
-                <div class="dash-profile-stat-label"># of Orders</div>
+                <div class="dash-profile-stat-label">OIS Entered</div>
                 <div class="dash-profile-stat-value">${Object.keys(myLogs).length}</div>
               </div>
             </div>
           </div>
         </div>
       `;
-      profileBackBtn.onclick = () => {
-        state.dashView = "logging";
-        showScreen("board");
-      };
       document.getElementById("dash-profile-avatar-btn")?.addEventListener("click", () => {
         promptPickAvatarUpload(state.currentUser);
       });
@@ -1703,6 +1744,7 @@ function renderBoardEndedPodium(compId, body) {
       btn.onclick = () => {
         state.currentUser = player.id;
         state.dashView = "profile";
+        state.profileReturnScreen = "board";
         renderDash();
         showScreen("dash");
       };
@@ -1828,6 +1870,7 @@ function renderBoard() {
     card.onclick = () => {
       state.currentUser = player.id;
       state.dashView = "profile";
+      state.profileReturnScreen = "board";
       renderDash();
       showScreen("dash");
     };
@@ -3291,7 +3334,7 @@ function renderAdminLogs(container) {
   playerDayWrap.className = "admin-log-player-wrap";
   playerDayWrap.innerHTML = `
     <div class="admin-log-player-header">
-      <div class="admin-log-player-title">PLAYERS FOR DAY</div>
+      <div class="admin-log-player-title">PLAYERS FOR THE DAY</div>
     </div>
     <div class="admin-log-player-status" id="admin-logs-player-status"></div>
     <div class="admin-log-player-list" id="admin-logs-player-list"></div>
@@ -3392,7 +3435,7 @@ function refreshAdminDayView() {
       return { id, player, log };
     });
   const loggedCount = playersForDay.filter(p => p.log).length;
-  playerStatus.textContent = loggedCount === 0 ? "No players logged" : "";
+  playerStatus.textContent = loggedCount === 0 ? "No players entered an OIS today" : "";
 
   if (!playersForDay.length) {
     playerList.innerHTML = `<div class="admin-log-empty-state">No players found for this day</div>`;
@@ -3893,6 +3936,34 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("[data-ois-back]").forEach(btn => {
     btn.addEventListener("click", () => setOisStep(btn.dataset.oisBack));
   });
+
+  // Step 1's collapsed summary is a div (not a button) so it can hold nested
+  // buttons: the X clears the selected player, View Profile opens their
+  // profile page. The avatar picture itself is decorative (not clickable).
+  // Anything else in the row falls back to going back to step 1.
+  const summary1 = document.getElementById("ois-summary-1");
+  if (summary1) {
+    summary1.addEventListener("click", (e) => {
+      if (e.target.closest(".ois-summary-clear")) {
+        resetPickPlayerSelection();
+        return;
+      }
+      if (e.target.closest(".ois-summary-view-profile")) {
+        state.dashView = "profile";
+        state.profileReturnScreen = "pick";
+        renderDash();
+        showScreen("dash");
+        return;
+      }
+      if (e.target.closest(".ois-summary-avatar-frame")) {
+        return;
+      }
+      setOisStep(1);
+    });
+    summary1.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); summary1.click(); }
+    });
+  }
 
   document.querySelectorAll("[data-ois-close]").forEach(btn => {
     btn.addEventListener("click", collapseOisFlow);

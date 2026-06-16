@@ -2288,6 +2288,12 @@ body::after {
   border-color: #52ff98 !important;
 }
 
+/* Logged day: ever so slightly dimmed so it doesn't compete with active/today states */
+.day-btn.logged {
+  border-color: #45e085 !important;
+  color: #b8e8cf !important;
+}
+
 .pick-step-num {
   background: var(--power-pellet) !important;
   border-color: #fff2a8 !important;
@@ -2767,7 +2773,7 @@ button.btn-disabled:hover,
   border: 2px solid #2348b3;
   box-shadow: 2px 2px 0 #050816;
   font-family: "Press Start 2P", monospace;
-  font-size: 7px;
+  font-size: 8px;
   color: var(--text2);
 }
 
@@ -2785,7 +2791,7 @@ button.btn-disabled:hover,
   width: 34px;
   min-width: 34px;
   padding-top: 2px;
-  padding-bottom: 3px;
+  padding-bottom: 2px;
 }
 
 .ended-podium-tie .avatar-board {
@@ -2799,7 +2805,7 @@ button.btn-disabled:hover,
   background: #08133b;
   border: 2px solid #2348b3;
   box-shadow: 2px 2px 0 #050816;
-  padding-top: 5px;
+  padding-top: 4px;
 }
 
 .ended-podium-place-1 .ended-podium-riser {
@@ -2818,13 +2824,13 @@ button.btn-disabled:hover,
 .ended-podium-riser-num {
   color: var(--text2);
   font-family: "Press Start 2P", monospace;
-  font-size: 13px;
+  font-size: 12px;
   text-shadow: none;
 }
 
 .ended-podium-place-1 .ended-podium-riser-num {
   color: #ffd84d;
-  font-size: 17px;
+  font-size: 18px;
 }
 
 .ended-podium-place-2 .ended-podium-riser-num {
@@ -3343,10 +3349,6 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 }
 .pick-selected-player-name {
   font-size: 20px !important;
-}
-/* Edit-photo pill: hidden — avatar button itself is tappable to edit */
-.pick-avatar-edit-pill {
-  display: none !important;
 }
 /* X button: small and minimal, not part of the big arcade button group styling */
 .pick-selected-clear-btn {

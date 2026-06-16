@@ -258,7 +258,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
 }
 
 .ended-podium-player .board-avatar-stack {
@@ -269,7 +269,7 @@
 }
 
 .ended-podium-player .board-avatar-stack.rank-1 {
-  padding-top: 9px;
+  padding-top: 8px;
 }
 
 .ended-podium-player .avatar-board {
@@ -281,11 +281,11 @@
 .ended-podium-player .board-avatar-crown {
   width: 18px;
   height: 18px;
-  top: -7px;
+  top: -6px;
 }
 
 .ended-podium-tie-badge {
-  padding: 2px 7px;
+  padding: 2px 8px;
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: var(--radius-xs);
@@ -302,7 +302,7 @@
 }
 
 .ended-podium-tie .ended-podium-player {
-  padding-top: 5px;
+  padding-top: 4px;
   border-top: 1px solid var(--border);
 }
 
@@ -315,13 +315,13 @@
   width: 36px;
   min-width: 36px;
   padding-top: 2px;
-  padding-bottom: 3px;
+  padding-bottom: 2px;
 }
 
 .ended-podium-tie .avatar-board {
   width: 32px;
   height: 32px;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .ended-podium-place-1 { grid-column: 2; }
@@ -333,7 +333,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 5px;
+  padding-top: 4px;
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -352,7 +352,7 @@
 }
 
 .ended-podium-place-3 .ended-podium-riser {
-  height: 30px;
+  height: 32px;
   border-color: var(--bronze);
   border-top-width: 3px;
 }
@@ -392,7 +392,7 @@
 
 .ended-podium-score {
   font-family: var(--type-subheading-family);
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text2);
   white-space: nowrap;
 }
