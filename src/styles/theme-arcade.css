@@ -217,38 +217,59 @@ textarea {
 
 /* INSERT OIS trigger button — arcade CTA style */
 .ois-trigger-btn {
-  background: var(--accent) !important;
-  border: 2px solid var(--accent) !important;
-  color: #101014 !important;
+  border: 2px solid #2b6dff !important;
+  background: var(--surface-card) !important;
+  color: var(--text) !important;
   font-family: "Press Start 2P", monospace !important;
-  font-weight: 1000 !important;
   font-size: 14px !important;
   letter-spacing: 2px !important;
   text-transform: uppercase !important;
-  text-shadow: 0.6px 0 currentColor, -0.6px 0 currentColor, 0 0.6px currentColor !important;
-  transition: transform 0.12s steps(2), box-shadow 0.12s steps(2) !important;
-  box-shadow: 0 5px 0 #8f6c00, 0 0 18px rgba(255, 216, 77, 0.28) !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
+  transition:
+    transform 0.12s steps(2),
+    box-shadow 0.12s steps(2),
+    background-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    min-height 300ms cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 .ois-trigger-btn:hover {
-  box-shadow: 0 4px 0 #8f6c00, 0 0 22px rgba(255, 216, 77, 0.38) !important;
+  transform: translate(-2px, -2px) !important;
 }
 
 .ois-trigger-btn:active {
-  transform: scale(0.97) !important;
-  box-shadow: 0 2px 0 #8f6c00, 0 0 14px rgba(255, 216, 77, 0.24) !important;
+  transform: translate(2px, 2px) !important;
+  box-shadow: 1px 1px 0 var(--shadow-ink) !important;
 }
 
 .pick-ois-flow:not(.collapsed) .ois-trigger-btn {
-  background: #e4b72a !important;
-  transform: translateY(3px) !important;
-  box-shadow: 0 2px 0 #8f6c00, inset 0 2px 0 rgba(0, 0, 0, 0.18), 0 0 12px rgba(255, 216, 77, 0.2) !important;
+  background: #071d82 !important;
+  color: #fff !important;
+  min-height: 40px !important;
+  width: fit-content !important;
+  padding: 0 160px !important;
+  margin: 0 auto !important;
+  transform: translate(2px, 2px) !important;
+  box-shadow: 1px 1px 0 var(--shadow-ink) !important;
 }
 
-.ois-step-arrow:disabled {
-  opacity: 0 !important;
-  cursor: not-allowed !important;
-  pointer-events: none !important;
+/* Collapsed step summary — subtle arcade chip */
+.ois-step-summary {
+  font-family: "Press Start 2P", monospace !important;
+}
+
+.ois-summary-num {
+  background: rgba(71, 215, 255, 0.18) !important;
+  color: rgba(71, 215, 255, 0.7) !important;
+  border: 1px solid rgba(71, 215, 255, 0.3) !important;
+  font-size: 8px !important;
+}
+
+.ois-summary-label {
+  font-size: 8px !important;
+  letter-spacing: 1.5px !important;
+  color: rgba(71, 215, 255, 0.65) !important;
 }
 
 /* Connector line — teal glow, subtle downward fade */

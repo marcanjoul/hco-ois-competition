@@ -139,15 +139,17 @@
         <div class="log-card-body" id="pick-card-body">
           <div class="log-card-body-inner">
 
+            <!-- Step 1: Search Player -->
             <div class="ois-step" data-ois-panel="1">
-              <!-- Connector: trigger → step 1 -->
               <div class="ois-connector" aria-hidden="true"></div>
-
-              <div class="ois-step-shell">
-                <span class="ois-step-arrow ois-step-arrow-placeholder" aria-hidden="true"></span>
-
-                <!-- Step 1 -->
-                <div class="ois-step-card">
+              <div class="ois-step-card" id="ois-card-1">
+                <!-- Collapsed summary: tap to jump back to step 1 -->
+                <button type="button" class="ois-step-summary" data-ois-back="1" aria-label="Go back to search player">
+                  <span class="ois-summary-num">1</span>
+                  <span class="ois-summary-label" id="ois-summary-text-1">Search Player</span>
+                </button>
+                <!-- Full content -->
+                <div class="ois-step-content">
                   <h3 class="pick-step-header">
                     <span class="pick-step-num">1</span>
                     <span class="pick-step-label">Search Player</span>
@@ -168,69 +170,61 @@
                   </div>
                   <div id="pick-player-profile" style="display:none"></div>
                 </div>
-
-                <button type="button" class="pick-info-btn ois-step-arrow ois-step-arrow-right" data-ois-next="2" aria-label="Go to day step">→</button>
               </div>
             </div>
 
             <!-- Steps 2+3: unlocked after player selected -->
             <form id="pick-form-steps" class="steps-locked" novalidate>
 
+              <!-- Step 2: Pick the Day -->
               <div class="ois-step" data-ois-panel="2">
-                <!-- Connector: step 1 → step 2 (dims with form when locked) -->
                 <div class="ois-connector" aria-hidden="true"></div>
-
-                <div class="ois-step-shell">
-                  <button type="button" class="pick-info-btn ois-step-arrow ois-step-arrow-left" data-ois-back="1" aria-label="Go back to player step">←</button>
-
-                  <!-- Step 2 -->
-                  <div class="ois-step-card">
+                <div class="ois-step-card" id="ois-card-2">
+                  <!-- Collapsed summary: tap to jump back to step 2 -->
+                  <button type="button" class="ois-step-summary" data-ois-back="2" aria-label="Go back to pick a day">
+                    <span class="ois-summary-num">2</span>
+                    <span class="ois-summary-label" id="ois-summary-text-2">Pick the Day</span>
+                  </button>
+                  <!-- Full content -->
+                  <div class="ois-step-content">
                     <h3 class="pick-step-header">
                       <span class="pick-step-num">2</span>
-                      <span class="pick-step-label">Pick the day</span>
+                      <span class="pick-step-label">Pick the Day</span>
                     </h3>
                     <div class="day-row" id="pick-day-row"></div>
                   </div>
-
-                  <button type="button" class="pick-info-btn ois-step-arrow ois-step-arrow-right" data-ois-next="3" aria-label="Go to sales and hours step">→</button>
                 </div>
               </div>
 
-              <!-- Step 3: unlocked after day selected -->
-              <div id="pick-step-3" class="pick-step-3 step-3-locked">
-
-                <div class="ois-step" data-ois-panel="3">
-                  <!-- Connector: step 2 → step 3 (dims with step-3 when locked) -->
-                  <div class="ois-connector" aria-hidden="true"></div>
-
-                  <div class="ois-step-shell">
-                    <button type="button" class="pick-info-btn ois-step-arrow ois-step-arrow-left" data-ois-back="2" aria-label="Go back to day step">←</button>
-
-                    <!-- Step 3 -->
-                    <div class="ois-step-card">
-                      <h3 class="pick-step-header">
-                        <span class="pick-step-num">3</span>
-                        <span class="pick-step-label">Enter Sales & Hours</span>
-                      </h3>
-                      <div class="log-fields">
-                        <div class="log-field-wrap">
-                          <label class="field-label" for="pick-input-sales">SALES($)</label>
-                          <input type="number" id="pick-input-sales" class="log-input" placeholder="0.00" min="0" step="0.01" inputmode="decimal" />
-                        </div>
-                        <div class="log-field-wrap">
-                          <label class="field-label" for="pick-input-hours">HOURS WORKED</label>
-                          <input type="number" id="pick-input-hours" class="log-input" placeholder="0.0" min="0" step="0.5" inputmode="decimal" />
-                        </div>
+              <!-- Step 3: Sales & Hours -->
+              <div id="pick-step-3" class="ois-step step-3-locked" data-ois-panel="3">
+                <div class="ois-connector" aria-hidden="true"></div>
+                <div class="ois-step-card" id="ois-card-3">
+                  <!-- Collapsed summary: tap to return to step 3 -->
+                  <button type="button" class="ois-step-summary" data-ois-back="3" aria-label="Go back to sales and hours">
+                    <span class="ois-summary-num">3</span>
+                    <span class="ois-summary-label" id="ois-summary-text-3">Sales & Hours</span>
+                  </button>
+                  <div class="ois-step-content">
+                    <h3 class="pick-step-header">
+                      <span class="pick-step-num">3</span>
+                      <span class="pick-step-label">Sales & Hours</span>
+                    </h3>
+                    <div class="log-fields">
+                      <div class="log-field-wrap">
+                        <label class="field-label" for="pick-input-sales">SALES($)</label>
+                        <input type="number" id="pick-input-sales" class="log-input" placeholder="0.00" min="0" step="0.01" inputmode="decimal" />
                       </div>
-                      <button type="button" class="log-btn btn-ghost" id="pick-btn-log" disabled>ADD OIS</button>
-                      <p id="pick-log-locked-msg" class="log-locked-note">ASK A MANAGER TO EDIT</p>
+                      <div class="log-field-wrap">
+                        <label class="field-label" for="pick-input-hours">HOURS WORKED</label>
+                        <input type="number" id="pick-input-hours" class="log-input" placeholder="0.0" min="0" step="0.5" inputmode="decimal" />
+                      </div>
                     </div>
-
-                    <span class="ois-step-arrow ois-step-arrow-placeholder" aria-hidden="true"></span>
+                    <button type="button" class="log-btn btn-ghost" id="pick-btn-log" disabled>ADD OIS</button>
+                    <p id="pick-log-locked-msg" class="log-locked-note">ASK A MANAGER TO EDIT</p>
                   </div>
                 </div>
-
-              </div><!-- /#pick-step-3 -->
+              </div>
 
             </form>
 

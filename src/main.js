@@ -720,6 +720,7 @@ function renderPickDayRow() {
         const step3 = document.getElementById("pick-step-3");
         if (step3) step3.classList.remove("step-3-locked");
         updateOisArrowState();
+        updateOisSummary(2, `${dayInfo.dayName} ${dayInfo.dayNum}`);
         setOisStep(3);
       };
     } else {
@@ -807,16 +808,40 @@ function updatePickLogBtnState() {
   }
 }
 
+function updateOisSummary(panel, text) {
+  const el = document.getElementById(`ois-summary-text-${panel}`);
+  if (el) el.textContent = text;
+}
+
 function setOisStep(step) {
   const card = document.getElementById("pick-log-card");
   const trigger = document.getElementById("pick-card-toggle");
   const successState = document.getElementById("pick-success-state");
   if (!card) return;
 
+  const nextStep = parseInt(step) || 0;
+
   card.dataset.oisStep = String(step);
   card.classList.remove("collapsed");
   if (trigger) trigger.setAttribute("aria-expanded", "true");
   if (successState && String(step) !== "success") successState.classList.remove("visible");
+
+  // Mark the step as visited; choose animation based on whether it's the first visit
+  if (nextStep >= 1 && nextStep <= 3) {
+    const panelEl = document.querySelector(`.ois-step[data-ois-panel="${nextStep}"]`);
+    const newCard = document.getElementById(`ois-card-${nextStep}`);
+    const isFirstVisit = panelEl && !panelEl.classList.contains("ois-visited");
+
+    if (panelEl) panelEl.classList.add("ois-visited");
+
+    if (newCard) {
+      newCard.classList.remove("ois-entering", "ois-reopening");
+      void newCard.offsetWidth;
+      newCard.classList.add(isFirstVisit ? "ois-entering" : "ois-reopening");
+      setTimeout(() => newCard.classList.remove("ois-entering", "ois-reopening"), 420);
+    }
+  }
+
   updateOisArrowState();
 }
 
@@ -828,6 +853,104 @@ function collapseOisFlow() {
   card.classList.add("collapsed");
   if (trigger) trigger.setAttribute("aria-expanded", "false");
   updateOisArrowState();
+}
+
+function initOisSwipeDismiss() {
+  const logCard = document.getElementById("pick-log-card");
+  if (!logCard) return;
+
+  let swipeState = null;
+
+  function isInteractiveTarget(el) {
+    return !!el.closest("button, input, select, textarea, a, #pick-player-results, .day-row");
+  }
+
+  document.addEventListener("pointerdown", (e) => {
+    if (isInteractiveTarget(e.target)) return;
+    const step = parseInt(logCard.dataset.oisStep) || 0;
+    if (step < 1) return;
+    const card = document.getElementById(`ois-card-${step}`);
+    if (!card || !card.contains(e.target)) return;
+
+    swipeState = {
+      startY: e.clientY,
+      startX: e.clientX,
+      startTime: Date.now(),
+      committed: false,
+      step,
+      card,
+      pointerId: e.pointerId,
+    };
+  }, { passive: true });
+
+  document.addEventListener("pointermove", (e) => {
+    if (!swipeState || e.pointerId !== swipeState.pointerId) return;
+    const dy = e.clientY - swipeState.startY;
+    const dx = e.clientX - swipeState.startX;
+
+    if (!swipeState.committed) {
+      if (Math.abs(dy) < 6 && Math.abs(dx) < 6) return;
+      if (dy > 0 && dy > Math.abs(dx) * 1.2) {
+        swipeState.committed = true;
+      } else {
+        swipeState = null;
+        return;
+      }
+    }
+
+    if (dy <= 0) {
+      swipeState.card.style.transform = "";
+      return;
+    }
+    // Damped follow: resistance increases with distance
+    const damped = Math.pow(dy, 0.68) * 2.6;
+    swipeState.card.style.transform = `translateY(${damped}px)`;
+  }, { passive: true });
+
+  document.addEventListener("pointerup", (e) => {
+    if (!swipeState || e.pointerId !== swipeState.pointerId) {
+      swipeState = null;
+      return;
+    }
+    if (!swipeState.committed) { swipeState = null; return; }
+
+    const dy = e.clientY - swipeState.startY;
+    const elapsed = Math.max(1, Date.now() - swipeState.startTime);
+    const velocity = dy / elapsed; // px/ms
+    const { card, step } = swipeState;
+    swipeState = null;
+
+    if (dy > 55 || velocity > 0.35) {
+      // Commit dismiss: slide card down and out, then go back
+      card.style.transition = "transform 200ms cubic-bezier(0.23,1,0.32,1), opacity 180ms ease-out";
+      card.style.transform = "translateY(60px)";
+      card.style.opacity = "0";
+      setTimeout(() => {
+        card.style.transition = "";
+        card.style.transform = "";
+        card.style.opacity = "";
+        if (step > 1) {
+          setOisStep(step - 1);
+        } else {
+          collapseOisFlow();
+        }
+      }, 210);
+    } else {
+      // Spring back — bouncy easing signals "not enough"
+      card.style.transition = "transform 500ms cubic-bezier(0.34,1.25,0.64,1)";
+      card.style.transform = "";
+      setTimeout(() => { card.style.transition = ""; }, 520);
+    }
+  });
+
+  document.addEventListener("pointercancel", (e) => {
+    if (!swipeState || e.pointerId !== swipeState.pointerId) return;
+    const { card } = swipeState;
+    swipeState = null;
+    card.style.transition = "transform 420ms cubic-bezier(0.34,1.25,0.64,1)";
+    card.style.transform = "";
+    setTimeout(() => { card.style.transition = ""; }, 440);
+  });
 }
 
 function canEnterOisStep(step) {
@@ -1042,6 +1165,11 @@ function enterAsDashboard(playerId) {
   renderPickDayRow();
   updatePickLogBtnState();
   updateOisArrowState();
+  updateOisSummary(1, player?.name || playerId);
+  updateOisSummary(2, "Pick the Day");
+  // Clear step 3 visited — new player means day+sales need to be re-entered
+  const panel3 = document.querySelector(".ois-step[data-ois-panel='3']");
+  if (panel3) panel3.classList.remove("ois-visited");
   setOisStep(2);
 }
 
@@ -1081,6 +1209,13 @@ function resetPickPlayerSelection({ openGrid = false } = {}) {
   hideSelectedPlayerProfile();
   renderPickDayRow();
   updateOisArrowState();
+  updateOisSummary(1, "Search Player");
+  updateOisSummary(2, "Pick the Day");
+  // Clear visited state for steps 2 and 3 (full reset)
+  [2, 3].forEach(i => {
+    const panel = document.querySelector(`.ois-step[data-ois-panel="${i}"]`);
+    if (panel) panel.classList.remove("ois-visited");
+  });
   setOisStep(1);
   if (openGrid) focusElementSoon(searchEl, { preventScroll: true });
   updatePickLogBtnState();
@@ -3734,6 +3869,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (card.classList.contains("collapsed")) {
         setOisStep(1);
       } else {
+        resetPickPlayerSelection();
+        document.querySelectorAll(".ois-step.ois-visited").forEach(el => el.classList.remove("ois-visited"));
         collapseOisFlow();
       }
     };
@@ -3743,17 +3880,11 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => setOisStep(btn.dataset.oisBack));
   });
 
-  document.querySelectorAll("[data-ois-next]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const nextStep = btn.dataset.oisNext;
-      if (canEnterOisStep(nextStep)) setOisStep(nextStep);
-    });
-  });
-
   document.querySelectorAll("[data-ois-close]").forEach(btn => {
     btn.addEventListener("click", collapseOisFlow);
   });
   updateOisArrowState();
+  initOisSwipeDismiss();
 
   // Pick screen player search
   const pickPlayerSearch = document.getElementById("pick-player-search");

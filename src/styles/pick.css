@@ -931,12 +931,10 @@
   background: var(--accent);
   border: 1px solid var(--border);
   color: #fff;
-  font-family: var(--type-heading-family);
-  font-weight: 1000;
-  font-size: 20px;
-  letter-spacing: 1px;
+  font-family: var(--type-title-family);
+  font-size: 18px;
+  letter-spacing: 1.2px;
   line-height: 1;
-  text-shadow: 0.5px 0 currentColor, -0.5px 0 currentColor;
   cursor: pointer;
   transition: transform 160ms ease-out;
 }
@@ -945,37 +943,110 @@
   transform: scale(0.98);
 }
 
-.pick-ois-flow:not(.collapsed) .ois-trigger-btn {
-  transform: translateY(2px);
-}
+/* Step visibility: driven by ois-visited class (added via JS) */
+.ois-step { display: none; }
+.ois-step-summary { display: none; }
+.ois-step-content { display: block; }
 
-.ois-step {
-  display: none;
+/* Any visited step shows as a collapsed chip */
+.ois-step.ois-visited { display: block; }
+.ois-step.ois-visited .ois-step-summary { display: flex; }
+.ois-step.ois-visited .ois-step-content { display: none; }
+.ois-step.ois-visited .ois-step-card {
+  opacity: 0.44;
+  cursor: pointer;
+  transition: opacity 220ms ease;
 }
+.ois-step.ois-visited .ois-step-card:hover { opacity: 0.72; }
+.ois-step.ois-visited .ois-connector { opacity: 0.25; transition: opacity 220ms ease; }
 
+/* Active step: override visited state — higher specificity via .pick-ois-flow */
 .pick-ois-flow[data-ois-step="1"] .ois-step[data-ois-panel="1"],
 .pick-ois-flow[data-ois-step="2"] .ois-step[data-ois-panel="2"],
-.pick-ois-flow[data-ois-step="3"] .ois-step[data-ois-panel="3"] {
-  display: block;
-  animation: ois-step-enter 220ms cubic-bezier(0.23, 1, 0.32, 1);
+.pick-ois-flow[data-ois-step="3"] .ois-step[data-ois-panel="3"] { display: block; }
+
+.pick-ois-flow[data-ois-step="1"] .ois-step[data-ois-panel="1"] .ois-step-summary,
+.pick-ois-flow[data-ois-step="2"] .ois-step[data-ois-panel="2"] .ois-step-summary,
+.pick-ois-flow[data-ois-step="3"] .ois-step[data-ois-panel="3"] .ois-step-summary { display: none; }
+
+.pick-ois-flow[data-ois-step="1"] .ois-step[data-ois-panel="1"] .ois-step-content,
+.pick-ois-flow[data-ois-step="2"] .ois-step[data-ois-panel="2"] .ois-step-content,
+.pick-ois-flow[data-ois-step="3"] .ois-step[data-ois-panel="3"] .ois-step-content { display: block; }
+
+.pick-ois-flow[data-ois-step="1"] .ois-step[data-ois-panel="1"] .ois-step-card,
+.pick-ois-flow[data-ois-step="2"] .ois-step[data-ois-panel="2"] .ois-step-card,
+.pick-ois-flow[data-ois-step="3"] .ois-step[data-ois-panel="3"] .ois-step-card {
+  opacity: 1;
+  cursor: default;
+  transition: opacity 220ms ease;
+}
+.pick-ois-flow[data-ois-step="1"] .ois-step[data-ois-panel="1"] .ois-connector,
+.pick-ois-flow[data-ois-step="2"] .ois-step[data-ois-panel="2"] .ois-connector,
+.pick-ois-flow[data-ois-step="3"] .ois-step[data-ois-panel="3"] .ois-connector { opacity: 1; }
+
+/* Success: hide everything */
+.pick-ois-flow[data-ois-step="success"] .ois-step { display: none !important; }
+
+/* Collapsed summary row */
+.ois-step-summary {
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px var(--space-3);
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
 }
 
-.pick-ois-flow[data-ois-step="success"] .ois-step {
-  display: none;
+.ois-summary-num {
+  width: 16px;
+  height: 16px;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--type-label-family);
+  font-size: 9px;
+  font-weight: var(--type-label-weight);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-@keyframes ois-step-enter {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.ois-summary-label {
+  font-family: var(--type-label-family);
+  font-size: 10px;
+  font-weight: var(--type-label-weight);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* Vertical connector: glows from top down, dims when the step below is locked */
+/* Spring-in animation for newly active step (added via JS on forward nav) */
+.ois-step-card.ois-entering {
+  animation: ois-step-spring 380ms cubic-bezier(0.34, 1.25, 0.64, 1) both;
+}
+
+@keyframes ois-step-spring {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* Revisit animation: step re-expands from collapsed chip state */
+.ois-step-card.ois-reopening {
+  animation: ois-step-reopen 300ms cubic-bezier(0.34, 1.25, 0.64, 1) both;
+}
+
+@keyframes ois-step-reopen {
+  from { opacity: 0.6; transform: scale(0.96); }
+  to   { opacity: 1;   transform: scale(1); }
+}
+
+/* Vertical connector: glows downward */
 .ois-connector {
   width: 2px;
   height: 28px;
@@ -987,62 +1058,21 @@
   );
 }
 
-/* Step card: matches the base .log-card aesthetic */
+/* Step card base */
 .ois-step-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border-color);
   border-radius: var(--radius-sm);
-  padding: var(--space-3);
+  overflow: hidden;
   box-shadow: var(--shadow-card);
+}
+
+.ois-step-content {
+  padding: var(--space-3);
 }
 
 .ois-step-card .pick-step-header {
   margin-bottom: var(--space-3);
-}
-
-.ois-step-shell {
-  display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) 42px;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.ois-step-arrow {
-  position: static;
-  width: 42px;
-  height: 52px;
-  min-width: 0;
-  min-height: 0;
-  padding: 0;
-  z-index: 1;
-}
-
-.ois-step-arrow:disabled {
-  opacity: 0;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-.ois-step-arrow-placeholder {
-  pointer-events: none;
-  opacity: 0;
-}
-
-@media (max-width: 560px) {
-  .ois-step-shell {
-    grid-template-columns: 34px minmax(0, 1fr) 34px;
-    gap: 6px;
-  }
-
-  .ois-step-card {
-    padding: var(--space-3);
-  }
-
-  .ois-step-arrow {
-    width: 34px;
-    height: 48px;
-    font-size: 18px;
-  }
 }
 
 /* Grid trick: animates actual content height, not a fake max-height.
@@ -1068,24 +1098,14 @@
   opacity: 0;
 }
 
-/* Form logic remains locked until a player is selected. Hidden panels are still
-   controlled by data-ois-step above so users only see one step at a time. */
-#pick-form-steps {
-  display: block;
-  transition: opacity 0.2s ease;
-}
+/* Form locked until a player is selected — visibility handled by data-ois-step */
 #pick-form-steps.steps-locked {
-  opacity: 0.3;
   pointer-events: none;
   user-select: none;
 }
 
 /* Step 3 locked until a day is picked */
-.pick-step-3 {
-  transition: opacity 0.2s ease;
-}
-.pick-step-3.step-3-locked {
-  opacity: 0.35;
+.ois-step.step-3-locked {
   pointer-events: none;
   user-select: none;
 }
