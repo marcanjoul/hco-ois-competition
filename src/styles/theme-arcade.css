@@ -473,7 +473,6 @@ body::after {
 .nav-btn,
 .pick-player-selector,
 .pick-info-btn,
-.comp-select,
 .app-header-info-btn,
 .pick-success-cta,
 .admin-action-edit,
@@ -860,7 +859,6 @@ body::after {
 }
 
 .log-input,
-.comp-select,
 #input-pin {
   border-radius: 0 !important;
   border: 2px solid #2b6dff !important;
@@ -872,43 +870,7 @@ body::after {
   letter-spacing: 1px;
 }
 
-.board-comp-picker {
-  max-width: 340px;
-}
-
-.board-comp-trigger {
-  position: relative;
-  padding-right: 44px !important;
-}
-
-.board-comp-menu {
-  background:
-    linear-gradient(180deg, rgba(12, 25, 70, 0.98), rgba(7, 15, 41, 0.98));
-  border: 2px solid var(--card-border-color) !important;
-  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
-  padding: 6px;
-}
-
-.board-comp-option {
-  border-radius: 0 !important;
-  border: 2px solid transparent !important;
-  color: var(--text) !important;
-  background: var(--surface-card) !important;
-  box-shadow: 2px 2px 0 var(--shadow-ink);
-  font-family: "VT323", monospace;
-  font-size: 24px;
-  letter-spacing: 0.8px;
-  padding: 10px 12px;
-}
-
-.board-comp-option:hover,
-.board-comp-option.active {
-  border-color: #47d7ff !important;
-  background: var(--surface-lift) !important;
-}
-
 /* ── Unified dropdown arrow ── */
-.board-comp-trigger::after,
 .pick-player-selector::after {
   content: "▼";
   position: absolute;
@@ -953,7 +915,6 @@ select.log-input {
 }
 
 /* ── Dropdown open/focus state — shared across all three ── */
-.board-comp-picker.open .board-comp-trigger,
 .pick-player-selector.open,
 select.log-input:focus {
   border-color: var(--accent2) !important;
@@ -961,7 +922,6 @@ select.log-input:focus {
   box-shadow: 2px 2px 0 var(--shadow-ink), 0 0 0 2px rgba(71, 215, 255, 0.22) !important;
 }
 
-.board-comp-picker.open .board-comp-trigger::after,
 .pick-player-selector.open::after {
   color: var(--text2);
   text-shadow: none;
@@ -1838,7 +1798,6 @@ select.log-input:focus {
   }
 
   .log-input,
-  .comp-select,
   #input-pin {
     font-size: 20px;
   }
@@ -1847,29 +1806,6 @@ select.log-input:focus {
     min-height: 36px;
     padding: 6px 8px;
     font-size: 17px;
-  }
-
-  .comp-select {
-    flex: 1 1 100%;
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-    padding: 10px 42px 10px 12px !important;
-    font-size: 20px;
-    background-position:
-      calc(100% - 18px) calc(50% - 3px),
-      calc(100% - 10px) calc(50% - 3px) !important;
-    background-size: 7px 7px, 7px 7px !important;
-  }
-
-  .board-comp-picker {
-    flex: 1 1 100%;
-    width: 100%;
-    max-width: none;
-  }
-
-  .board-comp-option {
-    font-size: 20px;
   }
 
   #pick-player-list .name-btn,
@@ -2183,10 +2119,6 @@ body::after {
   z-index: 20;
 }
 
-.board-comp-menu {
-  z-index: 200 !important;
-}
-
 .screen-top-title,
 .log-card-title,
 .history-title,
@@ -2209,7 +2141,6 @@ body::after {
 .nav-btn,
 .pick-player-selector,
 .pick-info-btn,
-.comp-select,
 .app-header-info-btn,
 .pick-success-cta,
 .del-btn,
@@ -2302,7 +2233,6 @@ body::after {
 }
 
 .log-input,
-.comp-select,
 #input-pin {
   background:
     linear-gradient(180deg, #030716, #07122f) !important;
@@ -2313,7 +2243,6 @@ body::after {
 }
 
 .log-input:focus,
-.comp-select:focus,
 #input-pin:focus {
   border-color: var(--power-pellet) !important;
   outline: none;
@@ -3020,7 +2949,6 @@ button.btn-disabled:hover,
 .day-btn:not(.active):not(.logged):not(.disabled),
 .nav-btn:not(.active),
 .pick-player-selector,
-.comp-select,
 .del-btn:not(.danger),
 .mini-btn:not(.btn-ghost),
 .collapsible-toggle,
@@ -3331,7 +3259,6 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 
 /* Shrink all log inputs so they sit below the step headers visually */
 .log-input,
-.comp-select,
 #input-pin {
   font-size: 20px !important;
   padding: 7px 10px !important;
@@ -3635,7 +3562,6 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 }
 
 .log-input:focus-visible,
-.comp-select:focus-visible,
 #input-pin:focus-visible {
   outline: none;
 }

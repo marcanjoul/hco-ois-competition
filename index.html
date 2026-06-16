@@ -235,7 +235,10 @@
             <section id="pick-success-state" class="pick-success-state">
               <h3 class="pick-success-title">OIS ADDED!</h3>
               <div id="pick-success-stats" class="pick-success-stats"></div>
-              <button class="pick-success-cta" id="pick-success-board-btn">VIEW LEADERBOARD →</button>
+              <button class="pick-success-cta" id="pick-success-board-btn">
+                <span class="nav-pixel-icon nav-pixel-icon-board pick-success-cta-icon" aria-hidden="true"></span>
+                VIEW LEADERBOARD
+              </button>
             </section>
 
           </div><!-- /.log-card-body-inner -->
@@ -294,10 +297,9 @@
       <div class="screen-top-bar">
         <h1 class="screen-top-title" id="board-screen-title">LEADERBOARD</h1>
         <div class="board-comp-picker" id="board-comp-picker">
-          <button class="comp-select board-comp-trigger" id="board-comp-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-            Select...
-          </button>
-          <div class="board-comp-menu hidden" id="board-comp-menu" role="listbox" aria-label="Competition selector"></div>
+          <button class="board-comp-arrow" id="board-comp-prev" type="button" aria-label="Previous competition">←</button>
+          <span class="board-comp-name" id="board-comp-name"></span>
+          <button class="board-comp-arrow" id="board-comp-next" type="button" aria-label="Next competition">→</button>
         </div>
       </div>
       <div id="board-no-comps" style="display:none"></div>

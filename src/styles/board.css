@@ -12,7 +12,7 @@
    ──────────────────────────────────────────────────────────────────────────── */
 
 /* Competition selector control
-   Example on the website: the "Select..." dropdown at the top of leaderboard.
+   Example on the website: the "← June-July →" row under the LEADERBOARD title.
 */
 #screen-board .screen-inner {
   padding-top: 10px;
@@ -20,94 +20,63 @@
 
 #screen-board .screen-top-bar {
   padding-top: 10px;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border: 0 !important;
 }
 
-.comp-select {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: var(--space-2) 52px var(--space-2) var(--space-3);
-  font-family: var(--type-body-family);
-  font-size: var(--type-caption-size);
-  font-weight: 700;
-  color: var(--text);
-  outline: none;
-  cursor: pointer;
-  flex: 1;
-  max-width: 200px;
-  transition: all 0.15s;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image:
-    linear-gradient(45deg, transparent 50%, currentColor 50%),
-    linear-gradient(135deg, currentColor 50%, transparent 50%);
-  background-position:
-    calc(100% - 26px) calc(50% - 3px),
-    calc(100% - 18px) calc(50% - 3px);
-  background-size: 8px 8px, 8px 8px;
-  background-repeat: no-repeat;
+/* Kicker treatment: the comp name (board-comp-name) is the real heading now,
+   so this static "LEADERBOARD" label steps back into a small eyebrow. */
+#screen-board .screen-top-title {
+  font-size: 11px !important;
+  letter-spacing: 1px;
+  color: var(--text3) !important;
+  text-shadow: none !important;
 }
-.comp-select:focus { border-color: var(--accent); }
-.comp-select:focus-visible,
-.board-comp-option:focus-visible {
+
+.board-comp-picker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.board-comp-name {
+  font-family: var(--type-body-family);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: center;
+}
+
+.board-comp-arrow {
+  background: transparent;
+  border: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text2);
+  font-family: var(--type-label-family);
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.15s;
+  /* Press Start 2P only ships at regular weight — fake the extra weight with a stroke */
+  text-shadow: 1px 0 0 currentColor, -1px 0 0 currentColor, 0 1px 0 currentColor, 0 -1px 0 currentColor;
+}
+.board-comp-arrow:hover { color: var(--accent); }
+.board-comp-arrow:focus-visible {
   outline: 2px solid var(--accent2);
   outline-offset: 2px;
 }
 
-.board-comp-picker {
-  position: relative;
-  flex: 1;
-  max-width: 200px;
-}
-
-.board-comp-trigger {
-  width: 100%;
-  text-align: left;
-}
-
-.board-comp-menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  right: 0;
-  z-index: 60;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 8px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-lg);
-}
-
-.board-comp-menu.hidden {
-  display: none;
-}
-
-.board-comp-option {
-  width: 100%;
-  padding: 10px 12px;
-  text-align: left;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--radius-xs);
-  color: var(--text);
-  font-family: var(--type-body-family);
-  font-size: 16px;
-  font-weight: 700;
-  transition: all 0.15s;
-}
-
-.board-comp-option:hover,
-.board-comp-option.active {
-  border-color: var(--accent);
-  background: rgba(26,111,244,0.08);
-}
-
 .board-body {
   flex: 1;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-6) var(--space-4) var(--space-3);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -391,13 +360,13 @@
 .past-player-label {
   font-family: var(--type-label-family);
   font-size: 8px;
-  line-height: 1;
+  line-height: 1.5;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   background: rgba(255,255,255,0.12);
   color: var(--text3);
-  padding: 2px 5px;
-  border-radius: 0;
+  padding: 5px 10px;
+  border-radius: 5px;
   margin-left: var(--space-1);
   vertical-align: middle;
 }

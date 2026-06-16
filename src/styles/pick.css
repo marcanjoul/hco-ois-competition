@@ -1021,8 +1021,10 @@
 .pick-ois-flow[data-ois-step="2"] .ois-step[data-ois-panel="2"] .ois-connector,
 .pick-ois-flow[data-ois-step="3"] .ois-step[data-ois-panel="3"] .ois-connector { opacity: 1; }
 
-/* Success: hide everything */
+/* Success: hide everything except the success card itself — including the
+   INSERT OIS trigger button, so the confirmation card is the sole focus. */
 .pick-ois-flow[data-ois-step="success"] .ois-step { display: none !important; }
+.pick-ois-flow[data-ois-step="success"] .ois-trigger-btn { display: none !important; }
 
 /* Collapsed summary row */
 .ois-step-summary {
@@ -1584,6 +1586,10 @@ select.log-input:focus { background-color: var(--surface); }
   gap: var(--space-3);
   padding: var(--space-4);
   text-align: center;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
 }
 .pick-success-state.visible { display: flex; }
 
@@ -1657,6 +1663,10 @@ select.log-input:focus { background-color: var(--surface); }
 }
 
 .pick-success-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   background: var(--surface2);
   border: 1px solid var(--accent);
   border-radius: var(--radius-sm);
@@ -1670,6 +1680,20 @@ select.log-input:focus { background-color: var(--surface); }
   width: 100%;
 }
 .pick-success-cta:hover { background: rgba(26,111,244,0.1); }
+
+.pick-success-cta-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+
+.nav-pixel-icon.pick-success-cta-icon {
+  filter:
+    drop-shadow(1px 0 0 rgba(6, 16, 43, 0.85))
+    drop-shadow(-1px 0 0 rgba(6, 16, 43, 0.85))
+    drop-shadow(0 1px 0 rgba(6, 16, 43, 0.85))
+    drop-shadow(0 -1px 0 rgba(6, 16, 43, 0.85));
+}
 
 .pick-success-reset {
   background: none;
