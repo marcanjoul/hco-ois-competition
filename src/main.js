@@ -1680,13 +1680,15 @@ function renderBoardEndedPodium(compId, body) {
     const placeEl = document.createElement("div");
     placeEl.className = `ended-podium-place ended-podium-place-${rank}${tied ? " ended-podium-tie" : ""}`;
 
-    const rankEl = document.createElement("div");
-    rankEl.className = "ended-podium-rank";
-    rankEl.textContent = `#${rank}${tied ? " TIE" : ""}`;
-    placeEl.appendChild(rankEl);
-
     const playersEl = document.createElement("div");
     playersEl.className = "ended-podium-players";
+
+    if (tied) {
+      const tieBadge = document.createElement("div");
+      tieBadge.className = "ended-podium-tie-badge";
+      tieBadge.textContent = "TIE";
+      playersEl.appendChild(tieBadge);
+    }
 
     group.players.forEach(player => {
       const playerRecord = state.players[player.id] || { name: player.name };
@@ -1707,7 +1709,12 @@ function renderBoardEndedPodium(compId, body) {
       playersEl.appendChild(btn);
     });
 
+    const riserEl = document.createElement("div");
+    riserEl.className = "ended-podium-riser";
+    riserEl.innerHTML = `<span class="ended-podium-riser-num">${rank}</span>`;
+
     placeEl.appendChild(playersEl);
+    placeEl.appendChild(riserEl);
     podiumEl.appendChild(placeEl);
   });
 
@@ -1744,7 +1751,7 @@ function renderBoard() {
       <div class="board-empty-state">
         <div class="board-empty-icon board-empty-pixel-icon">▶</div>
         <div class="board-empty-title">COMPETITION STARTS NOW</div>
-        <div class="board-empty-sub">Be the first to log an order and claim the top spot!</div>
+        <div class="board-empty-sub">Be the first to insert an OIS and claim the top spot!</div>
         <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()">+ LOG AN ORDER</button>
       </div>
     `;
@@ -1774,10 +1781,10 @@ function renderBoard() {
 
   if (isCompEnded(comp)) {
     renderBoardEndedPodium(compId, body);
-    if (ranked.length > 0) {
+    const hasMoreBelowPodium = ranked.some((_, idx) => getLeaderboardDisplayRank(ranked, idx, metric) >= 4) || zeroes.length > 0;
+    if (hasMoreBelowPodium) {
       const rankDivider = document.createElement("div");
       rankDivider.className = "board-section-header";
-      rankDivider.innerHTML = `<span>FULL RANKINGS</span>`;
       body.appendChild(rankDivider);
     }
   }
@@ -1814,7 +1821,6 @@ function renderBoard() {
       <div class="board-score">
         <div class="board-sph">$${player.sph.toFixed(2)}</div>
         <div class="board-sph-label">/HR</div>
-        <div class="board-card-arrow">→</div>
       </div>
     `;
     card.setAttribute("role", "button");
@@ -1831,7 +1837,12 @@ function renderBoard() {
     return card;
   }
 
+  const minRank = isCompEnded(comp) ? 4 : 1;
+
   for (let i = 0; i < ranked.length; i++) {
+    const rank = getLeaderboardDisplayRank(ranked, i, metric);
+    if (rank < minRank) continue;
+
     const tieGroup = [ranked[i]];
     let j = i + 1;
     while (j < ranked.length && playersTiedOnLeaderboard(ranked[j - 1], ranked[j], metric)) {
@@ -1979,8 +1990,11 @@ function renderCompetitionEndedModal(compId) {
     }).join("");
     return `
       <div class="ended-podium-place ended-podium-place-${rank}${tied ? " ended-podium-tie" : ""}">
-        <div class="ended-podium-rank">#${rank}${tied ? " TIE" : ""}</div>
-        <div class="ended-podium-players">${playerHtml}</div>
+        <div class="ended-podium-players">
+          ${tied ? `<div class="ended-podium-tie-badge">TIE</div>` : ""}
+          ${playerHtml}
+        </div>
+        <div class="ended-podium-riser"><span class="ended-podium-riser-num">${rank}</span></div>
       </div>
     `;
   }).join("");
