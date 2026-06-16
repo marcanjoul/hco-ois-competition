@@ -1596,97 +1596,47 @@ function renderDash() {
 // ══════════════════════════════════════════════════════
 function renderBoardCompSelect() {
   const picker = document.getElementById("board-comp-picker");
-  const trigger = document.getElementById("board-comp-trigger");
-  const menu = document.getElementById("board-comp-menu");
+  const nameEl = document.getElementById("board-comp-name");
+  const prevBtn = document.getElementById("board-comp-prev");
+  const nextBtn = document.getElementById("board-comp-next");
   const title = document.getElementById("board-screen-title");
-  if (!picker || !trigger || !menu) return;
-  menu.innerHTML = "";
+  if (!picker || !nameEl || !prevBtn || !nextBtn) return;
 
-  const nonArchivedComps = Object.entries(state.competitions)
-    .sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0));
+  // Chronological order (by competition start date) so the arrows move
+  // forward/backward through time, not creation order.
+  const sortedComps = Object.entries(state.competitions)
+    .sort(([, a], [, b]) => (a.startDate || "").localeCompare(b.startDate || "") || (a.createdAt || 0) - (b.createdAt || 0));
 
-  if (nonArchivedComps.length === 0) {
+  if (sortedComps.length === 0) {
     picker.style.display = "none";
     if (title) title.textContent = "LEADERBOARD";
     return;
   }
 
-  picker.style.display = "block";
-  nonArchivedComps.forEach(([id, comp]) => {
-    const opt = document.createElement("button");
-    opt.type = "button";
-    opt.className = "board-comp-option";
-    opt.dataset.compId = id;
-    opt.setAttribute("role", "option");
-    opt.setAttribute("aria-selected", id === state.boardComp ? "true" : "false");
-    opt.textContent = comp.name;
-    if (id === state.boardComp) opt.classList.add("active");
-    opt.onclick = () => {
-      state.boardComp = id;
-      closeBoardCompMenu();
-      renderBoardCompSelect();
-      renderBoard();
-      focusElementSoon(trigger, { preventScroll: true });
-    };
-    opt.onkeydown = (e) => {
-      const options = Array.from(menu.querySelectorAll(".board-comp-option"));
-      const index = options.indexOf(opt);
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        options[(index + 1) % options.length]?.focus();
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        options[(index - 1 + options.length) % options.length]?.focus();
-      } else if (e.key === "Home") {
-        e.preventDefault();
-        options[0]?.focus();
-      } else if (e.key === "End") {
-        e.preventDefault();
-        options[options.length - 1]?.focus();
-      } else if (e.key === "Escape") {
-        e.preventDefault();
-        closeBoardCompMenu();
-        focusElementSoon(trigger, { preventScroll: true });
-      }
-    };
-    menu.appendChild(opt);
-  });
-  const activeComp = state.competitions[state.boardComp];
-  trigger.textContent = activeComp?.name || nonArchivedComps[0]?.[1]?.name || "Select...";
-  if (title) {
-    title.textContent = activeComp ? `LEADERBOARD` : "LEADERBOARD";
-  }
-  trigger.onclick = () => {
-    if (picker.classList.contains("open")) closeBoardCompMenu();
-    else openBoardCompMenu();
-  };
-  trigger.onkeydown = (e) => {
-    if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      openBoardCompMenu();
-      focusElementSoon(menu.querySelector(".board-comp-option.active") || menu.querySelector(".board-comp-option"), { preventScroll: true });
-    }
-  };
-}
+  picker.style.display = "flex";
+  if (title) title.textContent = "LEADERBOARD";
 
-function openBoardCompMenu() {
-  const picker = document.getElementById("board-comp-picker");
-  const trigger = document.getElementById("board-comp-trigger");
-  const menu = document.getElementById("board-comp-menu");
-  if (!picker || !trigger || !menu) return;
-  picker.classList.add("open");
-  menu.classList.remove("hidden");
-  trigger.setAttribute("aria-expanded", "true");
-}
+  let index = sortedComps.findIndex(([id]) => id === state.boardComp);
+  if (index === -1) index = sortedComps.length - 1;
+  const [activeId, activeComp] = sortedComps[index];
+  state.boardComp = activeId;
+  nameEl.textContent = activeComp.name;
 
-function closeBoardCompMenu() {
-  const picker = document.getElementById("board-comp-picker");
-  const trigger = document.getElementById("board-comp-trigger");
-  const menu = document.getElementById("board-comp-menu");
-  if (!picker || !trigger || !menu) return;
-  picker.classList.remove("open");
-  menu.classList.add("hidden");
-  trigger.setAttribute("aria-expanded", "false");
+  prevBtn.style.visibility = index > 0 ? "visible" : "hidden";
+  nextBtn.style.visibility = index < sortedComps.length - 1 ? "visible" : "hidden";
+
+  prevBtn.onclick = () => {
+    if (index <= 0) return;
+    state.boardComp = sortedComps[index - 1][0];
+    renderBoardCompSelect();
+    renderBoard();
+  };
+  nextBtn.onclick = () => {
+    if (index >= sortedComps.length - 1) return;
+    state.boardComp = sortedComps[index + 1][0];
+    renderBoardCompSelect();
+    renderBoard();
+  };
 }
 
 function renderBoardEndedPodium(compId, body) {
@@ -1856,7 +1806,7 @@ function renderBoard() {
       <div class="board-info">
         <div class="board-name-row">
           <div class="board-name">
-            ${safePlayerName}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}${playerRecord?.inactive ? " <span class='past-player-label'>PAST</span>" : ""}
+            ${safePlayerName}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}${playerRecord?.inactive ? " <span class='past-player-label'>PAST PLAYER</span>" : ""}
           </div>
         </div>
       </div>
@@ -4049,9 +3999,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document.addEventListener("click", (e) => {
-    const picker = document.getElementById("board-comp-picker");
-    if (picker && !picker.contains(e.target)) closeBoardCompMenu();
-
     const playerResults = document.getElementById("pick-player-results");
     const searchWrap = document.getElementById("pick-search-wrap");
     if (playerResults?.classList.contains("has-results") && !searchWrap?.contains(e.target)) {
@@ -4061,7 +4008,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      closeBoardCompMenu();
       closePickPlayerResults();
       closeInfoModal();
       closeCompetitionEndedModal();
