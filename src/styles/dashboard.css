@@ -82,6 +82,12 @@
   cursor: pointer;
 }
 
+.back-arrow {
+  display: inline-block;
+  font-family: var(--type-label-family);
+  text-shadow: 1px 0 0 currentColor, -1px 0 0 currentColor, 0 1px 0 currentColor, 0 -1px 0 currentColor;
+}
+
 .dash-profile-back-top {
   margin-bottom: var(--space-2);
 }
