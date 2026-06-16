@@ -3416,7 +3416,6 @@ function refreshAdminDayView() {
     btn.innerHTML = `
       <div class="admin-log-player-main">
         <div class="admin-log-player-name">${escapeHtml(player.name)}</div>
-        <div class="admin-log-player-meta">${log ? `$${log.sales.toFixed(2)} · ${log.hours.toFixed(1)} hrs` : "No log yet"}</div>
       </div>
       ${state.admin.selectedPlayer === id ? '<div class="admin-log-player-badge close">Close</div>' : (log ? '<div class="admin-log-player-badge edit">Edit</div>' : '<div class="admin-log-player-badge open">Add</div>')}
     `;
@@ -3539,7 +3538,6 @@ function renderAdminLogCreate(playerId, compId, date, target = null) {
         <div class="admin-log-header-name">${escapeHtml(state.players[playerId]?.name || "")}</div>
         <div class="admin-log-header-sub">${escapeHtml(`${dayName} ${date} · ${state.competitions[compId]?.name || ""}`)}</div>
       </div>
-      <div class="admin-log-header-badge not-logged">✗ No Log Yet</div>
     </div>
     <div class="log-fields admin-log-form-fields">
       <div class="log-field-wrap"><label class="field-label">SALES ($)</label><input type="number" id="admin-create-sales" class="log-input" placeholder="0.00" min="0" step="0.01" /></div>
