@@ -452,14 +452,14 @@ body::after {
   min-width: 48px;
   min-height: 52px;
   padding: 0;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .admin-day-buttons .week-nav-btn {
   flex-basis: 36px;
   min-width: 36px;
   min-height: 42px;
-  font-size: 12px;
+  font-size: 16px;
 }
 
 /* border-radius: 0 is redundant here — :root sets --radius-sm: 0 and --radius-xs: 0,
@@ -467,7 +467,6 @@ body::after {
    Only border, background, and box-shadow genuinely differ from base. */
 .name-btn,
 .log-btn,
-.week-nav-btn,
 .day-btn,
 .admin-day-btn,
 .nav-btn,
@@ -2135,7 +2134,6 @@ body::after {
 
 .name-btn,
 .log-btn,
-.week-nav-btn,
 .day-btn,
 .admin-day-btn,
 .nav-btn,
@@ -2156,10 +2154,7 @@ body::after {
 }
 
 .week-nav-btn {
-  box-shadow:
-    2px 2px 0 #050816,
-    inset 1px 1px 0 rgba(255, 255, 255, 0.08),
-    inset -1px -1px 0 rgba(0, 0, 0, 0.32) !important;
+  box-shadow: none !important;
 }
 
 .log-btn,
@@ -2945,7 +2940,6 @@ button.btn-disabled:hover,
 
 /* TIER 2 — Blue secondary (everything else interactive) */
 .name-btn,
-.week-nav-btn,
 .day-btn:not(.active):not(.logged):not(.disabled),
 .nav-btn:not(.active),
 .pick-player-selector,

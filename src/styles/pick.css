@@ -1326,22 +1326,21 @@
   min-width: 44px;
   min-height: 44px;
   border-radius: var(--radius-xs);
-  border: 1px solid var(--border);
-  background: var(--surface2);
+  border: 0;
+  background: transparent;
   color: var(--text2);
-  font-family: var(--type-body-family);
+  font-family: var(--type-label-family);
   font-weight: 900;
-  font-size: 15px;
+  font-size: 18px;
   flex-shrink: 0;
   transition: all 0.15s;
   display: flex;
   align-items: center;
   justify-content: center;
+  text-shadow: 1px 0 0 currentColor, -1px 0 0 currentColor, 0 1px 0 currentColor, 0 -1px 0 currentColor;
 }
 .week-nav-btn:hover {
-  border-color: var(--accent);
   color: var(--accent);
-  background: rgba(26,111,244,0.08);
 }
 .week-nav-btn:active { transform: scale(0.93); }
 
@@ -1902,4 +1901,34 @@ select.log-input:focus { background-color: var(--surface); }
 .goal-bar-fill.goal-hit-bar {
   background: linear-gradient(90deg, #32b851 0%, #3fd49a 100%);
   box-shadow: 0 6px 14px rgba(63,185,80,0.24);
+}
+
+.app-credit {
+  text-align: center;
+  padding: 48px 0 var(--space-4);
+  font-family: var(--type-body-family);
+  font-size: 20px;
+  color: var(--accent2);
+}
+
+#screen-pick .app-credit {
+  margin-top: auto;
+}
+
+.app-credit-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  /* VT323 only ships at one weight — a light stroke nudges the thickness up just a touch */
+  text-shadow: 0.5px 0 0 currentColor;
+}
+.app-credit-name:hover { text-decoration: underline; }
+
+.app-credit-arrow {
+  font-family: var(--type-label-family);
+  font-size: 12px;
+  text-shadow: 1px 0 0 currentColor, -1px 0 0 currentColor, 0 1px 0 currentColor, 0 -1px 0 currentColor;
 }

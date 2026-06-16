@@ -1449,10 +1449,10 @@ function renderDash() {
     if (isProfileView) {
       const displayRank = myRank > 0 ? myRank : ranked.length + 1;
       const profileReturn = state.profileReturnScreen === "pick"
-        ? { label: "← Back to Home", screen: "pick" }
-        : { label: "← Back to Leaderboard", screen: "board" };
+        ? { label: "Back to Home", screen: "pick" }
+        : { label: "Back to Leaderboard", screen: "board" };
       if (profileBackBtn) {
-        profileBackBtn.textContent = profileReturn.label;
+        profileBackBtn.innerHTML = `<span class="back-arrow">←</span> ${profileReturn.label}`;
         profileBackBtn.onclick = () => {
           state.dashView = "logging";
           showScreen(profileReturn.screen);
@@ -2627,7 +2627,7 @@ function renderCompEditPanel(compId, comp) {
     contentParent.insertBefore(topBackBtn, content);
   }
   if (topBackBtn) {
-    topBackBtn.textContent = "← Back";
+    topBackBtn.innerHTML = `<span class="back-arrow">←</span> Back`;
     topBackBtn.classList.remove("hidden");
     topBackBtn.onclick = () => {
       state.admin.tab = "competitions";
