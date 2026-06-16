@@ -244,11 +244,11 @@ textarea {
 }
 
 .pick-ois-flow:not(.collapsed) .ois-trigger-btn {
-  background: #071d82 !important;
+  background: #2e334a !important;
   color: #fff !important;
   min-height: 40px !important;
   width: fit-content !important;
-  padding: 0 160px !important;
+  padding: 0 200px !important;
   margin: 0 auto !important;
   transform: translate(2px, 2px) !important;
   box-shadow: 1px 1px 0 var(--shadow-ink) !important;
@@ -2753,23 +2753,26 @@ button.btn-disabled:hover,
   text-shadow: none;
 }
 
-.ended-podium-place {
-  border-radius: 0;
-  background: #08133b;
-  border: 2px solid #2348b3;
-  box-shadow: 2px 2px 0 #050816;
-}
-
 .ended-podium-players {
-  gap: 10px;
+  gap: 4px;
 }
 
 .ended-podium-player {
   min-width: 0;
 }
 
+.ended-podium-tie-badge {
+  border-radius: 0;
+  background: #08133b;
+  border: 2px solid #2348b3;
+  box-shadow: 2px 2px 0 #050816;
+  font-family: "Press Start 2P", monospace;
+  font-size: 7px;
+  color: var(--text2);
+}
+
 .ended-podium-tie .ended-podium-player {
-  padding-top: 10px;
+  padding-top: 6px;
   border-top: 2px dashed #2348b3;
 }
 
@@ -2779,44 +2782,59 @@ button.btn-disabled:hover,
 }
 
 .ended-podium-tie .board-avatar-stack {
-  width: 48px;
-  min-width: 48px;
-  padding-top: 3px;
-  padding-bottom: 5px;
+  width: 34px;
+  min-width: 34px;
+  padding-top: 2px;
+  padding-bottom: 3px;
 }
 
 .ended-podium-tie .avatar-board {
-  width: 44px;
-  height: 44px;
-  font-size: 18px;
+  width: 30px;
+  height: 30px;
+  font-size: 12px;
 }
 
-.ended-podium-place-1 {
+.ended-podium-riser {
+  border-radius: 0;
+  background: #08133b;
+  border: 2px solid #2348b3;
+  box-shadow: 2px 2px 0 #050816;
+  padding-top: 5px;
+}
+
+.ended-podium-place-1 .ended-podium-riser {
   border-color: #ffd84d;
-  background:
-    linear-gradient(180deg, rgba(255, 216, 77, 0.16), rgba(8, 19, 59, 0.98));
+  background: #15214f;
 }
 
-.ended-podium-place-2 {
+.ended-podium-place-2 .ended-podium-riser {
   border-color: #c6d2e3;
 }
 
-.ended-podium-place-3 {
+.ended-podium-place-3 .ended-podium-riser {
   border-color: #ff9a3c;
 }
 
-.ended-podium-place-3.ended-podium-tie {
-  min-height: 196px;
-}
-
-.ended-podium-rank {
+.ended-podium-riser-num {
   color: var(--text2);
   font-family: "Press Start 2P", monospace;
-  font-size: 14px;
+  font-size: 13px;
   text-shadow: none;
 }
 
-.ended-podium-place-1 .ended-podium-rank,
+.ended-podium-place-1 .ended-podium-riser-num {
+  color: #ffd84d;
+  font-size: 17px;
+}
+
+.ended-podium-place-2 .ended-podium-riser-num {
+  color: #c6d2e3;
+}
+
+.ended-podium-place-3 .ended-podium-riser-num {
+  color: #ff9a3c;
+}
+
 .ended-podium-place-1 .ended-podium-score {
   color: #ffd84d;
 }
@@ -2824,7 +2842,7 @@ button.btn-disabled:hover,
 .ended-podium-name {
   color: #fff2a8;
   font-family: "VT323", monospace;
-  font-size: 24px;
+  font-size: 16px;
   line-height: 1;
   text-shadow: none;
 }
@@ -2832,13 +2850,13 @@ button.btn-disabled:hover,
 .ended-podium-score {
   color: var(--text2);
   font-family: "Press Start 2P", monospace;
-  font-size: 13px;
+  font-size: 10px;
 }
 
 .ended-podium-score span {
   color: var(--text2);
   font-family: "VT323", monospace;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .ended-rank-row {
@@ -3541,40 +3559,10 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 
 /* ── FULL RANKINGS section header — distinct from NO SALES divider ── */
 .board-section-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 12px 0 6px;
-  color: var(--accent);
-  font-family: "Press Start 2P", monospace;
-  font-size: 9px;
-  letter-spacing: 2px;
-  text-shadow: none;
-}
-
-.board-section-header::before,
-.board-section-header::after {
-  content: "";
-  flex: 1;
   height: 3px;
-  background: repeating-linear-gradient(90deg, var(--accent) 0 8px, transparent 8px 14px);
+  margin: 12px 0 6px;
+  background: var(--accent);
   opacity: 0.7;
-}
-
-/* ── Board card tap affordance: pixel arrow ── */
-.board-card-arrow {
-  font-family: "Press Start 2P", monospace;
-  font-size: 9px;
-  color: var(--text3);
-  margin-top: 4px;
-  letter-spacing: 0;
-  transition: color 0.12s steps(2), transform 0.12s steps(2);
-}
-
-.board-card:hover .board-card-arrow,
-.board-card:focus-visible .board-card-arrow {
-  color: var(--text2);
-  transform: translateX(3px);
 }
 
 /* ── Empty state pixel icons ── */
