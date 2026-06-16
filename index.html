@@ -143,11 +143,13 @@
             <div class="ois-step" data-ois-panel="1">
               <div class="ois-connector" aria-hidden="true"></div>
               <div class="ois-step-card" id="ois-card-1">
-                <!-- Collapsed summary: tap to jump back to step 1 -->
-                <button type="button" class="ois-step-summary" data-ois-back="1" aria-label="Go back to search player">
+                <!-- Collapsed summary: tap to jump back to step 1. Once a player is
+                     selected this shows just their avatar with a small clear (X) button. -->
+                <div class="ois-step-summary" id="ois-summary-1" role="button" tabindex="0" aria-label="Go back to search player">
                   <span class="ois-summary-num">1</span>
+                  <span class="ois-summary-avatar" id="ois-summary-avatar-1"></span>
                   <span class="ois-summary-label" id="ois-summary-text-1">Search Player</span>
-                </button>
+                </div>
                 <!-- Full content -->
                 <div class="ois-step-content">
                   <h3 class="pick-step-header">
@@ -183,6 +185,7 @@
                   <!-- Collapsed summary: tap to jump back to step 2 -->
                   <button type="button" class="ois-step-summary" data-ois-back="2" aria-label="Go back to pick a day">
                     <span class="ois-summary-num">2</span>
+                    <span class="ois-summary-date" id="ois-summary-date-2"></span>
                     <span class="ois-summary-label" id="ois-summary-text-2">Pick the Day</span>
                   </button>
                   <!-- Full content -->
