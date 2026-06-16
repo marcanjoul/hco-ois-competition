@@ -89,7 +89,7 @@
   flex-direction: column;
 }
 
-.board-ended-kicker {
+.board-comp-status {
   font-family: var(--type-label-family);
   font-size: 11px;
   font-weight: var(--type-label-weight);
@@ -97,7 +97,6 @@
   text-transform: uppercase;
   color: var(--text3);
   text-align: center;
-  margin-bottom: var(--space-1);
 }
 
 .board-ended-podium-player {
