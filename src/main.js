@@ -1655,11 +1655,6 @@ function renderBoardEndedPodium(compId, body) {
   const section = document.createElement("div");
   section.className = "board-ended-section";
 
-  const kicker = document.createElement("div");
-  kicker.className = "board-ended-kicker";
-  kicker.textContent = "Competition Ended";
-  section.appendChild(kicker);
-
   const podiumEl = document.createElement("div");
   podiumEl.className = "ended-podium";
 
@@ -1718,6 +1713,7 @@ function renderBoard() {
   const compId = state.boardComp || state.currentComp;
   const body = document.getElementById("board-body");
   const noCompsMsg = document.getElementById("board-no-comps");
+  const statusEl = document.getElementById("board-comp-status");
   if (!body) return;
 
   // If no competition, show message
@@ -1730,6 +1726,7 @@ function renderBoard() {
       </div>
     `;
     if (noCompsMsg) noCompsMsg.style.display = "none";
+    if (statusEl) statusEl.style.display = "none";
     return;
   }
 
@@ -1737,6 +1734,15 @@ function renderBoard() {
   const comp = state.competitions[compId];
   const hasLogs = hasLogsInComp(compId);
   body.innerHTML = "";
+
+  if (statusEl) {
+    if (isCompEnded(comp)) {
+      statusEl.textContent = "Competition Ended";
+      statusEl.style.display = "block";
+    } else {
+      statusEl.style.display = "none";
+    }
+  }
 
   if (!hasLogs) {
     body.innerHTML = `
