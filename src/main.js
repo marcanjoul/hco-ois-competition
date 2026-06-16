@@ -571,7 +571,6 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
   container.classList.remove("hidden");
   container.innerHTML = `
     <h2 class="pick-comp-name">${escapeHtml(comp.name)}</h2>
-    <p class="pick-comp-dates">${comp.startDate && comp.endDate ? escapeHtml(`${formatDate(comp.startDate)} → ${formatDate(comp.endDate)}`) : ""}</p>
     <div class="pick-comp-hero-row">
       <div class="pick-countdown">
         <span class="${countdownClass}" style="${countdownStyle}">${countdownNum}</span>
@@ -3556,13 +3555,13 @@ function renderAdminLogCreate(playerId, compId, date, target = null) {
   detail.querySelector("#admin-create-log-btn").onclick = async () => {
     const sales = parseFloat(s.value);
     const hours = parseFloat(h.value);
-    if (isNaN(sales) || sales < 0) { showToast("Enter valid sales amount"); return; }
+    if (isNaN(sales) || sales < 0) { showToast("Enter sales amount"); return; }
     if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked"); return; }
-    if (date > getTodayDate()) { showToast("Can't create logs for future dates 🔮"); return; }
+    if (date > getTodayDate()) { showToast("Can't create OIS for future dates"); return; }
     await set(dbRef.dateLog(compId, playerId, date), { sales, hours });
     upsertLocalLog(compId, playerId, date, { sales, hours });
     state.admin.selectedPlayer = null;
-    showToast("Log created ✅");
+    showToast("OIS Entered");
     refreshAdminDayView();
     if (state.currentUser === playerId) { renderDash(); renderBoard(); renderAllTime(); }
   };

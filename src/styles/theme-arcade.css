@@ -1620,9 +1620,9 @@ select.log-input:focus {
   }
 
   .pick-comp-name {
-    font-size: 20px;
+    font-size: 24px;
     line-height: 1;
-    margin-bottom: 3px;
+    margin-bottom: 16px;
   }
 
   .pick-comp-hero-row {
@@ -1634,29 +1634,29 @@ select.log-input:focus {
   }
 
   .pick-countdown-num {
-    font-size: 30px;
+    font-size: 28px;
     line-height: 0.95;
   }
 
   .pick-countdown-label {
-    font-size: 8px;
-    margin-bottom: 2px;
+    font-size: 12px;
+    margin-bottom: 1px;
   }
 
   .pick-comp-dates {
-    margin-bottom: 7px;
+    margin-bottom: 8px;
     padding: 0;
     font-size: 13px;
   }
 
   .pick-goals-toggle {
     min-height: 0;
-    padding: 8px 10px;
+    padding: 8px 8px;
     font-size: 10px;
   }
 
   .pick-goals-content {
-    padding: 8px 9px 9px;
+    padding: 8px 8px 8px;
   }
 
   .comp-detail {
