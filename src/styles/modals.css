@@ -54,7 +54,7 @@
 }
 
 .admin-edit-player-modal-header {
-  font-family: var(--type-title-family);
+  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   font-size: var(--type-title-size);
   letter-spacing: 1px;
   margin-bottom: var(--space-4);
@@ -126,12 +126,12 @@
   background: var(--surface);
   z-index: 101;
 }
-.info-modal-title { font-family: var(--type-title-family); font-size: var(--type-title-size); letter-spacing: 1px; color: var(--text); }
+.info-modal-title { font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch); font-size: var(--type-title-size); letter-spacing: 1px; color: var(--text); }
 .info-modal-close { background: none; border: none; color: var(--text2); font-size: 20px; cursor: pointer; padding: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .info-modal-close:hover { color: var(--text); transform: scale(1.1); }
 .info-modal-body { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); }
 .info-section { display: flex; flex-direction: column; gap: var(--space-2); }
-.info-section-title { font-family: var(--type-title-family); font-size: 15px; color: var(--accent); margin-bottom: var(--space-1); }
+.info-section-title { font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch); font-size: 15px; color: var(--accent); margin-bottom: var(--space-1); }
 .info-section p { font-family: var(--type-body-family); font-size: 16px; font-weight: 600; line-height: 1.65; color: var(--text2); }
 .credits-section {
   padding-top: var(--space-3);
@@ -208,7 +208,7 @@
 
 .competition-ended-title {
   margin-top: 6px;
-  font-family: var(--type-title-family);
+  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   font-size: 24px;
   color: var(--text);
 }
@@ -221,7 +221,7 @@
 }
 
 .competition-ended-winner-name {
-  font-family: var(--type-display-family);
+  font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
   font-size: 36px;
   line-height: 1;
   color: var(--gold);
@@ -377,7 +377,7 @@
 }
 
 .ended-podium-riser-num {
-  font-family: var(--type-display-family);
+  font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
   font-size: 18px;
   color: var(--text2);
 }
@@ -401,7 +401,7 @@
 
 .ended-podium-name {
   max-width: 100%;
-  font-family: var(--type-title-family);
+  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   font-size: 12px;
   color: var(--text);
   white-space: nowrap;
@@ -410,7 +410,7 @@
 }
 
 .ended-podium-score {
-  font-family: var(--type-subheading-family);
+  font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
   font-size: 12px;
   color: var(--text2);
   white-space: nowrap;
@@ -442,7 +442,7 @@
 
 .ended-rank-num,
 .ended-rank-score {
-  font-family: var(--type-title-family);
+  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   color: var(--accent);
 }
 

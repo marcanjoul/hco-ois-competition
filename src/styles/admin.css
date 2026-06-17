@@ -33,7 +33,7 @@
 .admin-gate-icon { font-size: 56px; line-height: 1; }
 
 .admin-gate-title {
-  font-family: var(--type-heading-family);
+  font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
   font-size: 28px;
   letter-spacing: var(--type-heading-letter-spacing);
   color: var(--text);
@@ -270,7 +270,7 @@
    Example on the website: section titles and section content inside admin.
 */
 .admin-section-title {
-  font-family: var(--type-title-family);
+  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   font-size: var(--type-title-size);
   letter-spacing: var(--type-title-letter-spacing);
   color: var(--text2);
@@ -307,7 +307,7 @@
 }
 
 .admin-edit-group-title {
-  font-family: var(--type-title-family);
+  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   font-size: var(--type-title-size);
   letter-spacing: var(--type-title-letter-spacing);
   color: var(--text);
@@ -348,7 +348,7 @@
 }
 
 .admin-collapsible-title {
-  font-family: var(--type-title-family);
+  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   font-size: var(--type-title-size);
   letter-spacing: var(--type-title-letter-spacing);
   color: var(--text);
@@ -1011,7 +1011,7 @@
 .admin-log-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--space-3); text-align: center; }
 .admin-log-stat.accent { background: rgba(26,111,244,0.08); border-color: rgba(26,111,244,0.3); }
 .admin-log-stat-label { font-family: var(--type-label-family); font-size: 9px; font-weight: var(--type-label-weight); letter-spacing: 1px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; }
-.admin-log-stat-value { font-family: var(--type-subheading-family); font-size: 20px; letter-spacing: 1px; color: var(--text); line-height: 1; }
+.admin-log-stat-value { font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch); font-size: 20px; letter-spacing: 1px; color: var(--text); line-height: 1; }
 .admin-log-stat.accent .admin-log-stat-value { color: var(--accent); }
 
 .admin-log-actions-row { display: flex; gap: var(--space-2); }
@@ -1107,7 +1107,7 @@
   border-radius: var(--radius-sm);
   background: var(--surface2);
   color: var(--text);
-  font-family: var(--type-subheading-family);
+  font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
   font-size: 16px;
   letter-spacing: 0.4px;
   text-align: center;
@@ -1135,7 +1135,7 @@
 }
 
 .admin-log-player-title {
-  font-family: var(--type-title-family);
+  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   font-size: var(--type-title-size);
   letter-spacing: 1px;
   color: var(--text);
@@ -1168,7 +1168,7 @@
 }
 
 .admin-log-player-section-title {
-  font-family: var(--type-title-family);
+  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   font-size: var(--type-title-size);
   letter-spacing: 1px;
   color: var(--text);
@@ -1223,14 +1223,14 @@
   line-height: 1;
 }
 
-/* Bold pixel-stroke treatment for disclosure carets, matching the arrow
-   language used elsewhere (week-nav, leaderboard comp picker, back buttons). */
+/* Bold disclosure carets, matching the arrow language used elsewhere
+   (week-nav, leaderboard comp picker, back buttons). */
 .collapsible-toggle-icon,
 .admin-log-player-toggle-icon,
 .view-all-btn-icon {
   display: inline-block;
   font-family: var(--type-label-family);
-  text-shadow: 1px 0 0 currentColor, -1px 0 0 currentColor, 0 1px 0 currentColor, 0 -1px 0 currentColor;
+  font-weight: 800;
 }
 
 .admin-log-player-card {
@@ -1411,7 +1411,7 @@
   border: 0;
   padding: 0;
 }
-.goal-admin-label { font-family: var(--type-title-family); font-size: var(--type-title-size); letter-spacing: 1px; color: var(--text); margin-bottom: 4px; }
+.goal-admin-label { font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch); font-size: var(--type-title-size); letter-spacing: 1px; color: var(--text); margin-bottom: 4px; }
 .goal-admin-hint { font-family: var(--type-caption-family); font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); color: var(--text2); margin-bottom: var(--space-3); }
 .goal-admin-input-shell {
   margin-top: 8px;
@@ -1457,7 +1457,7 @@
   border-radius: 0;
   background: transparent;
   color: var(--accent);
-  font-family: var(--type-title-family);
+  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   font-size: 22px;
   line-height: 1;
 }
@@ -1474,7 +1474,7 @@
   min-width: 0;
 }
 .goal-day-name {
-  font-family: var(--type-title-family);
+  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   font-size: 15px;
   color: var(--text);
   margin-bottom: 3px;
@@ -1508,7 +1508,7 @@
   border-radius: 0;
   background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.14));
   color: var(--text2);
-  font-family: var(--type-title-family);
+  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   font-size: 15px;
   text-shadow: 0 1px 0 rgba(255,255,255,0.1), 0 -1px 0 rgba(0,0,0,0.35);
   box-shadow: inset 1px 1px 0 rgba(255,255,255,0.06), inset -1px -1px 0 rgba(0,0,0,0.22);

@@ -1814,9 +1814,8 @@ function renderBoard() {
       ${getBoardAvatarHtml(playerRecord || { name: player.name }, player.id, isZero ? 99 : displayRank)}
       <div class="board-info">
         <div class="board-name-row">
-          <div class="board-name">
-            ${safePlayerName}${isWinner ? " <span class='winner-label'>WINNER</span>" : ""}${playerRecord?.inactive ? " <span class='past-player-label'>PAST PLAYER</span>" : ""}
-          </div>
+          <div class="board-name">${safePlayerName}</div>
+          ${isWinner ? "<span class='winner-label'>WINNER</span>" : ""}${playerRecord?.inactive ? "<span class='past-player-label'>PAST</span>" : ""}
         </div>
       </div>
       <div class="board-score">
