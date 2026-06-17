@@ -20,7 +20,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--space-10) var(--space-6) calc(var(--nav-height) + var(--space-6));
+  padding: var(--space-10) var(--space-6) calc(var(--nav-height) + env(safe-area-inset-bottom) + var(--space-6));
   max-width: 360px;
   margin: 0 auto;
   width: 100%;

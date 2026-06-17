@@ -39,3 +39,6 @@ DESIGN.md
 #CLI Skills
 *.playwright-cli
 reduce_fonts.py
+
+#brand/design system
+*brandkit

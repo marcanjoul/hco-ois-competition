@@ -1563,7 +1563,7 @@ select.log-input:focus {
 
   .pick-inner {
     gap: 8px;
-    padding: 8px 8px calc(var(--nav-height) + 8px);
+    padding: 8px 8px calc(var(--nav-height) + env(safe-area-inset-bottom) + 8px);
   }
 
   .app-header {
@@ -1573,7 +1573,7 @@ select.log-input:focus {
   }
 
   .bottom-nav {
-    height: var(--nav-height);
+    min-height: var(--nav-height);
     gap: 3px;
     padding: 4px 5px calc(4px + env(safe-area-inset-bottom));
   }
@@ -3596,7 +3596,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 #screen-admin-gate {
   align-items: center;
   justify-content: center;
-  padding: 24px 24px calc(var(--nav-height) + 24px);
+  padding: 24px 24px calc(var(--nav-height) + env(safe-area-inset-bottom) + 24px);
 }
 
 .admin-gate-body {
