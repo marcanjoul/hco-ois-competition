@@ -645,7 +645,8 @@
   box-shadow: 0 10px 30px rgba(26,111,244,0.10);
 }
 
-.pick-selected-avatar-btn {
+.pick-selected-avatar-btn,
+.pick-selected-avatar-wrap {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;

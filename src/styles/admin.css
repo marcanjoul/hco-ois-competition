@@ -75,10 +75,14 @@
   align-items: center;
   line-height: 1;
   transition: opacity 0.15s;
+  z-index: 10;
 }
 #btn-pin-reveal:hover { opacity: 1; }
 
-.admin-gate-body #btn-pin-submit { width: 100%; }
+.admin-gate-body #btn-pin-submit {
+  width: 100%;
+  margin-top: 8px !important;
+}
 
 .pin-error {
   color: var(--red);

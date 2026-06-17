@@ -1265,22 +1265,15 @@ function showSelectedPlayerProfile(playerId, player) {
 
   profileCard.innerHTML = `
     <div class="pick-selected-player-card">
-      <button class="pick-selected-avatar-btn" id="pick-player-avatar-btn" type="button" title="Tap to edit avatar">
-        ${getAvatarHtml(player, "pick-large avatar-interactive", playerId)}
-        <span class="pick-avatar-edit-pill">Edit Avatar</span>
-      </button>
+      <div class="pick-selected-avatar-wrap">
+        ${getAvatarHtml(player, "pick-large", playerId)}
+      </div>
       <div class="pick-selected-player-copy">
         <div class="pick-selected-player-name">${escapeHtml(player.name)}</div>
       </div>
       <button class="pick-selected-clear-btn" id="pick-clear-player-btn" type="button" title="Choose a different player" aria-label="Choose a different player">X</button>
     </div>
   `;
-
-  // Make avatar clickable to edit (players can only edit avatar)
-  document.getElementById("pick-player-avatar-btn").onclick = (e) => {
-    e.stopPropagation();
-    promptPickAvatarUpload(playerId);
-  };
 
   document.getElementById("pick-clear-player-btn").onclick = (e) => {
     e.stopPropagation();
@@ -1752,7 +1745,7 @@ function renderBoard() {
         <div class="board-empty-icon board-empty-pixel-icon"><span class="pixel-icon-play" style="margin: 0 auto;"></span></div>
         <div class="board-empty-title">COMPETITION STARTS NOW</div>
         <div class="board-empty-sub">Be the first to insert an OIS and claim the top spot!</div>
-        <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()">+ LOG AN ORDER</button>
+        <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()"><span class="pixel-icon-plus"></span>LOG AN ORDER</button>
       </div>
     `;
     return;
@@ -1765,7 +1758,7 @@ function renderBoard() {
         <div class="board-empty-icon board-empty-pixel-icon"><span class="pixel-icon-play" style="margin: 0 auto;"></span></div>
         <div class="board-empty-title">NO ORDERS YET</div>
         <div class="board-empty-sub">The scoreboard is empty. Log your first OIS and lead the pack!</div>
-        <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()">+ LOG AN ORDER</button>
+        <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()"><span class="pixel-icon-plus"></span>LOG AN ORDER</button>
       </div>
     `;
     return;
@@ -2272,7 +2265,7 @@ function renderAdminComps(container) {
         <input type="number" id="input-new-comp-goal" class="log-input goal-day-input" placeholder="0" min="0" step="1" />
       </label>
     </div>
-    <button class="log-btn btn-ghost" id="btn-add-comp" disabled>+ CREATE COMPETITION</button>
+    <button class="log-btn btn-ghost" id="btn-add-comp" disabled><span class="pixel-icon-plus"></span>CREATE COMPETITION</button>
   `;
 
   const dateBlock = getNewCompetitionDateBlock();
@@ -3572,7 +3565,7 @@ function renderAdminLogCreate(playerId, compId, date, target = null) {
       <div class="log-field-wrap"><label class="field-label">SALES ($)</label><input type="number" id="admin-create-sales" class="log-input" placeholder="0.00" min="0" step="0.01" /></div>
       <div class="log-field-wrap"><label class="field-label">HOURS</label><input type="number" id="admin-create-hours" class="log-input" placeholder="0.0" min="0" step="0.5" /></div>
     </div>
-    <button class="log-btn btn-ghost admin-log-form-submit" id="admin-create-log-btn" disabled>+ CREATE LOG</button>
+    <button class="log-btn btn-ghost admin-log-form-submit" id="admin-create-log-btn" disabled><span class="pixel-icon-plus"></span>CREATE LOG</button>
   `;
   const s = detail.querySelector("#admin-create-sales");
   const h = detail.querySelector("#admin-create-hours");
@@ -4109,9 +4102,17 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   pinInput.addEventListener("input", () => {
-    const hasValue = pinInput.value.trim().length > 0;
-    pinSubmitBtn.disabled = !hasValue;
-    pinSubmitBtn.classList.toggle("btn-ghost", !hasValue);
+    const value = pinInput.value;
+    const pinLength = ADMIN_PIN ? ADMIN_PIN.length : 7;
+    const isDigitsOnly = /^\d+$/.test(value);
+    const isValidLength = value.length === pinLength;
+    const isValid = isDigitsOnly && isValidLength;
+
+    pinSubmitBtn.disabled = !isValid;
+    pinSubmitBtn.classList.toggle("btn-ghost", !isValid);
+
+    // Hide error text while typing
+    document.getElementById("pin-error")?.classList.add("hidden");
   });
 
   pinInput.addEventListener("keydown", e => {
