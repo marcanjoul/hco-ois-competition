@@ -1278,47 +1278,6 @@ select.log-input:focus {
   box-shadow: none;
 }
 
-.admin-comp-filter-bar {
-  border: 2px solid var(--maze-blue) !important;
-  background:
-    linear-gradient(180deg, rgba(10, 22, 60, 0.98), rgba(6, 13, 36, 0.98)) !important;
-  box-shadow:
-    2px 2px 0 #050816,
-    inset 0 0 0 2px var(--surface-deep) !important;
-}
-
-.admin-comp-filter-btn {
-  border: 2px solid transparent !important;
-  color: var(--text2) !important;
-  font-family: "Press Start 2P", monospace !important;
-  font-size: 9px !important;
-  line-height: 1.2;
-  text-shadow: none;
-}
-
-.admin-comp-filter-btn:hover {
-  border-color: var(--maze-blue-bright) !important;
-  color: var(--power-pellet) !important;
-  background: var(--surface-card) !important;
-}
-
-.admin-comp-filter-btn.active {
-  background: #b23ab5 !important;
-  border-color: #ffd6ef !important;
-  color: #fff7fb !important;
-  box-shadow:
-    2px 2px 0 #050816,
-    inset 1px 1px 0 rgba(255, 255, 255, 0.14),
-    inset -1px -1px 0 rgba(0, 0, 0, 0.32) !important;
-}
-
-.admin-comp-filter-count {
-  border: 2px solid currentColor !important;
-  color: inherit;
-  background: rgba(5, 8, 22, 0.38);
-  text-shadow: none;
-}
-
 .history-rate {
   border: 2px solid #52ff98;
   background: #0f3925;
@@ -1437,7 +1396,7 @@ select.log-input:focus {
 .admin-tab-bar {
   gap: 12px !important;
   padding: 10px 16px !important;
-  margin-bottom: 16px;
+  margin: 0 16px 16px;
   justify-content: center;
   align-items: center;
 }
@@ -1880,7 +1839,7 @@ select.log-input:focus {
   }
 
   .admin-comp-item {
-    padding: 12px;
+    padding: 12px 8px;
     gap: 12px;
   }
 
