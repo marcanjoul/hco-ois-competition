@@ -1705,6 +1705,11 @@ function renderBoardEndedPodium(compId, body) {
   });
 
   section.appendChild(podiumEl);
+
+  const baseEl = document.createElement("div");
+  baseEl.className = "ended-podium-base";
+  section.appendChild(baseEl);
+
   body.appendChild(section);
 }
 
@@ -2014,7 +2019,7 @@ function renderCompetitionEndedModal(compId) {
       <span class="competition-ended-winner-label">${winnerGroup?.players?.length > 1 ? "Winners" : "Winner"}</span>
       <span class="competition-ended-winner-name">${escapeHtml(winnerNames)}</span>
     </div>
-    ${podiumHtml ? `<div class="ended-podium">${podiumHtml}</div>` : `
+    ${podiumHtml ? `<div class="ended-podium">${podiumHtml}</div><div class="ended-podium-base"></div>` : `
       <div class="ended-empty">No orders were logged this round.</div>
     `}
     ${restHtml ? `<div class="ended-rank-list">${restHtml}</div>` : ""}

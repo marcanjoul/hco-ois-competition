@@ -232,7 +232,17 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: end;
   gap: 0;
-  margin: var(--space-4) 0 var(--space-3);
+  width: 88%;
+  margin: var(--space-4) auto 0;
+}
+
+/* One shared bar under all three platforms, instead of relying on three
+   separate borders happening to line up — guarantees a single connected base. */
+.ended-podium-base {
+  width: 88%;
+  height: 3px;
+  background: var(--border);
+  margin: 0 auto var(--space-3);
 }
 
 .ended-podium-place {
@@ -324,9 +334,12 @@
   font-size: 12px;
 }
 
-.ended-podium-place-1 { grid-column: 2; }
-.ended-podium-place-2 { grid-column: 1; }
-.ended-podium-place-3 { grid-column: 3; }
+/* grid-row pinned explicitly — without it, place-1's column-2 placement (it's
+   first in DOM order) pushes the auto-placement cursor past column 1, forcing
+   place-2 onto a second implicit row instead of sharing place-1's row. */
+.ended-podium-place-1 { grid-column: 2; grid-row: 1; }
+.ended-podium-place-2 { grid-column: 1; grid-row: 1; }
+.ended-podium-place-3 { grid-column: 3; grid-row: 1; }
 
 .ended-podium-riser {
   width: 100%;
@@ -335,25 +348,31 @@
   justify-content: center;
   padding-top: 4px;
   background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-left: 0;
+  border-right: 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 0;
+  border-radius: 0;
 }
 
 .ended-podium-place-1 .ended-podium-riser {
-  height: 56px;
-  border-color: var(--gold);
+  height: 120px;
+  background: var(--gold);
+  border-top-color: var(--gold);
   border-top-width: 3px;
 }
 
 .ended-podium-place-2 .ended-podium-riser {
-  height: 40px;
-  border-color: var(--silver);
+  height: 88px;
+  background: var(--silver);
+  border-top-color: var(--silver);
   border-top-width: 3px;
 }
 
 .ended-podium-place-3 .ended-podium-riser {
-  height: 32px;
-  border-color: var(--bronze);
+  height:72px;
+  background: var(--bronze);
+  border-top-color: var(--bronze);
   border-top-width: 3px;
 }
 
@@ -365,15 +384,15 @@
 
 .ended-podium-place-1 .ended-podium-riser-num {
   font-size: 24px;
-  color: var(--gold);
+  color: #06102b;
 }
 
 .ended-podium-place-2 .ended-podium-riser-num {
-  color: var(--silver);
+  color: #06102b;
 }
 
 .ended-podium-place-3 .ended-podium-riser-num {
-  color: var(--bronze);
+  color: #06102b;
 }
 
 .ended-podium-place-1 .ended-podium-score {
