@@ -33,10 +33,6 @@
     padding: 12px 8px;
   }
 
-  .pick-success-checkmark {
-    font-size: 38px;
-  }
-
   .pick-success-title {
     font-size: 18px;
     letter-spacing: 1px;
@@ -106,39 +102,12 @@
     gap: 6px;
   }
 
-  .admin-edit-group {
-    padding: 12px;
-    gap: 12px;
-  }
-
-  .admin-edit-group-body {
-    gap: 12px;
-  }
-
   .goal-admin-block {
     padding: 10px;
   }
 
-  .goal-day-card {
-    gap: 8px;
-    padding: 8px 10px;
-  }
-
-  .goal-day-name {
-    font-size: 15px;
-  }
-
-  .goal-day-date {
-    font-size: 11px;
-  }
-
   .goal-day-input {
     font-size: 16px;
-  }
-
-  .admin-edit-two-col {
-    grid-template-columns: 1fr;
-    gap: 12px;
   }
 
   .history-item {
@@ -162,19 +131,6 @@
   .history-meta {
     font-size: 16px;
     margin-top: 2px;
-  }
-
-  .history-rate {
-    min-width: 56px;
-    padding: 5px 7px;
-  }
-
-  .history-rate-value {
-    font-size: 15px;
-  }
-
-  .history-rate-label {
-    font-size: 7px;
   }
 
   .board-avatar-stack {
@@ -305,13 +261,6 @@
     margin-bottom: 4px;
   }
 
-  .pick-comp-dates {
-    font-size: 11px;
-    padding: 0;
-    margin-bottom: 8px;
-    border-radius: 0;
-  }
-
   .pick-comp-goals,
   .pick-winner-row {
     margin: 0 -12px;
@@ -347,17 +296,8 @@
     letter-spacing: 1px;
   }
 
-  .detail-label-goal {
-    font-size: 14px;
-  }
-
   .goal-progress {
     gap: 6px;
-  }
-
-  .goal-progress-top {
-    gap: 8px;
-    align-items: center;
   }
 
   .goal-current {
@@ -365,33 +305,13 @@
     line-height: 1;
   }
 
-  .goal-percent {
-    min-width: 50px;
-    padding: 5px 7px;
-    font-size: 9px;
-    letter-spacing: 0.8px;
-  }
-
   .goal-bar-bg {
     height: 12px;
-  }
-
-  .goal-target {
-    min-width: 0;
-    padding: 0;
-    font-size: 9px;
-    letter-spacing: 0.7px;
   }
 
   .pick-inner {
     gap: var(--space-2);
     padding-top: var(--space-3);
-  }
-
-  .pick-player-selector {
-    font-size: 18px;
-    min-height: 50px;
-    padding: var(--space-3);
   }
 
   .pick-selected-player-card {
@@ -406,15 +326,6 @@
 
   .pick-selected-player-name {
     font-size: 18px;
-  }
-
-  .log-card {
-    padding: var(--space-3);
-  }
-
-  .log-card-title {
-    font-size: 20px;
-    margin-bottom: 10px;
   }
 
   .log-btn {
@@ -563,19 +474,6 @@
     font-size: 13px;
   }
 
-  .history-rate {
-    min-width: 52px;
-    padding: 4px 6px;
-  }
-
-  .history-rate-value {
-    font-size: 14px;
-  }
-
-  .history-rate-label {
-    font-size: 6px;
-  }
-
   .pick-inner {
     gap: 6px;
   }
@@ -597,20 +495,6 @@
 
   .pick-selected-player-name {
     font-size: 16px;
-  }
-
-  .pick-player-selector {
-    font-size: 16px;
-    min-height: 46px;
-  }
-
-  .log-card {
-    padding: var(--space-2) var(--space-3);
-  }
-
-  .log-card-title {
-    font-size: 18px;
-    margin-bottom: var(--space-2);
   }
 
   .log-btn {
@@ -639,17 +523,8 @@
     margin-bottom: 8px;
   }
 
-  .pick-comp-dates {
-    width: 100%;
-    font-size: 14px;
-  }
-
   .comp-detail {
     padding: 12px;
-  }
-
-  .goal-progress-top {
-    align-items: center;
   }
 
   .goal-current {
@@ -659,22 +534,6 @@
   .detail-label {
     font-size: 13px;
     letter-spacing: 1.3px;
-  }
-
-  .detail-label-goal {
-    font-size: 16px;
-  }
-
-  .goal-percent {
-    min-width: 56px;
-    padding: 7px 8px;
-    font-size: 11px;
-  }
-
-  .goal-target {
-    min-width: 0;
-    padding: 0;
-    font-size: 11px;
   }
 
   .pick-comp-goals,
@@ -689,32 +548,9 @@
     padding-right: 14px;
   }
 
-  .goal-day-card {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
   .goal-day-input-shell {
     min-width: 0;
     width: 100%;
-  }
-
-  .admin-date-range-top {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .admin-date-range-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-date-range-summary {
-    text-align: center;
-  }
-
-  .admin-date-range-connector {
-    min-height: 44px;
   }
 
   .admin-log-week-controls .week-nav-btn,
@@ -730,12 +566,6 @@
     font-size: 12px;
   }
 
-  .admin-log-week-display {
-    min-height: 38px;
-    padding: 0 10px;
-    font-size: 15px;
-  }
-
   .admin-log-player-header,
   .admin-log-player-card {
     flex-direction: column;
@@ -744,23 +574,6 @@
 
   .admin-day-buttons {
     gap: 6px;
-  }
-
-  .admin-day-btn {
-    min-height: 40px;
-    padding: 4px;
-  }
-
-  .admin-day-btn-dayname {
-    font-size: 6px;
-  }
-
-  .admin-day-btn-date {
-    font-size: 14px;
-  }
-
-  .admin-log-player-sub {
-    text-align: left;
   }
 
   .admin-log-player-badge {
@@ -779,13 +592,6 @@
 }
 
 @media (max-width: 380px) {
-  .goal-day-name {
-    font-size: 16px;
-  }
-
-  .goal-day-date {
-    font-size: 12px;
-  }
 
   .goal-day-currency {
     width: 38px;

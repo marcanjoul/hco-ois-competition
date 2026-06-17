@@ -354,30 +354,6 @@
   line-height: 1.05;
   margin-top: 3px;
 }
-.history-rate {
-  display: grid;
-  gap: 2px;
-  justify-items: end;
-  min-width: 64px;
-  padding: 6px 8px;
-  border: 1px solid rgba(82, 255, 152, 0.4);
-  background: rgba(82, 255, 152, 0.08);
-}
-.history-rate-value {
-  font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
-  font-size: 14px;
-  letter-spacing: 0.5px;
-  color: var(--green);
-  line-height: 1;
-}
-.history-rate-label {
-  font-family: var(--type-label-family);
-  font-size: 9px;
-  font-weight: var(--type-label-weight);
-  letter-spacing: 0.5px;
-  color: var(--text2);
-  text-transform: uppercase;
-}
 
 @media (max-width: 400px) {
   .stat-row {

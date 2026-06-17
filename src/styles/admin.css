@@ -109,9 +109,6 @@
     font-size: 18px;
     letter-spacing: 5px;
   }
-  .admin-log-stats {
-    grid-template-columns: 1fr;
-  }
   .admin-btn-row {
     flex-direction: column;
   }
@@ -122,22 +119,6 @@
   0%,100% { transform: translateX(0); }
   25% { transform: translateX(-6px); }
   75% { transform: translateX(6px); }
-}
-
-/* ────────────────────────────────────────────────────────────────────────────
-   8. ADMIN PANEL
-   ──────────────────────────────────────────────────────────────────────────── */
-
-/* Admin top bar with lock button
-   Example on the website: the top bar inside admin after you unlock it.
-*/
-.admin-top-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-4) var(--space-4) var(--space-2);
-  gap: var(--space-3);
-  border-bottom: 1px solid var(--border);
 }
 
 .admin-lock-btn {
@@ -256,74 +237,12 @@
   text-transform: uppercase;
 }
 
-.admin-edit-shell {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.admin-edit-group {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 16px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-}
-
-.admin-edit-group-collapsible {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 0;
-}
-
-.admin-edit-group-header {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.admin-edit-group-title {
-  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
-  font-size: var(--type-title-size);
-  letter-spacing: var(--type-title-letter-spacing);
-  color: var(--text);
-  text-transform: uppercase;
-}
-
-.admin-edit-group-sub {
-  font-family: var(--type-caption-family);
-  font-size: var(--type-caption-size);
-  font-weight: var(--type-caption-weight);
-  color: var(--text2);
-}
-
-.admin-edit-group-body {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.admin-edit-field-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.admin-edit-two-col {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
 .admin-edit-actions {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding-top: 6px;
 }
-
 
 .admin-new-comp-section {
   margin-top: 14px;
@@ -724,74 +643,6 @@
   box-shadow: 0 10px 24px rgba(150, 174, 214, 0.12);
 }
 
-.admin-team-tools-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.admin-team-tools-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 0;
-  background: rgba(111, 156, 233, 0.12);
-  color: var(--accent);
-  font-family: var(--type-label-family);
-  font-size: 8px;
-  font-weight: 720;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-.admin-team-tools-title-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  width: 100%;
-}
-
-.admin-team-tools-title {
-  font-family: var(--type-label-family);
-  font-size: 13px;
-  font-weight: 810;
-  line-height: 1;
-  color: var(--text);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.admin-team-tools-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 24px;
-  padding: 5px 9px;
-  border-radius: 0;
-  background: rgba(109, 214, 195, 0.16);
-  border: 1px solid rgba(109, 214, 195, 0.26);
-  color: #2b7f78;
-  font-family: var(--type-label-family);
-  font-size: 7px;
-  font-weight: 720;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.admin-team-tools-sub {
-  margin-top: 8px;
-  color: var(--text2);
-  font-size: 0.96rem;
-  font-weight: 630;
-  line-height: 1.35;
-}
-
 .admin-team-controls {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
@@ -817,19 +668,6 @@
 .admin-team-input-shell {
   position: relative;
 }
-
-.admin-team-search-icon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--accent);
-  font-size: 13px;
-  line-height: 1;
-  pointer-events: none;
-  opacity: 0.85;
-}
-
 
 .admin-team-tools .admin-team-input {
   min-height: 46px;
@@ -898,25 +736,6 @@
 }
 .view-all-btn:hover { opacity: 0.75; }
 
-/* Matches the "Other Players" disclosure toggle in the Orders tab. */
-.view-all-btn-boxed {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  margin-bottom: var(--space-2);
-  background: var(--surface2);
-  text-align: center;
-}
-.view-all-btn-boxed:hover {
-  opacity: 1;
-  border-color: var(--accent);
-}
-
 @media (max-width: 640px) {
   .admin-team-tools {
     padding: 10px;
@@ -925,10 +744,6 @@
 
   .admin-team-controls {
     grid-template-columns: 1fr;
-  }
-
-  .admin-team-tools-title {
-    font-size: 8px;
   }
 
   .admin-new-row-top {
@@ -942,33 +757,10 @@
   }
 }
 
-/* Admin log detail
-   Example on the website: the panel showing one player's numbers for a day.
-*/
-.admin-log-detail-wrap {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: var(--space-4);
-  margin-top: var(--space-3);
-}
-
 .admin-log-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-4); }
 .admin-log-header-info { flex: 1; min-width: 0; }
 .admin-log-header-name { font-weight: 810; font-size: var(--type-body-size); color: var(--text); }
 .admin-log-header-sub { font-family: var(--type-caption-family); font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); color: var(--text2); margin-top: var(--space-1); }
-.admin-log-header-badge { font-family: var(--type-label-family); font-size: 7px; font-weight: var(--type-label-weight); letter-spacing: 0.5px; padding: var(--space-1) var(--space-2); border-radius: var(--radius-xs); white-space: nowrap; flex-shrink: 0; border: 1px solid; }
-.admin-log-header-badge.logged { background: rgba(63,185,80,0.1); color: var(--green); border-color: var(--green); }
-.admin-log-header-badge.not-logged { background: rgba(248,81,73,0.1); color: var(--red); border-color: var(--red); }
-
-.admin-log-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-2); margin-bottom: var(--space-4); }
-.admin-log-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--space-3); text-align: center; }
-.admin-log-stat.accent { background: rgba(26,111,244,0.08); border-color: rgba(26,111,244,0.3); }
-.admin-log-stat-label { font-family: var(--type-label-family); font-size: 7px; font-weight: var(--type-label-weight); letter-spacing: 1px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; }
-.admin-log-stat-value { font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch); font-size: 16px; letter-spacing: 1px; color: var(--text); line-height: 1; }
-.admin-log-stat.accent .admin-log-stat-value { color: var(--accent); }
-
-.admin-log-actions-row { display: flex; gap: var(--space-2); }
 .admin-action-edit, .admin-action-delete {
   flex: 1;
   padding: var(--space-3);
@@ -983,7 +775,6 @@
   color: var(--text);
   min-height: 44px;
 }
-.admin-action-edit:hover { border-color: var(--accent); color: var(--accent); }
 .admin-action-delete:hover { border-color: var(--red); color: var(--red); }
 
 .admin-log-edit-fields {
@@ -1020,17 +811,6 @@
   background: transparent;
 }
 
-.admin-log-week-wrap {
-  margin-bottom: 10px;
-}
-
-.admin-log-week-controls {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 8px;
-  align-items: center;
-}
-
 .admin-log-week-controls .week-nav-btn,
 .admin-day-buttons .week-nav-btn {
   min-width: 52px;
@@ -1043,37 +823,6 @@
   min-width: 40px;
   min-height: 42px;
   font-size: 11px;
-}
-
-.admin-log-week-input-wrap {
-  position: relative;
-  display: block;
-  cursor: pointer;
-}
-
-.admin-log-week-display {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 52px;
-  padding: 0 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface2);
-  color: var(--text);
-  font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
-  font-size: 13px;
-  letter-spacing: 0.4px;
-  text-align: center;
-}
-
-.admin-log-week-picker-native {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
 }
 
 .admin-log-player-wrap {
@@ -1296,10 +1045,6 @@
   font-weight: 630;
 }
 
-.admin-log-detail-empty {
-  margin: 0;
-}
-
 .admin-logs-comp-picker {
   margin-bottom: var(--space-4);
 }
@@ -1315,47 +1060,6 @@
   margin-bottom: var(--space-3);
   overflow-x: auto;
 }
-
-.admin-day-btn {
-  flex: 1;
-  min-width: 0;
-  padding: var(--space-2);
-  border-radius: var(--radius-xs);
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  color: var(--text2);
-  font-family: var(--type-label-family);
-  font-size: 7px;
-  font-weight: var(--type-label-weight);
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  transition: all 0.15s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  min-height: 56px;
-  transform-origin: center;
-}
-
-.admin-day-btn-dayname {
-  font-size: 6px;
-  font-weight: 720;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.admin-day-btn-date { font-size: 14px; font-weight: 810; line-height: 1; }
-
-.admin-day-btn:hover { border-color: var(--accent); color: var(--text); }
-.admin-day-btn.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: white;
-  transform: scale(1.08);
-}
-.admin-day-btn.disabled { opacity: 0.25; cursor: not-allowed; pointer-events: none; }
 
 /* Goal admin blocks
    Example on the website: cards used to edit competition goals in admin.
@@ -1374,80 +1078,8 @@
   border: 0;
   padding: 0;
 }
-.goal-admin-label { font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch); font-size: var(--type-title-size); letter-spacing: 1px; color: var(--text); margin-bottom: 4px; }
-.goal-admin-hint { font-family: var(--type-caption-family); font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); color: var(--text2); margin-bottom: var(--space-3); }
 .goal-admin-input-shell {
   margin-top: 8px;
-}
-.admin-date-range {
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-}
-.admin-date-range-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-.admin-date-range-summary {
-  display: none;
-}
-.admin-date-range-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  align-items: end;
-  gap: 12px;
-}
-.admin-date-field {
-  display: grid;
-  gap: 6px;
-  min-width: 0;
-}
-.admin-date-input {
-  width: 100%;
-}
-.admin-date-range-connector {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 42px;
-  min-height: 52px;
-  padding: 0 8px;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: var(--accent);
-  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
-  font-size: 18px;
-  line-height: 1;
-}
-.goal-day-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px 12px;
-  border: 2px solid var(--card-border-color);
-  border-radius: 0;
-  background: var(--card-bg);
-}
-.goal-day-meta {
-  min-width: 0;
-}
-.goal-day-name {
-  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
-  font-size: 13px;
-  color: var(--text);
-  margin-bottom: 3px;
-  white-space: nowrap;
-}
-.goal-day-date {
-  font-family: var(--type-caption-family);
-  font-size: 9px;
-  font-weight: 630;
-  color: var(--text3);
 }
 .goal-day-input-shell {
   position: relative;

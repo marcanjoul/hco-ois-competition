@@ -85,7 +85,6 @@
   --type-label-letter-spacing: 1px;
 }
 
-
 /* Border-radius overrides are no longer needed here.
    --radius-pill, --radius-sheet, --radius-option, --radius-circle are all set
    to 0 in :root above, so the base CSS variables cascade correctly. */
@@ -117,8 +116,6 @@
   height: var(--header-height);
   padding: 0 18px;
 }
-
-
 
 .dash-name,
 .dash-comp-badge,
@@ -318,11 +315,6 @@ body::after {
   text-shadow: none;
 }
 
-.pick-countdown-num.urgent {
-  color: var(--red);
-  text-shadow: none;
-}
-
 .pick-countdown-num.last-day {
   color: var(--red);
   font-size: 31px;
@@ -334,20 +326,6 @@ body::after {
   color: #05102a;
   background: var(--accent);
   border-color: var(--accent);
-}
-
-.pick-comp-dates {
-  display: block;
-  margin: -2px 0 10px;
-  padding: 0;
-  background: transparent;
-  color: var(--text2);
-  border: 0 !important;
-  box-shadow: none !important;
-  font-family: "Science Gothic", sans-serif;
-  font-size: 14px;
-  letter-spacing: 0.8px;
-  text-transform: none;
 }
 
 .pick-goals-toggle,
@@ -375,23 +353,6 @@ body::after {
   line-height: 1;
   text-align: right;
   text-shadow: none;
-}
-
-.goal-target {
-  color: var(--text2);
-  background: transparent;
-  border: 0 !important;
-  font-family: "Science Gothic", sans-serif;
-  font-size: 14px;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  text-shadow: none;
-}
-
-.goal-target-hit {
-  color: #52ff98;
-  background: transparent;
-  border-color: transparent !important;
 }
 
 .goal-current {
@@ -518,7 +479,6 @@ body::after {
   box-shadow: 1px 1px 0 var(--shadow-ink) !important;
 }
 
-
 .mini-btn:not(.btn-ghost) {
   background: var(--accent) !important;
   color: #06102b !important;
@@ -620,21 +580,6 @@ body::after {
   border: 2px solid var(--card-border-color) !important;
   background: var(--surface-card) !important;
   box-shadow: 2px 2px 0 var(--shadow-ink) !important;
-}
-
-.admin-log-week-display {
-  color: #ffd84d;
-  font-family: "Science Gothic", sans-serif;
-  font-weight: 720;
-  font-size: 20px;
-  letter-spacing: 0.5px;
-  text-shadow: none;
-}
-
-.admin-log-week-input-wrap:hover .admin-log-week-display,
-.admin-log-week-input-wrap:focus-within .admin-log-week-display {
-  border-color: #47d7ff !important;
-  background: var(--surface-lift) !important;
 }
 
 .admin-log-player-title {
@@ -781,18 +726,6 @@ body::after {
   color: #ffd6ef;
 }
 
-#pick-player-list .name-btn {
-  min-height: 50px;
-  padding: 8px 10px;
-  gap: 10px;
-}
-
-#pick-player-list .name-btn > span:last-child,
-#pick-player-list .name-btn > div {
-  font-size: 16px;
-  line-height: 1.05;
-}
-
 #pick-player-list .avatar-small,
 #pick-player-results .avatar-small {
   width: 38px;
@@ -841,20 +774,6 @@ body::after {
   letter-spacing: 1px;
 }
 
-/* ── Unified dropdown arrow ── */
-.pick-player-selector::after {
-  content: "▼";
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-family: "Science Gothic", sans-serif;
-  font-size: 8px;
-  color: var(--accent);
-  text-shadow: none;
-  pointer-events: none;
-}
-
 /* select can't use ::after — use a bigger pixel-triangle instead */
 select.log-input {
   padding-right: 54px !important;
@@ -871,32 +790,12 @@ select.log-input {
   background-color: #050d27 !important;
 }
 
-.pick-player-selector {
-  font-size: 24px !important;
-  color: #fff2a8 !important;
-  min-height: 52px;
-  padding: 10px 44px 10px 12px !important;
-  text-shadow: none;
-}
-
-.pick-player-selector.has-selection {
-  font-size: 20px !important;
-  color: var(--text) !important;
-  text-shadow: none;
-}
-
 /* ── Dropdown open/focus state — shared across all three ── */
 .pick-player-selector.open,
 select.log-input:focus {
   border-color: var(--accent2) !important;
   background: #0d2060 !important;
   box-shadow: 2px 2px 0 var(--shadow-ink), 0 0 0 2px rgba(71, 215, 255, 0.22) !important;
-}
-
-.pick-player-selector.open::after {
-  color: var(--text2);
-  text-shadow: none;
-  transform: translateY(-50%) rotate(180deg);
 }
 
 select.log-input:focus {
@@ -964,22 +863,6 @@ select.log-input:focus {
   background:
     linear-gradient(180deg, rgba(16, 30, 85, 0.98), rgba(7, 15, 41, 0.98)) !important;
   border: 2px solid var(--card-border-color) !important;
-}
-
-.admin-edit-group {
-  background:
-    linear-gradient(180deg, rgba(16, 30, 85, 0.98), rgba(7, 15, 41, 0.98)) !important;
-  border: 2px solid var(--card-border-color) !important;
-  box-shadow: var(--shadow) !important;
-}
-
-.admin-edit-group-title {
-  color: var(--accent);
-  text-shadow: none;
-}
-
-.admin-edit-group-sub {
-  color: var(--text2);
 }
 
 .dash-profile-kicker {
@@ -1135,14 +1018,6 @@ select.log-input:focus {
   box-shadow: 2px 2px 0 var(--shadow-ink) !important;
 }
 
-.status-badge.active {
-  background: var(--accent2) !important;
-  color: #07122f !important;
-  border: 2px solid #47d7ff !important;
-  border-radius: 0 !important;
-  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
-}
-
 .site-banner {
   background: #2c184d;
   color: #ffd6ef;
@@ -1172,10 +1047,6 @@ select.log-input:focus {
   margin-bottom: 10px;
 }
 
-.admin-team-tools-header {
-  margin-bottom: 6px;
-}
-
 .admin-team-controls {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
   align-items: end;
@@ -1184,26 +1055,6 @@ select.log-input:focus {
 
 .admin-team-field {
   gap: 4px;
-}
-
-.admin-team-tools-title {
-  font-family: "Science Gothic", sans-serif !important;
-  font-weight: 720 !important;
-  font-size: 18px !important;
-  line-height: 1;
-  color: #ffd84d !important;
-  text-shadow: none;
-}
-
-.admin-team-tools-count {
-  min-height: 26px;
-  padding: 4px 9px;
-  border: 2px solid #47d7ff;
-  border-radius: 0;
-  background: #07122f;
-  color: var(--text2);
-  font-size: 11px;
-  box-shadow: 2px 2px 0 #050816;
 }
 
 .admin-team-field-label {
@@ -1292,66 +1143,6 @@ select.log-input:focus {
   color: var(--text) !important;
 }
 
-.admin-date-range {
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-.history-rate {
-  border: 2px solid #52ff98;
-  background: #0f3925;
-  box-shadow: 2px 2px 0 var(--shadow-ink);
-}
-
-.history-rate-value {
-  color: #52ff98;
-  text-shadow: none;
-}
-
-.history-rate-label {
-  color: var(--text2);
-}
-
-.admin-date-range-summary {
-  display: none;
-}
-
-.admin-date-range-connector {
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: #fff2a8;
-  text-shadow: none;
-}
-
-.admin-date-input {
-  min-height: 74px;
-}
-
-.goal-day-card {
-  border: 2px solid var(--card-border-color);
-  border-radius: 0;
-  background:
-    linear-gradient(180deg, rgba(14, 28, 78, 0.98), rgba(8, 16, 46, 0.98));
-  box-shadow: 2px 2px 0 var(--shadow-ink);
-}
-
-.goal-day-name {
-  color: var(--text2);
-  font-size: 13px;
-  text-shadow: none;
-}
-
-.goal-day-date {
-  color: #6e95ff;
-  font-family: "Science Gothic", sans-serif;
-  font-weight: 630;
-  font-size: 11px;
-  letter-spacing: 0.6px;
-}
-
 .goal-day-input-shell {
   min-width: 122px;
 }
@@ -1381,16 +1172,8 @@ select.log-input:focus {
   border-color: #47d7ff !important;
 }
 
-.comp-status-chip.comp-status-active {
-  color: var(--green) !important;
-}
-
 .comp-status-chip.comp-status-upcoming {
   color: var(--gold) !important;
-}
-
-.comp-status-chip.comp-status-closed {
-  color: var(--red) !important;
 }
 
 .comp-status-chip.comp-status-edit {
@@ -1399,10 +1182,6 @@ select.log-input:focus {
 
 .comp-status-chip.comp-status-delete {
   color: #ff5d73 !important;
-}
-
-.comp-status-chip.comp-status-archived {
-  color: var(--text2) !important;
 }
 
 .admin-team-tools-count,
@@ -1491,22 +1270,6 @@ select.log-input:focus {
     text-align: center;
   }
 
-  .goal-day-card {
-    gap: 8px;
-    padding: 7px 8px;
-    box-shadow: 2px 2px 0 var(--shadow-ink);
-  }
-
-  .goal-day-name {
-    font-size: 14px;
-    line-height: 1;
-  }
-
-  .goal-day-date {
-    font-size: 11px;
-    line-height: 1;
-  }
-
   .goal-day-input-shell {
     min-width: 126px;
     padding-left: 34px;
@@ -1522,10 +1285,6 @@ select.log-input:focus {
     padding: 5px 8px;
     font-size: 14px;
   }
-}
-
-.admin-team-search-icon {
-  color: var(--accent);
 }
 
 .admin-item-name,
@@ -1633,12 +1392,6 @@ select.log-input:focus {
     margin-bottom: 1px;
   }
 
-  .pick-comp-dates {
-    margin-bottom: 8px;
-    padding: 0;
-    font-size: 11px;
-  }
-
   .pick-goals-toggle {
     min-height: 0;
     padding: 8px 8px;
@@ -1662,33 +1415,8 @@ select.log-input:focus {
     letter-spacing: 0;
   }
 
-  .goal-target {
-    min-width: 0;
-    padding: 0;
-    font-size: 7px;
-    letter-spacing: 0.8px;
-  }
-
-  .goal-percent {
-    min-width: 54px;
-    padding: 6px 8px;
-    font-size: 8px;
-  }
-
   .goal-bar-bg {
     height: 18px;
-  }
-
-  .admin-date-input {
-    min-height: 46px;
-  }
-
-  .log-card {
-    padding: 9px;
-  }
-
-  .log-card-title {
-    font-size: 16px;
   }
 
   .log-card-body-inner {
@@ -1721,7 +1449,6 @@ select.log-input:focus {
     gap: 8px;
     margin-bottom: 7px !important;
   }
-
 
   .pick-step-num {
     width: 20px;
@@ -1771,13 +1498,6 @@ select.log-input:focus {
     font-size: 10px;
   }
 
-
-  .pick-player-selector {
-    min-height: 42px;
-    padding: 7px 9px !important;
-    font-size: 18px !important;
-  }
-
   .log-input,
   #input-pin {
     font-size: 16px;
@@ -1786,17 +1506,6 @@ select.log-input:focus {
   #pick-player-grid .log-input {
     min-height: 36px;
     padding: 6px 8px;
-    font-size: 14px;
-  }
-
-  #pick-player-list .name-btn {
-    min-height: 48px;
-    padding: 7px 9px;
-    gap: 9px;
-  }
-
-  #pick-player-list .name-btn > span:last-child,
-  #pick-player-list .name-btn > div {
     font-size: 14px;
   }
 
@@ -1830,7 +1539,6 @@ select.log-input:focus {
     width: 14px;
     height: 14px;
   }
-
 
   .admin-item-name,
   .comp-status-chip,
@@ -2623,11 +2331,6 @@ button.btn-disabled:hover,
   text-shadow: none !important;
 }
 
-#screen-pick .pick-comp-dates {
-  text-shadow: none !important;
-  filter: none !important;
-}
-
 /* Competition ended reveal — background now driven by --modal-overlay-heavy in :root */
 
 .competition-ended-content {
@@ -2851,10 +2554,6 @@ button.btn-disabled:hover,
   .pick-success-state {
     gap: 10px;
     padding: 12px 8px;
-  }
-
-  .pick-success-checkmark {
-    font-size: 29px;
   }
 
   .pick-success-title {
@@ -3304,13 +3003,6 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   letter-spacing: 1.5px !important;
 }
 
-/* Shrink player selector slightly */
-.pick-player-selector {
-  font-size: 20px !important;
-  min-height: 46px !important;
-  padding: 9px 44px 9px 12px !important;
-}
-
 /* Shrink all log inputs so they sit below the step headers visually */
 .log-input,
 #input-pin {
@@ -3496,13 +3188,6 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   to   { opacity: 1; transform: scale(1); }
 }
 
-/* ── Nav buttons rise from the bottom one by one (crescendo) ──
-   Delayed until ACT 1 is done. Gaps increase (120ms → 140ms) for the build.
-   Spring coefficient 1.25 adds pop without clashing with the flat aesthetic. ── */
-.boot-nav-enter .nav-btn {
-  animation: nav-btn-rise 0.40s cubic-bezier(0.34, 1.25, 0.64, 1) both;
-}
-
 .boot-nav-enter .nav-btn:nth-child(1) { animation-delay: 0.56s; }
 .boot-nav-enter .nav-btn:nth-child(2) { animation-delay: 0.68s; }
 .boot-nav-enter .nav-btn:nth-child(3) { animation-delay: 0.82s; }
@@ -3562,15 +3247,6 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   color: var(--text2) !important;
 }
 
-/* ── Success checkmark: pixel green ── */
-.pick-success-checkmark {
-  font-family: "Science Gothic", sans-serif;
-  font-size: 28px !important;
-  color: var(--green);
-  text-shadow: none;
-  letter-spacing: 2px;
-}
-
 /* ── Success state fade-in ── */
 .pick-success-state.visible {
   animation: success-panel-in 0.22s ease both !important;
@@ -3627,7 +3303,6 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
     2px 2px 0 rgba(0, 0, 0, 0.62),
     0 0 24px rgba(71, 215, 255, 0.45) !important;
 }
-
 
 /* ── Minimal 4px border radius for all borders ── */
 .ois-step-card,

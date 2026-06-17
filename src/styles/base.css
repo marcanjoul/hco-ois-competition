@@ -248,12 +248,6 @@ input[type="number"] { -moz-appearance: textfield; }
   }
 }
 
-.scroll-y {
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-}
-
 /* ── APP HEADER ──
    Example on the website: the thin top bar that shows player/competition info.
 */
@@ -296,21 +290,6 @@ input[type="number"] { -moz-appearance: textfield; }
   color: var(--accent);
   margin-top: 2px;
   text-transform: uppercase;
-}
-
-.app-header-info-btn {
-  flex-shrink: 0;
-  background: rgba(26,111,244,0.1);
-  border: 1px solid rgba(26,111,244,0.3);
-  border-radius: var(--radius-xs);
-  width: 40px; height: 40px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  color: var(--accent);
-  transition: all 0.2s;
-}
-.app-header-info-btn:hover {
-  background: rgba(26,111,244,0.2);
 }
 
 /* ── BOTTOM NAV ──

@@ -133,22 +133,6 @@
   padding: 0 0 4px;
 }
 
-.pick-comp-dates {
-  display: block;
-  margin: 0 0 8px;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  font-family: var(--type-label-family);
-  font-size: 9px;
-  font-weight: var(--type-label-weight);
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: var(--text2);
-  opacity: 0.9;
-}
-
 /* Countdown row */
 .pick-comp-hero-row {
   display: flex;
@@ -169,140 +153,6 @@
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
 }
 
-.pick-countdown-copy {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 6px;
-}
-
-.pick-countdown-kicker,
-.pick-countdown-end {
-  font-family: var(--type-label-family);
-  font-size: 9px;
-  font-weight: var(--type-label-weight);
-  letter-spacing: 1px;
-  color: var(--text3);
-  text-transform: uppercase;
-}
-
-.pick-countdown-end {
-  color: var(--text2);
-}
-
-.pick-countdown-status {
-  font-family: var(--type-label-family);
-  font-size: 9px;
-  font-weight: var(--type-label-weight);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.pick-countdown-led {
-  width: 8px;
-  height: 8px;
-  border-radius: 0;
-  background: var(--accent);
-}
-
-.pick-countdown-ticker {
-  width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-  font-family: var(--type-label-family);
-  font-size: 9px;
-  font-weight: var(--type-label-weight);
-  letter-spacing: 1px;
-  color: var(--text3);
-  text-transform: uppercase;
-}
-
-.pick-countdown-ticker span {
-  display: inline-block;
-  padding-right: 18px;
-}
-
-.pick-countdown-days {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-}
-
-.pick-countdown-day {
-  min-width: 36px;
-  padding: 5px 6px;
-  border-radius: var(--radius-xs);
-  background: rgba(26,111,244,0.08);
-  border: 1px solid rgba(26,111,244,0.12);
-  text-align: center;
-  color: var(--text2);
-}
-
-.pick-countdown-day-name,
-.pick-countdown-day-num {
-  display: block;
-}
-
-.pick-countdown-day-name {
-  font-family: var(--type-label-family);
-  font-size: 8px;
-  font-weight: var(--type-label-weight);
-  letter-spacing: 0.7px;
-  text-transform: uppercase;
-}
-
-.pick-countdown-day-num {
-  font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
-  font-size: 13px;
-  line-height: 1;
-}
-
-.pick-countdown-day.past {
-  opacity: 0.38;
-}
-
-.pick-countdown-day.today {
-  color: var(--accent);
-  border-color: var(--accent);
-  background: rgba(26,111,244,0.14);
-}
-
-.pick-countdown-track {
-  position: relative;
-  height: 30px;
-  border-radius: 0;
-  background: rgba(26,111,244,0.12);
-  overflow: hidden;
-}
-
-.pick-countdown-track-label {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  font-family: var(--type-label-family);
-  font-size: 9px;
-  font-weight: var(--type-label-weight);
-  letter-spacing: 0.8px;
-  color: var(--text3);
-}
-
-.pick-countdown-track-label.start { left: 10px; }
-.pick-countdown-track-label.finish { right: 10px; }
-
-.pick-countdown-runner {
-  position: absolute;
-  top: 50%;
-  width: 18px;
-  height: 18px;
-  border-radius: 0;
-  transform: translate(-50%, -50%);
-  background: var(--accent);
-  box-shadow: 0 4px 12px rgba(26,111,244,0.22);
-}
-
 .pick-countdown-num {
   font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
   font-size: 48px;
@@ -312,7 +162,6 @@
   text-shadow: 0 10px 22px rgba(26,111,244,0.18);
   transition: color 0.3s;
 }
-.pick-countdown-num.urgent { color: var(--red); animation: pulse-urgent 1.2s ease-in-out infinite; }
 .pick-countdown-num.ended { color: var(--gold); }
 
 @keyframes pulse-urgent {
@@ -328,54 +177,6 @@
   color: var(--text2);
   text-transform: uppercase;
   margin-bottom: 3px;
-}
-
-.pick-countdown-meter {
-  position: relative;
-  height: 8px;
-  width: 100%;
-  border-radius: 0;
-  overflow: hidden;
-  background: rgba(26,111,244,0.12);
-  box-shadow: inset 0 1px 2px rgba(15,25,35,0.08);
-}
-
-.pick-countdown-meter-fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 0;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  transition: width 0.7s cubic-bezier(0.34,1.2,0.64,1);
-}
-
-.pick-comp-days-left {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  padding: 2px 0 8px;
-}
-
-.pick-comp-days-num {
-  font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
-  font-size: 23px;
-  line-height: 1;
-  font-weight: 810;
-}
-
-.pick-comp-days-num.last-day {
-  font-size: 20px;
-  text-transform: uppercase;
-}
-
-.pick-comp-days-label {
-  font-family: var(--type-label-family);
-  font-size: 9px;
-  font-weight: var(--type-label-weight);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--text2);
 }
 
 /* Goal bars — collapsible section */
@@ -476,10 +277,6 @@
   margin-bottom: var(--space-2);
 }
 
-.pick-step-header-first {
-  margin-bottom: var(--space-2);
-}
-
 .pick-step-num {
   width: 20px; height: 20px;
   border-radius: 0;
@@ -555,75 +352,6 @@
   font-family: var(--type-body-family);
 }
 
-/* Player selector trigger button */
-.pick-player-selector-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  margin-bottom: var(--space-2);
-}
-.pick-player-selector-wrap.hidden { display: none; }
-
-.pick-player-selector {
-  width: 100%;
-  padding: 12px 14px;
-  text-align: left;
-  background: var(--bg);
-  border: 2px solid var(--accent);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-family: var(--type-body-family);
-  font-size: 16px;
-  font-weight: 810;
-  color: var(--text);
-  transition: all 0.2s;
-  position: relative;
-  padding-right: 36px;
-  min-height: 52px;
-  box-shadow: 0 0 0 4px rgba(26,111,244,0.08);
-}
-.pick-player-selector::after {
-  content: '▼';
-  position: absolute;
-  right: var(--space-4);
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 8px;
-  color: var(--accent);
-}
-.pick-player-selector:hover {
-  background: var(--surface);
-  border-color: var(--accent2);
-}
-.pick-player-selector.has-selection {
-  color: var(--text);
-  border-color: var(--border);
-  background: var(--bg);
-  box-shadow: none;
-  font-size: 14px;
-}
-
-/* Player grid */
-.pick-player-grid {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 8px;
-  margin-bottom: var(--space-2);
-  max-height: 360px;
-}
-.pick-player-grid.hidden { display: none; }
-
-.pick-player-grid .search-wrap {
-  margin-bottom: 8px;
-}
-
-.pick-player-grid .log-input {
-  min-height: 44px;
-  padding: 8px 10px;
-  font-size: 14px;
-}
-
 /* Selected player profile card */
 #pick-player-profile { margin-bottom: var(--space-3); }
 
@@ -682,16 +410,6 @@
   min-width: 0;
 }
 
-.pick-selected-player-eyebrow {
-  font-family: var(--type-label-family);
-  font-size: 8px;
-  font-weight: var(--type-label-weight);
-  letter-spacing: 1.5px;
-  color: var(--accent);
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-
 .pick-selected-player-name {
   font-size: 14px;
   line-height: 1.05;
@@ -720,121 +438,6 @@
   pointer-events: auto;
 }
 
-.pick-avatar-upload-sheet {
-  width: min(100%, 460px);
-  background: var(--surface);
-  border: 1px solid rgba(15,25,35,0.08);
-  border-radius: var(--radius-sheet);
-  box-shadow: var(--shadow-card);
-  padding: var(--space-4);
-  transform: translateY(18px);
-  transition: transform 0.18s ease;
-}
-
-.pick-avatar-upload-modal.active .pick-avatar-upload-sheet {
-  transform: translateY(0);
-}
-
-.pick-avatar-upload-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.pick-avatar-upload-title {
-  font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
-  font-size: 20px;
-  letter-spacing: 1.5px;
-  color: var(--text);
-}
-
-.pick-avatar-upload-close {
-  width: 36px;
-  height: 36px;
-  border-radius: 0;
-  color: var(--text2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  transition: all 0.18s ease;
-}
-
-.pick-avatar-upload-close:hover {
-  background: var(--surface2);
-  color: var(--text);
-}
-
-.pick-avatar-upload-subtitle {
-  margin-top: 6px;
-  color: var(--text2);
-  font-size: 12px;
-  font-weight: 630;
-}
-
-.pick-avatar-upload-actions {
-  display: grid;
-  gap: var(--space-3);
-  margin-top: var(--space-4);
-}
-
-.pick-avatar-upload-option {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  text-align: left;
-  padding: 14px 16px;
-  border-radius: var(--radius-option);
-  background: linear-gradient(180deg, rgba(26,111,244,0.08) 0%, rgba(26,111,244,0.03) 100%);
-  border: 1px solid rgba(26,111,244,0.14);
-  transition: all 0.18s ease;
-}
-
-.pick-avatar-upload-option:hover {
-  border-color: rgba(26,111,244,0.28);
-  transform: translateY(-1px);
-}
-
-.pick-avatar-upload-option-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 0;
-  background: var(--surface);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-.pick-avatar-upload-option-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.pick-avatar-upload-option-copy strong {
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 630;
-}
-
-.pick-avatar-upload-option-copy span {
-  color: var(--text2);
-  font-size: 10px;
-  font-weight: 630;
-}
-
-.pick-selected-player-hint {
-  margin-top: 6px;
-  font-size: 11px;
-  font-weight: 630;
-  color: var(--text2);
-}
-
 .pick-selected-clear-btn {
   width: 28px;
   height: 28px;
@@ -861,62 +464,13 @@
   transform: scale(0.96);
 }
 
-
-
-/* Player name buttons inside the grid */
-.name-btn {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
-  text-align: left;
-  font-family: var(--type-body-family);
-  font-weight: 630;
-  font-size: 12px;
-  color: var(--text);
-  cursor: pointer;
-  transition: all 0.15s ease;
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: var(--space-2);
-  overflow: hidden;
-  position: relative;
-}
-
 #pick-player-list {
   max-height: 260px;
-}
-.name-btn:hover {
-  border-color: var(--accent);
-  background: rgba(26,111,244,0.08);
-  transform: translateY(-1px);
-}
-.name-btn:active { transform: scale(0.97); }
-.name-btn.selected {
-  border-color: var(--accent);
-  background: rgba(26,111,244,0.12);
-}
-.name-btn-winner {
-  border-color: var(--gold);
-  background: rgba(245,166,35,0.08);
 }
 
 .rank-pip {
   font-size: 12px;
   flex-shrink: 0;
-}
-
-/* ── LOG CARD ──
-   Example on the website: the large "INSERT OIS" card.
-*/
-.log-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border-color);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3);
-  box-shadow: var(--shadow-card);
 }
 
 /* ── OIS FLOW: trigger button + connector lines + step cards ── */
@@ -1468,14 +1022,6 @@
   border-color: var(--border);
 }
 
-.log-input.center {
-  text-align: center;
-  font-size: 23px;
-  letter-spacing: 8px;
-  font-weight: 630;
-  color: var(--accent);
-}
-
 select.log-input {
   cursor: pointer;
   padding-right: 36px;
@@ -1546,14 +1092,6 @@ select.log-input:focus { background-color: var(--surface); }
   animation: none;
 }
 
-/* Success state */
-.log-btn.btn-success {
-  background: var(--green);
-  border: none;
-  color: white;
-  animation: none;
-}
-
 /* ── LOCKED STATE BANNER ── */
 .log-locked-note {
   display: none;
@@ -1583,11 +1121,6 @@ select.log-input:focus { background-color: var(--surface); }
   box-shadow: var(--shadow-card);
 }
 .pick-success-state.visible { display: flex; }
-
-.pick-success-checkmark {
-  font-size: 39px;
-  animation: success-pop 0.4s cubic-bezier(0.34,1.56,0.64,1);
-}
 
 @keyframes success-pop {
   0% { transform: scale(0); opacity: 0; }
@@ -1686,18 +1219,6 @@ select.log-input:focus { background-color: var(--surface); }
     drop-shadow(0 -1px 0 rgba(6, 16, 43, 0.85));
 }
 
-.pick-success-reset {
-  background: none;
-  border: none;
-  color: var(--text3);
-  font-family: var(--type-label-family);
-  font-size: var(--type-label-size);
-  font-weight: var(--type-label-weight);
-  cursor: pointer;
-  padding: var(--space-2);
-  text-decoration: underline;
-}
-
 /* ── GOAL BARS ──
    Example on the website: the progress bars inside the competition card.
 */
@@ -1724,13 +1245,6 @@ select.log-input:focus { background-color: var(--surface); }
   text-transform: uppercase;
 }
 
-.goal-progress-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: var(--space-2);
-}
-
 .goal-current {
   font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
   font-size: 16px;
@@ -1738,13 +1252,6 @@ select.log-input:focus { background-color: var(--surface); }
   color: var(--text);
 }
 .goal-current.goal-hit { color: var(--green); }
-
-.goal-target {
-  font-family: var(--type-small-family);
-  font-size: var(--type-small-size);
-  font-weight: var(--type-small-weight);
-  color: var(--text3);
-}
 
 .goal-bar-bg {
   height: 6px;
@@ -1784,20 +1291,10 @@ select.log-input:focus { background-color: var(--surface); }
   text-transform: uppercase;
   line-height: 1.2;
 }
-
-.detail-label-goal {
-  color: var(--accent);
-  font-size: 14px;
-  letter-spacing: 1px;
-}
 .goal-progress {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.comp-detail-spaced {
-  margin-top: 12px;
 }
 
 .goal-progress-top,
@@ -1830,29 +1327,6 @@ select.log-input:focus { background-color: var(--surface); }
 .goal-current.goal-hit {
   color: #25a95c;
   text-shadow: none;
-}
-
-.goal-percent,
-.goal-target {
-  align-self: center;
-  flex-shrink: 0;
-  min-width: 0;
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-  color: #55718f;
-  font-family: var(--type-label-family);
-  font-size: 9px;
-  font-weight: var(--type-label-weight);
-  letter-spacing: 1px;
-  text-align: right;
-  text-transform: uppercase;
-}
-
-.goal-percent-hit,
-.goal-target-hit {
-  background: rgba(63,185,80,0.14);
-  color: var(--green);
 }
 
 .goal-percent-inline {
