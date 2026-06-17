@@ -51,9 +51,7 @@ Associates log their daily order counts, the app handles the math (sales-per-hou
 ## Roadmap
 
 - [ ] Exportable reports for managers (CSV/PDF)
-- [ ] Competition history archive
 - [ ] Richer player profiles — streaks, personal bests, stats over time
-- [ ] Improved input validation and admin audit log
 
 ---
 
