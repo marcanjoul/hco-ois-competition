@@ -45,7 +45,7 @@
 
 .board-comp-name {
   font-family: var(--type-body-family);
-  font-size: 28px;
+  font-size: 23px;
   font-weight: 630;
   color: var(--accent);
   text-align: center;
@@ -61,7 +61,7 @@
   justify-content: center;
   color: var(--text2);
   font-family: var(--type-label-family);
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 810;
   cursor: pointer;
   transition: all 0.15s;
@@ -89,7 +89,7 @@
 
 .board-comp-status {
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -187,7 +187,7 @@
   background: rgba(26,111,244,0.12);
   color: var(--accent);
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 8px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -247,7 +247,7 @@
   left: 50%;
   bottom: 4px;
   transform: translateX(-50%);
-  font-size: 22px;
+  font-size: 18px;
   line-height: 1;
   z-index: 2;
 }
@@ -265,7 +265,7 @@
 
 .board-rank-num {
   font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
-  font-size: 20px;
+  font-size: 16px;
   line-height: 1;
   color: var(--text);
   text-align: center;
@@ -294,7 +294,7 @@
   border: 0;
   border-radius: 10px;
   font-family: var(--type-body-family);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 720;
   letter-spacing: 0.6px;
   line-height: 1;
@@ -326,7 +326,7 @@
 .board-name {
   font-family: var(--type-body-family);
   font-weight: 810;
-  font-size: 15px;
+  font-size: 13px;
   flex: 1 1 auto;
   min-width: 0;
   white-space: nowrap;
@@ -334,13 +334,13 @@
   text-overflow: ellipsis;
   color: var(--text);
 }
-.board-card.rank-1 .board-name { font-size: 18px; }
-.board-card.rank-2 .board-name { font-size: 17px; }
-.board-card.rank-3 .board-name { font-size: 16px; }
+.board-card.rank-1 .board-name { font-size: 14px; }
+.board-card.rank-2 .board-name { font-size: 14px; }
+.board-card.rank-3 .board-name { font-size: 13px; }
 
 .winner-label {
   font-family: var(--type-label-family);
-  font-size: 8px;
+  font-size: 6px;
   line-height: 1;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
@@ -355,7 +355,7 @@
 
 .past-player-label {
   font-family: var(--type-label-family);
-  font-size: 8px;
+  font-size: 6px;
   line-height: 1.5;
   font-weight: var(--type-label-weight);
   letter-spacing: 0.4px;
@@ -370,7 +370,7 @@
 
 .board-meta {
   font-family: var(--type-caption-family);
-  font-size: 16px;
+  font-size: 13px;
   font-weight: var(--type-caption-weight);
   color: var(--text2);
   line-height: 1.15;
@@ -385,18 +385,18 @@
 
 .board-sph {
   font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
-  font-size: 17px;
+  font-size: 14px;
   letter-spacing: 1px;
   text-align: right;
   flex-shrink: 0;
   line-height: 1;
   color: var(--text);
 }
-.board-card.rank-1 .board-sph { font-size: 20px; color: var(--gold); }
+.board-card.rank-1 .board-sph { font-size: 16px; color: var(--gold); }
 
 .board-sph-label {
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   color: var(--text3);
@@ -418,10 +418,10 @@
   flex: 1;
 }
 
-.board-empty-icon { font-size: 48px; }
+.board-empty-icon { font-size: 39px; }
 .board-empty-title {
   font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
-  font-size: 22px;
+  font-size: 18px;
   letter-spacing: 2px;
   color: var(--text);
   line-height: 1.2;
@@ -440,7 +440,7 @@
   padding: var(--space-3) var(--space-4);
   color: white;
   font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
-  font-size: 18px;
+  font-size: 14px;
   letter-spacing: 1.2px;
   cursor: pointer;
   box-shadow: var(--glow-accent);

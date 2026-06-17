@@ -48,7 +48,7 @@
   width: 40px;
   height: 40px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 23px;
+  font-size: 19px;
   font-weight: 810;
   color: var(--text) !important;
   font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
@@ -122,7 +122,7 @@
 /* Competition name — huge, dominant */
 .pick-comp-name {
   font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
-  font-size: 24px;
+  font-size: 20px;
   letter-spacing: 1px;
   color: var(--text);
   line-height: 1;
@@ -140,7 +140,7 @@
   border: 0;
   box-shadow: none;
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 0.8px;
   text-transform: uppercase;
@@ -178,7 +178,7 @@
 .pick-countdown-kicker,
 .pick-countdown-end {
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   color: var(--text3);
@@ -191,7 +191,7 @@
 
 .pick-countdown-status {
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -210,7 +210,7 @@
   overflow: hidden;
   white-space: nowrap;
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   color: var(--text3);
@@ -246,7 +246,7 @@
 
 .pick-countdown-day-name {
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 8px;
   font-weight: var(--type-label-weight);
   letter-spacing: 0.7px;
   text-transform: uppercase;
@@ -254,7 +254,7 @@
 
 .pick-countdown-day-num {
   font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
-  font-size: 16px;
+  font-size: 13px;
   line-height: 1;
 }
 
@@ -282,7 +282,7 @@
   transform: translateY(-50%);
   z-index: 2;
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 0.8px;
   color: var(--text3);
@@ -304,7 +304,7 @@
 
 .pick-countdown-num {
   font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
-  font-size: 34px;
+  font-size: 28px;
   letter-spacing: 0;
   line-height: 1;
   color: var(--accent);
@@ -321,7 +321,7 @@
 
 .pick-countdown-label {
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   color: var(--text2);
@@ -358,19 +358,19 @@
 
 .pick-comp-days-num {
   font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
-  font-size: 28px;
+  font-size: 23px;
   line-height: 1;
   font-weight: 810;
 }
 
 .pick-comp-days-num.last-day {
-  font-size: 24px;
+  font-size: 20px;
   text-transform: uppercase;
 }
 
 .pick-comp-days-label {
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -393,7 +393,7 @@
   background: transparent;
   color: #3d5573;
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1.2px;
   text-transform: uppercase;
@@ -406,7 +406,7 @@
 }
 
 .pick-goals-toggle-arrow {
-  font-size: 16px;
+  font-size: 13px;
   transition: transform 0.2s;
 }
 .pick-goals-toggle.open .pick-goals-toggle-arrow { transform: rotate(180deg); }
@@ -429,7 +429,7 @@
   align-items: center;
   gap: var(--space-2);
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   color: var(--gold);
   letter-spacing: 1px;
@@ -440,7 +440,7 @@
   text-align: center;
   color: var(--text3);
   font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
-  font-size: 24px;
+  font-size: 20px;
   letter-spacing: 1px;
   padding: var(--space-12) var(--space-4);
   line-height: 1.4;
@@ -489,7 +489,7 @@
   background: var(--accent);
   color: white;
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 8px;
   font-weight: var(--type-label-weight);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
@@ -535,7 +535,7 @@
   border-bottom: 1px solid rgba(46, 77, 128, 0.3);
   color: var(--text);
   font-family: var(--type-body-family);
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 630;
   text-align: left;
   cursor: pointer;
@@ -554,7 +554,7 @@
 .pick-search-no-results {
   padding: 12px var(--space-3);
   color: var(--text3);
-  font-size: 14px;
+  font-size: 12px;
   font-family: var(--type-body-family);
 }
 
@@ -576,7 +576,7 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-family: var(--type-body-family);
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 810;
   color: var(--text);
   transition: all 0.2s;
@@ -591,7 +591,7 @@
   right: var(--space-4);
   top: 50%;
   transform: translateY(-50%);
-  font-size: 10px;
+  font-size: 8px;
   color: var(--accent);
 }
 .pick-player-selector:hover {
@@ -604,7 +604,7 @@
   border-color: var(--border);
   background: var(--bg);
   box-shadow: none;
-  font-size: 18px;
+  font-size: 14px;
 }
 
 /* Player grid */
@@ -625,7 +625,7 @@
 .pick-player-grid .log-input {
   min-height: 44px;
   padding: 8px 10px;
-  font-size: 18px;
+  font-size: 14px;
 }
 
 /* Selected player profile card */
@@ -666,14 +666,14 @@
 .avatar-pick-large {
   width: 52px;
   height: 52px;
-  font-size: 22px;
+  font-size: 18px;
   border-width: 2px;
   background: var(--surface);
   box-shadow: 0 8px 20px rgba(15,25,35,0.12);
 }
 
 .avatar-pick-large .avatar-placeholder {
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .pick-avatar-edit-pill {
@@ -688,7 +688,7 @@
   box-shadow: 2px 2px 0 var(--shadow-ink, rgba(15,25,35,0.18));
   color: var(--accent);
   font-family: var(--type-label-family);
-  font-size: 9px;
+  font-size: 7px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -700,7 +700,7 @@
 
 .pick-selected-player-eyebrow {
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 8px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1.5px;
   color: var(--accent);
@@ -709,7 +709,7 @@
 }
 
 .pick-selected-player-name {
-  font-size: 18px;
+  font-size: 14px;
   line-height: 1.05;
   font-weight: 810;
   color: var(--text);
@@ -760,7 +760,7 @@
 
 .pick-avatar-upload-title {
   font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
-  font-size: 24px;
+  font-size: 20px;
   letter-spacing: 1.5px;
   color: var(--text);
 }
@@ -773,7 +773,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 14px;
   transition: all 0.18s ease;
 }
 
@@ -785,7 +785,7 @@
 .pick-avatar-upload-subtitle {
   margin-top: 6px;
   color: var(--text2);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 630;
 }
 
@@ -822,7 +822,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 16px;
   flex-shrink: 0;
 }
 
@@ -835,19 +835,19 @@
 
 .pick-avatar-upload-option-copy strong {
   color: var(--text);
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 630;
 }
 
 .pick-avatar-upload-option-copy span {
   color: var(--text2);
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 630;
 }
 
 .pick-selected-player-hint {
   margin-top: 6px;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 630;
   color: var(--text2);
 }
@@ -859,7 +859,7 @@
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text2);
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 720;
   display: flex;
   align-items: center;
@@ -891,7 +891,7 @@
   text-align: left;
   font-family: var(--type-body-family);
   font-weight: 630;
-  font-size: 14px;
+  font-size: 12px;
   color: var(--text);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -924,7 +924,7 @@
 }
 
 .rank-pip {
-  font-size: 14px;
+  font-size: 12px;
   flex-shrink: 0;
 }
 
@@ -958,7 +958,7 @@
   font-family: var(--type-title-family);
   font-weight: 720;
   font-stretch: 87.5%;
-  font-size: 16px;
+  font-size: 13px;
   letter-spacing: 0.4px;
   line-height: 1;
   white-space: nowrap;
@@ -967,7 +967,7 @@
 }
 
 .ois-trigger-btn:active {
-  transform: scale(0.98);
+  transform: scale(0.9);
 }
 
 .ois-trigger-icon {
@@ -975,7 +975,7 @@
   position: relative;
   top: -2px;
   margin-right: 6px;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 810;
   line-height: 1;
   transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -1081,7 +1081,7 @@
   background: rgba(255, 255, 255, 0.15);
   color: rgba(255, 255, 255, 0.6);
   font-family: var(--type-label-family);
-  font-size: 9px;
+  font-size: 7px;
   font-weight: var(--type-label-weight);
   display: flex;
   align-items: center;
@@ -1102,7 +1102,7 @@
 .ois-summary-avatar .avatar {
   width: 16px;
   height: 16px;
-  font-size: 8px;
+  font-size: 6px;
 }
 
 /* Step 1 collapsed summary: once a player is picked, show only their
@@ -1128,14 +1128,14 @@
 .ois-step[data-ois-panel="1"] .ois-summary-avatar .avatar {
   width: 88px;
   height: 88px;
-  font-size: 34px;
+  font-size: 28px;
 }
 
 .ois-summary-view-profile {
   cursor: pointer;
   min-width: auto;
   padding: 4px 6px;
-  font-size: 7px;
+  font-size: 5px;
   animation: card-soft-in 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: 60ms;
   transition: transform 120ms ease-out;
@@ -1157,7 +1157,7 @@
   border: 1px solid var(--border);
   color: var(--text2);
   font-family: Arial, Helvetica, sans-serif !important;
-  font-size: 16px;
+  font-size: 13px;
   line-height: 1;
   display: flex;
   align-items: center;
@@ -1200,8 +1200,8 @@
   animation: card-soft-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.ois-summary-day-btn .day-btn-dayname { font-size: 13px; color: #fff !important; }
-.ois-summary-day-btn .day-btn-date { font-size: 28px; color: #fff !important; }
+.ois-summary-day-btn .day-btn-dayname { font-size: 11px; color: #fff !important; }
+.ois-summary-day-btn .day-btn-date { font-size: 23px; color: #fff !important; }
 
 .ois-summary-pencil {
   position: absolute;
@@ -1215,7 +1215,7 @@
   border: 1px solid var(--border);
   color: var(--text2);
   font-family: Arial, Helvetica, sans-serif !important;
-  font-size: 16px;
+  font-size: 13px;
   line-height: 1;
   display: flex;
   align-items: center;
@@ -1226,7 +1226,7 @@
 
 .ois-summary-label {
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 8px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -1362,7 +1362,7 @@
   color: var(--text2);
   font-family: var(--type-label-family);
   font-weight: 810;
-  font-size: 18px;
+  font-size: 14px;
   flex-shrink: 0;
   transition: all 0.15s;
   display: flex;
@@ -1384,7 +1384,7 @@
   background: var(--surface2);
   color: var(--text2);
   font-family: var(--type-label-family);
-  font-size: 9px;
+  font-size: 7px;
   font-weight: var(--type-label-weight);
   letter-spacing: 0.5px;
   cursor: pointer;
@@ -1397,12 +1397,12 @@
   position: relative;
 }
 
-.day-btn-dayname { font-size: 9px; font-weight: 720; text-transform: uppercase; }
-.day-btn-date { font-size: 12px; font-weight: 810; line-height: 1; }
+.day-btn-dayname { font-size: 7px; font-weight: 720; text-transform: uppercase; }
+.day-btn-date { font-size: 10px; font-weight: 810; line-height: 1; }
 .day-btn-checkmark {
   position: absolute;
   top: 2px; right: 3px;
-  font-size: 9px;
+  font-size: 7px;
   color: var(--green);
 }
 
@@ -1411,7 +1411,7 @@
   border-color: var(--accent);
   color: var(--accent);
 }
-.day-btn.today .day-btn-date { font-size: 13px; }
+.day-btn.today .day-btn-date { font-size: 11px; }
 
 /* Selected: filled accent, white, slightly larger */
 .day-btn.active {
@@ -1430,7 +1430,7 @@
   border-color: var(--green);
   color: var(--green);
 }
-.day-btn.logged .day-btn-checkmark { font-size: 10px; }
+.day-btn.logged .day-btn-checkmark { font-size: 8px; }
 
 /* Selected + logged */
 .day-btn.logged.active {
@@ -1466,7 +1466,7 @@
   border-radius: var(--radius-sm);
   padding: 9px 10px;
   font-family: var(--type-body-family);
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 630;
   color: var(--text);
   outline: none;
@@ -1493,7 +1493,7 @@
 
 .log-input.center {
   text-align: center;
-  font-size: 28px;
+  font-size: 23px;
   letter-spacing: 8px;
   font-weight: 630;
   color: var(--accent);
@@ -1529,7 +1529,7 @@ select.log-input:focus { background-color: var(--surface); }
   padding: var(--space-3) var(--space-4);
   color: white;
   font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
-  font-size: 18px;
+  font-size: 14px;
   letter-spacing: 1.2px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.34,1.2,0.64,1);
@@ -1598,7 +1598,7 @@ select.log-input:focus { background-color: var(--surface); }
   text-align: center;
   margin-top: var(--space-2);
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   color: var(--text3);
   letter-spacing: 0.5px;
@@ -1623,7 +1623,7 @@ select.log-input:focus { background-color: var(--surface); }
 .pick-success-state.visible { display: flex; }
 
 .pick-success-checkmark {
-  font-size: 48px;
+  font-size: 39px;
   animation: success-pop 0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
 
@@ -1634,7 +1634,7 @@ select.log-input:focus { background-color: var(--surface); }
 
 .pick-success-title {
   font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
-  font-size: 22px;
+  font-size: 18px;
   letter-spacing: 2px;
   color: var(--green);
 }
@@ -1666,7 +1666,7 @@ select.log-input:focus { background-color: var(--surface); }
 
 .pick-success-stat-label {
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   color: var(--text3);
@@ -1676,7 +1676,7 @@ select.log-input:focus { background-color: var(--surface); }
 
 .pick-success-stat-value {
   font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
-  font-size: 20px;
+  font-size: 16px;
   letter-spacing: 1px;
   color: var(--text);
   line-height: 1;
@@ -1702,7 +1702,7 @@ select.log-input:focus { background-color: var(--surface); }
   padding: var(--space-3) var(--space-6);
   color: var(--accent);
   font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
-  font-size: 16px;
+  font-size: 13px;
   letter-spacing: 2px;
   cursor: pointer;
   transition: all 0.2s;
@@ -1771,7 +1771,7 @@ select.log-input:focus { background-color: var(--surface); }
 
 .goal-current {
   font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
-  font-size: 20px;
+  font-size: 16px;
   letter-spacing: 1px;
   color: var(--text);
 }
@@ -1815,7 +1815,7 @@ select.log-input:focus { background-color: var(--surface); }
 }
 .detail-label {
   font-family: var(--type-label-family);
-  font-size: 15px;
+  font-size: 13px;
   font-weight: var(--type-label-weight);
   letter-spacing: var(--type-label-letter-spacing);
   color: var(--text2);
@@ -1825,7 +1825,7 @@ select.log-input:focus { background-color: var(--surface); }
 
 .detail-label-goal {
   color: var(--accent);
-  font-size: 18px;
+  font-size: 14px;
   letter-spacing: 1px;
 }
 .goal-progress {
@@ -1858,7 +1858,7 @@ select.log-input:focus { background-color: var(--surface); }
   position: relative;
   z-index: 2;
   font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
-  font-size: 18px;
+  font-size: 14px;
   line-height: 1;
   letter-spacing: 0.4px;
   color: #162435;
@@ -1880,7 +1880,7 @@ select.log-input:focus { background-color: var(--surface); }
   background: transparent;
   color: #55718f;
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   text-align: right;
@@ -1899,7 +1899,7 @@ select.log-input:focus { background-color: var(--surface); }
   justify-content: flex-end;
   flex: 0 0 46px;
   font-family: var(--type-label-family);
-  font-size: 12px;
+  font-size: 10px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   color: #162435;
@@ -1937,7 +1937,7 @@ select.log-input:focus { background-color: var(--surface); }
   text-align: center;
   padding: 24px 0 var(--space-4);
   font-family: var(--type-body-family);
-  font-size: 14px;
+  font-size: 12px;
   color: var(--accent2);
 }
 
@@ -1957,6 +1957,6 @@ select.log-input:focus { background-color: var(--surface); }
 
 .app-credit-arrow {
   font-family: var(--type-label-family);
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 720;
 }

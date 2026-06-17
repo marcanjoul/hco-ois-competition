@@ -299,7 +299,7 @@ body::after {
 
 .pick-comp-name {
   max-width: 100%;
-  font-size: 30px;
+  font-size: 24px;
   line-height: 1.05;
   text-shadow: none;
 }
@@ -333,7 +333,7 @@ body::after {
 
 .pick-countdown-num {
   color: var(--accent);
-  font-size: 46px;
+  font-size: 37px;
   text-shadow: none;
 }
 
@@ -344,7 +344,7 @@ body::after {
 
 .pick-countdown-num.last-day {
   color: var(--red);
-  font-size: 38px;
+  font-size: 31px;
 }
 
 .pick-winner-row,
@@ -364,7 +364,7 @@ body::after {
   border: 0 !important;
   box-shadow: none !important;
   font-family: "Science Gothic", sans-serif;
-  font-size: 18px;
+  font-size: 14px;
   letter-spacing: 0.8px;
   text-transform: none;
 }
@@ -388,7 +388,7 @@ body::after {
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
-  font-size: 13px;
+  font-size: 11px;
   letter-spacing: 0.6px;
   flex-basis: 58px;
   line-height: 1;
@@ -401,7 +401,7 @@ body::after {
   background: transparent;
   border: 0 !important;
   font-family: "Science Gothic", sans-serif;
-  font-size: 18px;
+  font-size: 14px;
   letter-spacing: 0.8px;
   text-transform: uppercase;
   text-shadow: none;
@@ -458,14 +458,14 @@ body::after {
   min-width: 48px;
   min-height: 52px;
   padding: 0;
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .admin-day-buttons .week-nav-btn {
   flex-basis: 36px;
   min-width: 36px;
   min-height: 42px;
-  font-size: 16px;
+  font-size: 13px;
 }
 
 /* border-radius: 0 is redundant here — :root sets --radius-sm: 0 and --radius-xs: 0,
@@ -643,7 +643,7 @@ body::after {
   color: #ffd84d;
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
-  font-size: 24px;
+  font-size: 20px;
   letter-spacing: 0.5px;
   text-shadow: none;
 }
@@ -712,7 +712,7 @@ body::after {
 }
 
 .admin-log-player-name {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .admin-log-player-badge {
@@ -813,7 +813,7 @@ body::after {
 #pick-player-list .name-btn > div,
 #name-grid .name-btn > span:last-child,
 #name-grid .name-btn > div {
-  font-size: 20px;
+  font-size: 16px;
   line-height: 1.05;
 }
 
@@ -841,7 +841,7 @@ body::after {
 #name-grid .avatar-board {
   width: 36px;
   height: 36px;
-  font-size: 16px;
+  font-size: 13px;
 }
 
 #pick-player-list .board-avatar-crown,
@@ -856,13 +856,13 @@ body::after {
 #pick-player-list .board-avatar-medal,
 #name-grid .board-avatar-medal {
   bottom: 1px;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 #pick-player-list .avatar-small .avatar-placeholder,
 #pick-player-results .avatar-small .avatar-placeholder,
 #name-grid .avatar-small .avatar-placeholder {
-  font-size: 17px;
+  font-size: 14px;
 }
 
 .log-input,
@@ -873,7 +873,7 @@ body::after {
   color: var(--accent) !important;
   box-shadow: inset 0 0 0 2px var(--surface-mid);
   font-family: "Science Gothic", sans-serif;
-  font-size: 28px;
+  font-size: 23px;
   letter-spacing: 1px;
 }
 
@@ -885,7 +885,7 @@ body::after {
   top: 50%;
   transform: translateY(-50%);
   font-family: "Science Gothic", sans-serif;
-  font-size: 10px;
+  font-size: 8px;
   color: var(--accent);
   text-shadow: none;
   pointer-events: none;
@@ -948,7 +948,7 @@ select.log-input:focus {
 #pick-player-grid .log-input {
   min-height: 42px;
   padding: 7px 10px;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 /* Player inline search results */
@@ -960,7 +960,7 @@ select.log-input:focus {
 
 .pick-result-btn {
   font-family: "Science Gothic", sans-serif;
-  font-size: 24px;
+  font-size: 20px;
   letter-spacing: 0.8px;
   color: var(--accent);
   border-bottom-color: rgba(46, 77, 128, 0.4);
@@ -1068,7 +1068,7 @@ select.log-input:focus {
 .avatar-placeholder {
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
-  font-size: 18px;
+  font-size: 14px;
   color: var(--accent);
   text-shadow: none;
 }
@@ -1108,7 +1108,7 @@ select.log-input:focus {
 
 .board-meta {
   color: #7fdcff;
-  font-size: 15px;
+  font-size: 13px;
   letter-spacing: 0.5px;
   text-shadow: none;
 }
@@ -1121,7 +1121,7 @@ select.log-input:focus {
   color: #8faee8;
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
-  font-size: 8px;
+  font-size: 6px;
   letter-spacing: 2px;
   text-shadow: none;
 }
@@ -1246,12 +1246,12 @@ select.log-input:focus {
   border-radius: 0;
   background: #07122f;
   color: var(--text2);
-  font-size: 8px;
+  font-size: 6px;
   box-shadow: 2px 2px 0 #050816;
 }
 
 .admin-team-field-label {
-  font-size: 8px;
+  font-size: 6px;
   line-height: 1.1;
   color: var(--text2) !important;
   text-shadow: none;
@@ -1260,14 +1260,14 @@ select.log-input:focus {
 .admin-team-tools .admin-team-input {
   min-height: 46px;
   padding: 7px 12px !important;
-  font-size: 16px;
+  font-size: 13px;
 }
 
 .admin-new-row-top .mini-btn {
   min-width: 66px;
   min-height: 40px;
   padding: 0 10px;
-  font-size: 10px;
+  font-size: 8px;
 }
 
 .admin-player-list {
@@ -1339,7 +1339,7 @@ select.log-input:focus {
 
 .goal-day-name {
   color: var(--text2);
-  font-size: 16px;
+  font-size: 13px;
   text-shadow: none;
 }
 
@@ -1347,7 +1347,7 @@ select.log-input:focus {
   color: #6e95ff;
   font-family: "Science Gothic", sans-serif;
   font-weight: 630;
-  font-size: 13px;
+  font-size: 11px;
   letter-spacing: 0.6px;
 }
 
@@ -1498,12 +1498,12 @@ select.log-input:focus {
   }
 
   .goal-day-name {
-    font-size: 18px;
+    font-size: 14px;
     line-height: 1;
   }
 
   .goal-day-date {
-    font-size: 13px;
+    font-size: 11px;
     line-height: 1;
   }
 
@@ -1514,13 +1514,13 @@ select.log-input:focus {
 
   .goal-day-currency {
     width: 34px;
-    font-size: 16px;
+    font-size: 13px;
   }
 
   .goal-day-input {
     min-height: 38px;
     padding: 5px 8px;
-    font-size: 17px;
+    font-size: 14px;
   }
 }
 
@@ -1533,7 +1533,7 @@ select.log-input:focus {
 .log-locked-note,
 .admin-team-tools-sub,
 .admin-gate-sub {
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .search-results-info,
@@ -1583,17 +1583,17 @@ select.log-input:focus {
   }
 
   .nav-label {
-    font-size: 11px;
+    font-size: 9px;
     letter-spacing: 0.3px;
     line-height: 1.1;
   }
 
   .dash-name {
-    font-size: 15px;
+    font-size: 13px;
   }
 
   .dash-comp-badge {
-    font-size: 8px;
+    font-size: 6px;
     letter-spacing: 0.5px;
   }
 
@@ -1610,7 +1610,7 @@ select.log-input:focus {
   }
 
   .pick-comp-name {
-    font-size: 24px;
+    font-size: 20px;
     line-height: 1;
     margin-bottom: 16px;
   }
@@ -1624,25 +1624,25 @@ select.log-input:focus {
   }
 
   .pick-countdown-num {
-    font-size: 28px;
+    font-size: 23px;
     line-height: 0.95;
   }
 
   .pick-countdown-label {
-    font-size: 12px;
+    font-size: 10px;
     margin-bottom: 1px;
   }
 
   .pick-comp-dates {
     margin-bottom: 8px;
     padding: 0;
-    font-size: 13px;
+    font-size: 11px;
   }
 
   .pick-goals-toggle {
     min-height: 0;
     padding: 8px 8px;
-    font-size: 10px;
+    font-size: 8px;
   }
 
   .pick-goals-content {
@@ -1665,14 +1665,14 @@ select.log-input:focus {
   .goal-target {
     min-width: 0;
     padding: 0;
-    font-size: 9px;
+    font-size: 7px;
     letter-spacing: 0.8px;
   }
 
   .goal-percent {
     min-width: 54px;
     padding: 6px 8px;
-    font-size: 10px;
+    font-size: 8px;
   }
 
   .goal-bar-bg {
@@ -1688,7 +1688,7 @@ select.log-input:focus {
   }
 
   .log-card-title {
-    font-size: 20px;
+    font-size: 16px;
   }
 
   .log-card-body-inner {
@@ -1713,7 +1713,7 @@ select.log-input:focus {
   .screen-top-title {
     flex: 1 1 100%;
     min-width: 0;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 1.2;
   }
 
@@ -1729,11 +1729,11 @@ select.log-input:focus {
   .pick-step-num {
     width: 20px;
     height: 20px;
-    font-size: 9px;
+    font-size: 7px;
   }
 
   .pick-step-label {
-    font-size: 8px;
+    font-size: 6px;
     letter-spacing: 0.8px;
   }
 
@@ -1745,14 +1745,14 @@ select.log-input:focus {
   .week-nav-btn {
     min-width: 32px;
     min-height: 38px;
-    font-size: 14px;
+    font-size: 12px;
     flex: 0 0 32px;
   }
 
   .admin-day-buttons .week-nav-btn {
     min-width: 28px;
     flex-basis: 28px;
-    font-size: 12px;
+    font-size: 10px;
   }
 
   .day-btn {
@@ -1763,21 +1763,21 @@ select.log-input:focus {
   }
 
   .day-btn-dayname {
-    font-size: 7px;
+    font-size: 5px;
   }
 
   .day-btn-date {
-    font-size: 11px;
+    font-size: 9px;
   }
 
   .day-btn.today .day-btn-date {
-    font-size: 12px;
+    font-size: 10px;
   }
 
   .day-btn-checkmark {
     top: 1px;
     right: 2px;
-    font-size: 7px;
+    font-size: 5px;
   }
 
   .pick-player-selector {
@@ -1788,13 +1788,13 @@ select.log-input:focus {
 
   .log-input,
   #input-pin {
-    font-size: 20px;
+    font-size: 16px;
   }
 
   #pick-player-grid .log-input {
     min-height: 36px;
     padding: 6px 8px;
-    font-size: 17px;
+    font-size: 14px;
   }
 
   #pick-player-list .name-btn,
@@ -1808,7 +1808,7 @@ select.log-input:focus {
   #pick-player-list .name-btn > div,
   #name-grid .name-btn > span:last-child,
   #name-grid .name-btn > div {
-    font-size: 18px;
+    font-size: 14px;
   }
 
   #pick-player-list .avatar-small,
@@ -1835,7 +1835,7 @@ select.log-input:focus {
   #name-grid .avatar-board {
     width: 34px;
     height: 34px;
-    font-size: 15px;
+    font-size: 13px;
   }
 
   #pick-player-list .board-avatar-crown,
@@ -1850,7 +1850,7 @@ select.log-input:focus {
   #pick-player-list .board-avatar-medal,
   #name-grid .board-avatar-medal {
     bottom: 0;
-    font-size: 13px;
+    font-size: 11px;
   }
 
   .admin-item-name,
@@ -1859,11 +1859,11 @@ select.log-input:focus {
   .log-locked-note,
   .admin-team-tools-sub,
   .admin-gate-sub {
-    font-size: 19px;
+    font-size: 15px;
   }
 
   .comp-status-chip {
-    font-size: 9px;
+    font-size: 7px;
     padding: 5px 8px;
   }
 
@@ -2169,7 +2169,7 @@ body::after {
   /* inherits yellow gradient from .log-btn group above */
   border: 2px solid #f5bf1f !important;
   color: #06102b !important;
-  font-size: 18px;
+  font-size: 14px;
   line-height: 1.25;
   letter-spacing: 1.2px;
   text-shadow: none !important;
@@ -2663,7 +2663,7 @@ button.btn-disabled:hover,
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
   font-weight: 630;
-  font-size: 12px;
+  font-size: 10px;
 }
 
 .competition-ended-kicker,
@@ -2671,7 +2671,7 @@ button.btn-disabled:hover,
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
-  font-size: 9px;
+  font-size: 7px;
   letter-spacing: 1px;
   text-shadow: none;
 }
@@ -2681,7 +2681,7 @@ button.btn-disabled:hover,
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
   font-stretch: 87.5%;
-  font-size: 18px;
+  font-size: 14px;
   line-height: 1.4;
   text-shadow: none;
 }
@@ -2691,7 +2691,7 @@ button.btn-disabled:hover,
   font-family: "Science Gothic", sans-serif;
   font-weight: 810;
   font-stretch: 85%;
-  font-size: 28px;
+  font-size: 23px;
   line-height: 1.3;
   text-shadow: none;
 }
@@ -2711,7 +2711,7 @@ button.btn-disabled:hover,
   box-shadow: 2px 2px 0 #050816;
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
-  font-size: 8px;
+  font-size: 6px;
   color: var(--text2);
 }
 
@@ -2735,7 +2735,7 @@ button.btn-disabled:hover,
 .ended-podium-tie .avatar-board {
   width: 42px;
   height: 42px;
-  font-size: 16px;
+  font-size: 13px;
 }
 
 .ended-podium-riser {
@@ -2775,13 +2775,13 @@ button.btn-disabled:hover,
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
   font-weight: 810;
-  font-size: 12px;
+  font-size: 10px;
   text-shadow: none;
 }
 
 .ended-podium-place-1 .ended-podium-riser-num {
   color: #06102b;
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .ended-podium-place-2 .ended-podium-riser-num {
@@ -2800,7 +2800,7 @@ button.btn-disabled:hover,
   color: #fff2a8;
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
-  font-size: 16px;
+  font-size: 13px;
   line-height: 1;
   text-shadow: none;
 }
@@ -2809,14 +2809,14 @@ button.btn-disabled:hover,
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
   font-weight: 630;
-  font-size: 10px;
+  font-size: 8px;
 }
 
 .ended-podium-score span {
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
   font-weight: 630;
-  font-size: 12px;
+  font-size: 10px;
 }
 
 .ended-rank-row {
@@ -2831,14 +2831,14 @@ button.btn-disabled:hover,
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
-  font-size: 11px;
+  font-size: 9px;
 }
 
 .ended-rank-name {
   color: #d8e7ff;
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .competition-ended-board-btn {
@@ -2849,7 +2849,7 @@ button.btn-disabled:hover,
   box-shadow: 2px 2px 0 #8e5f00;
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
-  font-size: 10px;
+  font-size: 8px;
 }
 
 .competition-ended-board-btn:active {
@@ -2861,7 +2861,7 @@ button.btn-disabled:hover,
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
   font-weight: 540;
-  font-size: 22px;
+  font-size: 18px;
 }
 
 @media (max-width: 640px) {
@@ -2871,11 +2871,11 @@ button.btn-disabled:hover,
   }
 
   .pick-success-checkmark {
-    font-size: 36px;
+    font-size: 29px;
   }
 
   .pick-success-title {
-    font-size: 15px;
+    font-size: 13px;
     letter-spacing: 1px;
   }
 
@@ -2888,12 +2888,12 @@ button.btn-disabled:hover,
   }
 
   .pick-success-stat-label {
-    font-size: 6px;
+    font-size: 5px;
     letter-spacing: 0.5px;
   }
 
   .pick-success-stat-value {
-    font-size: 13px;
+    font-size: 11px;
     letter-spacing: 0;
     text-shadow: none !important;
   }
@@ -2901,30 +2901,30 @@ button.btn-disabled:hover,
   .pick-success-cta {
     min-height: 46px;
     padding: 10px 8px;
-    font-size: 11px;
+    font-size: 9px;
     letter-spacing: 0.6px;
   }
 
   .competition-ended-title {
-    font-size: 13px;
+    font-size: 11px;
   }
 
   .competition-ended-winner-name {
-    font-size: 18px;
+    font-size: 14px;
   }
 
   .ended-podium-name {
-    font-size: 18px;
+    font-size: 14px;
   }
 
   .ended-podium-score,
   .ended-rank-num,
   .ended-rank-score {
-    font-size: 9px;
+    font-size: 7px;
   }
 
   .ended-rank-name {
-    font-size: 18px;
+    font-size: 14px;
   }
 
   .board-tie-group {
@@ -3134,7 +3134,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
   letter-spacing: 4px;
-  font-size: 11px;
+  font-size: 9px;
   color: var(--text2);
   text-transform: uppercase;
 }
@@ -3143,7 +3143,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   font-family: "Science Gothic", sans-serif;
   font-weight: 810;
   font-stretch: 80%;
-  font-size: 30px;
+  font-size: 24px;
   line-height: 1.05;
   color: #ffd84d;
 }
@@ -3152,7 +3152,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
   letter-spacing: 2.5px;
-  font-size: 12px;
+  font-size: 10px;
   color: #ffd84d;
   text-transform: uppercase;
   margin-top: 2px;
@@ -3162,7 +3162,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
   letter-spacing: 5px;
-  font-size: 9px;
+  font-size: 7px;
   color: var(--text2);
   text-shadow: none;
   margin-bottom: 14px;
@@ -3236,7 +3236,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 .welcome-boot-status-wrap {
   font-family: "Science Gothic", sans-serif;
   font-weight: 630;
-  font-size: 9px;
+  font-size: 7px;
   letter-spacing: 2.5px;
   min-height: 14px;
   margin-bottom: 30px;
@@ -3286,7 +3286,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
     width: 100%;
   }
   .welcome-boot-ois {
-    font-size: 40px;
+    font-size: 32px;
   }
 }
 
@@ -3561,7 +3561,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 .board-empty-pixel-icon {
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
-  font-size: 22px;
+  font-size: 18px;
   color: var(--accent);
   text-shadow: none;
   line-height: 1;

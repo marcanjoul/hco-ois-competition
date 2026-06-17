@@ -79,7 +79,7 @@
   background: var(--surface2);
   color: var(--text);
   font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 810;
   letter-spacing: 0.6px;
   cursor: pointer;
@@ -145,7 +145,7 @@
 .dash-profile-avatar .avatar-board {
   width: 116px;
   height: 116px;
-  font-size: 46px;
+  font-size: 37px;
 }
 
 .dash-profile-avatar .board-avatar-crown {
@@ -158,7 +158,7 @@
 
 .dash-profile-avatar .board-avatar-medal {
   bottom: 0;
-  font-size: 40px;
+  font-size: 32px;
 }
 
 .dash-profile-copy {
@@ -167,7 +167,7 @@
 
 .dash-profile-kicker {
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -185,7 +185,7 @@
 
 .dash-profile-name {
   font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
-  font-size: 30px;
+  font-size: 24px;
   line-height: 1;
   color: var(--text);
   word-break: break-word;
@@ -193,7 +193,7 @@
 
 .dash-profile-rank-badge {
   font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
-  font-size: 20px;
+  font-size: 16px;
   line-height: 1;
   color: var(--gold, #f5a623);
   opacity: 0.9;
@@ -218,7 +218,7 @@
 
 .dash-profile-stat-label {
   font-family: var(--type-label-family);
-  font-size: 9px;
+  font-size: 7px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -276,7 +276,7 @@
 
 .stat-label {
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 1px;
   color: var(--text3);
@@ -285,7 +285,7 @@
 
 .stat-value {
   font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
-  font-size: 26px;
+  font-size: 21px;
   letter-spacing: 1px;
   color: var(--text);
   line-height: 1;
@@ -309,7 +309,7 @@
   color: var(--text);
   min-height: 44px;
 }
-#vibe-emoji { font-size: 22px; flex-shrink: 0; }
+#vibe-emoji { font-size: 18px; flex-shrink: 0; }
 
 /* History
    Example on the website: the "ORDERS" list of saved entries.
@@ -356,17 +356,17 @@
   color: var(--accent);
 }
 .history-day-name {
-  font-size: 11px;
+  font-size: 9px;
   line-height: 0.95;
 }
 .history-day-num {
-  font-size: 24px;
+  font-size: 20px;
   line-height: 0.9;
 }
 .history-info { min-width: 0; }
 .history-sales {
   font-weight: 720;
-  font-size: 18px;
+  font-size: 14px;
   line-height: 1;
 }
 .history-meta {
@@ -388,14 +388,14 @@
 }
 .history-rate-value {
   font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
-  font-size: 18px;
+  font-size: 14px;
   letter-spacing: 0.5px;
   color: var(--green);
   line-height: 1;
 }
 .history-rate-label {
   font-family: var(--type-label-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: var(--type-label-weight);
   letter-spacing: 0.5px;
   color: var(--text2);
@@ -420,10 +420,10 @@
   }
 
   .dash-profile-name {
-    font-size: 24px;
+    font-size: 20px;
   }
   .dash-profile-rank-badge {
-    font-size: 17px;
+    font-size: 14px;
   }
 
   .dash-profile-stat {

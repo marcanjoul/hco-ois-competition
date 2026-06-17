@@ -30,11 +30,11 @@
   border: 1px solid var(--card-border-color);
 }
 
-.admin-gate-icon { font-size: 56px; line-height: 1; }
+.admin-gate-icon { font-size: 45px; line-height: 1; }
 
 .admin-gate-title {
   font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
-  font-size: 28px;
+  font-size: 23px;
   letter-spacing: var(--type-heading-letter-spacing);
   color: var(--text);
 }
@@ -53,7 +53,7 @@
 }
 
 #input-pin {
-  font-size: 32px;
+  font-size: 26px;
   letter-spacing: 10px !important;
   text-align: center;
   width: 100%;
@@ -91,7 +91,7 @@
 
 @media (max-width: 640px) {
   #input-pin {
-    font-size: 26px;
+    font-size: 21px;
     letter-spacing: 7px;
   }
   .admin-gate-body {
@@ -102,7 +102,7 @@
 
 @media (max-width: 380px) {
   #input-pin {
-    font-size: 22px;
+    font-size: 18px;
     letter-spacing: 5px;
   }
   .admin-log-stats {
@@ -173,7 +173,7 @@
   border-radius: 0;
   padding: var(--space-1) var(--space-3);
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 8px;
   font-weight: var(--type-label-weight);
   color: var(--text2);
   white-space: nowrap;
@@ -233,7 +233,7 @@
     min-width: 0;
     justify-content: center;
     padding: 12px 8px;
-    font-size: 9px;
+    font-size: 7px;
     line-height: 1.15;
     text-align: center;
   }
@@ -411,7 +411,7 @@
 
 .admin-deleted-expiry {
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 8px;
   letter-spacing: 0.6px;
   color: var(--text3);
   margin-top: 2px;
@@ -575,7 +575,7 @@
   padding: 6px 10px;
   border: 2px solid currentColor;
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 8px;
   font-weight: var(--type-label-weight);
   letter-spacing: 0.9px;
   text-transform: uppercase;
@@ -635,7 +635,7 @@
 .admin-comp-item .admin-item-name {
   flex: 1;
   min-width: 0;
-  font-size: 30px;
+  font-size: 24px;
   white-space: normal;
   line-height: 1.15;
 }
@@ -651,7 +651,7 @@
 .admin-comp-item .del-btn {
   padding: 10px 14px;
   min-height: 44px;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 810;
   letter-spacing: 0.4px;
 }
@@ -669,7 +669,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-xs);
   padding: var(--space-2) var(--space-3);
-  font-size: 11px;
+  font-size: 9px;
   color: var(--text2);
   cursor: pointer;
   font-family: var(--type-body-family);
@@ -794,7 +794,7 @@
   background: rgba(111, 156, 233, 0.12);
   color: var(--accent);
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 720;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -812,7 +812,7 @@
 
 .admin-team-tools-title {
   font-family: var(--type-label-family);
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 810;
   line-height: 1;
   color: var(--text);
@@ -831,7 +831,7 @@
   border: 1px solid rgba(109, 214, 195, 0.26);
   color: #2b7f78;
   font-family: var(--type-label-family);
-  font-size: 9px;
+  font-size: 7px;
   font-weight: 720;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -861,7 +861,7 @@
 .admin-team-field-label {
   color: var(--text2);
   font-family: var(--type-label-family);
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 720;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -877,7 +877,7 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--accent);
-  font-size: 15px;
+  font-size: 13px;
   line-height: 1;
   pointer-events: none;
   opacity: 0.85;
@@ -980,7 +980,7 @@
   }
 
   .admin-team-tools-title {
-    font-size: 10px;
+    font-size: 8px;
   }
 
   .admin-new-row-top {
@@ -1009,15 +1009,15 @@
 .admin-log-header-info { flex: 1; min-width: 0; }
 .admin-log-header-name { font-weight: 810; font-size: var(--type-body-size); color: var(--text); }
 .admin-log-header-sub { font-family: var(--type-caption-family); font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); color: var(--text2); margin-top: var(--space-1); }
-.admin-log-header-badge { font-family: var(--type-label-family); font-size: 9px; font-weight: var(--type-label-weight); letter-spacing: 0.5px; padding: var(--space-1) var(--space-2); border-radius: var(--radius-xs); white-space: nowrap; flex-shrink: 0; border: 1px solid; }
+.admin-log-header-badge { font-family: var(--type-label-family); font-size: 7px; font-weight: var(--type-label-weight); letter-spacing: 0.5px; padding: var(--space-1) var(--space-2); border-radius: var(--radius-xs); white-space: nowrap; flex-shrink: 0; border: 1px solid; }
 .admin-log-header-badge.logged { background: rgba(63,185,80,0.1); color: var(--green); border-color: var(--green); }
 .admin-log-header-badge.not-logged { background: rgba(248,81,73,0.1); color: var(--red); border-color: var(--red); }
 
 .admin-log-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-2); margin-bottom: var(--space-4); }
 .admin-log-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--space-3); text-align: center; }
 .admin-log-stat.accent { background: rgba(26,111,244,0.08); border-color: rgba(26,111,244,0.3); }
-.admin-log-stat-label { font-family: var(--type-label-family); font-size: 9px; font-weight: var(--type-label-weight); letter-spacing: 1px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; }
-.admin-log-stat-value { font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch); font-size: 20px; letter-spacing: 1px; color: var(--text); line-height: 1; }
+.admin-log-stat-label { font-family: var(--type-label-family); font-size: 7px; font-weight: var(--type-label-weight); letter-spacing: 1px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; }
+.admin-log-stat-value { font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch); font-size: 16px; letter-spacing: 1px; color: var(--text); line-height: 1; }
 .admin-log-stat.accent .admin-log-stat-value { color: var(--accent); }
 
 .admin-log-actions-row { display: flex; gap: var(--space-2); }
@@ -1061,7 +1061,7 @@
   min-width: 0;
   min-height: 44px;
   padding: 9px 10px;
-  font-size: 14px;
+  font-size: 12px;
   letter-spacing: 0.8px;
 }
 
@@ -1094,7 +1094,7 @@
   flex: 0 0 40px;
   min-width: 40px;
   min-height: 42px;
-  font-size: 13px;
+  font-size: 11px;
 }
 
 .admin-log-week-input-wrap {
@@ -1114,7 +1114,7 @@
   background: var(--surface2);
   color: var(--text);
   font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
-  font-size: 16px;
+  font-size: 13px;
   letter-spacing: 0.4px;
   text-align: center;
 }
@@ -1225,7 +1225,7 @@
 }
 
 .admin-log-player-toggle-icon {
-  font-size: 12px;
+  font-size: 10px;
   line-height: 1;
 }
 
@@ -1306,7 +1306,7 @@
   border: 1px solid currentColor;
   border-radius: var(--radius-xs);
   font-family: var(--type-label-family);
-  font-size: 9px;
+  font-size: 7px;
   font-weight: var(--type-label-weight);
   letter-spacing: 0.7px;
   text-transform: uppercase;
@@ -1368,7 +1368,7 @@
   background: var(--surface2);
   color: var(--text2);
   font-family: var(--type-label-family);
-  font-size: 9px;
+  font-size: 7px;
   font-weight: var(--type-label-weight);
   letter-spacing: 0.5px;
   cursor: pointer;
@@ -1383,13 +1383,13 @@
 }
 
 .admin-day-btn-dayname {
-  font-size: 8px;
+  font-size: 6px;
   font-weight: 720;
   line-height: 1;
   text-transform: uppercase;
 }
 
-.admin-day-btn-date { font-size: 18px; font-weight: 810; line-height: 1; }
+.admin-day-btn-date { font-size: 14px; font-weight: 810; line-height: 1; }
 
 .admin-day-btn:hover { border-color: var(--accent); color: var(--text); }
 .admin-day-btn.active {
@@ -1464,7 +1464,7 @@
   background: transparent;
   color: var(--accent);
   font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
-  font-size: 22px;
+  font-size: 18px;
   line-height: 1;
 }
 .goal-day-card {
@@ -1481,14 +1481,14 @@
 }
 .goal-day-name {
   font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
-  font-size: 15px;
+  font-size: 13px;
   color: var(--text);
   margin-bottom: 3px;
   white-space: nowrap;
 }
 .goal-day-date {
   font-family: var(--type-caption-family);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 630;
   color: var(--text3);
 }
@@ -1515,7 +1515,7 @@
   background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.14));
   color: var(--text2);
   font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
-  font-size: 15px;
+  font-size: 13px;
   text-shadow: 0 1px 0 rgba(255,255,255,0.1), 0 -1px 0 rgba(0,0,0,0.35);
   box-shadow: inset 1px 1px 0 rgba(255,255,255,0.06), inset -1px -1px 0 rgba(0,0,0,0.22);
 }
@@ -1523,7 +1523,7 @@
   width: 100%;
   min-width: 0;
   text-align: center;
-  font-size: 16px;
+  font-size: 13px;
   padding: 5px 8px;
   border-radius: 0 !important;
   border-left-width: 0 !important;
@@ -1557,6 +1557,7 @@
 /* "+ NEW COMPETITION" — centered like the INSERT OIS CTA, not a left/right
    disclosure row like the other collapsible toggles. */
 .collapsible-toggle-cta { justify-content: center; }
+.collapsible-toggle-cta:active { transform: scale(0.9); }
 .collapsible-toggle-cta.expanded .ois-trigger-icon { transform: rotate(45deg); }
 .admin-collapsible-toggle {
   padding: 12px 14px;
