@@ -77,6 +77,15 @@
   padding: var(--space-3); background: var(--bg); border-radius: var(--radius-sm);
 }
 .admin-edit-player-avatar-large { width: 120px; height: 120px; }
+.admin-edit-player-avatar-section .pick-avatar-edit-pill {
+  min-width: 116px;
+  min-height: 20px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-top: 6px !important;
+}
 
 /* Info modal
    Example on the website: the popup opened from the little "i" rules button.

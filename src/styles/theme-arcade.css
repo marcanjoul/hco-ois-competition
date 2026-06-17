@@ -2081,23 +2081,9 @@ body::after {
     0 0 24px rgba(71, 215, 255, 0.16) !important;
 }
 
-.bottom-nav::after {
-  content: "";
-  position: absolute;
-  inset: 8px 10px;
-  border: 2px solid rgba(71, 215, 255, 0.45);
-  border-left: none !important;
-  border-right: none !important;
-  pointer-events: none;
-}
-
 .app-header::before {
   display: none !important;
   content: none !important;
-}
-
-.bottom-nav::after {
-  inset: 7px 8px calc(7px + env(safe-area-inset-bottom));
 }
 
 .nav-btn {
@@ -3195,8 +3181,18 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   opacity: 0;
   animation: boot-appear 0.2s ease forwards 0.5s;
 }
-.welcome-boot-panel::before { top: 14px;    left: 14px;    border-width: 2px 0 0 3px; }
-.welcome-boot-panel::after  { bottom: 14px; right: 14px;   border-width: 0 3px 3px 0; }
+.welcome-boot-panel::before { 
+  top: 14px;    
+  left: 14px;    
+  border-width: 2px 0 0 3px; 
+  border-top-left-radius: 4px;
+}
+.welcome-boot-panel::after  { 
+  bottom: 14px; 
+  right: 14px;   
+  border-width: 0 3px 3px 0; 
+  border-bottom-right-radius: 4px;
+}
 
 /* Horizontal scanline sweep across the panel on startup */
 .welcome-boot-panel .boot-scanline {
@@ -3372,10 +3368,10 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 .welcome-boot-status-wrap {
   font-family: "Science Gothic", sans-serif;
   font-weight: 630;
-  font-size: 7px;
+  font-size: 13px;
   letter-spacing: 2.5px;
-  min-height: 14px;
-  margin-bottom: 30px;
+  min-height: 20px;
+  margin-bottom: 24px;
   opacity: 0;
   animation: boot-fade-up 0.22s ease 0.62s both;
 }

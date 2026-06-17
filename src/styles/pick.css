@@ -1015,7 +1015,14 @@
   overflow: visible !important;
 }
 .pick-ois-flow:not([data-ois-step="1"]) .ois-step[data-ois-panel="1"].ois-visited .ois-step-card:hover { opacity: 1 !important; }
-.ois-step[data-ois-panel="1"] .ois-step-summary { justify-content: center; padding: 0 var(--space-3); }
+.ois-step[data-ois-panel="1"] .ois-step-summary {
+  justify-content: center;
+  padding: 0 var(--space-3);
+  cursor: default !important;
+}
+.ois-step[data-ois-panel="1"] .ois-step-summary:active {
+  transform: none !important;
+}
 
 /* Step 2 collapsed: same treatment as step 1 — no card chrome, just a
    centered square (the picked day) with its own pencil badge. */

@@ -2931,14 +2931,14 @@ function openEditAvatarModal(playerId, player) {
       </div>
 
       <div class="admin-edit-player-avatar-section">
-        <div id="edit-avatar-preview" class="admin-edit-player-avatar-large">
-          ${getAvatarHtml(player, "large", playerId)}
-        </div>
-        <div class="avatar-upload">
-          <input type="file" id="edit-avatar-file-input" accept="image/*" />
-          <button class="avatar-upload-btn">▣ Upload Photo</button>
-        </div>
-        ${isCustomAvatar ? `<button class="mini-btn del-btn danger">Remove Avatar</button>` : ""}
+        <button class="dash-profile-avatar-btn" id="edit-avatar-trigger" type="button" title="Tap to upload photo">
+          <div id="edit-avatar-preview" class="admin-edit-player-avatar-large">
+            ${getAvatarHtml(player, "large", playerId)}
+          </div>
+          <span class="pick-avatar-edit-pill">Upload Photo</span>
+        </button>
+        <input type="file" id="edit-avatar-file-input" accept="image/*" style="display: none;" />
+        ${isCustomAvatar ? `<button class="mini-btn del-btn danger" id="edit-avatar-remove" type="button" style="margin-top: 8px;">Remove Photo</button>` : ""}
       </div>
 
       <div class="admin-btn-row">
@@ -2953,10 +2953,12 @@ function openEditAvatarModal(playerId, player) {
   // Close button handler
   modal.querySelector(".admin-edit-player-modal-close").onclick = closeEditAvatarModal;
 
-  // Upload button
-  const uploadBtn = modal.querySelector(".avatar-upload-btn");
+  // Trigger file input
+  const triggerBtn = modal.querySelector("#edit-avatar-trigger");
   const fileInput = modal.querySelector("#edit-avatar-file-input");
-  uploadBtn.onclick = () => fileInput.click();
+  if (triggerBtn && fileInput) {
+    triggerBtn.onclick = () => fileInput.click();
+  }
 
   // File input change
   fileInput.onchange = async (e) => {
@@ -2965,18 +2967,22 @@ function openEditAvatarModal(playerId, player) {
     if (file.size > 5000000) { showToast("Image too large (max 5MB)"); return; }
     const base64 = await fileToBase64(file);
     const preview = modal.querySelector("#edit-avatar-preview");
-    preview.innerHTML = `<div class="avatar avatar-large"><img class="avatar-img" src="${base64}" alt="preview" /></div>`;
+    if (preview) preview.innerHTML = `<div class="avatar avatar-large"><img class="avatar-img" src="${base64}" alt="preview" /></div>`;
     window.editAvatarData = base64;
+    const removeBtn = modal.querySelector("#edit-avatar-remove");
+    if (removeBtn) removeBtn.style.display = "inline-block";
   };
 
   // Remove avatar button
-  const removeBtn = modal.querySelector(".mini-btn.del-btn.danger");
+  const removeBtn = modal.querySelector("#edit-avatar-remove");
   if (removeBtn) {
     removeBtn.onclick = () => {
       if (confirm("Remove your avatar?")) {
         window.editAvatarData = null;
         const preview = modal.querySelector("#edit-avatar-preview");
-        if (preview) preview.innerHTML = `<div class="avatar avatar-large">${getAvatarPlaceholder(playerId)}</div>`;
+        const placeholder = getAvatarPlaceholder(player.name || playerId);
+        if (preview) preview.innerHTML = `<div class="avatar avatar-large"><span class="avatar-placeholder">${placeholder}</span></div>`;
+        removeBtn.style.display = "none";
       }
     };
   }
@@ -3028,20 +3034,20 @@ function openEditPlayerModal(playerId, player) {
         <button class="admin-edit-player-modal-close">✕</button>
       </div>
 
+      <div class="admin-edit-player-avatar-section">
+        <button class="dash-profile-avatar-btn" id="edit-player-avatar-trigger" type="button" title="Tap to upload photo">
+          <div id="edit-player-avatar-preview" class="admin-edit-player-avatar-large">
+            ${getAvatarHtml(player, "large", playerId)}
+          </div>
+          <span class="pick-avatar-edit-pill">Upload Photo</span>
+        </button>
+        <input type="file" id="edit-player-avatar-input" accept="image/*" style="display: none;" />
+        ${isCustomAvatar ? `<button class="mini-btn del-btn danger" id="edit-player-avatar-remove" type="button" style="margin-top: 8px;">Remove Photo</button>` : ""}
+      </div>
+
       <div class="admin-edit-player-section">
         <label class="field-label">NAME</label>
         <input type="text" id="edit-player-name" class="log-input" value="${escapeHtml(player.name)}" placeholder="Player name" />
-      </div>
-
-      <div class="admin-edit-player-avatar-section">
-        <div id="edit-player-avatar-preview" class="admin-edit-player-avatar-large">
-          ${getAvatarHtml(player, "large", playerId)}
-        </div>
-        <div class="avatar-upload">
-          <input type="file" id="edit-player-avatar-input" accept="image/*" />
-          <button class="avatar-upload-btn">▣ Upload Photo</button>
-        </div>
-        ${isCustomAvatar ? `<button class="mini-btn del-btn danger">Remove Avatar</button>` : ""}
       </div>
 
       <div class="admin-btn-row">
@@ -3056,10 +3062,12 @@ function openEditPlayerModal(playerId, player) {
   // Close button handler
   modal.querySelector(".admin-edit-player-modal-close").onclick = closeEditPlayerModal;
 
-  // Upload button
-  const uploadBtn = modal.querySelector(".avatar-upload-btn");
+  // Trigger file input
+  const triggerBtn = modal.querySelector("#edit-player-avatar-trigger");
   const fileInput = modal.querySelector("#edit-player-avatar-input");
-  uploadBtn.onclick = () => fileInput.click();
+  if (triggerBtn && fileInput) {
+    triggerBtn.onclick = () => fileInput.click();
+  }
 
   // File input change
   fileInput.onchange = async (e) => {
@@ -3068,18 +3076,22 @@ function openEditPlayerModal(playerId, player) {
     if (file.size > 5000000) { showToast("Image too large (max 5MB)"); return; }
     const base64 = await fileToBase64(file);
     const preview = modal.querySelector("#edit-player-avatar-preview");
-    preview.innerHTML = `<div class="avatar avatar-large"><img class="avatar-img" src="${base64}" alt="preview" /></div>`;
+    if (preview) preview.innerHTML = `<div class="avatar avatar-large"><img class="avatar-img" src="${base64}" alt="preview" /></div>`;
     window.editPlayerAvatarData = base64;
+    const removeBtn = modal.querySelector("#edit-player-avatar-remove");
+    if (removeBtn) removeBtn.style.display = "inline-block";
   };
 
   // Remove avatar button
-  const removeBtn = modal.querySelector(".mini-btn.del-btn.danger");
+  const removeBtn = modal.querySelector("#edit-player-avatar-remove");
   if (removeBtn) {
     removeBtn.onclick = () => {
       if (confirm("Remove avatar for this player?")) {
         window.editPlayerAvatarData = null;
         const preview = modal.querySelector("#edit-player-avatar-preview");
-        if (preview) preview.innerHTML = `<div class="avatar avatar-large">${getAvatarPlaceholder(playerId)}</div>`;
+        const placeholder = getAvatarPlaceholder(player.name || playerId);
+        if (preview) preview.innerHTML = `<div class="avatar avatar-large"><span class="avatar-placeholder">${placeholder}</span></div>`;
+        removeBtn.style.display = "none";
       }
     };
   }
