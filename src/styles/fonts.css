@@ -1,0 +1,17 @@
+/*
+  BEGINNER GUIDE
+  This file loads the "Science Gothic" variable font used everywhere in the app.
+
+  It is one font file that can render 9 weights (Thin → Black) and 9 widths
+  (UltraCondensed → UltraExpanded) on demand, so standard `font-weight` and
+  `font-stretch` values in the other CSS files pick the right style
+  automatically — no separate font files needed per style.
+*/
+@font-face {
+  font-family: "Science Gothic";
+  src: url("../assets/fonts/ScienceGothic-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-stretch: 50% 200%;
+  font-style: normal;
+  font-display: swap;
+}

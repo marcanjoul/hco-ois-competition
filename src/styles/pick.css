@@ -51,7 +51,7 @@
   font-size: 23px;
   font-weight: 900;
   color: var(--text) !important;
-  font-family: var(--type-heading-family);
+  font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
   text-transform: uppercase;
   z-index: 3;
   box-shadow: 4px 4px 0 #09153a !important;
@@ -110,7 +110,7 @@
 
 /* Competition name — huge, dominant */
 .pick-comp-name {
-  font-family: var(--type-display-family);
+  font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
   font-size: 24px;
   letter-spacing: 1px;
   color: var(--text);
@@ -242,7 +242,7 @@
 }
 
 .pick-countdown-day-num {
-  font-family: var(--type-subheading-family);
+  font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
   font-size: 16px;
   line-height: 1;
 }
@@ -292,7 +292,7 @@
 }
 
 .pick-countdown-num {
-  font-family: var(--type-display-family);
+  font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
   font-size: 34px;
   letter-spacing: 0;
   line-height: 1;
@@ -346,7 +346,7 @@
 }
 
 .pick-comp-days-num {
-  font-family: var(--type-display-family);
+  font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
   font-size: 28px;
   line-height: 1;
   font-weight: 900;
@@ -428,7 +428,7 @@
 .no-comps-message {
   text-align: center;
   color: var(--text3);
-  font-family: var(--type-subheading-family);
+  font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
   font-size: 24px;
   letter-spacing: 1px;
   padding: var(--space-12) var(--space-4);
@@ -748,7 +748,7 @@
 }
 
 .pick-avatar-upload-title {
-  font-family: var(--type-heading-family);
+  font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
   font-size: 24px;
   letter-spacing: 1.5px;
   color: var(--text);
@@ -944,9 +944,12 @@
   border: 1px solid var(--border);
   color: #fff;
   font-family: var(--type-title-family);
-  font-size: 18px;
-  letter-spacing: 1.2px;
+  font-weight: 800;
+  font-stretch: 87.5%;
+  font-size: 16px;
+  letter-spacing: 0.4px;
   line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
   transition: transform 160ms ease-out;
 }
@@ -1351,7 +1354,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  text-shadow: 1px 0 0 currentColor, -1px 0 0 currentColor, 0 1px 0 currentColor, 0 -1px 0 currentColor;
 }
 .week-nav-btn:hover {
   color: var(--accent);
@@ -1512,7 +1514,7 @@ select.log-input:focus { background-color: var(--surface); }
   border-radius: var(--radius-sm);
   padding: var(--space-3) var(--space-4);
   color: white;
-  font-family: var(--type-title-family);
+  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   font-size: 18px;
   letter-spacing: 1.2px;
   cursor: pointer;
@@ -1617,7 +1619,7 @@ select.log-input:focus { background-color: var(--surface); }
 }
 
 .pick-success-title {
-  font-family: var(--type-heading-family);
+  font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
   font-size: 22px;
   letter-spacing: 2px;
   color: var(--green);
@@ -1659,7 +1661,7 @@ select.log-input:focus { background-color: var(--surface); }
 }
 
 .pick-success-stat-value {
-  font-family: var(--type-subheading-family);
+  font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
   font-size: 20px;
   letter-spacing: 1px;
   color: var(--text);
@@ -1685,7 +1687,7 @@ select.log-input:focus { background-color: var(--surface); }
   border-radius: var(--radius-sm);
   padding: var(--space-3) var(--space-6);
   color: var(--accent);
-  font-family: var(--type-title-family);
+  font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   font-size: 16px;
   letter-spacing: 2px;
   cursor: pointer;
@@ -1754,7 +1756,7 @@ select.log-input:focus { background-color: var(--surface); }
 }
 
 .goal-current {
-  font-family: var(--type-subheading-family);
+  font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
   font-size: 20px;
   letter-spacing: 1px;
   color: var(--text);
@@ -1841,7 +1843,7 @@ select.log-input:focus { background-color: var(--surface); }
 .goal-current {
   position: relative;
   z-index: 2;
-  font-family: var(--type-display-family);
+  font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
   font-size: 18px;
   line-height: 1;
   letter-spacing: 0.4px;
@@ -1934,13 +1936,13 @@ select.log-input:focus { background-color: var(--surface); }
   align-items: center;
   gap: 2px;
   color: var(--accent);
+  font-weight: 800;
   text-decoration: none;
-  /* VT323 only ships at one weight — a light stroke nudges the thickness up just a touch */
 }
 .app-credit-name:hover { text-decoration: underline; }
 
 .app-credit-arrow {
   font-family: var(--type-label-family);
   font-size: 12px;
-  text-shadow: 1px 0 0 currentColor, -1px 0 0 currentColor, 0 1px 0 currentColor, 0 -1px 0 currentColor;
+  font-weight: 800;
 }

@@ -13,7 +13,9 @@
   - `shared.css` = avatars, toast, utility helpers
   - `responsive.css` = phone/tablet sizing changes
   - `theme-arcade.css` = retro arcade look overrides
+  - `fonts.css` = loads the Science Gothic variable font
 */
+@import "./styles/fonts.css";
 @import "./styles/base.css";
 @import "./styles/pick.css";
 @import "./styles/dashboard.css";

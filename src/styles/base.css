@@ -123,15 +123,18 @@
   --max-width:     580px;
   --gutter:        16px;
 
-  /* ── Typography Families ── */
-  --type-display-family:    'Bebas Neue', sans-serif;
-  --type-heading-family:    'Bebas Neue', sans-serif;
-  --type-subheading-family: 'Bebas Neue', sans-serif;
-  --type-title-family:      'Bebas Neue', sans-serif;
-  --type-body-family:       'Nunito', sans-serif;
-  --type-label-family:      'Nunito', sans-serif;
-  --type-caption-family:    'Nunito', sans-serif;
-  --type-small-family:      'Nunito', sans-serif;
+  /* ── Typography Families ──
+     Science Gothic is a variable font: one file covers every weight
+     (Thin 100 → Black 900) and width (UltraCondensed 50% → UltraExpanded
+     200%), so font-weight/font-stretch below pick the style directly. */
+  --type-display-family:    'Science Gothic', sans-serif;
+  --type-heading-family:    'Science Gothic', sans-serif;
+  --type-subheading-family: 'Science Gothic', sans-serif;
+  --type-title-family:      'Science Gothic', sans-serif;
+  --type-body-family:       'Science Gothic', sans-serif;
+  --type-label-family:      'Science Gothic', sans-serif;
+  --type-caption-family:    'Science Gothic', sans-serif;
+  --type-small-family:      'Science Gothic', sans-serif;
 
   /* ── Typography Sizes ── */
   --type-display-size:    48px;
@@ -143,16 +146,30 @@
   --type-caption-size:    12px;
   --type-small-size:      11px;
 
-  /* ── Typography Misc ── */
-  --type-heading-letter-spacing:    2px;
-  --type-subheading-letter-spacing: 1.5px;
-  --type-title-letter-spacing:      1px;
-  --type-label-letter-spacing:      1.5px;
+  /* ── Typography Weight & Width ── */
+  --type-display-weight:    800;
+  --type-display-stretch:   87.5%;
+  --type-heading-weight:    800;
+  --type-heading-stretch:   87.5%;
+  --type-subheading-weight: 700;
+  --type-subheading-stretch: 100%;
+  --type-title-weight:      700;
+  --type-title-stretch:     100%;
   --type-label-weight:    800;
-  --type-body-weight:     600;
-  --type-caption-weight:  600;
-  --type-small-weight:    600;
-  --type-heading-line-height: 1;
+  --type-label-stretch:   100%;
+  --type-body-weight:     500;
+  --type-body-stretch:    100%;
+  --type-caption-weight:  500;
+  --type-caption-stretch: 100%;
+  --type-small-weight:    500;
+  --type-small-stretch:   100%;
+
+  /* ── Typography Misc ── */
+  --type-heading-letter-spacing:    0.5px;
+  --type-subheading-letter-spacing: 0.3px;
+  --type-title-letter-spacing:      0.2px;
+  --type-label-letter-spacing:      0.6px;
+  --type-heading-line-height: 1.05;
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -320,7 +337,7 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 .welcome-title {
-  font-family: var(--type-display-family);
+  font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
   font-size: clamp(20px, 5.8vw, 34px);
   letter-spacing: 0.6px;
   line-height: 1.22;
@@ -347,7 +364,7 @@ input[type="number"] { -moz-appearance: textfield; }
   border: none;
   background: var(--accent);
   color: #fff;
-  font-family: var(--type-heading-family);
+  font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
   font-size: 20px;
   letter-spacing: 0.9px;
   text-transform: uppercase;
@@ -440,7 +457,7 @@ input[type="number"] { -moz-appearance: textfield; }
 
 .dash-name {
   display: block;
-  font-family: var(--type-heading-family);
+  font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
   font-size: var(--type-heading-size);
   letter-spacing: var(--type-heading-letter-spacing);
   color: var(--text);
@@ -574,7 +591,7 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 .screen-top-title {
-  font-family: var(--type-heading-family);
+  font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
   font-size: var(--type-heading-size);
   letter-spacing: var(--type-heading-letter-spacing);
   color: var(--text);
