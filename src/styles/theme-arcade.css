@@ -400,14 +400,14 @@ body::after {
   min-width: 48px;
   min-height: 52px;
   padding: 0;
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .admin-day-buttons .week-nav-btn {
   flex-basis: 36px;
   min-width: 36px;
   min-height: 42px;
-  font-size: 13px;
+  font-size: 18px;
 }
 
 /* border-radius: 0 is redundant here — :root sets --radius-sm: 0 and --radius-xs: 0,
@@ -1469,14 +1469,14 @@ select.log-input:focus {
   .week-nav-btn {
     min-width: 32px;
     min-height: 38px;
-    font-size: 12px;
+    font-size: 18px;
     flex: 0 0 32px;
   }
 
   .admin-day-buttons .week-nav-btn {
     min-width: 28px;
     flex-basis: 28px;
-    font-size: 10px;
+    font-size: 15px;
   }
 
   .day-btn {
@@ -1803,12 +1803,10 @@ body::after {
 }
 
 .screen-top-bar {
-  margin: 10px 10px 0;
-  border: 2px solid var(--maze-blue) !important;
-  background:
-    linear-gradient(90deg, rgba(255, 216, 77, 0.16), transparent 22%),
-    linear-gradient(180deg, #102260, #08143d);
-  box-shadow: 2px 2px 0 #050816;
+  margin: 0;
+  border: 0 !important;
+  background: none;
+  box-shadow: none;
   /* Ensures the dropdown escapes the leaderboard cards below */
   position: relative;
   z-index: 20;
@@ -3390,31 +3388,26 @@ select.log-input,
 
 /* ── Admin gate: square card centered on screen (matches welcome-boot-panel) ── */
 
-/* ── Competition selector arrow buttons ── */
+/* ── Competition selector arrow buttons — borderless glyphs ── */
 .board-comp-arrow {
-  width: 38px !important;
-  height: 38px !important;
-  font-size: 22px !important;
+  width: 44px !important;
+  height: 44px !important;
+  font-size: 30px !important;
   font-weight: 900 !important;
-  border-radius: 4px !important;
-  background: #11215c !important;
-  border: 2px solid #2b6dff !important;
+  border-radius: 0 !important;
+  background: none !important;
+  border: 0 !important;
   color: var(--text2) !important;
-  box-shadow:
-    2px 2px 0 #050816,
-    inset 1px 1px 0 rgba(255, 255, 255, 0.06),
-    inset -1px -1px 0 rgba(0, 0, 0, 0.3) !important;
+  box-shadow: none !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer !important;
-  transition: transform 0.12s steps(2), background-color 0.12s steps(2), border-color 0.12s steps(2) !important;
+  transition: transform 0.12s steps(2), color 0.12s steps(2) !important;
 }
 
 .board-comp-arrow:hover {
-  background: #2348b3 !important;
   color: var(--accent) !important;
-  border-color: var(--accent) !important;
 }
 
 .board-comp-arrow:active {
