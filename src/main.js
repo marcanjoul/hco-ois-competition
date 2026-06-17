@@ -33,20 +33,9 @@ function getTodayDate() {
 // In-memory app state.
 // Think of this as "everything the app currently remembers".
 // Example on the website: which screen is open, who is selected, and which comp is active.
-let _autoSelectAttempted = false;
 // Tracks whether the user has actually tapped a day in step 2 — until they
 // do, no day (including today) should appear pre-selected.
 let _dayExplicitlySelected = false;
-
-function tryAutoSelectPlayer() {
-  if (_autoSelectAttempted || state.currentUser) return;
-  if (Object.keys(state.players).length === 0) return;
-  _autoSelectAttempted = true;
-  const lastId = localStorage.getItem("lastPlayer");
-  if (lastId && state.players[lastId] && !state.players[lastId].inactive) {
-    enterAsDashboard(lastId);
-  }
-}
 
 let state = {
   competitions: {},
@@ -164,16 +153,6 @@ function focusElementSoon(el, options = {}) {
   window.requestAnimationFrame(() => el.focus(options));
 }
 
-function focusFirstEditablePickInput() {
-  const salesInput = document.getElementById("pick-input-sales");
-  const hoursInput = document.getElementById("pick-input-hours");
-  const target = salesInput && !salesInput.readOnly && !salesInput.value
-    ? salesInput
-    : hoursInput && !hoursInput.readOnly && !hoursInput.value
-      ? hoursInput
-      : null;
-  focusElementSoon(target, { preventScroll: true });
-}
 
 function closePickPlayerResults() {
   const results = document.getElementById("pick-player-results");
@@ -338,51 +317,6 @@ function getCompetitionCountdownStyle(comp) {
   return `color:${color};text-shadow:4px 4px 0 ${shadow};`;
 }
 
-function getCompetitionTimePct(comp) {
-  if (!comp?.startDate || !comp?.endDate) return 0;
-
-  const start = new Date(comp.startDate + "T00:00:00").getTime();
-  const end = new Date(comp.endDate + "T23:59:59").getTime();
-  const now = Date.now();
-
-  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return 0;
-  return Math.min(100, Math.max(0, ((end - now) / (end - start)) * 100));
-}
-
-function getCompetitionDayStrip(comp) {
-  if (!comp?.startDate || !comp?.endDate) return "";
-
-  const start = new Date(comp.startDate + "T00:00:00");
-  const end = new Date(comp.endDate + "T00:00:00");
-  const todayStr = getTodayDate();
-  const days = [];
-
-  if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || end < start) return "";
-
-  for (let d = new Date(start); d <= end && days.length < 21; d.setDate(d.getDate() + 1)) {
-    const dateString = formatLocalDate(d);
-    const stateClass = dateString < todayStr ? "past" : dateString === todayStr ? "today" : "future";
-    days.push(`
-      <span class="pick-countdown-day ${stateClass}">
-        <span class="pick-countdown-day-name">${DAYS[d.getDay()]}</span>
-        <span class="pick-countdown-day-num">${d.getDate()}</span>
-      </span>
-    `);
-  }
-
-  return days.join("");
-}
-
-function getCompetitionElapsedPct(comp) {
-  if (!comp?.startDate || !comp?.endDate) return 0;
-
-  const start = new Date(comp.startDate + "T00:00:00").getTime();
-  const end = new Date(comp.endDate + "T23:59:59").getTime();
-  const now = Date.now();
-
-  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return 0;
-  return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
-}
 
 
 // ══════════════════════════════════════════════════════
@@ -998,10 +932,7 @@ function syncPickStep3Lock() {
   updateOisArrowState();
 }
 // ══════════════════════════════════════════════════════
-function renderPickScreen(filterText = "") {
-  const searchInput = document.getElementById("input-search-players");
-  if (searchInput && searchInput.value !== filterText) searchInput.value = filterText;
-
+function renderPickScreen() {
   // Competition info card — show only active comp
   const compInfo = document.getElementById("pick-comp-info");
   const noCompsMsg = document.getElementById("no-comps-message");
@@ -1024,51 +955,6 @@ function renderPickScreen(filterText = "") {
     if (noCompsMsg) noCompsMsg.classList.add("hidden");
     renderCompetitionCard(compInfo, state.currentComp, { collapsibleGoals: false });
   }
-
-  const grid = document.getElementById("name-grid");
-  if (!grid) return;
-  grid.innerHTML = "";
-
-  const hasLogs = hasLogsInComp(state.currentComp);
-  const players = hasLogs ? getRankedPlayers(state.currentComp) : getAlphabeticalPlayers(state.currentComp);
-  const activePlayers = Object.entries(state.players).filter(([, player]) => !player.inactive);
-  const filtered = activePlayers
-    .filter(([, player]) => player.name.toLowerCase().includes(filterText.toLowerCase()));
-
-  if (filtered.length === 0) {
-    grid.classList.add("empty");
-    grid.innerHTML = filterText ? "No players found" : "No players yet - add them in Manager";
-    document.getElementById("search-results-info")?.classList.add("hidden");
-    return;
-  }
-
-  grid.classList.remove("empty");
-  const resultsInfo = document.getElementById("search-results-info");
-  if (resultsInfo) {
-    if (filterText) {
-      resultsInfo.textContent = `${filtered.length} of ${activePlayers.length} players`;
-      resultsInfo.classList.remove("hidden");
-    } else {
-      resultsInfo.classList.add("hidden");
-    }
-  }
-
-  filtered.forEach(([id, player]) => {
-    const rank = players.findIndex(p => p.id === id);
-    const isTopThree = hasLogs && rank >= 0 && rank < 3;
-    const isWinner = state.competitions[state.currentComp]?.winner === id;
-    const safeName = escapeHtml(player.name);
-    const btn = document.createElement("button");
-    btn.className = `name-btn${isWinner ? " name-btn-winner" : ""}`;
-    btn.innerHTML = `
-      ${isTopThree ? getBoardAvatarHtml(player, id, rank + 1) : getAvatarHtml(player, "small", id)}
-      <div>
-        ${isWinner ? "★ " : ""}${safeName}
-      </div>
-    `;
-    btn.onclick = () => enterAsDashboard(id);
-    grid.appendChild(btn);
-  });
 }
 
 // ══════════════════════════════════════════════════════
@@ -3897,15 +3783,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("screen-welcome")
     ?.addEventListener("click", advanceFromBoot, { once: true });
 
-  const searchInput = document.getElementById("input-search-players");
-  if (searchInput) {
-    searchInput.oninput = () => {
-      clearTimeout(state.searchDebounceTimer);
-      state.searchDebounceTimer = setTimeout(() => {
-        renderPickScreen(searchInput.value);
-      }, 150);
-    };
-  }
+
 
   // Admin lock button
   const adminLockBtn = document.getElementById("admin-lock-btn");

@@ -817,50 +817,42 @@ body::after {
   color: #ffd6ef;
 }
 
-#pick-player-list .name-btn,
-#name-grid .name-btn {
+#pick-player-list .name-btn {
   min-height: 50px;
   padding: 8px 10px;
   gap: 10px;
 }
 
 #pick-player-list .name-btn > span:last-child,
-#pick-player-list .name-btn > div,
-#name-grid .name-btn > span:last-child,
-#name-grid .name-btn > div {
+#pick-player-list .name-btn > div {
   font-size: 16px;
   line-height: 1.05;
 }
 
 #pick-player-list .avatar-small,
-#pick-player-results .avatar-small,
-#name-grid .avatar-small {
+#pick-player-results .avatar-small {
   width: 38px;
   height: 38px;
 }
 
-#pick-player-list .board-avatar-stack,
-#name-grid .board-avatar-stack {
+#pick-player-list .board-avatar-stack {
   width: 44px;
   min-width: 44px;
   padding-top: 5px;
   padding-bottom: 7px;
 }
 
-#pick-player-list .board-avatar-stack.rank-1,
-#name-grid .board-avatar-stack.rank-1 {
+#pick-player-list .board-avatar-stack.rank-1 {
   padding-top: 11px;
 }
 
-#pick-player-list .avatar-board,
-#name-grid .avatar-board {
+#pick-player-list .avatar-board {
   width: 36px;
   height: 36px;
   font-size: 13px;
 }
 
-#pick-player-list .board-avatar-crown,
-#name-grid .board-avatar-crown {
+#pick-player-list .board-avatar-crown {
   top: -4px;
   left: 50%;
   right: auto;
@@ -868,15 +860,13 @@ body::after {
   height: 16px;
 }
 
-#pick-player-list .board-avatar-medal,
-#name-grid .board-avatar-medal {
+#pick-player-list .board-avatar-medal {
   bottom: 1px;
   font-size: 12px;
 }
 
 #pick-player-list .avatar-small .avatar-placeholder,
-#pick-player-results .avatar-small .avatar-placeholder,
-#name-grid .avatar-small .avatar-placeholder {
+#pick-player-results .avatar-small .avatar-placeholder {
   font-size: 14px;
 }
 
@@ -1855,49 +1845,41 @@ select.log-input:focus {
     font-size: 14px;
   }
 
-  #pick-player-list .name-btn,
-  #name-grid .name-btn {
+  #pick-player-list .name-btn {
     min-height: 48px;
     padding: 7px 9px;
     gap: 9px;
   }
 
   #pick-player-list .name-btn > span:last-child,
-  #pick-player-list .name-btn > div,
-  #name-grid .name-btn > span:last-child,
-  #name-grid .name-btn > div {
+  #pick-player-list .name-btn > div {
     font-size: 14px;
   }
 
   #pick-player-list .avatar-small,
-  #pick-player-results .avatar-small,
-  #name-grid .avatar-small {
+  #pick-player-results .avatar-small {
     width: 36px;
     height: 36px;
   }
 
-  #pick-player-list .board-avatar-stack,
-  #name-grid .board-avatar-stack {
+  #pick-player-list .board-avatar-stack {
     width: 42px;
     min-width: 42px;
     padding-top: 5px;
     padding-bottom: 6px;
   }
 
-  #pick-player-list .board-avatar-stack.rank-1,
-  #name-grid .board-avatar-stack.rank-1 {
+  #pick-player-list .board-avatar-stack.rank-1 {
     padding-top: 10px;
   }
 
-  #pick-player-list .avatar-board,
-  #name-grid .avatar-board {
+  #pick-player-list .avatar-board {
     width: 34px;
     height: 34px;
     font-size: 13px;
   }
 
-  #pick-player-list .board-avatar-crown,
-  #name-grid .board-avatar-crown {
+  #pick-player-list .board-avatar-crown {
     top: -3px;
     left: 50%;
     right: auto;
@@ -1905,8 +1887,7 @@ select.log-input:focus {
     height: 14px;
   }
 
-  #pick-player-list .board-avatar-medal,
-  #name-grid .board-avatar-medal {
+  #pick-player-list .board-avatar-medal {
     bottom: 0;
     font-size: 11px;
   }

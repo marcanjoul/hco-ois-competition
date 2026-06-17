@@ -880,8 +880,7 @@
   transform: scale(0.96);
 }
 
-/* Name grid (legacy on pick screen, hidden) */
-#name-grid { display: none !important; }
+
 
 /* Player name buttons inside the grid */
 .name-btn {
