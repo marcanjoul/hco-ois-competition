@@ -1192,6 +1192,13 @@ select.log-input:focus {
   border-bottom: 1px solid #2348b3 !important;
 }
 
+/* Competition rows are presented as individual cards (with gaps between
+   them from .admin-list's own gap), so they get the usual full border
+   instead of just a bottom divider. */
+.admin-comp-item {
+  border: 1px solid #2348b3 !important;
+}
+
 .admin-team-tools {
   padding: 10px 12px !important;
   margin-bottom: 10px;
@@ -1369,6 +1376,10 @@ select.log-input:focus {
 
 .comp-status-chip.comp-status-closed {
   color: var(--red) !important;
+}
+
+.comp-status-chip.comp-status-edit {
+  color: #6ea8ff !important;
 }
 
 .comp-status-chip.comp-status-archived {
@@ -2393,6 +2404,14 @@ body::after {
   border-color: #ff5d73 !important;
   color: #fff2f4 !important;
   text-shadow: none !important;
+  box-shadow:
+    2px 2px 0 #050816,
+    inset 1px 1px 0 rgba(255, 255, 255, 0.08),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.34) !important;
+}
+
+.del-btn.danger,
+.admin-action-delete {
   box-shadow:
     2px 2px 0 #050816,
     inset 1px 1px 0 rgba(255, 255, 255, 0.08),
