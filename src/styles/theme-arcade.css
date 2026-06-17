@@ -211,7 +211,6 @@ body::before {
 .pick-avatar-upload-sheet,
 .board-card,
 .admin-team-tools,
-.admin-team-input-shell,
 .admin-list,
 .admin-summary-bar,
 .admin-tab-bar,
@@ -1197,8 +1196,7 @@ select.log-input:focus {
 }
 
 .admin-team-tools,
-.admin-list,
-.admin-team-input-shell {
+.admin-list {
   background:
     linear-gradient(180deg, rgba(10, 22, 60, 0.98), rgba(6, 13, 36, 0.98)) !important;
   border: 2px solid #2b6dff !important;
@@ -1237,7 +1235,7 @@ select.log-input:focus {
 .admin-team-tools-title {
   font-family: "Science Gothic", sans-serif !important;
   font-weight: 800 !important;
-  font-size: 11px !important;
+  font-size: 18px !important;
   line-height: 1;
   color: #ffd84d !important;
   text-shadow: none;
@@ -1262,9 +1260,9 @@ select.log-input:focus {
 }
 
 .admin-team-tools .admin-team-input {
-  min-height: 40px;
-  padding: 7px 10px !important;
-  font-size: 14px;
+  min-height: 46px;
+  padding: 7px 12px !important;
+  font-size: 16px;
 }
 
 .admin-new-row-top .mini-btn {
@@ -1398,6 +1396,10 @@ select.log-input:focus {
 
 .comp-status-chip.comp-status-edit {
   color: #6ea8ff !important;
+}
+
+.comp-status-chip.comp-status-delete {
+  color: #ff5d73 !important;
 }
 
 .comp-status-chip.comp-status-archived {
@@ -2487,6 +2489,15 @@ button.btn-disabled,
     inset -1px -1px 0 rgba(0, 0, 0, 0.38) !important;
 }
 
+/* Week-nav arrows stay borderless/transparent when disabled — just dimmed,
+   not re-skinned with the generic bordered/boxed disabled look above. */
+.week-nav-btn:disabled {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--text2) !important;
+}
+
 button:disabled:hover,
 button.btn-ghost:hover,
 button.btn-disabled:hover,
@@ -3118,6 +3129,36 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 }
 
 /* ── Content elements ── */
+
+/* Home screen title — same family/weight/stretch language as the boot
+   splash's eyebrow/OIS/subtitle, just scaled down for persistent use. */
+.pick-app-title-eyebrow {
+  font-family: "Science Gothic", sans-serif;
+  font-weight: 800;
+  letter-spacing: 4px;
+  font-size: 11px;
+  color: var(--text2);
+  text-transform: uppercase;
+}
+
+.pick-app-title-main {
+  font-family: "Science Gothic", sans-serif;
+  font-weight: 900;
+  font-stretch: 80%;
+  font-size: 30px;
+  line-height: 1.05;
+  color: #ffd84d;
+}
+
+.pick-app-title-sub {
+  font-family: "Science Gothic", sans-serif;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  font-size: 12px;
+  color: #ffd84d;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
 
 .welcome-boot-eyebrow {
   font-family: "Science Gothic", sans-serif;

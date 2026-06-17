@@ -67,6 +67,17 @@
   box-shadow: 1px 1px 0 #09153a !important;
 }
 
+/* App title — same eyebrow/hero/sub structure as the boot splash, just
+   sized down for a screen the user sees on every visit, not a one-time intro. */
+.pick-app-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+  padding: 4px 0 14px;
+}
+
 /* ── COMPETITION CARD ──
    Example on the website: the card showing the current competition details.
 */

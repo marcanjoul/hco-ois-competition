@@ -2833,17 +2833,26 @@ function renderAdminPlayersList() {
       const leftPart = document.createElement("div");
       leftPart.className = "admin-item-left";
       leftPart.innerHTML = `${getAvatarHtml(player, "small", id)} <span class="admin-item-name">${escapeHtml(player.name)}</span>`;
-      item.appendChild(leftPart);
 
-      const rightPart = document.createElement("div");
-      rightPart.className = "admin-item-actions";
-      rightPart.appendChild(makeBtn("Edit", "del-btn", () => openEditPlayerModal(id, player)));
-      rightPart.appendChild(makeBtn("✕", "del-btn danger admin-icon-btn", async () => {
+      const editBtn = document.createElement("button");
+      editBtn.type = "button";
+      editBtn.className = "comp-status-chip comp-status-edit";
+      editBtn.textContent = "Edit";
+      editBtn.onclick = () => openEditPlayerModal(id, player);
+      leftPart.appendChild(editBtn);
+
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "comp-status-chip comp-status-delete";
+      delBtn.textContent = "✕";
+      delBtn.onclick = async () => {
         if (confirm(`Remove "${player.name}"? They'll move to Past Players.`)) {
           await update(dbRef.player(id), { inactive: true, removedAt: Date.now() });
         }
-      }));
-      item.appendChild(rightPart);
+      };
+      leftPart.appendChild(delBtn);
+
+      item.appendChild(leftPart);
 
       list.appendChild(item);
     });
@@ -3230,6 +3239,10 @@ function renderAdminLogs(container) {
   if (!state.admin.selectedDate) state.admin.selectedDate = getTodayDate();
   if (!state.admin.selectedComp) state.admin.selectedComp = state.currentComp || Object.keys(state.competitions)[0] || null;
   container.innerHTML = `<div class="admin-section-title">MANAGE ORDERS</div>`;
+
+  const compLabel = document.createElement("label");
+  compLabel.className = "field-label"; compLabel.style.marginBottom = "8px"; compLabel.textContent = "COMPETITION";
+  container.appendChild(compLabel);
 
   const compWrap = document.createElement("div");
   compWrap.className = "board-comp-picker admin-logs-comp-picker";
