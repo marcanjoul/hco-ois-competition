@@ -965,6 +965,7 @@
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
+  margin-bottom: var(--space-2);
   background: var(--surface2);
   text-align: center;
 }

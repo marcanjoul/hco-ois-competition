@@ -2827,7 +2827,6 @@ function renderAdminPlayers(container) {
   toolsWrap.innerHTML = `
     <div class="admin-team-tools-header">
       <div class="admin-team-tools-title-row">
-        <div class="admin-team-tools-title">Players</div>
         <div class="admin-team-tools-count">${playerCount} active</div>
       </div>
     </div>
@@ -2852,7 +2851,6 @@ function renderAdminPlayers(container) {
   searchWrap.className = "admin-player-list-search-wrap";
   searchWrap.innerHTML = `
     <label class="admin-team-field admin-team-search-wrap">
-      <span class="admin-team-field-label">Search players</span>
       <div class="admin-team-input-shell">
         <input type="text" id="admin-player-search" class="log-input admin-team-input" placeholder="Search..." />
       </div>
