@@ -369,20 +369,15 @@ input[type="number"] { -moz-appearance: textfield; }
   letter-spacing: 0.9px;
   text-transform: uppercase;
   line-height: 1.2;
-  box-shadow: var(--glow-accent);
   transition: all 0.2s cubic-bezier(0.34,1.2,0.64,1);
-  animation: btn-glow-pulse 2.5s ease-in-out infinite;
 }
 
 .welcome-start-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(26,111,244,0.5);
-  animation: none;
 }
 
 .welcome-start-btn:active {
   transform: scale(0.97);
-  animation: none;
 }
 
 .welcome-start-btn:focus-visible {
@@ -491,7 +486,6 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 .app-header-info-btn:hover {
   background: rgba(26,111,244,0.2);
-  box-shadow: var(--glow-accent);
 }
 
 /* ── BOTTOM NAV ──

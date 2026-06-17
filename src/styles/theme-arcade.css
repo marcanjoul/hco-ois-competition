@@ -3773,11 +3773,6 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
     0 0 24px rgba(71, 215, 255, 0.45) !important;
 }
 
-/* btn-glow-pulse in arcade uses gold glow instead of blue — override the keyframes */
-@keyframes btn-glow-pulse {
-  0%, 100% { filter: drop-shadow(0 0 6px rgba(255,216,77,0.45)); }
-  50%       { filter: drop-shadow(0 0 20px rgba(255,216,77,0.8)); }
-}
 
 /* ── Minimal 4px border radius for all borders ── */
 .ois-step-card,

@@ -598,7 +598,6 @@
 .pick-player-selector:hover {
   background: var(--surface);
   border-color: var(--accent2);
-  box-shadow: var(--glow-accent);
 }
 .pick-player-selector.has-selection {
   color: var(--text);
@@ -812,7 +811,6 @@
 
 .pick-avatar-upload-option:hover {
   border-color: rgba(26,111,244,0.28);
-  box-shadow: var(--glow-accent);
   transform: translateY(-1px);
 }
 
@@ -873,7 +871,6 @@
 .pick-selected-clear-btn:hover {
   color: var(--accent);
   border-color: rgba(26,111,244,0.25);
-  box-shadow: var(--glow-accent);
   transform: scale(1.05);
 }
 
@@ -917,7 +914,6 @@
 .name-btn.selected {
   border-color: var(--accent);
   background: rgba(26,111,244,0.12);
-  box-shadow: var(--glow-accent);
 }
 .name-btn-winner {
   border-color: var(--gold);
@@ -1427,7 +1423,6 @@
   border-color: var(--accent);
   color: white;
   transform: scale(1.03);
-  box-shadow: var(--glow-accent);
   z-index: 1;
 }
 .day-btn.active .day-btn-dayname { color: rgba(255,255,255,0.8); }
@@ -1445,7 +1440,6 @@
   background: var(--green);
   border-color: var(--green);
   color: white;
-  box-shadow: var(--glow-green);
 }
 
 /* Future: very dim, zero interaction */
@@ -1541,7 +1535,6 @@ select.log-input:focus { background-color: var(--surface); }
   letter-spacing: 1.2px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.34,1.2,0.64,1);
-  box-shadow: var(--glow-accent);
   min-height: 46px;
   display: flex;
   align-items: center;
@@ -1551,21 +1544,8 @@ select.log-input:focus { background-color: var(--surface); }
   overflow: hidden;
 }
 
-/* Active pulse — GPU-composited via filter (not box-shadow) */
-.log-btn:not(:disabled):not(.btn-ghost):not(.btn-locked) {
-  will-change: filter;
-  animation: btn-glow-pulse 2.5s ease-in-out infinite;
-}
-
-@keyframes btn-glow-pulse {
-  0%, 100% { filter: drop-shadow(0 0 6px rgba(26,111,244,0.4)); }
-  50%       { filter: drop-shadow(0 0 18px rgba(26,111,244,0.7)); }
-}
-
 .log-btn:hover:not(:disabled):not(.btn-ghost):not(.btn-locked) {
   transform: translateY(-2px);
-  filter: drop-shadow(0 8px 16px rgba(26,111,244,0.55));
-  animation: none;
 }
 .log-btn:active:not(:disabled) { transform: scale(0.97); }
 
@@ -1596,7 +1576,6 @@ select.log-input:focus { background-color: var(--surface); }
   background: var(--green);
   border: none;
   color: white;
-  box-shadow: var(--glow-green);
   animation: none;
 }
 

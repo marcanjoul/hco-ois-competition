@@ -1687,7 +1687,7 @@ function renderBoard() {
     card.innerHTML = `
       <div class="board-rank-stack">
         <div class="board-rank-num">${isZero ? "—" : `#${displayRank}`}</div>
-        ${isZero ? "" : `<div class="board-trend board-trend-${movement.type}">${movement.label}</div>`}
+        ${isZero || isCompEnded(comp) ? "" : `<div class="board-trend board-trend-${movement.type}">${movement.label}</div>`}
       </div>
       ${getBoardAvatarHtml(playerRecord || { name: player.name }, player.id, isZero ? 99 : displayRank)}
       <div class="board-info">
@@ -3026,32 +3026,33 @@ function openEditPlayerModal(playerId, player) {
   }
 
   const isCustomAvatar = player.avatar && player.avatar.startsWith("data:");
+  const originalName = player.name;
+  const originalAvatar = player.avatar || null;
+  window.editPlayerAvatarData = undefined;
 
   modal.innerHTML = `
     <div class="admin-edit-player-modal-content">
       <div class="admin-edit-player-modal-header">
         <div>Edit Player</div>
-        <button class="admin-edit-player-modal-close">✕</button>
+        <button class="admin-edit-player-modal-close" aria-label="Close modal">✕</button>
       </div>
 
       <div class="admin-edit-player-avatar-section">
-        <button class="dash-profile-avatar-btn" id="edit-player-avatar-trigger" type="button" title="Tap to upload photo">
-          <div id="edit-player-avatar-preview" class="admin-edit-player-avatar-large">
-            ${getAvatarHtml(player, "large", playerId)}
-          </div>
-          <span class="pick-avatar-edit-pill">Upload Photo</span>
-        </button>
+        <div id="edit-player-avatar-preview" class="admin-edit-player-avatar-large">
+          ${getAvatarHtml(player, "large", playerId)}
+        </div>
+        <button class="log-btn btn-secondary" id="edit-player-avatar-trigger" type="button" style="width: auto; min-width: 140px; padding: var(--space-2) var(--space-4);">Upload Photo</button>
         <input type="file" id="edit-player-avatar-input" accept="image/*" style="display: none;" />
-        ${isCustomAvatar ? `<button class="mini-btn del-btn danger" id="edit-player-avatar-remove" type="button" style="margin-top: 8px;">Remove Photo</button>` : ""}
+        <button class="mini-btn del-btn danger" id="edit-player-avatar-remove" type="button" style="width: auto; display: ${isCustomAvatar ? "inline-block" : "none"};">Remove Photo</button>
       </div>
 
       <div class="admin-edit-player-section">
         <label class="field-label">NAME</label>
-        <input type="text" id="edit-player-name" class="log-input" value="${escapeHtml(player.name)}" placeholder="Player name" />
+        <input type="text" id="edit-player-name" class="log-input" value="${escapeHtml(player.name)}" placeholder="Player name" autocomplete="off" />
       </div>
 
       <div class="admin-btn-row">
-        <button class="log-btn" id="player-save-btn">SAVE CHANGES</button>
+        <button class="log-btn" id="player-save-btn" disabled>SAVE CHANGES</button>
         <button class="btn-secondary" id="player-cancel-btn">CANCEL</button>
       </div>
     </div>
@@ -3059,12 +3060,45 @@ function openEditPlayerModal(playerId, player) {
 
   modal.classList.add("active");
 
+  const saveBtn = modal.querySelector("#player-save-btn");
+  const nameInput = modal.querySelector("#edit-player-name");
+  const removeBtn = modal.querySelector("#edit-player-avatar-remove");
+  const triggerBtn = modal.querySelector("#edit-player-avatar-trigger");
+  const fileInput = modal.querySelector("#edit-player-avatar-input");
+
+  function getCurrentlySelectedAvatar() {
+    return window.editPlayerAvatarData === undefined ? originalAvatar : window.editPlayerAvatarData;
+  }
+
+  function updateFormState() {
+    const currentName = nameInput.value.trim();
+    const currentAvatar = getCurrentlySelectedAvatar();
+
+    const isNameChanged = (currentName !== originalName);
+    const isAvatarChanged = (currentAvatar !== originalAvatar);
+    const hasChanges = (isNameChanged || isAvatarChanged) && currentName.length > 0;
+
+    saveBtn.disabled = !hasChanges;
+
+    if (removeBtn) {
+      removeBtn.style.display = currentAvatar ? "inline-block" : "none";
+    }
+
+    const preview = modal.querySelector("#edit-player-avatar-preview");
+    if (preview) {
+      if (currentAvatar) {
+        preview.innerHTML = `<div class="avatar avatar-large"><img class="avatar-img" src="${currentAvatar}" alt="preview" /></div>`;
+      } else {
+        const placeholder = getAvatarPlaceholder(currentName || playerId);
+        preview.innerHTML = `<div class="avatar avatar-large"><span class="avatar-placeholder">${placeholder}</span></div>`;
+      }
+    }
+  }
+
   // Close button handler
   modal.querySelector(".admin-edit-player-modal-close").onclick = closeEditPlayerModal;
 
   // Trigger file input
-  const triggerBtn = modal.querySelector("#edit-player-avatar-trigger");
-  const fileInput = modal.querySelector("#edit-player-avatar-input");
   if (triggerBtn && fileInput) {
     triggerBtn.onclick = () => fileInput.click();
   }
@@ -3075,30 +3109,28 @@ function openEditPlayerModal(playerId, player) {
     if (!file) return;
     if (file.size > 5000000) { showToast("Image too large (max 5MB)"); return; }
     const base64 = await fileToBase64(file);
-    const preview = modal.querySelector("#edit-player-avatar-preview");
-    if (preview) preview.innerHTML = `<div class="avatar avatar-large"><img class="avatar-img" src="${base64}" alt="preview" /></div>`;
     window.editPlayerAvatarData = base64;
-    const removeBtn = modal.querySelector("#edit-player-avatar-remove");
-    if (removeBtn) removeBtn.style.display = "inline-block";
+    updateFormState();
   };
 
   // Remove avatar button
-  const removeBtn = modal.querySelector("#edit-player-avatar-remove");
   if (removeBtn) {
     removeBtn.onclick = () => {
       if (confirm("Remove avatar for this player?")) {
         window.editPlayerAvatarData = null;
-        const preview = modal.querySelector("#edit-player-avatar-preview");
-        const placeholder = getAvatarPlaceholder(player.name || playerId);
-        if (preview) preview.innerHTML = `<div class="avatar avatar-large"><span class="avatar-placeholder">${placeholder}</span></div>`;
-        removeBtn.style.display = "none";
+        updateFormState();
       }
     };
   }
 
+  // Input name text changes
+  nameInput.oninput = () => {
+    updateFormState();
+  };
+
   // Save button
-  modal.querySelector("#player-save-btn").onclick = async () => {
-    const newName = modal.querySelector("#edit-player-name").value.trim();
+  saveBtn.onclick = async () => {
+    const newName = nameInput.value.trim();
     if (!newName) { showToast("Enter a name"); return; }
     if (findDuplicatePlayerName(newName, playerId)) {
       showToast(`We already have someone named ${newName} — try adding a last name initial`);
