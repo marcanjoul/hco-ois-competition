@@ -57,4 +57,7 @@ Associates log their daily order counts, the app handles the math (sales-per-hou
 
 ## Author
 
-**Marc Anjoul** — Built for an in-store team competition at Hollister Co. to make daily performance tracking simple, competitive, and engaging.
+**Mark Anjoul** — Built for an in-store team competition at Hollister Co. to make daily performance tracking simple, competitive, and engaging.
+
+## Disclaimer
+This is NOT affiliated with Abercrombie & Fitch company, this is purely a personal and passion project for my own developer growth, and its purpose is to create a more fun and dynamic store competition among associates.
