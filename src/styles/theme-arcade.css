@@ -203,7 +203,6 @@ textarea {
 .admin-team-tools,
 .admin-team-input-shell,
 .admin-list,
-.admin-item,
 .admin-summary-bar,
 .admin-tab-bar,
 .admin-tab-content,
@@ -1182,12 +1181,15 @@ select.log-input:focus {
 }
 
 .admin-team-tools,
-.admin-item,
 .admin-list,
 .admin-team-input-shell {
   background:
     linear-gradient(180deg, rgba(10, 22, 60, 0.98), rgba(6, 13, 36, 0.98)) !important;
   border: 2px solid #2b6dff !important;
+}
+
+.admin-item {
+  border-bottom: 1px solid #2348b3 !important;
 }
 
 .admin-team-tools {
@@ -2416,7 +2418,6 @@ body::after {
   .info-modal-content,
   .admin-team-tools,
   .admin-list,
-  .admin-item,
   .admin-log-player-card,
   .goal-day-card,
   .dash-profile-card {
