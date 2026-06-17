@@ -1237,6 +1237,7 @@ select.log-input:focus {
 .admin-team-controls {
   display: flex !important;
   flex-direction: column !important;
+  align-items: stretch !important;
   gap: 8px !important;
 }
 

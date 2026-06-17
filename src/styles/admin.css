@@ -453,6 +453,12 @@
   margin: 0 auto var(--space-4);
 }
 
+/* The full roster lives in one box; rows scroll instead of paginating. */
+#admin-player-list-container {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
 .admin-comp-row {
   display: flex;
   flex-direction: column;
@@ -525,6 +531,7 @@
 .comp-status-ended {
   color: var(--accent2);
   background: rgba(71, 215, 255, 0.12);
+  border-radius: 4px;
 }
 
 .comp-status-upcoming {
@@ -1137,6 +1144,15 @@
 
 .admin-log-player-list.hidden {
   display: none;
+}
+
+/* Other Players: full roster in one box, rows scroll instead of paginating. */
+.admin-log-other-box {
+  margin-top: 8px;
+}
+.admin-log-other-list {
+  max-height: 320px;
+  overflow-y: auto;
 }
 
 .admin-log-player-card-wrap {

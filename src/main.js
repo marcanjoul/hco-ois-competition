@@ -56,13 +56,13 @@ let state = {
   endedRevealDismissedCompId: null,
   admin: {
     showAllComps: false,
-    showAllPlayers: false,
     showUnloggedPlayers: false,
     selectedPlayer: null,
     selectedComp: null,
     editingCompId: null,
     selectedDate: getTodayDate(),
     playerSearch: "",
+    dayPlayerSearch: "",
     tab: "competitions",
   },
 };
@@ -2430,6 +2430,8 @@ function renderCompEditForm(compId, comp, editForm, { onDone = null } = {}) {
 function renderAdminPlayersList() {
   const listContainer = document.getElementById("admin-player-list-container");
   if (!listContainer) return;
+  const pastContainer = document.getElementById("admin-past-players-container");
+  if (pastContainer) pastContainer.innerHTML = "";
 
   const search = state.admin.playerSearch.toLowerCase();
   const allActive = Object.entries(state.players)
@@ -2440,7 +2442,7 @@ function renderAdminPlayersList() {
     .sort(([, a], [, b]) => a.name.localeCompare(b.name));
 
   const filtered = search ? allActive.filter(([, player]) => player.name.toLowerCase().includes(search)) : allActive;
-  const toShow = state.admin.showAllPlayers ? filtered : filtered.slice(0, PREVIEW_COUNT);
+  const toShow = filtered;
 
   listContainer.innerHTML = "";
   const list = document.createElement("div");
@@ -2483,22 +2485,19 @@ function renderAdminPlayersList() {
   }
   listContainer.appendChild(list);
 
-  if (filtered.length > PREVIEW_COUNT) {
-    const viewAllPlayersBtn = makeBtn("", "view-all-btn view-all-btn-boxed", () => { state.admin.showAllPlayers = !state.admin.showAllPlayers; renderAdminPlayersList(); });
-    viewAllPlayersBtn.innerHTML = state.admin.showAllPlayers
-      ? `Show less <span class="view-all-btn-icon">▲</span>`
-      : `View all ${filtered.length} players <span class="view-all-btn-icon">▼</span>`;
-    listContainer.appendChild(viewAllPlayersBtn);
-  }
-
   // Past Players section
   if (allPast.length > 0) {
     const pastSection = document.createElement("div");
     pastSection.className = "goal-admin-block admin-past-players-section";
 
     const pastToggle = document.createElement("button");
-    pastToggle.className = "collapsible-toggle";
-    pastToggle.innerHTML = `▢ PAST PLAYERS (${allPast.length}) <span class="collapsible-toggle-icon">▼</span>`;
+    pastToggle.type = "button";
+    pastToggle.className = "admin-log-player-toggle";
+    pastToggle.innerHTML = `
+      <span class="admin-log-player-section-title">Past Players</span>
+      <span class="admin-log-player-toggle-meta">${allPast.length} total</span>
+      <span class="admin-log-player-toggle-icon">▼</span>
+    `;
 
     const pastContent = document.createElement("div");
     pastContent.style.display = "none";
@@ -2554,28 +2553,24 @@ function renderAdminPlayersList() {
     pastContent.appendChild(pastList);
     pastSection.appendChild(pastToggle);
     pastSection.appendChild(pastContent);
-    listContainer.appendChild(pastSection);
+    (pastContainer || listContainer).appendChild(pastSection);
 
     pastToggle.onclick = () => {
       const isHidden = pastContent.style.display === "none";
       pastContent.style.display = isHidden ? "block" : "none";
       pastToggle.classList.toggle("expanded", isHidden);
+      pastToggle.querySelector(".admin-log-player-toggle-icon").textContent = isHidden ? "▲" : "▼";
     };
   }
 }
 
 function renderAdminPlayers(container) {
-  container.innerHTML = `<div class="admin-section-title">MANAGE PLAYERS</div>`;
   const playerCount = Object.values(state.players || {}).filter(e => !e.inactive).length;
+  container.innerHTML = `<div class="admin-section-title">MANAGE PLAYERS (${playerCount})</div>`;
 
   const toolsWrap = document.createElement("div");
   toolsWrap.className = "admin-team-tools";
   toolsWrap.innerHTML = `
-    <div class="admin-team-tools-header">
-      <div class="admin-team-tools-title-row">
-        <div class="admin-team-tools-count">${playerCount} active</div>
-      </div>
-    </div>
     <div class="admin-team-controls">
       <label class="admin-team-field admin-team-add-wrap">
         <span class="admin-team-field-label">Quick add</span>
@@ -2611,12 +2606,16 @@ function renderAdminPlayers(container) {
 
   container.appendChild(listBox);
 
+  // Past Players renders below, outside the active-roster box.
+  const pastContainer = document.createElement("div");
+  pastContainer.id = "admin-past-players-container";
+  container.appendChild(pastContainer);
+
   const searchInput = document.getElementById("admin-player-search");
   if (searchInput) {
     searchInput.value = state.admin.playerSearch;
     searchInput.oninput = (e) => {
       state.admin.playerSearch = e.target.value;
-      state.admin.showAllPlayers = false;
       renderAdminPlayersList();
     };
   }
@@ -3056,16 +3055,54 @@ function refreshAdminDayView() {
       <span class="admin-log-player-toggle-meta">${unloggedPlayers.length} more</span>
       <span class="admin-log-player-toggle-icon">${state.admin.showUnloggedPlayers ? "▲" : "▼"}</span>
     `;
-    const openList = document.createElement("div");
-    openList.className = `admin-log-player-list${state.admin.showUnloggedPlayers ? "" : " hidden"}`;
-    unloggedPlayers.forEach(player => openList.appendChild(renderPlayerCard(player)));
     openHeader.onclick = () => {
       state.admin.showUnloggedPlayers = !state.admin.showUnloggedPlayers;
       refreshAdminDayView();
     };
     openSection.appendChild(openHeader);
-    openSection.appendChild(openList);
-    playerList.appendChild(openSection);
+
+    // When expanded, the roster lives in one searchable, scrollable box.
+    if (state.admin.showUnloggedPlayers) {
+      const box = document.createElement("div");
+      box.className = "admin-player-list-box admin-log-other-box";
+      box.innerHTML = `
+        <div class="admin-player-list-search-wrap">
+          <label class="admin-team-field">
+            <div class="admin-team-input-shell">
+              <input type="text" id="admin-day-player-search" class="log-input admin-team-input" placeholder="Search..." />
+            </div>
+          </label>
+        </div>`;
+      const openList = document.createElement("div");
+      openList.className = "admin-log-player-list admin-log-other-list";
+      box.appendChild(openList);
+      openSection.appendChild(box);
+
+      const renderOtherList = () => {
+        const q = (state.admin.dayPlayerSearch || "").toLowerCase();
+        const matched = q ? unloggedPlayers.filter(p => p.player.name.toLowerCase().includes(q)) : unloggedPlayers;
+        openList.innerHTML = "";
+        if (!matched.length) {
+          openList.innerHTML = `<div class="admin-log-empty-state">No players found</div>`;
+        } else {
+          matched.forEach(player => openList.appendChild(renderPlayerCard(player)));
+        }
+      };
+      renderOtherList();
+
+      playerList.appendChild(openSection);
+
+      const daySearch = document.getElementById("admin-day-player-search");
+      if (daySearch) {
+        daySearch.value = state.admin.dayPlayerSearch || "";
+        daySearch.oninput = (e) => {
+          state.admin.dayPlayerSearch = e.target.value;
+          renderOtherList();
+        };
+      }
+    } else {
+      playerList.appendChild(openSection);
+    }
   }
 }
 
@@ -3621,7 +3658,6 @@ document.addEventListener("DOMContentLoaded", () => {
       state.adminUnlocked = true;
       sessionStorage.setItem("adminUnlocked", "1");
       state.admin.showAllComps = false;
-      state.admin.showAllPlayers = false;
       state.admin.selectedPlayer = null;
       state.admin.selectedComp = state.currentComp;
       state.admin.playerSearch = "";
