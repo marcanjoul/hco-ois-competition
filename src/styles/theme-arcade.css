@@ -3764,4 +3764,79 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
   50%       { filter: drop-shadow(0 0 20px rgba(255,216,77,0.8)); }
 }
 
+/* ── Minimal 4px border radius for all borders ── */
+.ois-step-card,
+.dash-comp-info,
+.history-wrap,
+.vibe-card,
+.admin-gate-body,
+.info-modal-content,
+.pick-avatar-upload-sheet,
+.board-card,
+.admin-team-tools,
+.admin-list,
+.admin-item,
+.admin-comp-item,
+.admin-player-list-box,
+.admin-summary-bar,
+.admin-tab-bar,
+.admin-tab-content,
+.no-comps-message,
+.toast,
+.log-input,
+#input-pin,
+select.log-input,
+.btn-secondary,
+.del-btn,
+.mini-btn,
+.collapsible-toggle,
+.admin-lock-btn,
+.log-btn,
+.nav-btn,
+.pick-player-selector,
+.pick-info-btn,
+.pick-success-cta,
+.admin-action-edit,
+.admin-action-delete,
+.pick-avatar-upload-option,
+.week-nav-btn,
+.pick-countdown,
+.pick-comp-dates,
+.pick-winner-row,
+.pick-goals-toggle,
+.goal-percent,
+.goal-target,
+.status-badge,
+.admin-log-header-badge,
+.goal-bar-bg,
+.goal-bar-fill,
+.goal-hit-bar,
+.admin-log-week-display,
+.admin-log-player-wrap,
+.admin-log-player-card,
+.admin-log-empty-state,
+.admin-log-player-toggle,
+.admin-log-inline-detail,
+.admin-log-player-badge,
+.admin-player-item,
+button,
+input[type="button"],
+input[type="submit"],
+[role="button"] {
+  border-radius: 4px !important;
+}
+
+/* Apply same border-radius variable defaults to cover child items in layout */
+*, *::before, *::after {
+  --radius: 4px !important;
+  --radius-sm: 4px !important;
+  --radius-xs: 4px !important;
+  --radius-md: 4px !important;
+  --radius-lg: 4px !important;
+  --radius-pill: 4px !important;
+  --radius-sheet: 4px !important;
+  --radius-option: 4px !important;
+  --radius-circle: 4px !important;
+}
+
 /* ── Admin gate: square card centered on screen (matches welcome-boot-panel) ── */

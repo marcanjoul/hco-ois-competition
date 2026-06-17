@@ -252,17 +252,17 @@
   }
 
   .board-name {
-    font-size: 23px;
+    font-size: 14px;
   }
 
   .board-card.rank-1 .board-name {
-    font-size: 26px;
+    font-size: 16px;
   }
   .board-card.rank-2 .board-name {
-    font-size: 25px;
+    font-size: 15px;
   }
   .board-card.rank-3 .board-name {
-    font-size: 24px;
+    font-size: 14px;
   }
 
   .avatar-board {
@@ -552,14 +552,14 @@
   }
 
   .board-name {
-    font-size: 20px;
+    font-size: 12px;
   }
 
   .board-card.rank-1 .board-name {
-    font-size: 22px;
+    font-size: 14px;
   }
   .board-card.rank-2 .board-name {
-    font-size: 21px;
+    font-size: 13px;
   }
 
   .board-trend {
