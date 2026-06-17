@@ -54,9 +54,7 @@
   --type-label-family: "Science Gothic", sans-serif;
   --type-caption-family: "Science Gothic", sans-serif;
   --type-small-family: "Science Gothic", sans-serif;
-  /* Science Gothic scale — sized for a normal proportional sans, replacing
-     the old Press Start 2P/VT323 pixel-font scale. Hierarchy now comes from
-     real weight + width (condensed) on the variable font, not just size. */
+  
   --type-display-size:    36px;
   --type-heading-size:    24px;
   --type-subheading-size: 18px;
