@@ -480,10 +480,6 @@
   margin-bottom: var(--space-2);
 }
 
-.pick-step-header-form {
-  margin: var(--space-6) 0 var(--space-2);
-}
-
 .pick-step-num {
   width: 20px; height: 20px;
   border-radius: 0;
@@ -662,19 +658,6 @@
   position: absolute;
   top: 8px;
   right: 8px;
-}
-
-.avatar-pick-large {
-  width: 52px;
-  height: 52px;
-  font-size: 18px;
-  border-width: 2px;
-  background: var(--surface);
-  box-shadow: 0 8px 20px rgba(15,25,35,0.12);
-}
-
-.avatar-pick-large .avatar-placeholder {
-  font-size: 18px;
 }
 
 .pick-avatar-edit-pill {
@@ -1403,12 +1386,6 @@
 
 .day-btn-dayname { font-size: 7px; font-weight: 720; text-transform: uppercase; }
 .day-btn-date { font-size: 10px; font-weight: 810; line-height: 1; }
-.day-btn-checkmark {
-  position: absolute;
-  top: 2px; right: 3px;
-  font-size: 7px;
-  color: var(--green);
-}
 
 /* Today: accent color border, bold date */
 .day-btn.today {
@@ -1433,8 +1410,6 @@
   border-color: var(--green);
   color: var(--green);
 }
-.day-btn.logged .day-btn-checkmark { font-size: 8px; }
-
 /* Selected + logged */
 .day-btn.logged.active {
   background: var(--green);

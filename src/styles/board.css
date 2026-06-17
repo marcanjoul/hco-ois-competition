@@ -241,16 +241,6 @@
     drop-shadow(0 0 6px rgba(71, 215, 255, 0.24));
 }
 
-.board-avatar-medal {
-  position: absolute;
-  left: 50%;
-  bottom: 4px;
-  transform: translateX(-50%);
-  font-size: 18px;
-  line-height: 1;
-  z-index: 2;
-}
-
 .board-rank-stack {
   width: 38px;
   min-width: 38px;
@@ -365,14 +355,6 @@
   flex-shrink: 0;
   white-space: nowrap;
   vertical-align: middle;
-}
-
-.board-meta {
-  font-family: var(--type-caption-family);
-  font-size: 13px;
-  font-weight: var(--type-caption-weight);
-  color: var(--text2);
-  line-height: 1.15;
 }
 
 .board-score {

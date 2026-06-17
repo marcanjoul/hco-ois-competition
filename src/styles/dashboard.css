@@ -157,11 +157,6 @@
   height: 44px;
 }
 
-.dash-profile-avatar .board-avatar-medal {
-  bottom: 0;
-  font-size: 32px;
-}
-
 .dash-profile-copy {
   min-width: 0;
 }
@@ -292,25 +287,6 @@
   line-height: 1;
 }
 .stat-card.accent .stat-value { color: var(--accent); }
-
-/* Vibe card
-   Example on the website: the message card with the emoji and helper text.
-*/
-.vibe-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border-color);
-  border-radius: var(--radius-sm);
-  padding: 10px var(--space-3);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-family: var(--type-body-family);
-  font-size: var(--type-body-size);
-  font-weight: 630;
-  color: var(--text);
-  min-height: 44px;
-}
-#vibe-emoji { font-size: 18px; flex-shrink: 0; }
 
 /* History
    Example on the website: the "ORDERS" list of saved entries.

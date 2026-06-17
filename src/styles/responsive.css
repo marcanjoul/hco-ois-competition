@@ -111,20 +111,6 @@
     gap: 12px;
   }
 
-  .admin-collapsible-toggle {
-    padding: 10px 12px;
-    min-height: 50px;
-  }
-
-  .admin-collapsible-title {
-    font-size: 18px;
-    letter-spacing: 0.8px;
-  }
-
-  .admin-collapsible-sub {
-    font-size: 10px;
-  }
-
   .admin-edit-group-body {
     gap: 12px;
   }
@@ -221,23 +207,9 @@
     right: auto;
   }
 
-  .board-avatar-medal {
-    font-size: 18px;
-    bottom: 1px;
-  }
-
   .board-score {
     min-width: 60px;
     flex-shrink: 0;
-  }
-
-  .board-meta {
-    font-size: 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.1;
-    letter-spacing: 0.2px;
   }
 
   .board-name-row {
@@ -422,15 +394,6 @@
     padding: var(--space-3);
   }
 
-  .avatar-pick-large {
-    width: 52px;
-    height: 52px;
-  }
-
-  .avatar-pick-large .avatar-placeholder {
-    font-size: 22px;
-  }
-
   .pick-selected-player-card {
     gap: var(--space-2);
     padding: 10px;
@@ -540,11 +503,6 @@
     right: auto;
   }
 
-  .board-avatar-medal {
-    font-size: 15px;
-    bottom: 0;
-  }
-
   .avatar-board {
     width: 38px;
     height: 38px;
@@ -565,11 +523,6 @@
   .board-trend {
     min-width: 20px;
     font-size: 11px;
-  }
-
-  .board-meta {
-    font-size: 8px;
-    line-height: 1.05;
   }
 
   .board-score {
@@ -640,15 +593,6 @@
   .pick-comp-name {
     font-size: 22px;
     max-width: calc(100% - 56px);
-  }
-
-  .avatar-pick-large {
-    width: 48px;
-    height: 48px;
-  }
-
-  .avatar-pick-large .avatar-placeholder {
-    font-size: 22px;
   }
 
   .pick-selected-player-name {

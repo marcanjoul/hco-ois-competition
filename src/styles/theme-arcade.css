@@ -114,7 +114,6 @@ body::before {
 .app-header,
 .bottom-nav,
 .admin-team-input-shell,
-.admin-summary-bar,
 .admin-tab-bar,
 .pick-avatar-upload-sheet,
 .toast,
@@ -194,14 +193,12 @@ body::before {
 .ois-step-card,
 .dash-comp-info,
 .history-wrap,
-.vibe-card,
 .admin-gate-body,
 .info-modal-content,
 .pick-avatar-upload-sheet,
 .board-card,
 .admin-team-tools,
 .admin-list,
-.admin-summary-bar,
 .admin-tab-bar,
 .admin-tab-content,
 .no-comps-message,
@@ -782,10 +779,6 @@ body::after {
   opacity: 1;
 }
 
-.nav-icon {
-  display: none;
-}
-
 .nav-label {
   color: var(--text2);
   text-shadow: none;
@@ -847,11 +840,6 @@ body::after {
   right: auto;
   width: 16px;
   height: 16px;
-}
-
-#pick-player-list .board-avatar-medal {
-  bottom: 1px;
-  font-size: 12px;
 }
 
 #pick-player-list .avatar-small .avatar-placeholder,
@@ -984,12 +972,6 @@ select.log-input:focus {
   text-shadow: none;
 }
 
-.vibe-card {
-  border-color: var(--accent-alt) !important;
-  background:
-    linear-gradient(180deg, rgba(255, 79, 163, 0.12), rgba(7, 15, 41, 0.98)) !important;
-}
-
 .dash-profile-card,
 .dash-profile-stat,
 .admin-edit-group {
@@ -1068,7 +1050,6 @@ select.log-input:focus {
 
 .rank-pip,
 .pick-success-checkmark,
-#vibe-emoji,
 .admin-gate-icon {
   font-family: "Science Gothic", sans-serif;
   font-weight: 720;
@@ -1097,13 +1078,6 @@ select.log-input:focus {
   background:
     radial-gradient(ellipse 80% 100% at 0% 50%, rgba(192, 122, 58, 0.14) 0%, transparent 62%),
     linear-gradient(180deg, rgba(18, 38, 108, 0.98), rgba(7, 15, 41, 0.99)) !important;
-}
-
-.board-meta {
-  color: #7fdcff;
-  font-size: 13px;
-  letter-spacing: 0.5px;
-  text-shadow: none;
 }
 
 .board-zero-divider {
@@ -1449,7 +1423,6 @@ select.log-input:focus {
 }
 
 .admin-team-tools-count,
-.admin-summary-chip,
 .admin-tab-btn,
 .admin-team-field-label,
 .search-results-info,
@@ -1459,7 +1432,6 @@ select.log-input:focus {
 }
 
 .admin-team-tools-count,
-.admin-summary-chip,
 .admin-tab-btn {
   background: var(--surface-lift) !important;
   border: 2px solid #2b6dff !important;
@@ -1767,9 +1739,6 @@ select.log-input:focus {
     margin-bottom: 7px !important;
   }
 
-  .pick-step-header-form {
-    margin: 10px 0 7px !important;
-  }
 
   .pick-step-num {
     width: 20px;
@@ -1819,11 +1788,6 @@ select.log-input:focus {
     font-size: 10px;
   }
 
-  .day-btn-checkmark {
-    top: 1px;
-    right: 2px;
-    font-size: 5px;
-  }
 
   .pick-player-selector {
     min-height: 42px;
@@ -1884,10 +1848,6 @@ select.log-input:focus {
     height: 14px;
   }
 
-  #pick-player-list .board-avatar-medal {
-    bottom: 0;
-    font-size: 11px;
-  }
 
   .admin-item-name,
   .comp-status-chip,
@@ -1992,17 +1952,6 @@ body::after {
   opacity: 0.08;
 }
 
-.welcome-orb {
-  display: none;
-}
-
-.welcome-screen::before,
-.welcome-screen::after,
-.welcome-inner::after {
-  display: none !important;
-}
-
-.welcome-screen,
 .pick-inner,
 .dash-body,
 .screen-inner,
@@ -2010,12 +1959,10 @@ body::after {
   position: relative;
 }
 
-.welcome-inner,
 .pick-comp-info,
 .log-card,
 .dash-comp-info,
 .stat-card,
-.vibe-card,
 .history-wrap,
 .board-card,
 .admin-gate-body,
@@ -2032,7 +1979,6 @@ body::after {
      (--card-bg, --card-border-color, --shadow-card) in :root — no !important needed */
 }
 
-.welcome-inner::after,
 .log-card::after,
 .pick-comp-info::after,
 .history-wrap::after,
@@ -2040,31 +1986,9 @@ body::after {
   display: none !important;
 }
 
-.welcome-inner {
-  min-height: 590px;
-  padding-bottom: 72px;
-  background:
-    linear-gradient(180deg, #12266c 0%, var(--surface-deep) 100%) !important;
-}
-
 .pick-comp-info {
   background:
     linear-gradient(180deg, #12266c 0%, var(--surface-deep) 100%) !important;
-}
-
-.welcome-title {
-  color: var(--power-pellet);
-  text-shadow: none;
-}
-
-.welcome-copy {
-  color: var(--text2);
-  text-shadow: none;
-}
-
-.welcome-copy-group::after {
-  display: none !important;
-  content: none !important;
 }
 
 .app-header {
@@ -2206,7 +2130,6 @@ body::after {
   color: var(--power-pellet) !important;
 }
 
-.maze-glow-text,
 .log-card-title,
 .history-title,
 .admin-section-title {
@@ -2239,8 +2162,7 @@ body::after {
 }
 
 .log-btn,
-.pick-success-cta,
-.welcome-start-btn {
+.pick-success-cta {
   background: #ffd84d !important;
   color: #06102b !important;
   border-color: #fff2a8 !important;
@@ -2248,35 +2170,8 @@ body::after {
 }
 
 .log-btn:hover,
-.pick-success-cta:hover,
-.welcome-start-btn:hover {
+.pick-success-cta:hover {
   filter: brightness(1.08) saturate(1.12);
-}
-
-.welcome-start-btn {
-  min-width: 260px;
-  min-height: 66px;
-  padding: 18px 28px;
-  /* inherits yellow gradient from .log-btn group above */
-  border: 2px solid #f5bf1f !important;
-  color: #06102b !important;
-  font-size: 14px;
-  line-height: 1.25;
-  letter-spacing: 1.2px;
-  text-shadow: none !important;
-  box-shadow:
-    2px 2px 0 #050816,
-    inset 1px 1px 0 rgba(255, 255, 255, 0.22),
-    inset -1px -1px 0 rgba(0, 0, 0, 0.28),
-    0 0 18px rgba(255, 216, 77, 0.35) !important;
-}
-
-.welcome-start-btn::after {
-  opacity: 0 !important;
-}
-
-.welcome-start-btn:hover {
-  filter: brightness(1.1) saturate(1.15);
 }
 
 .day-btn.active,
@@ -2418,10 +2313,6 @@ body::after {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .welcome-copy-group::after {
-    animation: none;
-  }
-
   .nav-btn.active .nav-pixel-icon-maze {
     animation: pac-chomp 0.42s steps(2) infinite;
   }
@@ -2494,18 +2385,6 @@ body::after {
     background: none;
   }
 
-  .welcome-inner {
-    min-height: 520px;
-    padding-bottom: 56px;
-  }
-
-  .welcome-copy-group::after {
-    width: 124px;
-    margin-top: 22px;
-    transform: scale(0.82);
-    transform-origin: center;
-  }
-
   .nav-pixel-icon {
     width: 16px;
     height: 16px;
@@ -2516,12 +2395,10 @@ body::after {
     margin: 6px 6px 0;
   }
 
-  .welcome-inner,
   .pick-comp-info,
   .log-card,
   .dash-comp-info,
   .stat-card,
-  .vibe-card,
   .history-wrap,
   .board-card,
   .admin-gate-body,
@@ -3073,7 +2950,6 @@ button.btn-disabled:hover,
 
 /* TIER 1 — Gold primary actions */
 .log-btn:not(.btn-ghost):not(.btn-locked):not(.btn-disabled):not(.admin-danger-btn),
-.welcome-start-btn,
 .board-empty-cta,
 .competition-ended-board-btn,
 .pick-success-cta {
@@ -3087,7 +2963,6 @@ button.btn-disabled:hover,
     inset -1px -1px 0 rgba(0, 0, 0, 0.22) !important;
 }
 .log-btn:not(.btn-ghost):not(.btn-locked):not(.btn-disabled):not(.admin-danger-btn):hover,
-.welcome-start-btn:hover,
 .board-empty-cta:hover,
 .competition-ended-board-btn:hover,
 .pick-success-cta:hover {
@@ -3461,13 +3336,9 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 }
 
 /* Shrink the selected-player card (avatar, name, edit-photo pill) */
-.avatar-pick-large,
 .pick-selected-player-card .avatar {
   width: 40px !important;
   height: 40px !important;
-  font-size: 16px !important;
-}
-.avatar-pick-large .avatar-placeholder {
   font-size: 16px !important;
 }
 .pick-selected-player-name {
@@ -3779,7 +3650,6 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 .ois-step-card,
 .dash-comp-info,
 .history-wrap,
-.vibe-card,
 .admin-gate-body,
 .info-modal-content,
 .pick-avatar-upload-sheet,
@@ -3789,7 +3659,6 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 .admin-item,
 .admin-comp-item,
 .admin-player-list-box,
-.admin-summary-bar,
 .admin-tab-bar,
 .admin-tab-content,
 .no-comps-message,
@@ -3835,7 +3704,6 @@ select.log-input,
   .avatar-board,
   .avatar-small,
   .avatar-large,
-  .avatar-pick-large,
   .app-back-btn,
   .dash-profile-back-top,
   .welcome-boot-panel,

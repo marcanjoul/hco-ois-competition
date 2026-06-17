@@ -31,10 +31,6 @@
 .avatar-small { width: 40px; height: 40px; font-size: 14px; }
 .avatar-board { width: 56px; height: 56px; font-size: 18px; }
 
-.avatar-interactive { cursor: pointer; transition: all 0.2s; border-color: var(--border); }
-.avatar-interactive:hover { transform: scale(1.05); border-color: var(--accent); box-shadow: var(--glow-accent); }
-.avatar-interactive:active { transform: scale(0.95); }
-
 @media (max-width: 480px) {
   .pick-selected-player-card {
     gap: 8px;
@@ -56,34 +52,12 @@
     line-height: 1;
   }
 
-  .avatar-pick-large {
-    width: 72px;
-    height: 72px;
-    font-size: 24px;
-  }
-
-  .avatar-pick-large .avatar-placeholder {
-    font-size: 24px;
-  }
-
   .pick-avatar-edit-pill {
     min-width: 72px;
     padding: 2px 6px;
     font-size: 7px;
   }
 }
-
-.avatar-upload { position: relative; overflow: hidden; }
-.avatar-upload input[type="file"] { position: absolute; left: -9999px; }
-.avatar-upload-btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: var(--space-2) var(--space-3);
-  cursor: pointer; border-radius: var(--radius-sm);
-  background: var(--surface2); border: 1px solid var(--border);
-  color: var(--text2); font-size: 10px; font-family: var(--type-body-family); font-weight: 630;
-  transition: all 0.2s;
-}
-.avatar-upload-btn:hover { border-color: var(--accent); color: var(--accent); }
 
 /* ────────────────────────────────────────────────────────────────────────────
    11. TOAST

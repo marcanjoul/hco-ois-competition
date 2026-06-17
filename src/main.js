@@ -434,13 +434,6 @@ async function purgeExpiredDeletedComps() {
 // ══════════════════════════════════════════════════════
 function getCompGoals(compId) { return state.goals[compId] || {}; }
 
-function getPlayerSph(playerId, compId) {
-  const logs = (state.logs[compId] || {})[playerId] || {};
-  let total = 0, hours = 0;
-  Object.values(logs).forEach(l => { total += l.sales || 0; hours += l.hours || 0; });
-  return { total, hours, sph: hours > 0 ? total / hours : 0 };
-}
-
 function renderGoalBar(current, target, type) {
   const pct = Math.min(100, target > 0 ? (current / target) * 100 : 0);
   const isHit = current >= target;
@@ -1174,13 +1167,6 @@ function hideSelectedPlayerProfile() {
   if (searchWrap) searchWrap.style.display = "";
 }
 
-function isIOSDevice() {
-  const ua = navigator.userAgent || "";
-  const platform = navigator.platform || "";
-  const touchPoints = navigator.maxTouchPoints || 0;
-  return /iPhone|iPad|iPod/i.test(ua) || (platform === "MacIntel" && touchPoints > 1);
-}
-
 function promptPickAvatarUpload(playerId) {
   triggerAvatarFileInput(playerId, { accept: "image/*,.heic,.heif,.png,.jpg,.jpeg,.webp" });
 }
@@ -1188,10 +1174,6 @@ function promptPickAvatarUpload(playerId) {
 function closePickAvatarUploadModal() {
   const modal = document.getElementById("pick-avatar-upload-modal");
   if (modal) modal.classList.remove("active");
-}
-
-function getAdminLogEmptyState(message) {
-  return `<div class="admin-log-empty-state admin-log-detail-empty">${escapeHtml(message)}</div>`;
 }
 
 function triggerAvatarFileInput(playerId, { accept = "image/*", capture } = {}) {
@@ -1774,19 +1756,6 @@ function hasLogsInComp(compId) {
   });
 }
 
-function getAlphabeticalPlayers(compId) {
-  const compLogs = state.logs[compId] || {};
-  return Object.entries(state.players)
-    .filter(([, player]) => !player.inactive)
-    .map(([id, player]) => {
-      const playerLogs = compLogs[id] || {};
-      let total = 0, hours = 0;
-      Object.values(playerLogs).forEach(log => { total += log.sales || 0; hours += log.hours || 0; });
-      return { id, name: player.name, total, hours, sph: hours > 0 ? total / hours : 0 };
-    })
-    .sort((a, b) => a.name.localeCompare(b.name));
-}
-
 function getRankedPlayers(compId, logsSource = state.logs) {
   const compLogs = logsSource[compId] || {};
   const metric = state.settings.rankingMetric || "sph";
@@ -1989,23 +1958,6 @@ function getLeaderboardMovement(compId) {
 // ══════════════════════════════════════════════════════
 // ADMIN — Tab system
 // ══════════════════════════════════════════════════════
-function renderAdminSummaryBar() {
-  const bar = document.getElementById("admin-summary-bar");
-  if (!bar) return;
-  const playerCount = Object.keys(state.players).length;
-  const today = getTodayDate();
-  const compId = state.currentComp;
-  let logsToday = 0;
-  if (compId && state.logs[compId]) {
-    Object.values(state.logs[compId]).forEach(playerLogs => {
-      if (playerLogs[today]) logsToday++;
-    });
-  }
-  const comp = compId ? state.competitions[compId] : null;
-  const days = comp ? daysRemaining(comp) : null;
-  const dayStr = days === null ? "" : days <= 0 ? "Ends today" : `${days}d left`;
-}
-
 function openAdminPanel() {
   state.admin.tab = "competitions";
   renderAdminTab();
@@ -2471,212 +2423,6 @@ function renderCompEditForm(compId, comp, editForm, { onDone = null } = {}) {
   updateSaveButtonState();
 }
 
-function renderCompEditPanel(compId, comp) {
-  const content = document.getElementById("admin-tab-content");
-  const contentParent = content?.parentElement;
-  let topBackBtn = document.getElementById("admin-back-top");
-  if (!topBackBtn && contentParent) {
-    topBackBtn = document.createElement("button");
-    topBackBtn.id = "admin-back-top";
-    topBackBtn.type = "button";
-    topBackBtn.className = "app-back-btn admin-back-top hidden";
-    contentParent.insertBefore(topBackBtn, content);
-  }
-  if (topBackBtn) {
-    topBackBtn.innerHTML = `<span class="back-arrow">←</span> Back`;
-    topBackBtn.classList.remove("hidden");
-    topBackBtn.onclick = () => {
-      state.admin.tab = "competitions";
-      renderAdminTabBar();
-      renderAdminTab();
-    };
-  }
-  content.innerHTML = "";
-
-  const title = document.createElement("div");
-  title.className = "admin-section-title";
-  title.style.margin = "12px 0";
-  title.textContent = `EDITING: ${comp.name}`;
-  content.appendChild(title);
-
-  const editShell = document.createElement("div");
-  editShell.className = "admin-edit-shell";
-  content.appendChild(editShell);
-
-  const editForm = document.createElement("div");
-  editForm.className = "goal-admin-block admin-new-comp-form admin-edit-comp-form";
-  editShell.appendChild(editForm);
-
-  const changedFields = {};
-  let saveAllBtn = null;
-
-  const normalizeStringValue = (value) => String(value ?? "");
-  const normalizeNumericGoalValue = (value) => {
-    const num = Number.parseFloat(String(value ?? "").trim());
-    if (!Number.isFinite(num) || num <= 0) return "";
-    return String(num);
-  };
-
-  const getHighlightTarget = (el) => (
-    el?.closest(".goal-day-input-shell") ||
-    el?.closest(".admin-form-field-offset") ||
-    el?.closest(".log-field-wrap") ||
-    el
-  );
-
-  const updateSaveButtonState = () => {
-    if (!saveAllBtn) return;
-    const isDirty = Object.keys(changedFields).length > 0;
-    saveAllBtn.disabled = !isDirty;
-    saveAllBtn.classList.toggle("btn-ghost", !isDirty);
-  };
-
-  const highlightField = (id) => {
-    const el = document.getElementById(id);
-    const target = getHighlightTarget(el);
-    target?.classList.toggle("admin-field-changed", !!changedFields[id]);
-    updateSaveButtonState();
-  };
-
-  const addChangeListener = (id, originalValue, compare = "string") => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const checkChange = () => {
-      const currentValue = el.value;
-      const normalizedCurrent = compare === "numeric-goal"
-        ? normalizeNumericGoalValue(currentValue)
-        : normalizeStringValue(currentValue);
-      const normalizedOriginal = compare === "numeric-goal"
-        ? normalizeNumericGoalValue(originalValue)
-        : normalizeStringValue(originalValue);
-
-      if (normalizedCurrent !== normalizedOriginal) {
-        changedFields[id] = true;
-      } else {
-        delete changedFields[id];
-      }
-      highlightField(id);
-    };
-    el.addEventListener("input", checkChange);
-    el.addEventListener("change", checkChange);
-  };
-
-  const nameWrap = document.createElement("div");
-  nameWrap.className = "admin-form-field-offset";
-  nameWrap.innerHTML = `<label class="field-label">NAME *</label><input type="text" id="comp-edit-name" class="log-input admin-form-input-spaced" value="${escapeHtml(comp.name)}" placeholder="e.g.OIS Competition" />`;
-  editForm.appendChild(nameWrap);
-  addChangeListener("comp-edit-name", comp.name);
-
-  const dateRangeWrap = document.createElement("div");
-  dateRangeWrap.className = "log-fields admin-form-fields-spaced";
-  dateRangeWrap.innerHTML = `
-      <div class="log-field-wrap">
-        <label class="field-label" for="comp-edit-startDate">START DATE *</label>
-        <input type="date" id="comp-edit-startDate" class="log-input" value="${escapeHtml(comp.startDate || "")}" />
-      </div>
-      <div class="log-field-wrap">
-        <label class="field-label" for="comp-edit-endDate">END DATE *</label>
-        <input type="date" id="comp-edit-endDate" class="log-input" value="${escapeHtml(comp.endDate || "")}" />
-      </div>
-  `;
-  editForm.appendChild(dateRangeWrap);
-  addChangeListener("comp-edit-startDate", comp.startDate || "");
-  addChangeListener("comp-edit-endDate", comp.endDate || "");
-
-  const startDateInput = document.getElementById("comp-edit-startDate");
-  const endDateInput = document.getElementById("comp-edit-endDate");
-  const updateDateRangeUI = () => {
-    const startValue = startDateInput?.value || "";
-    const endValue = endDateInput?.value || "";
-    if (startDateInput) startDateInput.max = endValue || "";
-    if (endDateInput) endDateInput.min = startValue || "";
-  };
-  startDateInput?.addEventListener("change", updateDateRangeUI);
-  endDateInput?.addEventListener("change", updateDateRangeUI);
-  startDateInput?.addEventListener("input", updateDateRangeUI);
-  endDateInput?.addEventListener("input", updateDateRangeUI);
-  updateDateRangeUI();
-
-  if (isCompEnded(comp)) {
-    const winnerDisplayText = (comp.winner && state.players[comp.winner]?.name)
-      ? state.players[comp.winner].name
-      : "No winner set";
-
-    const winnerWrap = document.createElement("div");
-    winnerWrap.className = "admin-form-field-offset";
-    winnerWrap.innerHTML = `
-      <label class="field-label">WINNER</label>
-      <div class="admin-readonly-field">${escapeHtml(winnerDisplayText)}</div>
-    `;
-    editForm.appendChild(winnerWrap);
-  }
-
-  const compGoals = getCompGoals(compId);
-
-  // Competition Total Goal
-  const compGoalSection = document.createElement("div");
-  compGoalSection.className = "admin-form-field-offset";
-  compGoalSection.innerHTML = `
-    <label class="field-label">COMPETITION GOAL</label>
-    <label class="goal-day-input-shell goal-admin-input-shell" for="goal-val-competition">
-      <span class="goal-day-currency">$</span>
-      <input type="number" id="goal-val-competition" class="log-input goal-day-input" placeholder="0" value="${compGoals.competition?.value || ""}" min="0" step="1" />
-    </label>
-  `;
-  editForm.appendChild(compGoalSection);
-  addChangeListener("goal-val-competition", compGoals.competition?.value || "", "numeric-goal");
-
-  // ═══ Save All Button ═══
-  saveAllBtn = makeBtn("SAVE ALL CHANGES", "log-btn btn-ghost", async () => {
-    // Save competition details
-    await update(dbRef.comp(compId), {
-      name: document.getElementById("comp-edit-name").value.trim() || comp.name,
-      startDate: document.getElementById("comp-edit-startDate").value,
-      endDate: document.getElementById("comp-edit-endDate").value,
-    });
-
-    // Save competition goal
-    const compGoalValue = parseFloat(document.getElementById("goal-val-competition").value);
-    if (compGoalValue > 0) {
-      await set(ref(db, `goals/${compId}/competition`), { type: "total", value: compGoalValue });
-    } else {
-      await remove(ref(db, `goals/${compId}/competition`));
-    }
-
-    showToast("All changes saved ✓");
-    state.admin.tab = "competitions"; renderAdminTabBar(); renderAdminTab();
-  });
-  const actionsWrap = document.createElement("div");
-  actionsWrap.className = "admin-edit-actions";
-  editForm.appendChild(actionsWrap);
-  actionsWrap.appendChild(saveAllBtn);
-
-  const delBtn = makeBtn("DELETE COMPETITION", "log-btn admin-danger-btn", async () => {
-    const confirmed = await showAppConfirm({
-      title: "Delete Competition",
-      message: `Delete "${comp.name}"? It will be kept in Recently Deleted for 7 days and can be restored.`,
-      confirmLabel: "Delete Competition",
-      confirmClassName: "log-btn admin-danger-btn",
-    });
-    if (!confirmed) return;
-    const snapshot = {
-      comp: { ...comp },
-      logs: state.logs[compId] || null,
-      goals: state.goals[compId] || null,
-      deletedAt: Date.now(),
-    };
-    await set(dbRef.deletedComp(compId), snapshot);
-    await remove(dbRef.comp(compId));
-    await remove(ref(db, `logs/${compId}`));
-    await remove(ref(db, `goals/${compId}`));
-    delete state.logs[compId];
-    showToast("Competition moved to Recently Deleted");
-    state.admin.tab = "competitions"; renderAdminTabBar(); renderAdminTab();
-  });
-  actionsWrap.appendChild(delBtn);
-  updateSaveButtonState();
-}
-
 // ══════════════════════════════════════════════════════
 // ADMIN — Players
 // ══════════════════════════════════════════════════════
@@ -2906,110 +2652,6 @@ function findDuplicatePlayerName(name, excludeId = null) {
 // ADMIN — Edit Players Modal
 // ══════════════════════════════════════════════════════
 
-// Players can only edit their own avatar
-function openEditAvatarModal(playerId, player) {
-  let modal = document.getElementById("edit-avatar-player-modal");
-  if (!modal) {
-    modal = document.createElement("div");
-    modal.id = "edit-avatar-player-modal";
-    modal.className = "admin-edit-player-modal";
-    document.body.appendChild(modal);
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) closeEditAvatarModal();
-    });
-  }
-
-  const isCustomAvatar = player.avatar && player.avatar.startsWith("data:");
-
-  modal.innerHTML = `
-    <div class="admin-edit-player-modal-content">
-      <div class="admin-edit-player-modal-header">
-        <div>Edit Your Avatar</div>
-        <button class="admin-edit-player-modal-close">✕</button>
-      </div>
-
-      <div class="admin-edit-player-avatar-section">
-        <button class="dash-profile-avatar-btn" id="edit-avatar-trigger" type="button" title="Tap to upload photo">
-          <div id="edit-avatar-preview" class="admin-edit-player-avatar-large">
-            ${getAvatarHtml(player, "large", playerId)}
-          </div>
-          <span class="pick-avatar-edit-pill">Upload Photo</span>
-        </button>
-        <input type="file" id="edit-avatar-file-input" accept="image/*" style="display: none;" />
-        ${isCustomAvatar ? `<button class="mini-btn del-btn danger" id="edit-avatar-remove" type="button" style="margin-top: 8px;">Remove Photo</button>` : ""}
-      </div>
-
-      <div class="admin-btn-row">
-        <button class="log-btn" id="avatar-save-btn">SAVE AVATAR</button>
-        <button class="btn-secondary" id="avatar-cancel-btn">CANCEL</button>
-      </div>
-    </div>
-  `;
-
-  modal.classList.add("active");
-
-  // Close button handler
-  modal.querySelector(".admin-edit-player-modal-close").onclick = closeEditAvatarModal;
-
-  // Trigger file input
-  const triggerBtn = modal.querySelector("#edit-avatar-trigger");
-  const fileInput = modal.querySelector("#edit-avatar-file-input");
-  if (triggerBtn && fileInput) {
-    triggerBtn.onclick = () => fileInput.click();
-  }
-
-  // File input change
-  fileInput.onchange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.size > 5000000) { showToast("Image too large (max 5MB)"); return; }
-    const base64 = await fileToBase64(file);
-    const preview = modal.querySelector("#edit-avatar-preview");
-    if (preview) preview.innerHTML = `<div class="avatar avatar-large"><img class="avatar-img" src="${base64}" alt="preview" /></div>`;
-    window.editAvatarData = base64;
-    const removeBtn = modal.querySelector("#edit-avatar-remove");
-    if (removeBtn) removeBtn.style.display = "inline-block";
-  };
-
-  // Remove avatar button
-  const removeBtn = modal.querySelector("#edit-avatar-remove");
-  if (removeBtn) {
-    removeBtn.onclick = () => {
-      if (confirm("Remove your avatar?")) {
-        window.editAvatarData = null;
-        const preview = modal.querySelector("#edit-avatar-preview");
-        const placeholder = getAvatarPlaceholder(player.name || playerId);
-        if (preview) preview.innerHTML = `<div class="avatar avatar-large"><span class="avatar-placeholder">${placeholder}</span></div>`;
-        removeBtn.style.display = "none";
-      }
-    };
-  }
-
-  // Save button
-  modal.querySelector("#avatar-save-btn").onclick = async () => {
-    if (window.editAvatarData === undefined) {
-      closeEditAvatarModal();
-      return;
-    }
-    await update(dbRef.player(playerId), { avatar: window.editAvatarData || null });
-    showToast("Avatar updated ✓");
-    closeEditAvatarModal();
-    const updatedPlayer = state.players[playerId];
-    if (updatedPlayer && state.currentUser === playerId) {
-      showSelectedPlayerProfile(playerId, updatedPlayer);
-    }
-  };
-
-  // Cancel button
-  modal.querySelector("#avatar-cancel-btn").onclick = closeEditAvatarModal;
-}
-
-function closeEditAvatarModal() {
-  const modal = document.getElementById("edit-avatar-player-modal");
-  if (modal) modal.classList.remove("active");
-  window.editAvatarData = undefined;
-}
-
 // Managers can edit both name and avatar
 function openEditPlayerModal(playerId, player) {
   let modal = document.getElementById("admin-edit-player-modal");
@@ -3160,10 +2802,6 @@ function closeEditPlayerModal() {
   const modal = document.getElementById("admin-edit-player-modal");
   if (modal) modal.classList.remove("active");
   window.editPlayerAvatarData = undefined;
-}
-
-function inlineRenamePlayer(playerId, currentName) {
-  openEditPlayerModal(playerId, state.players[playerId]);
 }
 
 // ══════════════════════════════════════════════════════
@@ -3429,34 +3067,6 @@ function refreshAdminDayView() {
     openSection.appendChild(openList);
     playerList.appendChild(openSection);
   }
-}
-
-function renderAdminLogDetail(playerId, compId, date, log) {
-  const detail = document.getElementById("admin-logs-detail");
-  if (!detail) return;
-  const sph = log.hours > 0 ? (log.sales / log.hours).toFixed(2) : "—";
-  const d = new Date(date + "T00:00:00");
-  const dayName = DAYS[d.getDay()];
-  detail.innerHTML = `
-    <div class="admin-log-header">
-      <div class="admin-log-header-info">
-        <div class="admin-log-header-name">${escapeHtml(state.players[playerId]?.name || "")}</div>
-        <div class="admin-log-header-sub">${escapeHtml(`${dayName} ${date} · ${state.competitions[compId]?.name || ""}`)}</div>
-      </div>
-      <div class="admin-log-header-badge logged">Logged</div>
-    </div>
-    <div class="admin-log-stats">
-      <div class="admin-log-stat"><div class="admin-log-stat-label">SALES</div><div class="admin-log-stat-value">$${log.sales.toFixed(2)}</div></div>
-      <div class="admin-log-stat"><div class="admin-log-stat-label">HOURS</div><div class="admin-log-stat-value">${log.hours.toFixed(1)}</div></div>
-      <div class="admin-log-stat accent"><div class="admin-log-stat-label">$/HR</div><div class="admin-log-stat-value">$${sph}</div></div>
-    </div>
-    <div class="admin-log-actions-row">
-      <button class="admin-action-edit" id="admin-edit-log-btn">Edit</button>
-      <button class="admin-action-delete" id="admin-delete-log-btn">✕ Delete</button>
-    </div>
-  `;
-  document.getElementById("admin-edit-log-btn").onclick = () => renderAdminLogEdit(playerId, compId, date, log);
-  document.getElementById("admin-delete-log-btn").onclick = () => confirmAndDeleteAdminLog(playerId, compId, date);
 }
 
 async function confirmAndDeleteAdminLog(playerId, compId, date) {
