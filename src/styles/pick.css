@@ -360,7 +360,7 @@
   font-family: var(--type-display-family); font-weight: var(--type-display-weight); font-stretch: var(--type-display-stretch);
   font-size: 28px;
   line-height: 1;
-  font-weight: 900;
+  font-weight: 810;
 }
 
 .pick-comp-days-num.last-day {
@@ -536,7 +536,7 @@
   color: var(--text);
   font-family: var(--type-body-family);
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 630;
   text-align: left;
   cursor: pointer;
   transition: background 0.1s;
@@ -577,7 +577,7 @@
   cursor: pointer;
   font-family: var(--type-body-family);
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 810;
   color: var(--text);
   transition: all 0.2s;
   position: relative;
@@ -711,7 +711,7 @@
 .pick-selected-player-name {
   font-size: 18px;
   line-height: 1.05;
-  font-weight: 900;
+  font-weight: 810;
   color: var(--text);
 }
 
@@ -786,7 +786,7 @@
   margin-top: 6px;
   color: var(--text2);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 630;
 }
 
 .pick-avatar-upload-actions {
@@ -1482,7 +1482,7 @@
   background: var(--surface);
   box-shadow: 0 0 0 3px rgba(26,111,244,0.12);
 }
-.log-input::placeholder { color: var(--text3); font-weight: 600; }
+.log-input::placeholder { color: var(--text3); font-weight: 540; }
 
 .log-input.input-locked {
   background: var(--surface2);
@@ -1495,7 +1495,7 @@
   text-align: center;
   font-size: 28px;
   letter-spacing: 8px;
-  font-weight: 700;
+  font-weight: 630;
   color: var(--accent);
 }
 
@@ -1950,7 +1950,7 @@ select.log-input:focus { background-color: var(--surface); }
   align-items: center;
   gap: 2px;
   color: var(--accent);
-  font-weight: 800;
+  font-weight: 720;
   text-decoration: none;
 }
 .app-credit-name:hover { text-decoration: underline; }
@@ -1958,5 +1958,5 @@ select.log-input:focus { background-color: var(--surface); }
 .app-credit-arrow {
   font-family: var(--type-label-family);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 720;
 }

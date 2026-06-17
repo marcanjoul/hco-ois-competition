@@ -2710,7 +2710,7 @@ button.btn-disabled:hover,
   border: 2px solid #2348b3;
   box-shadow: 2px 2px 0 #050816;
   font-family: "Science Gothic", sans-serif;
-  font-weight: 800;
+  font-weight: 720;
   font-size: 8px;
   color: var(--text2);
 }
