@@ -2409,11 +2409,11 @@ function renderAdminComps(container) {
   container.appendChild(list);
 
   if (filteredEntries.length > PREVIEW_COUNT) {
-    container.appendChild(makeBtn(
-      state.admin.showAllComps ? "Show less ▲" : `View all ${filteredEntries.length} ▼`,
-      "view-all-btn",
-      () => { state.admin.showAllComps = !state.admin.showAllComps; renderAdminTab(); }
-    ));
+    const viewAllBtn = makeBtn("", "view-all-btn", () => { state.admin.showAllComps = !state.admin.showAllComps; renderAdminTab(); });
+    viewAllBtn.innerHTML = state.admin.showAllComps
+      ? `Show less <span class="view-all-btn-icon">▲</span>`
+      : `View all ${filteredEntries.length} <span class="view-all-btn-icon">▼</span>`;
+    container.appendChild(viewAllBtn);
   }
 
   // Recently Deleted section
@@ -2870,7 +2870,7 @@ function renderAdminPlayersList() {
       const rightPart = document.createElement("div");
       rightPart.className = "admin-item-actions";
       rightPart.appendChild(makeBtn("Edit", "del-btn", () => openEditPlayerModal(id, player)));
-      rightPart.appendChild(makeBtn("✕", "del-btn danger", async () => {
+      rightPart.appendChild(makeBtn("✕", "del-btn danger admin-icon-btn", async () => {
         if (confirm(`Remove "${player.name}"? They'll move to Past Players.`)) {
           await update(dbRef.player(id), { inactive: true, removedAt: Date.now() });
         }
@@ -2883,11 +2883,11 @@ function renderAdminPlayersList() {
   listContainer.appendChild(list);
 
   if (filtered.length > PREVIEW_COUNT) {
-    listContainer.appendChild(makeBtn(
-      state.admin.showAllPlayers ? "Show less ▲" : `View all ${filtered.length} players ▼`,
-      "view-all-btn",
-      () => { state.admin.showAllPlayers = !state.admin.showAllPlayers; renderAdminPlayersList(); }
-    ));
+    const viewAllPlayersBtn = makeBtn("", "view-all-btn", () => { state.admin.showAllPlayers = !state.admin.showAllPlayers; renderAdminPlayersList(); });
+    viewAllPlayersBtn.innerHTML = state.admin.showAllPlayers
+      ? `Show less <span class="view-all-btn-icon">▲</span>`
+      : `View all ${filtered.length} players <span class="view-all-btn-icon">▼</span>`;
+    listContainer.appendChild(viewAllPlayersBtn);
   }
 
   // Past Players section
@@ -3264,24 +3264,14 @@ function renderAdminLogs(container) {
   container.innerHTML = `<div class="admin-section-title">MANAGE ORDERS</div>`;
 
   const compWrap = document.createElement("div");
-  compWrap.style.marginBottom = "10px";
-  compWrap.innerHTML = `<label class="field-label">COMPETITION</label>`;
-  const compSel = document.createElement("select");
-  compSel.className = "log-input"; compSel.id = "admin-logs-comp";
-  compSel.innerHTML = `<option value="" disabled>— Select competition —</option>`;
-  Object.entries(state.competitions).forEach(([id, comp]) => {
-    const opt = document.createElement("option");
-    opt.value = id; opt.textContent = comp.name;
-    if (id === (state.admin.selectedComp || state.currentComp)) opt.selected = true;
-    compSel.appendChild(opt);
-  });
-  compSel.onchange = () => {
-    state.admin.selectedComp = compSel.value;
-    state.admin.selectedPlayer = null;
-    refreshAdminDayView();
-  };
-  compWrap.appendChild(compSel);
+  compWrap.className = "board-comp-picker admin-logs-comp-picker";
+  compWrap.innerHTML = `
+    <button class="board-comp-arrow" id="admin-logs-comp-prev" type="button" aria-label="Previous competition">←</button>
+    <span class="board-comp-name" id="admin-logs-comp-name"></span>
+    <button class="board-comp-arrow" id="admin-logs-comp-next" type="button" aria-label="Next competition">→</button>
+  `;
   container.appendChild(compWrap);
+  renderAdminLogsCompPicker();
 
   const dayLabel = document.createElement("label");
   dayLabel.className = "field-label"; dayLabel.style.marginBottom = "8px"; dayLabel.textContent = "WEEK";
@@ -3302,6 +3292,47 @@ function renderAdminLogs(container) {
   container.appendChild(playerDayWrap);
 
   refreshAdminDayView();
+}
+
+function renderAdminLogsCompPicker() {
+  const nameEl = document.getElementById("admin-logs-comp-name");
+  const prevBtn = document.getElementById("admin-logs-comp-prev");
+  const nextBtn = document.getElementById("admin-logs-comp-next");
+  if (!nameEl || !prevBtn || !nextBtn) return;
+
+  const sortedComps = Object.entries(state.competitions)
+    .sort(([, a], [, b]) => (a.startDate || "").localeCompare(b.startDate || "") || (a.createdAt || 0) - (b.createdAt || 0));
+
+  if (sortedComps.length === 0) {
+    nameEl.textContent = "No competitions";
+    prevBtn.style.visibility = "hidden";
+    nextBtn.style.visibility = "hidden";
+    return;
+  }
+
+  let index = sortedComps.findIndex(([id]) => id === state.admin.selectedComp);
+  if (index === -1) index = sortedComps.length - 1;
+  const [activeId, activeComp] = sortedComps[index];
+  state.admin.selectedComp = activeId;
+  nameEl.textContent = activeComp.name;
+
+  prevBtn.style.visibility = index > 0 ? "visible" : "hidden";
+  nextBtn.style.visibility = index < sortedComps.length - 1 ? "visible" : "hidden";
+
+  prevBtn.onclick = () => {
+    if (index <= 0) return;
+    state.admin.selectedComp = sortedComps[index - 1][0];
+    state.admin.selectedPlayer = null;
+    renderAdminLogsCompPicker();
+    refreshAdminDayView();
+  };
+  nextBtn.onclick = () => {
+    if (index >= sortedComps.length - 1) return;
+    state.admin.selectedComp = sortedComps[index + 1][0];
+    state.admin.selectedPlayer = null;
+    renderAdminLogsCompPicker();
+    refreshAdminDayView();
+  };
 }
 
 function refreshAdminDayView() {

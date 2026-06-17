@@ -675,6 +675,15 @@
 .del-btn.danger { border-color: var(--red); color: var(--red); }
 .del-btn.danger:hover { background: var(--color-feedback-error-light); }
 
+/* Compact icon-only variant — for quick, reversible row actions (not
+   permanent deletes, which keep an explicit text label for safety). */
+.admin-icon-btn {
+  flex: 0 0 auto !important;
+  width: 36px;
+  min-width: 36px;
+  padding: 0 !important;
+}
+
 @media (max-width: 640px) {
   .admin-player-list {
     gap: 12px;
@@ -1194,6 +1203,16 @@
   line-height: 1;
 }
 
+/* Bold pixel-stroke treatment for disclosure carets, matching the arrow
+   language used elsewhere (week-nav, leaderboard comp picker, back buttons). */
+.collapsible-toggle-icon,
+.admin-log-player-toggle-icon,
+.view-all-btn-icon {
+  display: inline-block;
+  font-family: var(--type-label-family);
+  text-shadow: 1px 0 0 currentColor, -1px 0 0 currentColor, 0 1px 0 currentColor, 0 -1px 0 currentColor;
+}
+
 .admin-log-player-card {
   width: 100%;
   display: flex;
@@ -1296,6 +1315,10 @@
 
 .admin-log-detail-empty {
   margin: 0;
+}
+
+.admin-logs-comp-picker {
+  margin-bottom: var(--space-4);
 }
 
 /* Admin day buttons

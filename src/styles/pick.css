@@ -1918,12 +1918,10 @@ select.log-input:focus { background-color: var(--surface); }
 .app-credit-name {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   color: var(--accent);
-  font-weight: 600;
   text-decoration: none;
   /* VT323 only ships at one weight — a light stroke nudges the thickness up just a touch */
-  text-shadow: 0.5px 0 0 currentColor;
 }
 .app-credit-name:hover { text-decoration: underline; }
 
