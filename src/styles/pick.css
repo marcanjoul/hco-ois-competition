@@ -890,7 +890,7 @@
   padding: 8px 10px;
   text-align: left;
   font-family: var(--type-body-family);
-  font-weight: 700;
+  font-weight: 630;
   font-size: 14px;
   color: var(--text);
   cursor: pointer;
@@ -956,7 +956,7 @@
   border: 1px solid var(--border);
   color: #fff;
   font-family: var(--type-title-family);
-  font-weight: 800;
+  font-weight: 720;
   font-stretch: 87.5%;
   font-size: 16px;
   letter-spacing: 0.4px;
@@ -1361,7 +1361,7 @@
   background: transparent;
   color: var(--text2);
   font-family: var(--type-label-family);
-  font-weight: 900;
+  font-weight: 810;
   font-size: 18px;
   flex-shrink: 0;
   transition: all 0.15s;
@@ -1397,8 +1397,8 @@
   position: relative;
 }
 
-.day-btn-dayname { font-size: 9px; font-weight: 800; text-transform: uppercase; }
-.day-btn-date { font-size: 12px; font-weight: 900; line-height: 1; }
+.day-btn-dayname { font-size: 9px; font-weight: 720; text-transform: uppercase; }
+.day-btn-date { font-size: 12px; font-weight: 810; line-height: 1; }
 .day-btn-checkmark {
   position: absolute;
   top: 2px; right: 3px;
@@ -1467,7 +1467,7 @@
   padding: 9px 10px;
   font-family: var(--type-body-family);
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 630;
   color: var(--text);
   outline: none;
   transition: all 0.15s;

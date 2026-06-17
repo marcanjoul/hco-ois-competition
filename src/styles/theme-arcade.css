@@ -2593,7 +2593,7 @@ button.btn-disabled:hover,
   border: 2px solid #fff2a8 !important;
   color: #050816 !important;
   font-family: "Science Gothic", sans-serif !important;
-  font-weight: 800 !important;
+  font-weight: 720 !important;
   font-size: 9px !important;
   line-height: 1.25;
   letter-spacing: 0.8px !important;
@@ -2662,7 +2662,7 @@ button.btn-disabled:hover,
 .competition-ended-close {
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
-  font-weight: 700;
+  font-weight: 630;
   font-size: 12px;
 }
 
@@ -2670,7 +2670,7 @@ button.btn-disabled:hover,
 .competition-ended-winner-label {
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
-  font-weight: 800;
+  font-weight: 720;
   font-size: 9px;
   letter-spacing: 1px;
   text-shadow: none;
@@ -2679,7 +2679,7 @@ button.btn-disabled:hover,
 .competition-ended-title {
   color: #fff2a8;
   font-family: "Science Gothic", sans-serif;
-  font-weight: 800;
+  font-weight: 720;
   font-stretch: 87.5%;
   font-size: 18px;
   line-height: 1.4;
@@ -2689,7 +2689,7 @@ button.btn-disabled:hover,
 .competition-ended-winner-name {
   color: #ffd84d;
   font-family: "Science Gothic", sans-serif;
-  font-weight: 900;
+  font-weight: 810;
   font-stretch: 85%;
   font-size: 28px;
   line-height: 1.3;
@@ -3188,7 +3188,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 
 .welcome-boot-subtitle {
   font-family: "Science Gothic", sans-serif;
-  font-weight: 800;
+  font-weight: 720;
   font-size: clamp(11px, 3vw, 14px);
   letter-spacing: 3px;
   color: #ffd84d;
@@ -3560,7 +3560,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 /* ── Empty state pixel icons ── */
 .board-empty-pixel-icon {
   font-family: "Science Gothic", sans-serif;
-  font-weight: 800;
+  font-weight: 720;
   font-size: 22px;
   color: var(--accent);
   text-shadow: none;
@@ -3570,7 +3570,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 /* ── Clear button: pixel font X ── */
 .pick-selected-clear-btn {
   font-family: "Science Gothic", sans-serif !important;
-  font-weight: 800 !important;
+  font-weight: 720 !important;
   font-size: 11px !important;
   color: var(--text2) !important;
 }

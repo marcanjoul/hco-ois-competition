@@ -80,7 +80,7 @@
   padding: var(--space-2) var(--space-3);
   cursor: pointer; border-radius: var(--radius-sm);
   background: var(--surface2); border: 1px solid var(--border);
-  color: var(--text2); font-size: 12px; font-family: var(--type-body-family); font-weight: 700;
+  color: var(--text2); font-size: 12px; font-family: var(--type-body-family); font-weight: 630;
   transition: all 0.2s;
 }
 .avatar-upload-btn:hover { border-color: var(--accent); color: var(--accent); }
