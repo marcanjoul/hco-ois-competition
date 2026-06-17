@@ -87,22 +87,6 @@
   --type-label-letter-spacing: 1px;
 }
 
-html,
-body {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(71, 215, 255, 0.12), transparent 34%),
-    linear-gradient(180deg, rgba(15, 29, 79, 0.85), rgba(5, 8, 22, 0.98)),
-    #050816;
-  color: var(--text);
-}
-
-body::before {
-  background:
-    linear-gradient(90deg, rgba(71, 215, 255, 0.04) 0 2px, transparent 2px 100%),
-    linear-gradient(rgba(71, 215, 255, 0.04) 0 2px, transparent 2px 100%);
-  background-size: 32px 32px, 32px 32px;
-  opacity: 1;
-}
 
 /* Border-radius overrides are no longer needed here.
    --radius-pill, --radius-sheet, --radius-option, --radius-circle are all set
