@@ -463,9 +463,30 @@
 
 /* Fixed-height box with its own scroll, so a long competition list doesn't
    push the rest of the page (and the tab bar) down with it. */
+/* Sized for ~4 rows (one taller "active" row + three "ended" rows) before
+   the box scrolls internally instead of growing the whole page. */
 .admin-comp-list {
-  max-height: 360px;
+  max-height: 386px;
   overflow-y: auto;
+  padding: 8px;
+  scrollbar-width: auto;
+  scrollbar-color: var(--accent) var(--surface2);
+}
+
+.admin-comp-list.is-editing {
+  max-height: none;
+  overflow-y: visible;
+}
+
+.admin-comp-list::-webkit-scrollbar {
+  width: 10px;
+}
+.admin-comp-list::-webkit-scrollbar-track {
+  background: var(--surface2);
+}
+.admin-comp-list::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border: 2px solid var(--surface2);
 }
 
 .admin-list-empty-state {
@@ -570,11 +591,26 @@
   background: var(--color-warning-light);
 }
 
+.comp-status-edit {
+  color: #6ea8ff;
+  background: rgba(43, 109, 255, 0.14);
+  cursor: pointer;
+}
+.comp-status-edit:hover { background: rgba(43, 109, 255, 0.24); }
+
+/* Ended competitions step back visually — still fully readable, just quieter. */
+.admin-comp-item-ended {
+  /* !important needed: .admin-item's card-soft-in entrance animation
+     (theme-arcade.css) keeps opacity:1 locked via fill-mode "both". */
+  opacity: 0.82 !important;
+}
+
 .admin-comp-item {
   align-items: center;
   padding: 14px 8px;
   gap: 16px;
-  border-bottom: 0;
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--radius-sm);
 }
 
 .admin-comp-row.editing .admin-comp-item {
@@ -908,6 +944,24 @@
   transition: opacity 0.15s;
 }
 .view-all-btn:hover { opacity: 0.75; }
+
+/* Matches the "Other Players" disclosure toggle in the Orders tab. */
+.view-all-btn-boxed {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface2);
+  text-align: center;
+}
+.view-all-btn-boxed:hover {
+  opacity: 1;
+  border-color: var(--accent);
+}
 
 @media (max-width: 640px) {
   .admin-team-tools {

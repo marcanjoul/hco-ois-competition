@@ -955,6 +955,20 @@
   transform: scale(0.98);
 }
 
+.ois-trigger-icon {
+  display: inline-block;
+  margin-right: 6px;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Rotating the "+" 45° turns it into an "×" — no need to swap glyphs. */
+.ois-trigger-btn[aria-expanded="true"] .ois-trigger-icon {
+  transform: rotate(45deg);
+}
+
 /* Step visibility: driven by ois-visited class (added via JS) */
 .ois-step { display: none; }
 .ois-step-summary { display: none; }

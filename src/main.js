@@ -2180,17 +2180,19 @@ function renderAdminComps(container) {
   const toShow = state.admin.showAllComps ? filteredEntries : filteredEntries.slice(0, PREVIEW_COUNT);
 
   const list = document.createElement("div");
-  list.className = "admin-list admin-comp-list";
+  // While a competition's edit form is open, let the box grow to fit it
+  // instead of forcing the user to scroll inside the small 4-row box.
+  list.className = `admin-list admin-comp-list${state.admin.editingCompId ? " is-editing" : ""}`;
 
   toShow.forEach(([id, comp]) => {
     const compWrap = document.createElement("div");
     compWrap.className = `admin-comp-row${state.admin.editingCompId === id ? " editing" : ""}`;
 
-    const item = document.createElement("div");
-    item.className = "admin-item admin-comp-item";
-    item.id = `admin-comp-item-${id}`;
     const ended = isCompEnded(comp);
     const upcoming = isCompUpcoming(comp);
+    const item = document.createElement("div");
+    item.className = `admin-item admin-comp-item${ended ? " admin-comp-item-ended" : ""}`;
+    item.id = `admin-comp-item-${id}`;
 
     const leftPart = document.createElement("div");
     leftPart.className = "admin-item-left";
@@ -2199,20 +2201,21 @@ function renderAdminComps(container) {
       ${ended ? `<span class="comp-status-chip comp-status-ended">Ended</span>` : ""}
       ${upcoming ? `<span class="comp-status-chip comp-status-upcoming">Upcoming</span>` : ""}
     `;
-    item.appendChild(leftPart);
-
-    const rightPart = document.createElement("div");
-    rightPart.className = "admin-item-actions";
     if (!ended) {
-      rightPart.appendChild(makeBtn(state.admin.editingCompId === id ? "Close" : "Edit", "del-btn", () => {
+      const editBtn = document.createElement("button");
+      editBtn.type = "button";
+      editBtn.className = "comp-status-chip comp-status-edit";
+      editBtn.textContent = state.admin.editingCompId === id ? "Close" : "Edit";
+      editBtn.onclick = () => {
         state.admin.editingCompId = state.admin.editingCompId === id ? null : id;
         renderAdminTab();
         requestAnimationFrame(() => {
           document.getElementById(`admin-comp-row-${id}`)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
         });
-      }));
+      };
+      leftPart.appendChild(editBtn);
     }
-    item.appendChild(rightPart);
+    item.appendChild(leftPart);
 
     compWrap.id = `admin-comp-row-${id}`;
     compWrap.appendChild(item);
@@ -2849,7 +2852,7 @@ function renderAdminPlayersList() {
   listContainer.appendChild(list);
 
   if (filtered.length > PREVIEW_COUNT) {
-    const viewAllPlayersBtn = makeBtn("", "view-all-btn", () => { state.admin.showAllPlayers = !state.admin.showAllPlayers; renderAdminPlayersList(); });
+    const viewAllPlayersBtn = makeBtn("", "view-all-btn view-all-btn-boxed", () => { state.admin.showAllPlayers = !state.admin.showAllPlayers; renderAdminPlayersList(); });
     viewAllPlayersBtn.innerHTML = state.admin.showAllPlayers
       ? `Show less <span class="view-all-btn-icon">▲</span>`
       : `View all ${filtered.length} players <span class="view-all-btn-icon">▼</span>`;
