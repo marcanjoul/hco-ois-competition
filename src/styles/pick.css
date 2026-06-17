@@ -49,7 +49,7 @@
   height: 40px;
   display: flex; align-items: center; justify-content: center;
   font-size: 23px;
-  font-weight: 900;
+  font-weight: 810;
   color: var(--text) !important;
   font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
   text-transform: uppercase;

@@ -2774,7 +2774,7 @@ button.btn-disabled:hover,
 .ended-podium-riser-num {
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
-  font-weight: 900;
+  font-weight: 810;
   font-size: 12px;
   text-shadow: none;
 }
@@ -2799,7 +2799,7 @@ button.btn-disabled:hover,
 .ended-podium-name {
   color: #fff2a8;
   font-family: "Science Gothic", sans-serif;
-  font-weight: 800;
+  font-weight: 720;
   font-size: 16px;
   line-height: 1;
   text-shadow: none;
@@ -2808,14 +2808,14 @@ button.btn-disabled:hover,
 .ended-podium-score {
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
-  font-weight: 700;
+  font-weight: 630;
   font-size: 10px;
 }
 
 .ended-podium-score span {
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
-  font-weight: 700;
+  font-weight: 630;
   font-size: 12px;
 }
 
@@ -2830,14 +2830,14 @@ button.btn-disabled:hover,
 .ended-rank-score {
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
-  font-weight: 800;
+  font-weight: 720;
   font-size: 11px;
 }
 
 .ended-rank-name {
   color: #d8e7ff;
   font-family: "Science Gothic", sans-serif;
-  font-weight: 800;
+  font-weight: 720;
   font-size: 22px;
 }
 
@@ -2848,7 +2848,7 @@ button.btn-disabled:hover,
   border: 2px solid #fff2a8;
   box-shadow: 2px 2px 0 #8e5f00;
   font-family: "Science Gothic", sans-serif;
-  font-weight: 800;
+  font-weight: 720;
   font-size: 10px;
 }
 
@@ -2860,7 +2860,7 @@ button.btn-disabled:hover,
 .ended-empty {
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
-  font-weight: 600;
+  font-weight: 540;
   font-size: 22px;
 }
 
@@ -3235,7 +3235,7 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 
 .welcome-boot-status-wrap {
   font-family: "Science Gothic", sans-serif;
-  font-weight: 700;
+  font-weight: 630;
   font-size: 9px;
   letter-spacing: 2.5px;
   min-height: 14px;

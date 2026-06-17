@@ -46,7 +46,7 @@
 .board-comp-name {
   font-family: var(--type-body-family);
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 630;
   color: var(--accent);
   text-align: center;
 }
@@ -62,7 +62,7 @@
   color: var(--text2);
   font-family: var(--type-label-family);
   font-size: 22px;
-  font-weight: 900;
+  font-weight: 810;
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -295,7 +295,7 @@
   border-radius: 10px;
   font-family: var(--type-body-family);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 720;
   letter-spacing: 0.6px;
   line-height: 1;
   white-space: nowrap;
@@ -325,7 +325,7 @@
 
 .board-name {
   font-family: var(--type-body-family);
-  font-weight: 900;
+  font-weight: 810;
   font-size: 15px;
   flex: 1 1 auto;
   min-width: 0;
