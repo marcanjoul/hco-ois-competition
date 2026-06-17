@@ -72,7 +72,6 @@ let state = {
     selectedPlayer: null,
     selectedComp: null,
     editingCompId: null,
-    compFilter: "all",
     selectedDate: getTodayDate(),
     playerSearch: "",
     tab: "competitions",
@@ -2174,46 +2173,14 @@ function renderAdminTab() {
 // ══════════════════════════════════════════════════════
 function renderAdminComps(container) {
   container.innerHTML = `<div class="admin-section-title">MANAGE COMPETITIONS</div>`;
-  const entries = Object.entries(state.competitions)
+  // Only one competition is ever active at a time, so there's nothing
+  // meaningful to filter — just show every competition, newest first.
+  const filteredEntries = Object.entries(state.competitions)
     .sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0));
-  const filterOptions = [
-    { id: "all", label: "All" },
-    { id: "active", label: "Active" },
-    { id: "ended", label: "Ended" },
-  ];
-  const filteredEntries = entries.filter(([, comp]) => {
-    const ended = isCompEnded(comp);
-    if (state.admin.compFilter === "active") return !ended;
-    if (state.admin.compFilter === "ended") return ended;
-    return true;
-  });
   const toShow = state.admin.showAllComps ? filteredEntries : filteredEntries.slice(0, PREVIEW_COUNT);
 
-  const filterBar = document.createElement("div");
-  filterBar.className = "admin-comp-filter-bar";
-  filterOptions.forEach(option => {
-    const count = entries.filter(([, comp]) => {
-      const ended = isCompEnded(comp);
-      if (option.id === "active") return !ended;
-      if (option.id === "ended") return ended;
-      return true;
-    }).length;
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = `admin-comp-filter-btn${state.admin.compFilter === option.id ? " active" : ""}`;
-    btn.innerHTML = `<span>${option.label}</span><span class="admin-comp-filter-count">${count}</span>`;
-    btn.onclick = () => {
-      state.admin.compFilter = option.id;
-      state.admin.showAllComps = false;
-      state.admin.editingCompId = null;
-      renderAdminTab();
-    };
-    filterBar.appendChild(btn);
-  });
-  container.appendChild(filterBar);
-
   const list = document.createElement("div");
-  list.className = "admin-list";
+  list.className = "admin-list admin-comp-list";
 
   toShow.forEach(([id, comp]) => {
     const compWrap = document.createElement("div");
@@ -2266,8 +2233,7 @@ function renderAdminComps(container) {
   if (filteredEntries.length === 0) {
     const empty = document.createElement("div");
     empty.className = "admin-list-empty-state admin-comp-empty-state";
-    const emptyLabel = state.admin.compFilter === "active" ? "No active competitions" : "No ended competitions";
-    empty.textContent = emptyLabel;
+    empty.textContent = "No competitions yet";
     list.appendChild(empty);
   }
   // New competition form
@@ -3451,6 +3417,7 @@ function refreshAdminDayView() {
     btn.innerHTML = `
       <div class="admin-log-player-main">
         <div class="admin-log-player-name">${escapeHtml(player.name)}</div>
+        ${log ? `<div class="admin-log-player-meta">$${(log.sales || 0).toFixed(2)} · ${(log.hours || 0).toFixed(1)} hrs</div>` : ""}
       </div>
       ${state.admin.selectedPlayer === id ? '<div class="admin-log-player-badge close">Close</div>' : (log ? '<div class="admin-log-player-badge edit">Edit</div>' : '<div class="admin-log-player-badge open">Add</div>')}
     `;
@@ -3481,8 +3448,6 @@ function refreshAdminDayView() {
     loggedSection.className = "admin-log-player-section";
     loggedSection.innerHTML = `
       <div class="admin-log-player-section-header">
-        <div class="admin-log-player-section-title">Orders Today</div>
-        <div class="admin-log-player-section-count">${loggedPlayers.length}</div>
       </div>
     `;
     const loggedList = document.createElement("div");
