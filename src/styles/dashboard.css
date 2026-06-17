@@ -80,7 +80,7 @@
   color: var(--text);
   font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch);
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 810;
   letter-spacing: 0.6px;
   cursor: pointer;
 }
@@ -90,7 +90,7 @@
   position: relative;
   top: -1px;
   font-family: var(--type-label-family);
-  font-weight: 800;
+  font-weight: 720;
 }
 
 .dash-profile-back-top {

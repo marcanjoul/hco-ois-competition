@@ -84,7 +84,7 @@
   color: var(--red);
   font-family: var(--type-body-family);
   font-size: var(--type-body-size);
-  font-weight: 700;
+  font-weight: 630;
   animation: shake 0.3s ease;
 }
 .pin-error.hidden { display: none; }
@@ -449,7 +449,7 @@
   color: var(--text2);
   font-family: var(--type-body-family);
   font-size: var(--type-body-size);
-  font-weight: 700;
+  font-weight: 630;
 }
 
 .admin-list {
@@ -501,7 +501,7 @@
   text-align: center;
   font-family: var(--type-caption-family);
   font-size: var(--type-caption-size);
-  font-weight: 700;
+  font-weight: 630;
   border: 1px dashed var(--border);
   background: var(--surface);
   border-radius: var(--radius-sm);
@@ -555,7 +555,7 @@
 
 .admin-item-name {
   flex: 1;
-  font-weight: 800;
+  font-weight: 720;
   font-size: var(--type-body-size);
   color: var(--text);
   overflow: hidden;
@@ -652,7 +652,7 @@
   padding: 10px 14px;
   min-height: 44px;
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 810;
   letter-spacing: 0.4px;
 }
 
@@ -673,7 +673,7 @@
   color: var(--text2);
   cursor: pointer;
   font-family: var(--type-body-family);
-  font-weight: 800;
+  font-weight: 720;
   transition: all 0.15s;
   min-height: 36px;
   display: flex;
@@ -728,7 +728,7 @@
   padding: var(--space-2) var(--space-4);
   color: var(--accent);
   font-family: var(--type-body-family);
-  font-weight: 800;
+  font-weight: 720;
   font-size: var(--type-small-size);
   cursor: pointer;
   white-space: nowrap;
@@ -746,7 +746,7 @@
   padding: var(--space-2) var(--space-4);
   color: var(--text2);
   font-family: var(--type-body-family);
-  font-weight: 800;
+  font-weight: 720;
   font-size: var(--type-small-size);
   cursor: pointer;
   transition: all 0.15s;
@@ -795,7 +795,7 @@
   color: var(--accent);
   font-family: var(--type-label-family);
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 720;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   margin-bottom: 10px;
@@ -813,7 +813,7 @@
 .admin-team-tools-title {
   font-family: var(--type-label-family);
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 810;
   line-height: 1;
   color: var(--text);
   letter-spacing: 0.12em;
@@ -832,7 +832,7 @@
   color: #2b7f78;
   font-family: var(--type-label-family);
   font-size: 9px;
-  font-weight: 800;
+  font-weight: 720;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -841,7 +841,7 @@
   margin-top: 8px;
   color: var(--text2);
   font-size: 0.96rem;
-  font-weight: 700;
+  font-weight: 630;
   line-height: 1.35;
 }
 
@@ -862,7 +862,7 @@
   color: var(--text2);
   font-family: var(--type-label-family);
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 720;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -891,13 +891,13 @@
   background: rgba(255,255,255,0.92);
   color: var(--text);
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 630;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
 }
 
 .admin-team-tools .admin-team-input::placeholder {
   color: #88a0c2;
-  font-weight: 600;
+  font-weight: 540;
 }
 
 .admin-team-tools .admin-team-input:focus {
@@ -916,7 +916,7 @@
   border-radius: 0;
   padding: 0 14px;
   font-size: 0.92rem;
-  font-weight: 900;
+  font-weight: 810;
 }
 
 .admin-new-row-top .mini-btn:not(:disabled) {
@@ -1007,7 +1007,7 @@
 
 .admin-log-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-4); }
 .admin-log-header-info { flex: 1; min-width: 0; }
-.admin-log-header-name { font-weight: 900; font-size: var(--type-body-size); color: var(--text); }
+.admin-log-header-name { font-weight: 810; font-size: var(--type-body-size); color: var(--text); }
 .admin-log-header-sub { font-family: var(--type-caption-family); font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); color: var(--text2); margin-top: var(--space-1); }
 .admin-log-header-badge { font-family: var(--type-label-family); font-size: 9px; font-weight: var(--type-label-weight); letter-spacing: 0.5px; padding: var(--space-1) var(--space-2); border-radius: var(--radius-xs); white-space: nowrap; flex-shrink: 0; border: 1px solid; }
 .admin-log-header-badge.logged { background: rgba(63,185,80,0.1); color: var(--green); border-color: var(--green); }
@@ -1026,7 +1026,7 @@
   padding: var(--space-3);
   border-radius: var(--radius-sm);
   font-family: var(--type-body-family);
-  font-weight: 800;
+  font-weight: 720;
   font-size: var(--type-small-size);
   cursor: pointer;
   transition: all 0.15s;
@@ -1236,7 +1236,7 @@
 .view-all-btn-icon {
   display: inline-block;
   font-family: var(--type-label-family);
-  font-weight: 800;
+  font-weight: 720;
 }
 
 .admin-log-player-card {
@@ -1288,7 +1288,7 @@
 }
 
 .admin-log-player-name {
-  font-weight: 800;
+  font-weight: 720;
   font-size: var(--type-body-size);
   color: var(--text);
 }
@@ -1336,7 +1336,7 @@
   text-align: center;
   font-family: var(--type-caption-family);
   font-size: var(--type-caption-size);
-  font-weight: 700;
+  font-weight: 630;
 }
 
 .admin-log-detail-empty {
@@ -1384,12 +1384,12 @@
 
 .admin-day-btn-dayname {
   font-size: 8px;
-  font-weight: 800;
+  font-weight: 720;
   line-height: 1;
   text-transform: uppercase;
 }
 
-.admin-day-btn-date { font-size: 18px; font-weight: 900; line-height: 1; }
+.admin-day-btn-date { font-size: 18px; font-weight: 810; line-height: 1; }
 
 .admin-day-btn:hover { border-color: var(--accent); color: var(--text); }
 .admin-day-btn.active {
@@ -1489,7 +1489,7 @@
 .goal-day-date {
   font-family: var(--type-caption-family);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 630;
   color: var(--text3);
 }
 .goal-day-input-shell {

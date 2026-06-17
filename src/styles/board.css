@@ -429,7 +429,7 @@
 .board-empty-sub {
   font-family: var(--type-body-family);
   font-size: var(--type-body-size);
-  font-weight: 600;
+  font-weight: 540;
   color: var(--text2);
   max-width: 260px;
 }

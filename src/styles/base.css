@@ -147,21 +147,21 @@
   --type-small-size:      11px;
 
   /* ── Typography Weight & Width ── */
-  --type-display-weight:    800;
+  --type-display-weight:    720;
   --type-display-stretch:   87.5%;
-  --type-heading-weight:    800;
+  --type-heading-weight:    720;
   --type-heading-stretch:   87.5%;
-  --type-subheading-weight: 700;
+  --type-subheading-weight: 630;
   --type-subheading-stretch: 100%;
-  --type-title-weight:      700;
+  --type-title-weight:      630;
   --type-title-stretch:     100%;
-  --type-label-weight:    800;
+  --type-label-weight:    720;
   --type-label-stretch:   100%;
-  --type-body-weight:     500;
+  --type-body-weight:     450;
   --type-body-stretch:    100%;
-  --type-caption-weight:  500;
+  --type-caption-weight:  450;
   --type-caption-stretch: 100%;
-  --type-small-weight:    500;
+  --type-small-weight:    450;
   --type-small-stretch:   100%;
 
   /* ── Typography Misc ── */
