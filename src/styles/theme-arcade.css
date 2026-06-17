@@ -137,18 +137,7 @@ body::before {
   padding: 0 18px;
 }
 
-.app-header::after,
-.bottom-nav::before {
-  content: "";
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 4px;
-  background: repeating-linear-gradient(90deg, var(--accent) 0 12px, transparent 12px 20px);
-}
 
-.bottom-nav::before {
-  inset: 0 0 auto 0;
-}
 
 .dash-name,
 .dash-comp-badge,
@@ -223,8 +212,9 @@ body::before {
   color: var(--text);
 }
 
-/* INSERT OIS trigger button — arcade CTA style */
-.ois-trigger-btn {
+/* Shared Primary CTA Toggle Buttons (Insert OIS and New Competition) */
+.ois-trigger-btn,
+.collapsible-toggle-cta {
   border: 2px solid #2b6dff !important;
   background: var(--surface-card) !important;
   color: var(--accent2) !important;
@@ -242,28 +232,28 @@ body::before {
     min-height 300ms cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
-.ois-trigger-btn:hover {
+.ois-trigger-btn:hover,
+.collapsible-toggle-cta:hover {
   transform: translate(-2px, -2px) !important;
 }
 
-.ois-trigger-btn:active {
+.ois-trigger-btn:active,
+.collapsible-toggle-cta:active {
   transform: scale(0.98) !important;
   box-shadow: 1px 1px 0 var(--shadow-ink) !important;
 }
-.pick-ois-flow:not(.collapsed) .ois-trigger-btn {
-  background: #2e334a !important;
-  color: #fff !important;
-  min-height: 40px !important;
-  width: 90% !important;
-  padding: 0 16px !important;
-  margin: 0 auto !important;
-}
 
+.pick-ois-flow:not(.collapsed) .ois-trigger-btn,
 .collapsible-toggle-cta.expanded {
   background: #2e334a !important;
   color: #fff !important;
   width: 90% !important;
   margin: 0 auto !important;
+}
+
+.pick-ois-flow:not(.collapsed) .ois-trigger-btn {
+  min-height: 40px !important;
+  padding: 0 16px !important;
 }
 
 #btn-add-comp {
@@ -280,6 +270,7 @@ body::before {
   color: rgba(71, 215, 255, 0.7) !important;
   border: 1px solid rgba(71, 215, 255, 0.3) !important;
   font-size: 8px !important;
+  border-radius: 4px !important;
 }
 
 .ois-summary-label {
@@ -548,9 +539,6 @@ body::after {
   box-shadow: 1px 1px 0 var(--shadow-ink) !important;
 }
 
-.collapsible-toggle-cta:active {
-  transform: scale(0.98) !important;
-}
 
 .mini-btn:not(.btn-ghost) {
   background: var(--accent) !important;
@@ -594,6 +582,7 @@ body::after {
   line-height: 1;
   text-transform: none !important;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.75), 0 0 8px rgba(71, 215, 255, 0.6);
+  padding: 0 !important;
 }
 
 .pick-info-btn:hover {
@@ -1182,7 +1171,14 @@ select.log-input:focus {
   text-transform: uppercase;
 }
 
-.pick-step-num,
+.pick-step-num {
+  background: var(--accent2) !important;
+  color: #07122f !important;
+  border: 2px solid #47d7ff !important;
+  border-radius: 4px !important;
+  box-shadow: 2px 2px 0 var(--shadow-ink) !important;
+}
+
 .status-badge.active {
   background: var(--accent2) !important;
   color: #07122f !important;
@@ -2070,11 +2066,17 @@ body::after {
   content: none !important;
 }
 
-.app-header,
-.bottom-nav {
+.app-header {
   border-width: 0 !important;
   box-shadow:
     inset 0 -4px 0 var(--maze-blue),
+    0 4px 0 var(--surface-deep),
+    0 0 24px rgba(71, 215, 255, 0.16) !important;
+}
+
+.bottom-nav {
+  border-width: 0 !important;
+  box-shadow:
     0 4px 0 var(--surface-deep),
     0 0 24px rgba(71, 215, 255, 0.16) !important;
 }
@@ -2084,6 +2086,8 @@ body::after {
   position: absolute;
   inset: 8px 10px;
   border: 2px solid rgba(71, 215, 255, 0.45);
+  border-left: none !important;
+  border-right: none !important;
   pointer-events: none;
 }
 
@@ -2138,23 +2142,23 @@ body::after {
 /* ── Custom CSS Pixel Art Icons ── */
 .pixel-icon-info {
   display: block;
-  width: 22px;
+  width: 23px;
   height: 22px;
   margin: 0 auto;
   image-rendering: pixelated;
   filter: drop-shadow(2px 2px 0 #050816);
   background:
-    linear-gradient(currentColor, currentColor) 10px 4px / 3px 3px no-repeat,
-    linear-gradient(currentColor, currentColor) 10px 9px / 3px 9px no-repeat,
-    linear-gradient(currentColor, currentColor) 8px 18px / 7px 2px no-repeat;
+    linear-gradient(currentColor, currentColor) 10px 3px / 3px 3px no-repeat,
+    linear-gradient(currentColor, currentColor) 10px 8px / 3px 9px no-repeat,
+    linear-gradient(currentColor, currentColor) 8px 17px / 7px 2px no-repeat;
 }
 
 .pixel-icon-plus {
   background:
-    linear-gradient(currentColor, currentColor) 4px 0px / 4px 12px no-repeat,
-    linear-gradient(currentColor, currentColor) 0px 4px / 12px 4px no-repeat !important;
-  width: 12px;
-  height: 12px;
+    linear-gradient(currentColor, currentColor) 6px 0px / 4px 16px no-repeat,
+    linear-gradient(currentColor, currentColor) 0px 6px / 16px 4px no-repeat !important;
+  width: 16px;
+  height: 16px;
   display: inline-block;
   vertical-align: middle;
   position: relative;
