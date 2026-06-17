@@ -391,8 +391,9 @@ body::after {
 .goal-percent-inline {
   color: var(--text2);
   font-family: "Science Gothic", sans-serif;
-  font-size: 9px;
-  letter-spacing: 1px;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.6px;
   flex-basis: 58px;
   line-height: 1;
   text-align: right;
@@ -417,7 +418,7 @@ body::after {
 }
 
 .goal-current {
-  font-size: 12px !important;
+  font-size: 16px !important;
   color: #ffd84d !important;
   text-align: right;
   text-shadow: none !important;
@@ -1582,7 +1583,7 @@ select.log-input:focus {
   }
 
   .nav-label {
-    font-size: 7px;
+    font-size: 11px;
     letter-spacing: 0.3px;
     line-height: 1.1;
   }
@@ -1657,7 +1658,7 @@ select.log-input:focus {
   }
 
   .goal-current {
-    font-size: 9px !important;
+    font-size: 13px !important;
     letter-spacing: 0;
   }
 
@@ -2716,16 +2717,16 @@ button.btn-disabled:hover,
 }
 
 .ended-podium-tie .board-avatar-stack {
-  width: 34px;
-  min-width: 34px;
+  width: 46px;
+  min-width: 46px;
   padding-top: 2px;
   padding-bottom: 2px;
 }
 
 .ended-podium-tie .avatar-board {
-  width: 30px;
-  height: 30px;
-  font-size: 12px;
+  width: 42px;
+  height: 42px;
+  font-size: 16px;
 }
 
 .ended-podium-riser {

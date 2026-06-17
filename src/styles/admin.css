@@ -1547,6 +1547,11 @@
 }
 .collapsible-toggle:hover { border-color: var(--accent); color: var(--accent); }
 .collapsible-toggle.expanded { border-radius: var(--radius-sm) var(--radius-sm) 0 0; border-bottom-color: transparent; }
+
+/* "+ NEW COMPETITION" — centered like the INSERT OIS CTA, not a left/right
+   disclosure row like the other collapsible toggles. */
+.collapsible-toggle-cta { justify-content: center; }
+.collapsible-toggle-cta.expanded .ois-trigger-icon { transform: rotate(45deg); }
 .admin-collapsible-toggle {
   padding: 12px 14px;
   min-height: 56px;
