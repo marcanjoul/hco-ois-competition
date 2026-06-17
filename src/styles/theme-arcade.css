@@ -250,16 +250,13 @@ body::before {
   transform: translate(2px, 2px) !important;
   box-shadow: 1px 1px 0 var(--shadow-ink) !important;
 }
-
 .pick-ois-flow:not(.collapsed) .ois-trigger-btn {
   background: #2e334a !important;
   color: #fff !important;
   min-height: 40px !important;
   width: fit-content !important;
-  padding: 0 200px !important;
+  padding: 0 16px !important;
   margin: 0 auto !important;
-  transform: translate(2px, 2px) !important;
-  box-shadow: 1px 1px 0 var(--shadow-ink) !important;
 }
 
 /* Collapsed step summary — subtle arcade chip */
@@ -788,6 +785,7 @@ body::after {
 .nav-label {
   color: var(--text2);
   text-shadow: none;
+  font-weight: 600 !important;
 }
 
 .nav-btn.active {

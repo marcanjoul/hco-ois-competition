@@ -999,7 +999,6 @@ function syncPickStep3Lock() {
 }
 // ══════════════════════════════════════════════════════
 function renderPickScreen(filterText = "") {
-  tryAutoSelectPlayer();
   const searchInput = document.getElementById("input-search-players");
   if (searchInput && searchInput.value !== filterText) searchInput.value = filterText;
 
