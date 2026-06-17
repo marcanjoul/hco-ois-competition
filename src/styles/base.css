@@ -559,7 +559,7 @@ input[type="number"] { -moz-appearance: textfield; }
 .nav-label {
   font-family: var(--type-label-family);
   font-size: 12px;
-  font-weight: var(--type-label-weight);
+  font-weight: 734;
   letter-spacing: var(--type-label-letter-spacing);
   color: var(--text3);
   transition: color 0.2s;

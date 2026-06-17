@@ -227,9 +227,9 @@ body::before {
 .ois-trigger-btn {
   border: 2px solid #2b6dff !important;
   background: var(--surface-card) !important;
-  color: var(--text) !important;
+  color: var(--accent2) !important;
   font-family: "Science Gothic", sans-serif !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
   letter-spacing: 2px !important;
   text-transform: uppercase !important;
   box-shadow: 2px 2px 0 var(--shadow-ink) !important;
@@ -247,7 +247,7 @@ body::before {
 }
 
 .ois-trigger-btn:active {
-  transform: translate(2px, 2px) !important;
+  transform: scale(0.98) !important;
   box-shadow: 1px 1px 0 var(--shadow-ink) !important;
 }
 .pick-ois-flow:not(.collapsed) .ois-trigger-btn {
@@ -537,6 +537,10 @@ body::after {
   box-shadow: 1px 1px 0 var(--shadow-ink) !important;
 }
 
+.collapsible-toggle-cta:active {
+  transform: scale(0.98) !important;
+}
+
 .mini-btn:not(.btn-ghost) {
   background: var(--accent) !important;
   color: #06102b !important;
@@ -785,7 +789,7 @@ body::after {
 .nav-label {
   color: var(--text2);
   text-shadow: none;
-  font-weight: 540 !important;
+  font-weight: 552 !important;
 }
 
 .nav-btn.active {
