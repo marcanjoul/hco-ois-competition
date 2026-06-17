@@ -324,7 +324,7 @@
   }
 
   .pick-countdown-num {
-    font-size: clamp(1.7rem, 8vw, 2.2rem);
+    font-size: clamp(2.2rem, 10vw, 3rem);
   }
 
   .pick-countdown-label {
@@ -687,7 +687,7 @@
   }
 
   .pick-countdown-num {
-    font-size: 30px;
+    font-size: 40px;
   }
 
   .pick-countdown-label {
