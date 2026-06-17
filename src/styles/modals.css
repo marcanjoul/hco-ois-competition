@@ -132,7 +132,7 @@
 .info-modal-body { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); }
 .info-section { display: flex; flex-direction: column; gap: var(--space-2); }
 .info-section-title { font-family: var(--type-title-family); font-weight: var(--type-title-weight); font-stretch: var(--type-title-stretch); font-size: 15px; color: var(--accent); margin-bottom: var(--space-1); }
-.info-section p { font-family: var(--type-body-family); font-size: 16px; font-weight: 600; line-height: 1.65; color: var(--text2); }
+.info-section p { font-family: var(--type-body-family); font-size: 16px; font-weight: 400; line-height: 1.65; color: var(--text2); }
 .credits-section {
   padding-top: var(--space-3);
   border-top: 1px solid var(--border);
@@ -272,8 +272,8 @@
 }
 
 .ended-podium-player .board-avatar-stack {
-  width: 42px;
-  min-width: 42px;
+  width: 56px;
+  min-width: 56px;
   padding-top: 4px;
   padding-bottom: 4px;
 }
@@ -283,15 +283,15 @@
 }
 
 .ended-podium-player .avatar-board {
-  width: 38px;
-  height: 38px;
-  font-size: 15px;
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
 }
 
 .ended-podium-player .board-avatar-crown {
-  width: 18px;
-  height: 18px;
-  top: -6px;
+  width: 24px;
+  height: 24px;
+  top: -8px;
 }
 
 .ended-podium-tie-badge {
@@ -322,16 +322,16 @@
 }
 
 .ended-podium-tie .board-avatar-stack {
-  width: 36px;
-  min-width: 36px;
+  width: 46px;
+  min-width: 46px;
   padding-top: 2px;
   padding-bottom: 2px;
 }
 
 .ended-podium-tie .avatar-board {
-  width: 32px;
-  height: 32px;
-  font-size: 12px;
+  width: 42px;
+  height: 42px;
+  font-size: 16px;
 }
 
 /* grid-row pinned explicitly — without it, place-1's column-2 placement (it's

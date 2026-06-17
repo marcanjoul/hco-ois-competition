@@ -589,7 +589,7 @@ function renderCompetitionCard(container, compId, { collapsibleGoals = true } = 
         `}
       </div>
     ` : ""}
-    ${ended && winner ? `<p class="pick-winner-row" style="display:flex">🏆 <span>${escapeHtml(`${winner.name} won!`)}</span></p>` : ""}
+    ${ended && winner ? `<p class="pick-winner-row" style="display:flex">★ <span>${escapeHtml(`${winner.name} won!`)}</span></p>` : ""}
   `;
 
   if (collapsibleGoals && hasGoals) {
@@ -1038,7 +1038,7 @@ function renderPickScreen(filterText = "") {
 
   if (filtered.length === 0) {
     grid.classList.add("empty");
-    grid.innerHTML = filterText ? "No players found" : "No players yet - add them in Wiregrass HQ";
+    grid.innerHTML = filterText ? "No players found" : "No players yet - add them in Manager";
     document.getElementById("search-results-info")?.classList.add("hidden");
     return;
   }
@@ -1064,7 +1064,7 @@ function renderPickScreen(filterText = "") {
     btn.innerHTML = `
       ${isTopThree ? getBoardAvatarHtml(player, id, rank + 1) : getAvatarHtml(player, "small", id)}
       <div>
-        ${isWinner ? "🏆 " : ""}${safeName}
+        ${isWinner ? "★ " : ""}${safeName}
       </div>
     `;
     btn.onclick = () => enterAsDashboard(id);
@@ -1337,7 +1337,7 @@ function triggerAvatarFileInput(playerId, { accept = "image/*", capture } = {}) 
 
     const base64 = await fileToBase64(file);
     await update(dbRef.player(playerId), { avatar: base64 });
-    showToast("Photo updated ✅");
+    showToast("Photo updated ✓");
 
     const updatedPlayer = state.players[playerId];
     if (updatedPlayer && state.currentUser === playerId) {
@@ -1533,7 +1533,7 @@ function renderDash() {
   const winnerBanner = document.getElementById("winner-banner");
   if (winnerBanner) {
     if (!isProfileView && winner && state.players[winner]) {
-      winnerBanner.innerHTML = `🏆 <strong>${escapeHtml(state.players[winner].name)}</strong> won!`;
+      winnerBanner.innerHTML = `★ <strong>${escapeHtml(state.players[winner].name)}</strong> won!`;
       winnerBanner.style.display = "block";
     } else {
       winnerBanner.style.display = "none";
@@ -1547,7 +1547,7 @@ function renderDash() {
     let goalsHtml = "";
     if (compGoals.competition?.value) {
       const g = compGoals.competition;
-      goalsHtml += `<div class="goal-block"><div class="goal-label">🎯 Competition Goal</div>${renderGoalBar(g.type === "sph" ? sph : totalSales, g.value, g.type)}</div>`;
+      goalsHtml += `<div class="goal-block"><div class="goal-label">▸ Competition Goal</div>${renderGoalBar(g.type === "sph" ? sph : totalSales, g.value, g.type)}</div>`;
     }
     goalsEl.innerHTML = goalsHtml;
     goalsEl.style.display = goalsHtml && !isProfileView ? "flex" : "none";
@@ -1815,7 +1815,7 @@ function renderBoard() {
       <div class="board-info">
         <div class="board-name-row">
           <div class="board-name">${safePlayerName}</div>
-          ${isWinner ? "<span class='winner-label'>WINNER</span>" : ""}${playerRecord?.inactive ? "<span class='past-player-label'>PAST</span>" : ""}
+          ${isWinner ? "<span class='winner-label'>WINNER</span>" : ""}${playerRecord?.inactive ? "<span class='past-player-label'>PAST PLAYER</span>" : ""}
         </div>
       </div>
       <div class="board-score">
@@ -2244,8 +2244,8 @@ function renderAdminComps(container) {
   newCompSection.classList.add("admin-new-comp-section");
 
   const toggleBtn = document.createElement("button");
-  toggleBtn.className = "collapsible-toggle";
-  toggleBtn.innerHTML = `+ NEW COMPETITION <span class="collapsible-toggle-icon">▼</span>`;
+  toggleBtn.className = "collapsible-toggle collapsible-toggle-cta";
+  toggleBtn.innerHTML = `<span class="ois-trigger-icon">+</span> NEW COMPETITION`;
 
   const collapsibleContent = document.createElement("div");
   collapsibleContent.id = "new-comp-form";
@@ -2366,7 +2366,7 @@ function renderAdminComps(container) {
     if (goalValue > 0) {
       await set(ref(db, `goals/${id}/competition`), { type: "total", value: goalValue });
     }
-    showToast(`"${name}" created! 🏆`);
+    showToast(`"${name}" created! ★`);
     ["input-new-comp","input-new-comp-start","input-new-comp-end","input-new-comp-goal"].forEach(i => {
       const el = document.getElementById(i);
       if (el) el.value = "";
@@ -2393,7 +2393,7 @@ function renderAdminComps(container) {
 
     const deletedToggle = document.createElement("button");
     deletedToggle.className = "collapsible-toggle admin-recently-deleted-toggle";
-    deletedToggle.innerHTML = `🗑 RECENTLY DELETED (${deletedEntries.length}) <span class="collapsible-toggle-icon">▼</span>`;
+    deletedToggle.innerHTML = `✕ RECENTLY DELETED (${deletedEntries.length}) <span class="collapsible-toggle-icon">▼</span>`;
 
     const deletedContent = document.createElement("div");
     deletedContent.className = "admin-recently-deleted-list";
@@ -2424,7 +2424,7 @@ function renderAdminComps(container) {
         if (data.logs) await set(ref(db, `logs/${id}`), data.logs);
         if (data.goals) await set(ref(db, `goals/${id}`), data.goals);
         await remove(dbRef.deletedComp(id));
-        showToast(`"${comp.name}" restored ✅`);
+        showToast(`"${comp.name}" restored ✓`);
       });
       right.appendChild(restoreBtn);
       row.appendChild(left);
@@ -2563,7 +2563,7 @@ function renderCompEditForm(compId, comp, editForm, { onDone = null } = {}) {
     if (compGoalValue > 0) await set(ref(db, `goals/${compId}/competition`), { type: "total", value: compGoalValue });
     else await remove(ref(db, `goals/${compId}/competition`));
 
-    showToast("All changes saved ✅");
+    showToast("All changes saved ✓");
     onDone?.();
   };
 
@@ -2765,7 +2765,7 @@ function renderCompEditPanel(compId, comp) {
       await remove(ref(db, `goals/${compId}/competition`));
     }
 
-    showToast("All changes saved ✅");
+    showToast("All changes saved ✓");
     state.admin.tab = "competitions"; renderAdminTabBar(); renderAdminTab();
   });
   const actionsWrap = document.createElement("div");
@@ -2865,7 +2865,7 @@ function renderAdminPlayersList() {
 
     const pastToggle = document.createElement("button");
     pastToggle.className = "collapsible-toggle";
-    pastToggle.innerHTML = `👤 PAST PLAYERS (${allPast.length}) <span class="collapsible-toggle-icon">▼</span>`;
+    pastToggle.innerHTML = `▢ PAST PLAYERS (${allPast.length}) <span class="collapsible-toggle-icon">▼</span>`;
 
     const pastContent = document.createElement("div");
     pastContent.style.display = "none";
@@ -3034,7 +3034,7 @@ function openEditAvatarModal(playerId, player) {
         </div>
         <div class="avatar-upload">
           <input type="file" id="edit-avatar-file-input" accept="image/*" />
-          <button class="avatar-upload-btn">📸 Upload Photo</button>
+          <button class="avatar-upload-btn">▣ Upload Photo</button>
         </div>
         ${isCustomAvatar ? `<button class="mini-btn del-btn danger">Remove Avatar</button>` : ""}
       </div>
@@ -3086,7 +3086,7 @@ function openEditAvatarModal(playerId, player) {
       return;
     }
     await update(dbRef.player(playerId), { avatar: window.editAvatarData || null });
-    showToast("Avatar updated ✅");
+    showToast("Avatar updated ✓");
     closeEditAvatarModal();
     const updatedPlayer = state.players[playerId];
     if (updatedPlayer && state.currentUser === playerId) {
@@ -3137,7 +3137,7 @@ function openEditPlayerModal(playerId, player) {
         </div>
         <div class="avatar-upload">
           <input type="file" id="edit-player-avatar-input" accept="image/*" />
-          <button class="avatar-upload-btn">📸 Upload Photo</button>
+          <button class="avatar-upload-btn">▣ Upload Photo</button>
         </div>
         ${isCustomAvatar ? `<button class="mini-btn del-btn danger">Remove Avatar</button>` : ""}
       </div>
@@ -3197,7 +3197,7 @@ function openEditPlayerModal(playerId, player) {
     }
 
     await update(dbRef.player(playerId), updates);
-    showToast("Player updated ✅");
+    showToast("Player updated ✓");
     closeEditPlayerModal();
 
     const updatedPlayer = state.players[playerId];
@@ -3351,7 +3351,7 @@ function refreshAdminDayView() {
       };
     } else {
       btn.disabled = true;
-      btn.onclick = () => showToast(isOutOfComp ? "That day is outside this competition" : "Can't log future dates 🔮");
+      btn.onclick = () => showToast(isOutOfComp ? "That day is outside this competition" : "Can't log future dates ✕");
     }
     dayContainer.appendChild(btn);
   });
@@ -3504,7 +3504,7 @@ function renderAdminLogDetail(playerId, compId, date, log) {
     </div>
     <div class="admin-log-actions-row">
       <button class="admin-action-edit" id="admin-edit-log-btn">Edit</button>
-      <button class="admin-action-delete" id="admin-delete-log-btn">🗑️ Delete</button>
+      <button class="admin-action-delete" id="admin-delete-log-btn">✕ Delete</button>
     </div>
   `;
   document.getElementById("admin-edit-log-btn").onclick = () => renderAdminLogEdit(playerId, compId, date, log);
@@ -3591,7 +3591,7 @@ function renderAdminLogEdit(playerId, compId, date, log, target = null) {
     await set(dbRef.dateLog(compId, playerId, date), { sales, hours });
     upsertLocalLog(compId, playerId, date, { sales, hours });
     state.admin.selectedPlayer = null;
-    showToast("Log updated ✅");
+    showToast("Log updated ✓");
     refreshAdminDayView();
     if (state.currentUser === playerId) { renderDash(); renderBoard(); renderAllTime(); }
   };
