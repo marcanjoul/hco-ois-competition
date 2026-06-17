@@ -124,6 +124,7 @@
   opacity: 0;
   position: relative;
   overflow: hidden;
+  /* use uniform padding from above to avoid content appearing shifted right */
 }
 
 @keyframes board-card-in {
