@@ -510,6 +510,7 @@ input[type="number"] { -moz-appearance: textfield; }
   -webkit-backdrop-filter: var(--ui-blur);
 }
 .bottom-nav.hidden { display: none; }
+.bottom-nav.keyboard-hidden { display: none !important; }
 
 .nav-btn {
   flex: 1;

@@ -1722,7 +1722,7 @@ function renderBoard() {
   if (!compId || !state.competitions[compId]) {
     body.innerHTML = `
       <div class="board-empty-state">
-        <div class="board-empty-icon board-empty-pixel-icon">★</div>
+        <div class="board-empty-icon board-empty-pixel-icon"><span class="pixel-icon-star" style="margin: 0 auto;"></span></div>
         <div class="board-empty-title">NO COMPETITION YET</div>
         <div class="board-empty-sub">Ask your manager to set up a competition.</div>
       </div>
@@ -1749,7 +1749,7 @@ function renderBoard() {
   if (!hasLogs) {
     body.innerHTML = `
       <div class="board-empty-state">
-        <div class="board-empty-icon board-empty-pixel-icon">▶</div>
+        <div class="board-empty-icon board-empty-pixel-icon"><span class="pixel-icon-play" style="margin: 0 auto;"></span></div>
         <div class="board-empty-title">COMPETITION STARTS NOW</div>
         <div class="board-empty-sub">Be the first to insert an OIS and claim the top spot!</div>
         <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()">+ LOG AN ORDER</button>
@@ -1762,7 +1762,7 @@ function renderBoard() {
   if (players.length === 0) {
     body.innerHTML = `
       <div class="board-empty-state">
-        <div class="board-empty-icon board-empty-pixel-icon">▶</div>
+        <div class="board-empty-icon board-empty-pixel-icon"><span class="pixel-icon-play" style="margin: 0 auto;"></span></div>
         <div class="board-empty-title">NO ORDERS YET</div>
         <div class="board-empty-sub">The scoreboard is empty. Log your first OIS and lead the pack!</div>
         <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()">+ LOG AN ORDER</button>
@@ -2244,7 +2244,7 @@ function renderAdminComps(container) {
 
   const toggleBtn = document.createElement("button");
   toggleBtn.className = "collapsible-toggle collapsible-toggle-cta";
-  toggleBtn.innerHTML = `<span class="ois-trigger-icon">+</span> NEW COMPETITION`;
+  toggleBtn.innerHTML = `<span class="ois-trigger-icon pixel-icon-plus" aria-hidden="true"></span> NEW COMPETITION`;
 
   const collapsibleContent = document.createElement("div");
   collapsibleContent.id = "new-comp-form";
@@ -2953,36 +2953,51 @@ function renderAdminPlayers(container) {
       </div>
     </div>
     <div class="admin-team-controls">
-      <label class="admin-team-field admin-team-search-wrap">
-        <span class="admin-team-field-label">Search players</span>
-        <div class="admin-team-input-shell">
-          <input type="text" id="admin-player-search" class="log-input admin-team-input" placeholder="Search..." />
-        </div>
-      </label>
       <label class="admin-team-field admin-team-add-wrap">
         <span class="admin-team-field-label">Quick add</span>
         <div class="admin-new-row admin-new-row-top">
           <input type="text" id="input-new-player" class="log-input admin-team-input" placeholder="Add a new player..." oninput="updateBtnState('input-new-player','btn-add-player')" />
-          <button class="mini-btn btn-ghost" id="btn-add-player" disabled>Add</button>
+          <button class="comp-status-chip comp-status-edit btn-ghost" type="button" id="btn-add-player" disabled>Add</button>
         </div>
       </label>
     </div>
   `;
   container.appendChild(toolsWrap);
 
-  const searchInput = document.getElementById("admin-player-search");
-  searchInput.value = state.admin.playerSearch;
-  searchInput.oninput = (e) => {
-    state.admin.playerSearch = e.target.value;
-    state.admin.showAllPlayers = false;
-    renderAdminPlayersList();
-  };
+  // Bordered player list box that encompasses both Search and list container
+  const listBox = document.createElement("div");
+  listBox.className = "admin-player-list-box";
+  
+  // Search wrap
+  const searchWrap = document.createElement("div");
+  searchWrap.className = "admin-player-list-search-wrap";
+  searchWrap.innerHTML = `
+    <label class="admin-team-field admin-team-search-wrap">
+      <span class="admin-team-field-label">Search players</span>
+      <div class="admin-team-input-shell">
+        <input type="text" id="admin-player-search" class="log-input admin-team-input" placeholder="Search..." />
+      </div>
+    </label>
+  `;
+  listBox.appendChild(searchWrap);
 
-  // Create container for list (will be updated by renderAdminPlayersList)
+  // List container for actual player rows
   const listContainer = document.createElement("div");
   listContainer.id = "admin-player-list-container";
-  container.appendChild(listContainer);
-  
+  listBox.appendChild(listContainer);
+
+  container.appendChild(listBox);
+
+  const searchInput = document.getElementById("admin-player-search");
+  if (searchInput) {
+    searchInput.value = state.admin.playerSearch;
+    searchInput.oninput = (e) => {
+      state.admin.playerSearch = e.target.value;
+      state.admin.showAllPlayers = false;
+      renderAdminPlayersList();
+    };
+  }
+
   // Render the list
   renderAdminPlayersList();
   document.getElementById("btn-add-player").onclick = async () => {
@@ -3801,6 +3816,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Show the welcome screen right away; data arrives in the background.
   showScreen(state.currentScreen);
+
+  // Hide bottom nav bar when virtual keyboard is open on mobile
+  const bottomNav = document.getElementById("bottom-nav");
+  if (bottomNav) {
+    const isMobile = window.matchMedia("(pointer: coarse)").matches;
+    if (isMobile) {
+      const handleKeyboardVisibility = () => {
+        const activeEl = document.activeElement;
+        const isInputFocused = activeEl && (
+          activeEl.tagName === "TEXTAREA" ||
+          activeEl.isContentEditable ||
+          (activeEl.tagName === "INPUT" && !["checkbox", "radio", "button", "submit", "image", "file", "range", "hidden", "reset", "color"].includes(activeEl.type?.toLowerCase()))
+        );
+
+        if (!isInputFocused) {
+          bottomNav.classList.remove("keyboard-hidden");
+          return;
+        }
+
+        if (window.visualViewport) {
+          const isViewportShrunk = (window.innerHeight - window.visualViewport.height) > 120;
+          bottomNav.classList.toggle("keyboard-hidden", isViewportShrunk);
+        } else {
+          bottomNav.classList.add("keyboard-hidden");
+        }
+      };
+
+      document.addEventListener("focusin", () => {
+        setTimeout(handleKeyboardVisibility, 100);
+      });
+      document.addEventListener("focusout", () => {
+        setTimeout(handleKeyboardVisibility, 100);
+      });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", handleKeyboardVisibility);
+      }
+    }
+  }
 
   // Mobile touch press feedback — iOS/Android don't fire :active reliably.
   // A global touchstart/end handler adds .touching so every button responds instantly.

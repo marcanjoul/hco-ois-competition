@@ -254,9 +254,20 @@ body::before {
   background: #2e334a !important;
   color: #fff !important;
   min-height: 40px !important;
-  width: fit-content !important;
+  width: 90% !important;
   padding: 0 16px !important;
   margin: 0 auto !important;
+}
+
+.collapsible-toggle-cta.expanded {
+  background: #2e334a !important;
+  color: #fff !important;
+  width: 90% !important;
+  margin: 0 auto !important;
+}
+
+#btn-add-comp {
+  margin-top: 8px !important;
 }
 
 /* Collapsed step summary — subtle arcade chip */
@@ -947,6 +958,7 @@ select.log-input:focus {
 
 .log-input::placeholder {
   color: #87a8ff;
+  font-size: 14px;
 }
 
 #pick-player-grid .log-input {
@@ -1244,18 +1256,18 @@ select.log-input:focus {
 }
 
 .admin-team-tools-count {
-  min-height: 22px;
-  padding: 4px 7px;
+  min-height: 26px;
+  padding: 4px 9px;
   border: 2px solid #47d7ff;
   border-radius: 0;
   background: #07122f;
   color: var(--text2);
-  font-size: 6px;
+  font-size: 11px;
   box-shadow: 2px 2px 0 #050816;
 }
 
 .admin-team-field-label {
-  font-size: 6px;
+  font-size: 11px;
   line-height: 1.1;
   color: var(--text2) !important;
   text-shadow: none;
@@ -1271,13 +1283,53 @@ select.log-input:focus {
   min-width: 66px;
   min-height: 40px;
   padding: 0 10px;
-  font-size: 8px;
+  font-size: 11px;
+}
+
+.admin-new-row-top #btn-add-player {
+  align-self: center;
+  min-width: 80px !important;
+  height: 32px !important;
+  min-height: 0 !important;
+  padding: 0 12px !important;
+}
+
+.admin-team-controls {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.admin-player-list-box {
+  background: linear-gradient(180deg, rgba(12, 25, 70, 0.98), rgba(7, 15, 41, 0.98)) !important;
+  border: 2px solid #2b6dff !important;
+  border-radius: 4px;
+  padding: 12px 8px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.admin-player-list-search-wrap {
+  padding: 0 4px;
 }
 
 .admin-player-list {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.admin-player-item {
+  border: 1px solid #2348b3 !important;
+  background: var(--card-bg) !important;
+  margin: 0 !important;
+  min-height: 52px !important;
+  padding: 8px 10px !important;
 }
 
 .admin-team-tools-title,
@@ -2098,6 +2150,67 @@ body::after {
   filter:
     drop-shadow(2px 2px 0 #050816)
     drop-shadow(0 0 8px rgba(255, 79, 163, 0.46));
+}
+
+/* ── Custom CSS Pixel Art Icons ── */
+.pixel-icon-info {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin: 0 auto;
+  image-rendering: pixelated;
+  filter: drop-shadow(2px 2px 0 #050816);
+  background:
+    linear-gradient(currentColor, currentColor) 10px 4px / 3px 3px no-repeat,
+    linear-gradient(currentColor, currentColor) 10px 9px / 3px 9px no-repeat,
+    linear-gradient(currentColor, currentColor) 8px 18px / 7px 2px no-repeat;
+}
+
+.pixel-icon-plus {
+  background:
+    linear-gradient(currentColor, currentColor) 5px 0px / 2px 12px no-repeat,
+    linear-gradient(currentColor, currentColor) 0px 5px / 12px 2px no-repeat !important;
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+  margin-right: 8px;
+  image-rendering: pixelated;
+}
+
+.pixel-icon-star {
+  background:
+    linear-gradient(var(--gold), var(--gold)) 10px 2px / 2px 2px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 9px 4px / 4px 2px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 8px 6px / 6px 2px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 2px 8px / 18px 2px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 4px 10px / 14px 2px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 6px 12px / 10px 2px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 4px 14px / 4px 4px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 14px 14px / 4px 4px no-repeat;
+  width: 22px;
+  height: 22px;
+  display: block;
+  image-rendering: pixelated;
+  filter: drop-shadow(2px 2px 0 #050816);
+}
+
+.pixel-icon-play {
+  background:
+    linear-gradient(var(--accent), var(--accent)) 6px 4px / 2px 14px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 8px 5px / 2px 12px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 10px 6px / 2px 10px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 12px 7px / 2px 8px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 14px 8px / 2px 6px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 16px 9px / 2px 4px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 18px 10px / 2px 2px no-repeat;
+  width: 22px;
+  height: 22px;
+  display: block;
+  image-rendering: pixelated;
+  filter: drop-shadow(2px 2px 0 #050816);
 }
 
 .screen-top-bar {
