@@ -3131,8 +3131,6 @@ function renderAdminLogCreate(playerId, compId, date, target = null) {
   detail.innerHTML = `
     <div class="admin-log-header">
       <div class="admin-log-header-info">
-        <div class="admin-log-header-name">${escapeHtml(state.players[playerId]?.name || "")}</div>
-        <div class="admin-log-header-sub">${escapeHtml(`${dayName} ${date} · ${state.competitions[compId]?.name || ""}`)}</div>
       </div>
     </div>
     <div class="log-fields admin-log-form-fields">
