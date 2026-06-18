@@ -3139,7 +3139,7 @@ function renderAdminLogCreate(playerId, compId, date, target = null) {
       <div class="log-field-wrap"><label class="field-label">SALES ($)</label><input type="number" id="admin-create-sales" class="log-input" placeholder="0.00" min="0" step="0.01" /></div>
       <div class="log-field-wrap"><label class="field-label">HOURS</label><input type="number" id="admin-create-hours" class="log-input" placeholder="0.0" min="0" step="0.5" /></div>
     </div>
-    <button class="log-btn btn-ghost admin-log-form-submit" id="admin-create-log-btn" disabled><span class="pixel-icon-plus"></span>CREATE LOG</button>
+    <button class="log-btn btn-ghost admin-log-form-submit" id="admin-create-log-btn" disabled><span class="pixel-icon-plus"></span>CREATE OIS</button>
   `;
   const s = detail.querySelector("#admin-create-sales");
   const h = detail.querySelector("#admin-create-hours");
