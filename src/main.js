@@ -1327,7 +1327,6 @@ function renderDash() {
             </button>
           </div>
           <div class="dash-profile-copy">
-            <div class="dash-profile-kicker">Player Profile</div>
             <div class="dash-profile-name-row">
               <h1 class="dash-profile-name">${escapeHtml(player.name)}</h1>
               ${myRank > 0 ? `<div class="dash-profile-rank-badge">#${myRank}</div>` : ""}
