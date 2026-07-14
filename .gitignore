@@ -41,7 +41,8 @@ DESIGN.md
 reduce_fonts.py
 
 #brand/design system
-*brandkitscripts/backup-*.json
+*brandkit
+scripts/backup-*.json
 brandkit/BRAND_GUIDE.md
 
 /brandkit
