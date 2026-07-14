@@ -2,7 +2,7 @@
 
 > A fast, game-like retail competition web app — log daily OIS performance, track sales-per-hour, and climb the live leaderboard. Supports multiple independent stores, each with its own data, roster, and manager PIN.
 
-🔗 **Live Site:** [hco-ois.vercel.app](https://hco-ois.vercel.app/)
+🔗 **Live Site:** [ois-competition.vercel.app](https://ois-competition.vercel.app/)
 
 ---
 
