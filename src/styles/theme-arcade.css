@@ -98,7 +98,6 @@
 .admin-tab-bar,
 .pick-avatar-upload-sheet,
 .toast,
-.no-comps-message,
 .search-wrap,
 .comp-detail,
 .admin-log-detail-wrap,
@@ -180,7 +179,6 @@
 .admin-list,
 .admin-tab-bar,
 .admin-tab-content,
-.no-comps-message,
 .toast {
   background:
     linear-gradient(180deg, rgba(12, 25, 70, 0.98), rgba(7, 15, 41, 0.98));
@@ -1018,12 +1016,6 @@ select.log-input:focus {
   box-shadow: 2px 2px 0 var(--shadow-ink) !important;
 }
 
-.site-banner {
-  background: #2c184d;
-  color: #ffd6ef;
-  border: 2px solid var(--accent-alt);
-}
-
 .admin-team-tools,
 .admin-list {
   background:
@@ -1767,23 +1759,6 @@ body::after {
   top: -1px;
   margin-right: 8px;
   image-rendering: pixelated;
-}
-
-.pixel-icon-star {
-  background:
-    linear-gradient(var(--gold), var(--gold)) 10px 2px / 2px 2px no-repeat,
-    linear-gradient(var(--gold), var(--gold)) 9px 4px / 4px 2px no-repeat,
-    linear-gradient(var(--gold), var(--gold)) 8px 6px / 6px 2px no-repeat,
-    linear-gradient(var(--gold), var(--gold)) 2px 8px / 18px 2px no-repeat,
-    linear-gradient(var(--gold), var(--gold)) 4px 10px / 14px 2px no-repeat,
-    linear-gradient(var(--gold), var(--gold)) 6px 12px / 10px 2px no-repeat,
-    linear-gradient(var(--gold), var(--gold)) 4px 14px / 4px 4px no-repeat,
-    linear-gradient(var(--gold), var(--gold)) 14px 14px / 4px 4px no-repeat;
-  width: 22px;
-  height: 22px;
-  display: block;
-  image-rendering: pixelated;
-  filter: drop-shadow(2px 2px 0 #050816);
 }
 
 .pixel-icon-play {
@@ -3317,7 +3292,6 @@ button.touching:not(:disabled):not(.btn-ghost):not(.btn-locked):not(.btn-disable
 .admin-player-list-box,
 .admin-tab-bar,
 .admin-tab-content,
-.no-comps-message,
 .toast,
 .log-input,
 #input-pin,

@@ -325,20 +325,6 @@ function getCompetitionCountdownStyle(comp) {
 
 
 // ══════════════════════════════════════════════════════
-// Apply settings
-// ══════════════════════════════════════════════════════
-function applySettings(s = {}) {
-  const color = s.accentColor || "#ff4fa3";
-  if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
-    document.documentElement.style.setProperty("--accent-alt", color);
-  }
-  document.documentElement.style.setProperty("--accent", "#ffd84d");
-  const banner = s.bannerMessage || "";
-  const bannerEl = document.getElementById("site-banner");
-  if (bannerEl) { bannerEl.textContent = banner; bannerEl.style.display = banner ? "block" : "none"; }
-}
-
-// ══════════════════════════════════════════════════════
 // Listeners
 // ══════════════════════════════════════════════════════
 
@@ -402,12 +388,11 @@ function startListeners() {
   onValue(dbRef.settings(), snap => {
     if (!snap.exists()) {
       // New store bootstrap. Placeholder PIN — change it in Admin → Settings.
-      set(dbRef.settings(), { accentColor: "#ff4fa3", rankingMetric: "sph", adminPin: "1234567" });
+      set(dbRef.settings(), { rankingMetric: "sph", adminPin: "1234567" });
       _markReady("settings");
       return;
     }
     state.settings = snap.val() || {};
-    applySettings(state.settings);
     _markReady("settings");
   });
 
@@ -931,6 +916,16 @@ function syncPickStep3Lock() {
   updateOisArrowState();
 }
 // ══════════════════════════════════════════════════════
+
+// Shared "no competition" empty state, used on both Home and Leaderboard.
+const NO_COMP_EMPTY_HTML = `
+  <div class="board-empty-state">
+    <div class="board-empty-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.6l2.86 5.8 6.4.93-4.63 4.51 1.09 6.37L12 17.2l-5.72 3.01 1.09-6.37-4.63-4.51 6.4-.93L12 2.6z"/></svg></div>
+    <div class="board-empty-title">NO COMPETITION YET</div>
+    <div class="board-empty-sub">Ask your manager to set up a competition.</div>
+  </div>
+`;
+
 function renderPickScreen() {
   // Competition info card — show only active comp
   const compInfo = document.getElementById("pick-comp-info");
@@ -939,10 +934,10 @@ function renderPickScreen() {
   const compSkeleton = document.getElementById("pick-comp-skeleton");
 
   if (!state.currentComp) {
-    // No active competition - hide log form, show big message
+    // No active competition - hide log form, show empty state
     if (compSkeleton) compSkeleton.classList.add("hidden");
     if (compInfo) compInfo.classList.add("hidden");
-    if (noCompsMsg) noCompsMsg.classList.remove("hidden");
+    if (noCompsMsg) { noCompsMsg.innerHTML = NO_COMP_EMPTY_HTML; noCompsMsg.classList.remove("hidden"); }
     const logCard = document.getElementById("pick-log-card");
     if (logCard) logCard.style.display = "none";
     if (state.currentScreen === "pick") maybeShowCompetitionEndedModal();
@@ -1587,13 +1582,7 @@ function renderBoard() {
 
   // If no competition, show message
   if (!compId || !state.competitions[compId]) {
-    body.innerHTML = `
-      <div class="board-empty-state">
-        <div class="board-empty-icon board-empty-pixel-icon"><span class="pixel-icon-star" style="margin: 0 auto;"></span></div>
-        <div class="board-empty-title">NO COMPETITION YET</div>
-        <div class="board-empty-sub">Ask your manager to set up a competition.</div>
-      </div>
-    `;
+    body.innerHTML = NO_COMP_EMPTY_HTML;
     if (noCompsMsg) noCompsMsg.style.display = "none";
     if (statusEl) statusEl.style.display = "none";
     return;

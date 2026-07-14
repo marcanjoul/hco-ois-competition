@@ -237,34 +237,8 @@
   letter-spacing: 1px;
 }
 
-/* No competition state */
-.no-comps-message {
-  text-align: center;
-  color: var(--text3);
-  font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight); font-stretch: var(--type-subheading-stretch);
-  font-size: 20px;
-  letter-spacing: 1px;
-  padding: var(--space-12) var(--space-4);
-  line-height: 1.4;
-}
-.no-comps-message.hidden { display: none; }
-
 /* Pick goals legacy element */
 #pick-goals { display: none !important; }
-
-/* Site banner */
-.site-banner {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: var(--radius-xs);
-  color: var(--text2);
-  font-family: var(--type-label-family);
-  font-size: var(--type-label-size);
-  font-weight: var(--type-label-weight);
-  padding: var(--space-3) var(--space-4);
-  text-align: center;
-}
-.site-banner:empty { display: none; }
 
 /* ── NAME SELECTION — STEP FLOW ──
    Example on the website: Step 1 "Who are you?" and the player chooser.

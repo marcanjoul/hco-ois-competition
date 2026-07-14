@@ -399,7 +399,12 @@
   flex: 1;
 }
 
-.board-empty-icon { font-size: 39px; }
+.board-empty-icon {
+  font-size: 39px;
+  color: var(--accent);
+  display: flex;
+  justify-content: center;
+}
 .board-empty-title {
   font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
   font-size: 18px;
