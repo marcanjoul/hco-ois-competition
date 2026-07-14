@@ -921,8 +921,7 @@ function syncPickStep3Lock() {
 const NO_COMP_EMPTY_HTML = `
   <div class="board-empty-state">
     <div class="board-empty-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.6l2.86 5.8 6.4.93-4.63 4.51 1.09 6.37L12 17.2l-5.72 3.01 1.09-6.37-4.63-4.51 6.4-.93L12 2.6z"/></svg></div>
-    <div class="board-empty-title">NO COMPETITION YET</div>
-    <div class="board-empty-sub">Ask your manager to set up a competition.</div>
+    <div class="board-empty-title">NO COMPETITION YET!</div>
   </div>
 `;
 
