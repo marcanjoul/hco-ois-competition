@@ -1,0 +1,26 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "stores": {
+      "$storeId": {
+        "competitions":         { ".read": true, ".write": true },
+        "deleted_competitions": { ".read": true, ".write": true },
+        "employees":            { ".read": true, ".write": true },
+        "settings":             { ".read": true, ".write": true },
+        "goals":                { ".read": true, ".write": true },
+        "logs": {
+          ".read": true,
+          "$compId": {
+            ".write": true,
+            "$empId": {
+              "$day": {
+                ".validate": "newData.hasChildren(['sales', 'hours']) && newData.child('sales').isNumber() && newData.child('hours').isNumber() && newData.child('sales').val() >= 0 && newData.child('hours').val() >= 0"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

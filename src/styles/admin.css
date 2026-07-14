@@ -1148,3 +1148,18 @@
 .collapsible-toggle-cta { justify-content: center; }
 .collapsible-toggle-cta:active { transform: scale(0.98); }
 .collapsible-toggle-cta.expanded .ois-trigger-icon { transform: rotate(45deg); }
+
+/* ── Admin settings tab: change PIN ── */
+.admin-pin-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 360px;
+}
+
+.admin-pin-form .log-btn { margin-top: var(--space-2); }
+
+.pin-change-success { color: var(--green); }
+
+
+

@@ -20,7 +20,7 @@
   -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>HCO OIS Tracker</title>
+  <title>OIS Competition</title>
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
@@ -33,6 +33,7 @@
       <span id="dash-name" class="dash-name"></span>
       <span id="dash-comp-name" class="dash-comp-badge"></span>
     </div>
+    <span id="header-store" class="header-store-badge"></span>
   </header>
 
   <!-- ── PERSISTENT BOTTOM NAV ──
@@ -55,12 +56,25 @@
 
   <main id="main-content">
 
+  <!-- SCREEN: Store Picker
+       Shown when no store is in the URL or saved on this device.
+  -->
+  <section id="screen-store-picker" class="screen">
+    <div class="store-picker-body">
+      <h1 class="store-picker-title">SELECT YOUR STORE</h1>
+      <div id="store-picker-list" class="store-picker-list"></div>
+      <footer class="app-credit">
+        Created by <a class="app-credit-name" href="https://markanjoul.com" target="_blank" rel="noopener noreferrer">Mark Anjoul <span class="app-credit-arrow" aria-hidden="true">↗</span></a>
+      </footer>
+    </div>
+  </section>
+
   <!-- SCREEN: Welcome / Boot sequence -->
   <section id="screen-welcome" class="screen active">
     <div class="welcome-boot">
       <div class="welcome-boot-panel">
         <div class="boot-scanline" aria-hidden="true"></div>
-        <div class="welcome-boot-eyebrow">WIREGRASS</div>
+        <div class="welcome-boot-eyebrow" id="boot-store-name"></div>
         <div class="welcome-boot-title-group">
           <h1 class="welcome-boot-ois">OIS</h1>
           <div class="welcome-boot-subtitle">COMPETITION</div>
@@ -89,7 +103,7 @@
       </button>
 
       <div class="pick-app-title">
-        <span class="pick-app-title-eyebrow">Wiregrass</span>
+        <span class="pick-app-title-eyebrow" id="pick-store-name"></span>
         <span class="pick-app-title-main">OIS</span>
         <span class="pick-app-title-sub">Competition</span>
       </div>

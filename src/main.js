@@ -16,12 +16,16 @@
 */
 // src/main.js
 import { db } from "./firebase.js";
-import { ref, set, onValue, update, remove } from "firebase/database";
+import { ref, set, get, onValue, update, remove } from "firebase/database";
 import { slugify, escapeHtml, formatLocalDate, shiftLocalDate, formatDate } from "./utils.js";
+import { STORES, resolveStore } from "./stores.js";
+
+// Which store this session is scoped to. Null means show the store picker.
+const STORE_ID = resolveStore();
+const STORE_NAME = STORE_ID ? STORES[STORE_ID] : "";
 
 // App-wide constants.
 // Example on the website: weekday labels and preview limits.
-const ADMIN_PIN = import.meta.env.VITE_ADMIN_PIN;
 const CROWN_ICON_URL = new URL("./assets/icons/crown-pixel-flaticon.svg", import.meta.url).href;
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const PREVIEW_COUNT = 5;
@@ -67,21 +71,22 @@ let state = {
   },
 };
 
-// Firebase database shortcuts.
-// Example: `dbRef.players()` points to the players collection in the database.
+// Firebase database shortcuts, all scoped to the current store.
+// Example: `dbRef.players()` points to this store's players collection.
+const sref = (path) => ref(db, `stores/${STORE_ID}/${path}`);
 const dbRef = {
-  comps:    ()              => ref(db, "competitions"),
-  comp:     (id)            => ref(db, `competitions/${id}`),
+  comps:    ()              => sref("competitions"),
+  comp:     (id)            => sref(`competitions/${id}`),
   // Note: the DB path stays "employees" for backward compatibility with existing data.
-  players:     ()              => ref(db, "employees"),
-  player:      (id)            => ref(db, `employees/${id}`),
-  logs:     ()              => ref(db, "logs"),
-  compLogs: (cId)           => ref(db, `logs/${cId}`),
-  dateLog:  (cId, pId, date) => ref(db, `logs/${cId}/${pId}/${date}`),
-  settings: ()              => ref(db, "settings"),
-  goals:    ()              => ref(db, "goals"),
-  deletedComps: ()         => ref(db, "deleted_competitions"),
-  deletedComp:  (id)       => ref(db, `deleted_competitions/${id}`),
+  players:     ()              => sref("employees"),
+  player:      (id)            => sref(`employees/${id}`),
+  logs:     ()              => sref("logs"),
+  compLogs: (cId)           => sref(`logs/${cId}`),
+  dateLog:  (cId, pId, date) => sref(`logs/${cId}/${pId}/${date}`),
+  settings: ()              => sref("settings"),
+  goals:    ()              => sref("goals"),
+  deletedComps: ()         => sref("deleted_competitions"),
+  deletedComp:  (id)       => sref(`deleted_competitions/${id}`),
 };
 
 // ══════════════════════════════════════════════════════
@@ -396,7 +401,8 @@ function startListeners() {
 
   onValue(dbRef.settings(), snap => {
     if (!snap.exists()) {
-      set(dbRef.settings(), { accentColor: "#ff4fa3", rankingMetric: "sph" });
+      // New store bootstrap. Placeholder PIN — change it in Admin → Settings.
+      set(dbRef.settings(), { accentColor: "#ff4fa3", rankingMetric: "sph", adminPin: "1234567" });
       _markReady("settings");
       return;
     }
@@ -982,6 +988,7 @@ function showScreen(name) {
     name === "board" ||
     name === "admin" ||
     name === "admin-gate" ||
+    name === "store-picker" ||
     (name === "dash" && state.dashView === "profile")
   );
   if (hideHeader) {
@@ -992,7 +999,7 @@ function showScreen(name) {
 
   const bottomNav = document.getElementById("bottom-nav");
   if (bottomNav) {
-    bottomNav.classList.toggle("hidden", name === "welcome");
+    bottomNav.classList.toggle("hidden", name === "welcome" || name === "store-picker");
   }
 
   // Update nav active state
@@ -1969,6 +1976,7 @@ function renderAdminTabBar() {
     { id: "competitions", label: "Competitions" },
     { id: "players",    label: "Players" },
     { id: "logs",         label: "Orders" },
+    { id: "settings",     label: "Settings" },
   ];
   const bar = document.getElementById("admin-tab-bar");
   if (!bar) return;
@@ -1993,7 +2001,59 @@ function renderAdminTab() {
     case "competitions": renderAdminComps(content); break;
     case "players":    renderAdminPlayers(content); break;
     case "logs":         renderAdminLogs(content); break;
+    case "settings":     renderAdminSettings(content); break;
   }
+}
+
+// ══════════════════════════════════════════════════════
+// ADMIN — Settings (change PIN, switch store)
+// ══════════════════════════════════════════════════════
+function renderAdminSettings(container) {
+  container.innerHTML = `
+    <div class="admin-section-title">CHANGE MANAGER PIN</div>
+    <form id="pin-change-form" class="admin-pin-form" novalidate>
+      <div class="log-field-wrap">
+        <label class="field-label" for="pin-current">CURRENT PIN</label>
+        <input type="password" id="pin-current" class="log-input" maxlength="7" inputmode="numeric" autocomplete="off" />
+      </div>
+      <div class="log-field-wrap">
+        <label class="field-label" for="pin-new">NEW PIN</label>
+        <input type="password" id="pin-new" class="log-input" maxlength="7" inputmode="numeric" autocomplete="off" />
+      </div>
+      <div class="log-field-wrap">
+        <label class="field-label" for="pin-confirm">CONFIRM NEW PIN</label>
+        <input type="password" id="pin-confirm" class="log-input" maxlength="7" inputmode="numeric" autocomplete="off" />
+      </div>
+      <p id="pin-change-msg" class="pin-error hidden"></p>
+      <button type="submit" class="log-btn" id="pin-change-submit">UPDATE PIN</button>
+    </form>
+  `;
+
+  const msg = container.querySelector("#pin-change-msg");
+  const showMsg = (text, ok = false) => {
+    msg.textContent = text;
+    msg.classList.remove("hidden");
+    msg.classList.toggle("pin-change-success", ok);
+  };
+
+  container.querySelector("#pin-change-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const current = container.querySelector("#pin-current").value.trim();
+    const next = container.querySelector("#pin-new").value.trim();
+    const confirm = container.querySelector("#pin-confirm").value.trim();
+
+    // Compare against the PIN currently in Firebase, not a cached copy.
+    const snap = await get(sref("settings/adminPin"));
+    const storedPin = snap.val();
+    if (current !== storedPin) { showMsg("Current PIN is wrong"); return; }
+    if (!/^\d{4,7}$/.test(next)) { showMsg("New PIN must be 4-7 digits"); return; }
+    if (next !== confirm) { showMsg("New PINs don't match"); return; }
+
+    await set(sref("settings/adminPin"), next);
+    ["#pin-current", "#pin-new", "#pin-confirm"].forEach(id => { container.querySelector(id).value = ""; });
+    showMsg("PIN updated ✓", true);
+    showToast("Manager PIN updated");
+  };
 }
 
 // ══════════════════════════════════════════════════════
@@ -2193,7 +2253,7 @@ function renderAdminComps(container) {
     const id = `comp_${Date.now()}`;
     await set(dbRef.comp(id), { name, startDate, endDate, createdAt: Date.now() });
     if (goalValue > 0) {
-      await set(ref(db, `goals/${id}/competition`), { type: "total", value: goalValue });
+      await set(sref(`goals/${id}/competition`), { type: "total", value: goalValue });
     }
     showToast(`"${name}" created! ★`);
     ["input-new-comp","input-new-comp-start","input-new-comp-end","input-new-comp-goal"].forEach(i => {
@@ -2250,8 +2310,8 @@ function renderAdminComps(container) {
         });
         if (!ok) return;
         if (data.comp) await set(dbRef.comp(id), data.comp);
-        if (data.logs) await set(ref(db, `logs/${id}`), data.logs);
-        if (data.goals) await set(ref(db, `goals/${id}`), data.goals);
+        if (data.logs) await set(sref(`logs/${id}`), data.logs);
+        if (data.goals) await set(sref(`goals/${id}`), data.goals);
         await remove(dbRef.deletedComp(id));
         showToast(`"${comp.name}" restored ✓`);
       });
@@ -2389,8 +2449,8 @@ function renderCompEditForm(compId, comp, editForm, { onDone = null } = {}) {
     });
 
     const compGoalValue = parseFloat(editForm.querySelector("#goal-val-competition").value);
-    if (compGoalValue > 0) await set(ref(db, `goals/${compId}/competition`), { type: "total", value: compGoalValue });
-    else await remove(ref(db, `goals/${compId}/competition`));
+    if (compGoalValue > 0) await set(sref(`goals/${compId}/competition`), { type: "total", value: compGoalValue });
+    else await remove(sref(`goals/${compId}/competition`));
 
     showToast("All changes saved ✓");
     onDone?.();
@@ -2412,8 +2472,8 @@ function renderCompEditForm(compId, comp, editForm, { onDone = null } = {}) {
     };
     await set(dbRef.deletedComp(compId), snapshot);
     await remove(dbRef.comp(compId));
-    await remove(ref(db, `logs/${compId}`));
-    await remove(ref(db, `goals/${compId}`));
+    await remove(sref(`logs/${compId}`));
+    await remove(sref(`goals/${compId}`));
     delete state.logs[compId];
     showToast("Competition moved to Recently Deleted");
     onDone?.();
@@ -2532,7 +2592,7 @@ function renderAdminPlayersList() {
           Object.keys(state.logs || {}).flatMap(compId => {
             const dates = state.logs[compId]?.[id];
             if (!dates) return [];
-            return Object.keys(dates).map(date => remove(ref(db, `logs/${compId}/${id}/${date}`)));
+            return Object.keys(dates).map(date => remove(sref(`logs/${compId}/${id}/${date}`)));
           })
         );
         // Removing the player record is what drops them from every leaderboard.
@@ -3372,12 +3432,38 @@ function closeInfoModal() {
   focusElementSoon(infoModalReturnFocusEl, { preventScroll: true });
   infoModalReturnFocusEl = null;
 }
+// Store picker — shown whenever the URL has no valid store.
+function renderStorePicker() {
+  const list = document.getElementById("store-picker-list");
+  if (!list) return;
+  Object.entries(STORES).forEach(([id, name]) => {
+    const btn = makeBtn(name, "store-picker-card", () => {
+      window.location.href = `/${id}`;
+    });
+    list.appendChild(btn);
+  });
+  showScreen("store-picker");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  if (!STORE_ID) {
+    renderStorePicker();
+    return;
+  }
+
+  // Stamp the current store's name wherever the UI shows it.
+  const storeNameEls = ["boot-store-name", "pick-store-name", "header-store"];
+  storeNameEls.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = STORE_NAME;
+  });
+
   // Start Firebase listeners immediately — they load all data in parallel over
   // a single WebSocket connection and re-render whenever data changes.
   startListeners();
 
-  if (sessionStorage.getItem("adminUnlocked") === "1") state.adminUnlocked = true;
+  // Admin unlock is remembered per store so switching stores re-asks for the PIN.
+  if (sessionStorage.getItem("adminUnlocked") === STORE_ID) state.adminUnlocked = true;
 
   // Show the welcome screen right away; data arrives in the background.
   showScreen(state.currentScreen);
@@ -3651,9 +3737,9 @@ document.addEventListener("DOMContentLoaded", () => {
   pinSubmitBtn.classList.add("btn-ghost");
 
   pinSubmitBtn.onclick = () => {
-    if (pinInput.value.trim() === ADMIN_PIN) {
+    if (state.settings.adminPin && pinInput.value.trim() === state.settings.adminPin) {
       state.adminUnlocked = true;
-      sessionStorage.setItem("adminUnlocked", "1");
+      sessionStorage.setItem("adminUnlocked", STORE_ID);
       state.admin.showAllComps = false;
       state.admin.selectedPlayer = null;
       state.admin.selectedComp = state.currentComp;
@@ -3666,7 +3752,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   pinInput.addEventListener("input", () => {
     const value = pinInput.value;
-    const pinLength = ADMIN_PIN ? ADMIN_PIN.length : 7;
+    const pinLength = state.settings.adminPin ? state.settings.adminPin.length : 7;
     const isDigitsOnly = /^\d+$/.test(value);
     const isValidLength = value.length === pinLength;
     const isValid = isDigitsOnly && isValidLength;

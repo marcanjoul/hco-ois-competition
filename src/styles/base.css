@@ -3,9 +3,9 @@
   This file controls the shared foundation of the site.
 
   Website examples:
-  - The welcome screen with "Wiregrass OIS Competition" and "Get Started"
+  - The welcome screen with "OIS Competition" and "Get Started"
   - The top header that later shows the player name
-  - The bottom navigation buttons: "Maze", "Leaderboard", and "WIREGRASS HQ"
+  - The bottom navigation buttons: "Maze", "Leaderboard", and "MANAGER"
   - Global colors, fonts, spacing, and shadows
 */
 /* ────────────────────────────────────────────────────────────────────────────
@@ -293,7 +293,7 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 /* ── BOTTOM NAV ──
-   Example on the website: the bottom buttons "Maze", "Leaderboard", "WIREGRASS HQ".
+   Example on the website: the bottom buttons "Maze", "Leaderboard", "MANAGER".
 */
 .bottom-nav {
   position: fixed;
@@ -378,4 +378,77 @@ input[type="number"] { -moz-appearance: textfield; }
   letter-spacing: var(--type-heading-letter-spacing);
   color: var(--text);
   flex-shrink: 0;
+}
+
+/* ── Header store badge ──
+   Small always-visible label showing which store's data is on screen. */
+.header-store-badge {
+  margin-left: auto;
+  font-family: var(--type-label-family); font-weight: var(--type-label-weight);
+  font-size: var(--type-small-size);
+  letter-spacing: var(--type-label-letter-spacing);
+  text-transform: uppercase;
+  color: var(--text2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ── Store picker screen ──
+   Shown before the app when no store is selected on this device. */
+.store-picker-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: var(--space-6);
+  max-width: 360px;
+  margin: 0 auto;
+  width: 100%;
+  text-align: center;
+  gap: var(--space-2);
+}
+
+.store-picker-title {
+  font-family: var(--type-heading-family); font-weight: var(--type-heading-weight); font-stretch: var(--type-heading-stretch);
+  font-size: 23px;
+  letter-spacing: var(--type-heading-letter-spacing);
+  color: var(--text);
+}
+
+.store-picker-sub {
+  font-family: var(--type-body-family);
+  font-size: var(--type-body-size);
+  color: var(--text2);
+  margin-bottom: var(--space-4);
+}
+
+.store-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.store-picker-card {
+  width: 100%;
+  padding: var(--space-5) var(--space-4);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card, var(--shadow));
+  font-family: var(--type-subheading-family); font-weight: var(--type-subheading-weight);
+  font-size: var(--type-subheading-size);
+  letter-spacing: var(--type-subheading-letter-spacing);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.store-picker-card:hover,
+.store-picker-card:focus-visible {
+  border-color: var(--accent);
 }
