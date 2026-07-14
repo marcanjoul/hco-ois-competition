@@ -26,7 +26,7 @@ const STORE_NAME = STORE_ID ? STORES[STORE_ID] : "";
 
 // App-wide constants.
 // Example on the website: weekday labels and preview limits.
-const CROWN_ICON_URL = new URL("./assets/icons/crown-pixel-flaticon.svg", import.meta.url).href;
+const CROWN_SVG = `<svg class="board-avatar-crown-icon" viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="Top player crown"><path d="M3 7.5l4.6 3.8L12 4.6l4.4 6.7L21 7.5l-1.7 10H4.7zM4.9 19h14.2v1.8H4.9z"/></svg>`;
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const PREVIEW_COUNT = 5;
 
@@ -189,7 +189,7 @@ function getAvatarHtml(player, size = "", playerId = "") {
 function getBoardAvatarHtml(player, playerId, displayRank) {
   return `
     <div class="board-avatar-stack${displayRank === 1 ? " rank-1" : ""}">
-      ${displayRank === 1 ? `<div class="board-avatar-crown"><img class="board-avatar-crown-icon" src="${CROWN_ICON_URL}" alt="Top player crown" /></div>` : ""}
+      ${displayRank === 1 ? `<div class="board-avatar-crown">${CROWN_SVG}</div>` : ""}
       ${getAvatarHtml(player || { name: playerId }, "board", playerId)}
     </div>
   `;

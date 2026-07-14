@@ -1704,53 +1704,38 @@ body::after {
   width: 22px;
   height: 22px;
   flex: 0 0 22px;
-  image-rendering: pixelated;
-  filter: drop-shadow(2px 2px 0 #050816);
 }
 
 .nav-pixel-icon-maze {
-  border-radius: 50%;
-  background: conic-gradient(from 42deg, transparent 0 84deg, var(--power-pellet) 85deg 360deg);
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3 3 11h2.5v9.5h5.5V15h2v5.5h5.5V11H21z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3 3 11h2.5v9.5h5.5V15h2v5.5h5.5V11H21z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .nav-pixel-icon-board {
-  background:
-    linear-gradient(var(--ghost-pink), var(--ghost-pink)) 2px 9px / 5px 11px no-repeat,
-    linear-gradient(var(--power-pellet), var(--power-pellet)) 9px 4px / 5px 16px no-repeat,
-    linear-gradient(var(--maze-blue-bright), var(--maze-blue-bright)) 16px 12px / 5px 8px no-repeat;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 20v-8h4v8zm6 0V4h4v16zm6 0v-5h4v5z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 20v-8h4v8zm6 0V4h4v16zm6 0v-5h4v5z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .nav-pixel-icon-hq {
-  background:
-    linear-gradient(var(--maze-blue-bright), var(--maze-blue-bright)) 8px 2px / 6px 18px no-repeat,
-    linear-gradient(var(--maze-blue-bright), var(--maze-blue-bright)) 4px 6px / 14px 6px no-repeat,
-    linear-gradient(var(--ghost-orange), var(--ghost-orange)) 2px 15px / 18px 5px no-repeat;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a5 5 0 0 0-5 5v3H6a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V11a1 1 0 0 0-1-1h-1V7a5 5 0 0 0-5-5zm3 8H9V7a3 3 0 0 1 6 0z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a5 5 0 0 0-5 5v3H6a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V11a1 1 0 0 0-1-1h-1V7a5 5 0 0 0-5-5zm3 8H9V7a3 3 0 0 1 6 0z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
-.nav-btn.active .nav-pixel-icon {
-  filter:
-    drop-shadow(2px 2px 0 #050816)
-    drop-shadow(0 0 8px rgba(255, 79, 163, 0.46));
-}
-
-/* ── Custom CSS Pixel Art Icons ── */
+/* ── Icons (currentColor SVG masks) ── */
 .pixel-icon-info {
   display: block;
-  width: 23px;
+  width: 22px;
   height: 22px;
   margin: 0 auto;
-  image-rendering: pixelated;
-  filter: drop-shadow(2px 2px 0 #050816);
-  background:
-    linear-gradient(currentColor, currentColor) 10px 3px / 3px 3px no-repeat,
-    linear-gradient(currentColor, currentColor) 10px 8px / 3px 9px no-repeat,
-    linear-gradient(currentColor, currentColor) 8px 17px / 7px 2px no-repeat;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16z'/%3E%3Ccircle cx='12' cy='7' r='1.4'/%3E%3Cpath d='M11 10h2v7h-2z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16z'/%3E%3Ccircle cx='12' cy='7' r='1.4'/%3E%3Cpath d='M11 10h2v7h-2z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .pixel-icon-plus {
-  background:
-    linear-gradient(currentColor, currentColor) 6px 0px / 4px 16px no-repeat,
-    linear-gradient(currentColor, currentColor) 0px 6px / 16px 4px no-repeat !important;
   width: 16px;
   height: 16px;
   display: inline-block;
@@ -1758,23 +1743,18 @@ body::after {
   position: relative;
   top: -1px;
   margin-right: 8px;
-  image-rendering: pixelated;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 3h4v7h7v4h-7v7h-4v-7H3v-4h7z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 3h4v7h7v4h-7v7h-4v-7H3v-4h7z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .pixel-icon-play {
-  background:
-    linear-gradient(var(--accent), var(--accent)) 6px 4px / 2px 14px no-repeat,
-    linear-gradient(var(--accent), var(--accent)) 8px 5px / 2px 12px no-repeat,
-    linear-gradient(var(--accent), var(--accent)) 10px 6px / 2px 10px no-repeat,
-    linear-gradient(var(--accent), var(--accent)) 12px 7px / 2px 8px no-repeat,
-    linear-gradient(var(--accent), var(--accent)) 14px 8px / 2px 6px no-repeat,
-    linear-gradient(var(--accent), var(--accent)) 16px 9px / 2px 4px no-repeat,
-    linear-gradient(var(--accent), var(--accent)) 18px 10px / 2px 2px no-repeat;
   width: 22px;
   height: 22px;
   display: block;
-  image-rendering: pixelated;
-  filter: drop-shadow(2px 2px 0 #050816);
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 4v16l14-8z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 4v16l14-8z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .screen-top-bar {
@@ -1974,74 +1954,6 @@ body::after {
 
 .credits-section {
   border-top: 2px dashed var(--maze-blue) !important;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .nav-btn.active .nav-pixel-icon-maze {
-    animation: pac-chomp 0.42s steps(2) infinite;
-  }
-
-  .nav-btn.active .nav-pixel-icon-board {
-    animation: board-bars-bounce 0.72s steps(2) infinite;
-  }
-
-  .nav-btn.active .nav-pixel-icon-hq {
-    animation: hq-signal-pulse 0.78s steps(2) infinite;
-  }
-}
-
-@keyframes arcade-chase {
-  0% { transform: translateX(-4px); }
-  100% { transform: translateX(8px); }
-}
-
-@keyframes pac-chomp {
-  0%, 100% {
-    background: conic-gradient(from 42deg, transparent 0 84deg, var(--power-pellet) 85deg 360deg);
-  }
-  50% {
-    background: conic-gradient(from 20deg, transparent 0 40deg, var(--power-pellet) 41deg 360deg);
-  }
-}
-
-@keyframes board-bars-bounce {
-  0%, 100% {
-    background:
-      linear-gradient(var(--ghost-pink), var(--ghost-pink)) 2px 9px / 5px 11px no-repeat,
-      linear-gradient(var(--power-pellet), var(--power-pellet)) 9px 4px / 5px 16px no-repeat,
-      linear-gradient(var(--maze-blue-bright), var(--maze-blue-bright)) 16px 12px / 5px 8px no-repeat;
-    transform: translateY(0);
-  }
-  50% {
-    background:
-      linear-gradient(var(--ghost-pink), var(--ghost-pink)) 2px 5px / 5px 15px no-repeat,
-      linear-gradient(var(--power-pellet), var(--power-pellet)) 9px 10px / 5px 10px no-repeat,
-      linear-gradient(var(--maze-blue-bright), var(--maze-blue-bright)) 16px 3px / 5px 17px no-repeat;
-    transform: translateY(-2px);
-  }
-}
-
-@keyframes hq-signal-pulse {
-  0%, 100% {
-    background:
-      linear-gradient(var(--maze-blue-bright), var(--maze-blue-bright)) 8px 2px / 6px 18px no-repeat,
-      linear-gradient(var(--maze-blue-bright), var(--maze-blue-bright)) 4px 6px / 14px 6px no-repeat,
-      linear-gradient(var(--ghost-orange), var(--ghost-orange)) 2px 15px / 18px 5px no-repeat;
-    transform: translateY(0);
-    filter:
-      drop-shadow(2px 2px 0 #050816)
-      drop-shadow(0 0 6px rgba(71, 215, 255, 0.38));
-  }
-  50% {
-    background:
-      linear-gradient(var(--power-pellet), var(--power-pellet)) 8px 0 / 6px 20px no-repeat,
-      linear-gradient(var(--maze-blue-bright), var(--maze-blue-bright)) 2px 5px / 18px 6px no-repeat,
-      linear-gradient(var(--ghost-pink), var(--ghost-pink)) 0 14px / 22px 6px no-repeat;
-    transform: translateY(-2px);
-    filter:
-      drop-shadow(2px 2px 0 #050816)
-      drop-shadow(0 0 9px rgba(255, 216, 77, 0.42));
-  }
 }
 
 @media (max-width: 720px) {

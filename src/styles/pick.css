@@ -1185,14 +1185,6 @@ select.log-input:focus { background-color: var(--surface); }
   flex: 0 0 18px;
 }
 
-.nav-pixel-icon.pick-success-cta-icon {
-  filter:
-    drop-shadow(1px 0 0 rgba(6, 16, 43, 0.85))
-    drop-shadow(-1px 0 0 rgba(6, 16, 43, 0.85))
-    drop-shadow(0 1px 0 rgba(6, 16, 43, 0.85))
-    drop-shadow(0 -1px 0 rgba(6, 16, 43, 0.85));
-}
-
 /* ── GOAL BARS ──
    Example on the website: the progress bars inside the competition card.
 */
