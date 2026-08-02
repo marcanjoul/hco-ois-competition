@@ -746,8 +746,20 @@
     grid-template-columns: 1fr;
   }
 
+  /* First + last name won't fit beside the Add button on a phone —
+     let the button drop to its own full-width row. */
   .admin-new-row-top {
     gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .admin-new-row-top .log-input {
+    flex: 1 1 40%;
+    min-width: 0;
+  }
+
+  .admin-new-row-top #btn-add-player {
+    flex: 1 1 100%;
   }
 
   .admin-new-row-top .mini-btn {

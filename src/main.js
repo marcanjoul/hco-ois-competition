@@ -215,6 +215,21 @@ window.updateBtnState = function(inputId, btnId) {
   btn.classList.toggle("btn-ghost", !hasValue);
 };
 
+// Players are stored with firstName (required) + lastName (optional), plus a
+// derived `name` so every read site (leaderboards, logs, avatars) stays simple.
+// ponytail: `name` is written, not computed on read — one write, zero read changes.
+function buildPlayerName(firstName, lastName) {
+  return [String(firstName || "").trim(), String(lastName || "").trim()].filter(Boolean).join(" ");
+}
+
+// Legacy players only have `name`; split on the first space so the edit form
+// can still show them in two fields.
+function splitPlayerName(player) {
+  if (player?.firstName !== undefined) return { firstName: player.firstName || "", lastName: player.lastName || "" };
+  const parts = String(player?.name || "").trim().split(/\s+/);
+  return { firstName: parts.shift() || "", lastName: parts.join(" ") };
+}
+
 // ══════════════════════════════════════════════════════
 // Competition helpers
 // Example on the website: deciding which competition is active and whether it has ended.
@@ -2621,7 +2636,8 @@ function renderAdminPlayers(container) {
       <label class="admin-team-field admin-team-add-wrap">
         <span class="admin-team-field-label">Quick add</span>
         <div class="admin-new-row admin-new-row-top">
-          <input type="text" id="input-new-player" class="log-input admin-team-input" placeholder="Add a new player..." oninput="updateBtnState('input-new-player','btn-add-player')" />
+          <input type="text" id="input-new-player" class="log-input admin-team-input" placeholder="First name *" oninput="updateBtnState('input-new-player','btn-add-player')" />
+          <input type="text" id="input-new-player-last" class="log-input admin-team-input" placeholder="Last name" />
           <button class="comp-status-chip comp-status-edit btn-ghost" type="button" id="btn-add-player" disabled>Add</button>
         </div>
       </label>
@@ -2669,15 +2685,18 @@ function renderAdminPlayers(container) {
   // Render the list
   renderAdminPlayersList();
   document.getElementById("btn-add-player").onclick = async () => {
-    const name = document.getElementById("input-new-player").value.trim();
-    if (!name) return;
+    const firstName = document.getElementById("input-new-player").value.trim();
+    const lastName = document.getElementById("input-new-player-last").value.trim();
+    if (!firstName) return;
+    const name = buildPlayerName(firstName, lastName);
     if (findDuplicatePlayerName(name)) {
-      showToast(`We already have someone named ${name} — try adding a last name initial`);
+      showToast(`We already have someone named ${name} — try adding a last name`);
       return;
     }
     const id = `${slugify(name)}_${Date.now()}`;
-    await set(dbRef.player(id), { name, active: true });
+    await set(dbRef.player(id), { name, firstName, lastName: lastName || null, active: true });
     document.getElementById("input-new-player").value = "";
+    document.getElementById("input-new-player-last").value = "";
     updateBtnState("input-new-player", "btn-add-player");
     showToast(`${name} added!`);
   };
@@ -2711,7 +2730,7 @@ function openEditPlayerModal(playerId, player) {
   }
 
   const isCustomAvatar = player.avatar && player.avatar.startsWith("data:");
-  const originalName = player.name;
+  const { firstName: originalFirst, lastName: originalLast } = splitPlayerName(player);
   const originalAvatar = player.avatar || null;
   window.editPlayerAvatarData = undefined;
 
@@ -2732,8 +2751,13 @@ function openEditPlayerModal(playerId, player) {
       </div>
 
       <div class="admin-edit-player-section">
-        <label class="field-label">NAME</label>
-        <input type="text" id="edit-player-name" class="log-input" value="${escapeHtml(player.name)}" placeholder="Player name" autocomplete="off" />
+        <label class="field-label" for="edit-player-name">FIRST NAME *</label>
+        <input type="text" id="edit-player-name" class="log-input" value="${escapeHtml(originalFirst)}" placeholder="First name" autocomplete="off" />
+      </div>
+
+      <div class="admin-edit-player-section">
+        <label class="field-label" for="edit-player-last-name">LAST NAME</label>
+        <input type="text" id="edit-player-last-name" class="log-input" value="${escapeHtml(originalLast)}" placeholder="Last name (optional)" autocomplete="off" />
       </div>
 
       <div class="admin-btn-row">
@@ -2747,6 +2771,7 @@ function openEditPlayerModal(playerId, player) {
 
   const saveBtn = modal.querySelector("#player-save-btn");
   const nameInput = modal.querySelector("#edit-player-name");
+  const lastNameInput = modal.querySelector("#edit-player-last-name");
   const removeBtn = modal.querySelector("#edit-player-avatar-remove");
   const triggerBtn = modal.querySelector("#edit-player-avatar-trigger");
   const fileInput = modal.querySelector("#edit-player-avatar-input");
@@ -2756,12 +2781,14 @@ function openEditPlayerModal(playerId, player) {
   }
 
   function updateFormState() {
-    const currentName = nameInput.value.trim();
+    const currentFirst = nameInput.value.trim();
+    const currentLast = lastNameInput.value.trim();
+    const currentName = buildPlayerName(currentFirst, currentLast);
     const currentAvatar = getCurrentlySelectedAvatar();
 
-    const isNameChanged = (currentName !== originalName);
+    const isNameChanged = (currentFirst !== originalFirst || currentLast !== originalLast);
     const isAvatarChanged = (currentAvatar !== originalAvatar);
-    const hasChanges = (isNameChanged || isAvatarChanged) && currentName.length > 0;
+    const hasChanges = (isNameChanged || isAvatarChanged) && currentFirst.length > 0;
 
     saveBtn.disabled = !hasChanges;
 
@@ -2809,26 +2836,27 @@ function openEditPlayerModal(playerId, player) {
   }
 
   // Input name text changes
-  nameInput.oninput = () => {
-    updateFormState();
-  };
+  nameInput.oninput = () => updateFormState();
+  lastNameInput.oninput = () => updateFormState();
 
   // Save button
   saveBtn.onclick = async () => {
-    const newName = nameInput.value.trim();
-    if (!newName) { showToast("Enter a name"); return; }
+    const firstName = nameInput.value.trim();
+    const lastName = lastNameInput.value.trim();
+    if (!firstName) { showToast("Enter a first name"); return; }
+    const newName = buildPlayerName(firstName, lastName);
     if (findDuplicatePlayerName(newName, playerId)) {
-      showToast(`We already have someone named ${newName} — try adding a last name initial`);
+      showToast(`We already have someone named ${newName} — try adding a last name`);
       return;
     }
 
-    const updates = { name: newName };
+    const updates = { name: newName, firstName, lastName: lastName || null };
     if (window.editPlayerAvatarData !== undefined) {
       updates.avatar = window.editPlayerAvatarData || null;
     }
 
     await update(dbRef.player(playerId), updates);
-    showToast("Player updated ✓");
+    showToast("Player updated");
     closeEditPlayerModal();
 
     const updatedPlayer = state.players[playerId];
