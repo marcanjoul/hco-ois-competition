@@ -1979,6 +1979,15 @@ function openAdminPanel() {
   showScreen("admin");
 }
 
+// Same 24×24 currentColor SVGs as the rest of the app's icons. On mobile only
+// the icon shows until a tab is active — see responsive.css.
+const ADMIN_TAB_ICONS = {
+  competitions: `<path d="M6 3h12v2h3v3.5a4.5 4.5 0 0 1-4 4.47V14h-2v2.2l3 1.3V21H8v-3.5l3-1.3V14H9v-1.03a4.5 4.5 0 0 1-4-4.47V5h1zM6 7v1.5A2.5 2.5 0 0 0 8 10.9V7zm12 0h-2v3.9a2.5 2.5 0 0 0 2-2.4z"/>`,
+  players: `<path d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zm0 1.6c-3 0-6 1.5-6 3.9V20h12v-3.5c0-2.4-3-3.9-6-3.9zM17 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm4 9v-2.8c0-1.9-2-3.2-4.3-3.5 1.4 1 2.3 2.2 2.3 3.8V20z"/>`,
+  logs: `<path d="M5 2h14v20l-2.3-1.6L14.4 22l-2.4-1.6L9.6 22l-2.3-1.6L5 22zm3 5v2h8V7zm0 4v2h8v-2zm0 4v2h5v-2z"/>`,
+  settings: `<path d="M10.2 2h3.6l.5 2.6 1.7.7 2.2-1.5 2.5 2.5-1.5 2.2.7 1.7 2.6.5v3.6l-2.6.5-.7 1.7 1.5 2.2-2.5 2.5-2.2-1.5-1.7.7-.5 2.6h-3.6l-.5-2.6-1.7-.7-2.2 1.5-2.5-2.5 1.5-2.2-.7-1.7L2 13.8v-3.6l2.6-.5.7-1.7-1.5-2.2 2.5-2.5 2.2 1.5 1.7-.7zM12 8.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 0 0 0-6.8z"/>`,
+};
+
 function renderAdminTabBar() {
   const tabs = [
     { id: "competitions", label: "Competitions" },
@@ -1992,8 +2001,19 @@ function renderAdminTabBar() {
   tabs.forEach(t => {
     const btn = document.createElement("button");
     btn.className = `admin-tab-btn${state.admin.tab === t.id ? " active" : ""}`;
-    btn.textContent = t.label;
-    btn.onclick = () => { state.admin.tab = t.id; renderAdminTabBar(); renderAdminTab(); };
+    btn.innerHTML = `
+      <svg class="admin-tab-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${ADMIN_TAB_ICONS[t.id]}</svg>
+      <span class="admin-tab-label">${t.label}</span>
+    `;
+    btn.setAttribute("aria-label", t.label);
+    // Toggle the class instead of re-rendering the bar: rebuilt nodes start at
+    // their final state, so the label's open/close transition would never run.
+    btn.onclick = () => {
+      if (state.admin.tab === t.id) return;
+      state.admin.tab = t.id;
+      bar.querySelectorAll(".admin-tab-btn").forEach(b => b.classList.toggle("active", b === btn));
+      renderAdminTab();
+    };
     bar.appendChild(btn);
   });
 }
@@ -2623,6 +2643,7 @@ function renderAdminPlayersList() {
     `;
 
     const pastContent = document.createElement("div");
+    pastContent.className = "admin-past-players-content";
     pastContent.style.display = "none";
 
     // Same search the active roster has — past players pile up over time.

@@ -153,6 +153,10 @@
 }
 
 .admin-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: var(--space-3) var(--space-4);
   border-radius: 0;
   border: none;
@@ -177,26 +181,14 @@
   background: transparent;
 }
 
-@media (max-width: 640px) {
-  .admin-tab-bar {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-    padding: 12px 12px 12px;
-    overflow-x: visible;
-    align-items: stretch;
-  }
-
-  .admin-tab-btn {
-    width: 100%;
-    min-width: 0;
-    justify-content: center;
-    padding: 12px 8px;
-    font-size: 7px;
-    line-height: 1.15;
-    text-align: center;
-  }
+.admin-tab-icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
 }
+
+/* Mobile tab layout (icon-only until active) lives in responsive.css — it has
+   to outrank theme-arcade.css, which loads last. */
 
 .admin-tab-content {
   flex: 1;
@@ -246,6 +238,19 @@
 
 .admin-new-comp-section {
   margin-top: 14px;
+  margin-bottom: 8px;
+}
+
+/* Sits below the active-roster box — same breathing room as Quick add → Search. */
+.admin-past-players-section {
+  margin-top: 8px;
+}
+
+/* Toggle → search → list all get the same gap when expanded. */
+.admin-past-players-content {
+  padding-top: 8px;
+}
+.admin-past-players-content .admin-player-list-search-wrap {
   margin-bottom: 8px;
 }
 

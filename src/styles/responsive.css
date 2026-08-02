@@ -607,6 +607,69 @@
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
+   ADMIN — ICON TABS (ALL WIDTHS)
+   Inactive tabs are icon-only; the active one names itself. theme-arcade.css
+   loads last and sets tab padding/size with !important, so these are id-scoped
+   and match its !important where they need to win.
+   ──────────────────────────────────────────────────────────────────────────── */
+#screen-admin .admin-tab-bar {
+  display: flex;
+  align-items: stretch;
+  /* No flex gap between icon and label — the label owns its own margin so the
+     spacing can collapse with it. */
+  gap: 8px !important;
+}
+
+#screen-admin .admin-tab-btn {
+  flex: 0 0 auto;
+  flex-direction: row;
+  gap: 0;
+  width: auto;
+  min-width: 0;
+  padding: 12px 14px !important;
+}
+
+/* The label is always in the DOM and slides open from behind the icon —
+   `display` can't transition, so toggling it would snap. max-width does the
+   width reveal, opacity trails slightly behind so text never appears clipped. */
+#screen-admin .admin-tab-label {
+  display: inline-block;
+  max-width: 0;
+  margin-left: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transform: translateX(-4px);
+  transition:
+    max-width 240ms cubic-bezier(0.23, 1, 0.32, 1),
+    margin-left 240ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 240ms cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 140ms ease-out;
+}
+
+#screen-admin .admin-tab-btn.active .admin-tab-label {
+  max-width: 160px;
+  margin-left: 8px;
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0ms, 0ms, 0ms, 80ms;
+}
+
+#screen-admin .admin-tab-icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+/* Reduced motion: keep the reveal, drop the movement. */
+@media (prefers-reduced-motion: reduce) {
+  #screen-admin .admin-tab-label {
+    transition: opacity 140ms ease-out;
+    transform: none;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
    ADMIN — SMALLER TYPE ON MOBILE
    The <=720px block in theme-arcade.css scales type UP (body 15->20px,
    caption 13->16px) because the player-facing screens are glanceable at arm's
@@ -614,13 +677,64 @@
    ──────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 720px) {
   #screen-admin {
-    --type-body-size: 15px;
-    --type-caption-size: 13px;
-    --type-title-size: 15px;
-    --type-label-size: 11px;
-    --type-small-size: 12px;
+    --type-body-size: 13px;
+    --type-caption-size: 11px;
+    --type-title-size: 14px;
+    --type-label-size: 10px;
+    --type-small-size: 11px;
   }
 
-  #screen-admin .admin-tab-btn { font-size: 13px; }
-  #screen-admin .log-btn { font-size: 13px; }
+  /* Sizes hardcoded in px elsewhere, tuned for the player screens. */
+  /* Narrow screens: the active tab also stretches to fill the leftover room. */
+  #screen-admin .admin-tab-bar {
+    gap: 6px !important;
+    padding: 10px 12px !important;
+    overflow-x: visible;
+  }
+
+  #screen-admin .admin-tab-btn {
+    min-height: 46px;
+    font-size: 10px !important;
+    letter-spacing: 0.5px !important;
+    padding: 8px 10px !important;
+  }
+
+  #screen-admin .admin-tab-btn.active .admin-tab-label { margin-left: 6px; }
+  #screen-admin .log-btn { font-size: 12px; }
+  #screen-admin .collapsible-toggle,
+  #screen-admin .collapsible-toggle-cta { font-size: 11px !important; }
+  #screen-admin .admin-comp-item .admin-item-name { font-size: 15px; }
+  #screen-admin .admin-comp-item .del-btn { font-size: 12px; padding: 6px 10px; }
+  #screen-admin .admin-log-player-name { font-size: 14px; }
+  #screen-admin .comp-status-chip { font-size: 10px; }
+  #screen-admin .goal-day-input { font-size: 16px; }
+  #screen-admin .admin-day-total-value { font-size: 14px; }
+
+  /* 16px is the floor — below it iOS zooms the page on input focus. */
+  #screen-admin .log-input,
+  #screen-admin .admin-team-tools .admin-team-input {
+    font-size: 16px !important;
+    padding: 6px 8px !important;
+    min-height: 38px;
+  }
+
+  /* Spacing follows the type down. */
+  #screen-admin .admin-tab-content { padding: 10px; }
+  #screen-admin .goal-admin-block { padding: 10px; }
+  #screen-admin .admin-section-title { margin-bottom: 6px; }
+  #screen-admin .admin-item,
+  #screen-admin .admin-log-player-card,
+  #screen-admin .admin-batch-row,
+  #screen-admin .admin-log-player-toggle { padding: 6px 8px; }
+  #screen-admin .admin-log-player-section { gap: 6px; }
+  #screen-admin .admin-item-left { gap: 8px; }
+  #screen-admin .admin-day-total { padding: 6px; }
+  #screen-admin .admin-day-totals { margin-bottom: 10px; }
+  #screen-admin .admin-comp-pick-trigger,
+  #screen-admin .admin-comp-pick-btn { padding: 4px 8px; }
+  #screen-admin .avatar-small { width: 28px; height: 28px; font-size: 12px; }
+
+  /* Buttons shrink but stay thumb-sized. */
+  #screen-admin .log-btn,
+  #screen-admin .admin-action-delete { min-height: 40px; padding: 8px 12px; }
 }
