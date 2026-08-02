@@ -3163,8 +3163,7 @@ function refreshAdminDayView() {
       const inlineDetail = document.createElement("div");
       inlineDetail.className = "admin-log-inline-detail";
       wrap.appendChild(inlineDetail);
-      if (log) renderAdminLogEdit(id, compId, selectedDate, log, inlineDetail);
-      else renderAdminLogCreate(id, compId, selectedDate, inlineDetail);
+      renderAdminLogEdit(id, compId, selectedDate, log, inlineDetail);
     }
 
     return wrap;
@@ -3201,7 +3200,9 @@ function refreshAdminDayView() {
     };
     openSection.appendChild(openHeader);
 
-    // When expanded, the roster lives in one searchable, scrollable box.
+    // When expanded, the roster lives in one searchable, scrollable box where
+    // every player can be filled in at once — one save for the whole day
+    // instead of open → type → save → collapse, per person.
     if (state.admin.showUnloggedPlayers) {
       const box = document.createElement("div");
       box.className = "admin-player-list-box admin-log-other-box";
@@ -3216,7 +3217,55 @@ function refreshAdminDayView() {
       const openList = document.createElement("div");
       openList.className = "admin-log-player-list admin-log-other-list";
       box.appendChild(openList);
+
+      const saveAllBtn = document.createElement("button");
+      saveAllBtn.type = "button";
+      saveAllBtn.className = "log-btn btn-ghost admin-batch-save-btn";
+      saveAllBtn.disabled = true;
+      box.appendChild(saveAllBtn);
       openSection.appendChild(box);
+
+      // Typed-but-unsaved values, so filtering the list doesn't wipe them.
+      // Cleared whenever the whole day view rebuilds (save, day or comp change).
+      const drafts = {};
+      const draftFor = (id) => (drafts[id] ||= { sales: "", hours: "" });
+      const filledDrafts = () => Object.entries(drafts)
+        .filter(([, d]) => d.sales.trim() !== "" && d.hours.trim() !== "");
+
+      const updateSaveAllBtn = () => {
+        const count = filledDrafts().length;
+        saveAllBtn.disabled = count === 0;
+        saveAllBtn.classList.toggle("btn-ghost", count === 0);
+        saveAllBtn.textContent = count === 0 ? "ENTER OIS" : `ENTER OIS (${count})`;
+      };
+
+      const renderBatchRow = ({ id, player }) => {
+        const draft = draftFor(id);
+        const row = document.createElement("div");
+        row.className = "admin-batch-row";
+        row.innerHTML = `
+          <div class="admin-batch-name">${escapeHtml(player.name)}</div>
+          <div class="admin-batch-fields">
+            <label class="admin-batch-field">
+              <span class="field-label">SALES ($)</span>
+              <input type="number" class="log-input admin-batch-input" data-field="sales" placeholder="0.00" min="0" step="0.01" value="${escapeHtml(draft.sales)}" />
+            </label>
+            <label class="admin-batch-field">
+              <span class="field-label">HOURS</span>
+              <input type="number" class="log-input admin-batch-input" data-field="hours" placeholder="0.0" min="0" step="0.5" value="${escapeHtml(draft.hours)}" />
+            </label>
+          </div>
+        `;
+        row.querySelectorAll(".admin-batch-input").forEach(input => {
+          input.oninput = () => {
+            draft[input.dataset.field] = input.value;
+            row.classList.toggle("has-draft", draft.sales.trim() !== "" || draft.hours.trim() !== "");
+            updateSaveAllBtn();
+          };
+        });
+        row.classList.toggle("has-draft", draft.sales.trim() !== "" || draft.hours.trim() !== "");
+        return row;
+      };
 
       const renderOtherList = () => {
         const q = (state.admin.dayPlayerSearch || "").toLowerCase();
@@ -3225,10 +3274,37 @@ function refreshAdminDayView() {
         if (!matched.length) {
           openList.innerHTML = `<div class="admin-log-empty-state">No players found</div>`;
         } else {
-          matched.forEach(player => openList.appendChild(renderPlayerCard(player)));
+          matched.forEach(player => openList.appendChild(renderBatchRow(player)));
         }
       };
       renderOtherList();
+      updateSaveAllBtn();
+
+      saveAllBtn.onclick = async () => {
+        if (selectedDate > getTodayDate()) { showToast("Can't create OIS for future dates"); return; }
+        // A half-filled row is a mistake, not an intent — name it and stop.
+        const halfFilled = Object.entries(drafts).find(([, d]) =>
+          (d.sales.trim() === "") !== (d.hours.trim() === "")
+        );
+        if (halfFilled) {
+          showToast(`Enter both sales and hours for ${state.players[halfFilled[0]]?.name || "that player"}`);
+          return;
+        }
+        const entries = filledDrafts().map(([id, d]) => ({ id, sales: parseFloat(d.sales), hours: parseFloat(d.hours) }));
+        const invalid = entries.find(e => !(e.sales >= 0) || !(e.hours > 0));
+        if (invalid) {
+          showToast(`Check the numbers for ${state.players[invalid.id]?.name || "that player"}`);
+          return;
+        }
+        saveAllBtn.disabled = true;
+        // ponytail: one write per player — a handful of rows a day, not a bulk import.
+        await Promise.all(entries.map(e => set(dbRef.dateLog(compId, e.id, selectedDate), { sales: e.sales, hours: e.hours })));
+        entries.forEach(e => upsertLocalLog(compId, e.id, selectedDate, { sales: e.sales, hours: e.hours }));
+        state.admin.selectedPlayer = null;
+        showToast(entries.length === 1 ? "OIS Entered" : `${entries.length} OIS entries saved`);
+        refreshAdminDayView();
+        if (entries.some(e => e.id === state.currentUser)) { renderDash(); renderBoard(); renderAllTime(); }
+      };
 
       playerList.appendChild(openSection);
 
@@ -3262,45 +3338,6 @@ async function confirmAndDeleteAdminLog(playerId, compId, date) {
   showToast("Order deleted");
   refreshAdminDayView();
   if (state.currentUser === playerId) { renderDash(); renderBoard(); renderAllTime(); }
-}
-
-function renderAdminLogCreate(playerId, compId, date, target = null) {
-  const detail = target || document.getElementById("admin-logs-detail");
-  if (!detail) return;
-  const d = new Date(date + "T00:00:00");
-  const dayName = DAYS[d.getDay()];
-  detail.innerHTML = `
-    <div class="admin-log-header">
-      <div class="admin-log-header-info">
-      </div>
-    </div>
-    <div class="log-fields admin-log-form-fields">
-      <div class="log-field-wrap"><label class="field-label">SALES ($)</label><input type="number" id="admin-create-sales" class="log-input" placeholder="0.00" min="0" step="0.01" /></div>
-      <div class="log-field-wrap"><label class="field-label">HOURS</label><input type="number" id="admin-create-hours" class="log-input" placeholder="0.0" min="0" step="0.5" /></div>
-    </div>
-    <button class="log-btn btn-ghost admin-log-form-submit" id="admin-create-log-btn" disabled><span class="pixel-icon-plus"></span>ENTER OIS</button>
-  `;
-  const s = detail.querySelector("#admin-create-sales");
-  const h = detail.querySelector("#admin-create-hours");
-  const checkReady = () => {
-    const ready = s.value.trim() !== "" && h.value.trim() !== "";
-    const btn = detail.querySelector("#admin-create-log-btn");
-    if (btn) { btn.disabled = !ready; btn.classList.toggle("btn-ghost", !ready); }
-  };
-  s.oninput = checkReady; h.oninput = checkReady;
-  detail.querySelector("#admin-create-log-btn").onclick = async () => {
-    const sales = parseFloat(s.value);
-    const hours = parseFloat(h.value);
-    if (isNaN(sales) || sales < 0) { showToast("Enter sales amount"); return; }
-    if (isNaN(hours) || hours <= 0) { showToast("Enter hours worked"); return; }
-    if (date > getTodayDate()) { showToast("Can't create OIS for future dates"); return; }
-    await set(dbRef.dateLog(compId, playerId, date), { sales, hours });
-    upsertLocalLog(compId, playerId, date, { sales, hours });
-    state.admin.selectedPlayer = null;
-    showToast("OIS Entered");
-    refreshAdminDayView();
-    if (state.currentUser === playerId) { renderDash(); renderBoard(); renderAllTime(); }
-  };
 }
 
 function renderAdminLogEdit(playerId, compId, date, log, target = null) {
