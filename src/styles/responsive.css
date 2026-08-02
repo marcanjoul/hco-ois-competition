@@ -605,3 +605,22 @@
     font-size: 20px;
   }
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+   ADMIN — SMALLER TYPE ON MOBILE
+   The <=720px block in theme-arcade.css scales type UP (body 15->20px,
+   caption 13->16px) because the player-facing screens are glanceable at arm's
+   length. Admin is a dense management screen, so it opts back out.
+   ──────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  #screen-admin {
+    --type-body-size: 15px;
+    --type-caption-size: 13px;
+    --type-title-size: 15px;
+    --type-label-size: 11px;
+    --type-small-size: 12px;
+  }
+
+  #screen-admin .admin-tab-btn { font-size: 13px; }
+  #screen-admin .log-btn { font-size: 13px; }
+}
