@@ -478,6 +478,12 @@
   font-weight: 720;
 }
 
+/* Confirms can open on top of another modal (e.g. "Remove Photo" from the
+   player edit popup), so it has to outrank the z-index: 100 overlays. */
+.app-confirm-modal {
+  z-index: 110;
+}
+
 .app-confirm-content {
   max-width: 420px;
 }

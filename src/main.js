@@ -2533,9 +2533,14 @@ function renderAdminPlayersList() {
       delBtn.className = "comp-status-chip comp-status-delete";
       delBtn.textContent = "✕";
       delBtn.onclick = async () => {
-        if (confirm(`Remove "${player.name}"? They'll move to Past Players.`)) {
-          await update(dbRef.player(id), { inactive: true, removedAt: Date.now() });
-        }
+        const confirmed = await showAppConfirm({
+          title: "Remove Player",
+          message: `Remove "${player.name}"? They'll move to Past Players and can be restored.`,
+          confirmLabel: "Remove",
+          confirmClassName: "log-btn admin-danger-btn",
+        });
+        if (!confirmed) return;
+        await update(dbRef.player(id), { inactive: true, removedAt: Date.now() });
       };
       leftPart.appendChild(delBtn);
 
@@ -2827,11 +2832,16 @@ function openEditPlayerModal(playerId, player) {
 
   // Remove avatar button
   if (removeBtn) {
-    removeBtn.onclick = () => {
-      if (confirm("Remove avatar for this player?")) {
-        window.editPlayerAvatarData = null;
-        updateFormState();
-      }
+    removeBtn.onclick = async () => {
+      const confirmed = await showAppConfirm({
+        title: "Remove Photo",
+        message: "Remove this player's photo? It's not gone until you save changes.",
+        confirmLabel: "Remove",
+        confirmClassName: "log-btn admin-danger-btn",
+      });
+      if (!confirmed) return;
+      window.editPlayerAvatarData = null;
+      updateFormState();
     };
   }
 
@@ -2910,6 +2920,7 @@ function renderAdminLogs(container) {
       <div class="admin-log-player-title">PLAYERS FOR THE DAY</div>
     </div>
     <div class="admin-log-player-status" id="admin-logs-player-status"></div>
+    <div class="admin-day-totals" id="admin-logs-day-totals"></div>
     <div class="admin-log-player-list" id="admin-logs-player-list"></div>
   `;
   container.appendChild(playerDayWrap);
@@ -3005,6 +3016,7 @@ function refreshAdminDayView() {
   const dayContainer = document.getElementById("admin-logs-days");
   const playerList = document.getElementById("admin-logs-player-list");
   const playerStatus = document.getElementById("admin-logs-player-status");
+  const dayTotals = document.getElementById("admin-logs-day-totals");
   if (!dayContainer || !playerList || !playerStatus) return;
 
   const comp = state.competitions[compId];
@@ -3012,6 +3024,7 @@ function refreshAdminDayView() {
     dayContainer.innerHTML = "";
     playerList.innerHTML = `<div class="admin-log-empty-state">Select a competition to manage its logs</div>`;
     playerStatus.textContent = "";
+    if (dayTotals) dayTotals.innerHTML = "";
     return;
   }
 
@@ -3094,6 +3107,19 @@ function refreshAdminDayView() {
     .filter(({ player, log }) => !player.inactive || log);
   const loggedCount = playersForDay.filter(p => p.log).length;
   playerStatus.textContent = loggedCount === 0 ? "No players entered an OIS" : "";
+
+  // Team totals for the selected day, so the manager can sanity-check the
+  // numbers without adding them up by hand.
+  if (dayTotals) {
+    const dayLogs = playersForDay.filter(p => p.log).map(p => p.log);
+    const daySales = dayLogs.reduce((sum, log) => sum + (log.sales || 0), 0);
+    const dayHours = dayLogs.reduce((sum, log) => sum + (log.hours || 0), 0);
+    const daySph = dayHours > 0 ? daySales / dayHours : 0;
+    dayTotals.innerHTML = dayLogs.length === 0 ? "" : `
+      <div class="admin-day-total"><span class="admin-day-total-label">Sales</span><span class="admin-day-total-value">$${daySales.toFixed(2)}</span></div>
+      <div class="admin-day-total"><span class="admin-day-total-label">$/HR</span><span class="admin-day-total-value">$${daySph.toFixed(2)}</span></div>
+    `;
+  }
 
   if (!playersForDay.length) {
     playerList.innerHTML = `<div class="admin-log-empty-state">No players found for this day</div>`;

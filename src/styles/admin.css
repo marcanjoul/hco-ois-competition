@@ -865,6 +865,41 @@
   color: var(--text2);
 }
 
+/* Team totals for the selected day, above the player list. Empty when nobody
+   has entered an OIS yet, so :empty keeps the margin from collapsing weirdly. */
+.admin-day-totals {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.admin-day-totals:empty { display: none; }
+
+.admin-day-total {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.admin-day-total-label {
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text2);
+}
+
+.admin-day-total-value {
+  font-weight: 810;
+  color: var(--text);
+}
+
 .admin-log-player-section {
   display: flex;
   flex-direction: column;
