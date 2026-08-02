@@ -2449,6 +2449,7 @@ function renderCompEditForm(compId, comp, editForm, { onDone = null } = {}) {
     </div>
     <div class="admin-edit-actions">
       <button class="log-btn btn-ghost" id="admin-save-comp-edit-btn" disabled>SAVE ALL CHANGES</button>
+      ${isCompEnded(comp) ? "" : `<button class="log-btn admin-danger-btn" id="admin-end-comp-btn" type="button">END NOW</button>`}
       <button class="log-btn btn-secondary" id="admin-export-comp-btn" type="button">EXPORT CSV</button>
       <button class="log-btn admin-danger-btn" id="admin-delete-comp-edit-btn">DELETE COMPETITION</button>
     </div>
@@ -2474,6 +2475,24 @@ function renderCompEditForm(compId, comp, editForm, { onDone = null } = {}) {
   updateDateRangeUI();
 
   editForm.querySelector("#admin-export-comp-btn").onclick = () => exportCompCsv(compId, comp);
+
+  // Ends the competition today rather than making the manager hand-edit the
+  // end date. An upcoming comp has no days to keep, so it ends on its own start.
+  editForm.querySelector("#admin-end-comp-btn")?.addEventListener("click", async () => {
+    const today = getTodayDate();
+    const endDate = comp.startDate && comp.startDate > today ? comp.startDate : today;
+    const confirmed = await showAppConfirm({
+      title: "End Competition",
+      message: `End "${comp.name}" on ${formatDate(endDate)}? No one can log orders after that day.`,
+      confirmLabel: "End Competition",
+      confirmClassName: "log-btn admin-danger-btn",
+    });
+    if (!confirmed) return;
+    await update(dbRef.comp(compId), { endDate });
+    showToast("Competition ended");
+    onDone?.();
+  });
+
 
   saveAllBtn = editForm.querySelector("#admin-save-comp-edit-btn");
   saveAllBtn.onclick = async () => {
