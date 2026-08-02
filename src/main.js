@@ -2077,20 +2077,19 @@ function renderAdminComps(container) {
       ${ended ? `<span class="comp-status-chip comp-status-ended">Ended</span>` : ""}
       ${upcoming ? `<span class="comp-status-chip comp-status-upcoming">Upcoming</span>` : ""}
     `;
-    if (!ended) {
-      const editBtn = document.createElement("button");
-      editBtn.type = "button";
-      editBtn.className = "comp-status-chip comp-status-edit";
-      editBtn.textContent = state.admin.editingCompId === id ? "Close" : "Edit";
-      editBtn.onclick = () => {
-        state.admin.editingCompId = state.admin.editingCompId === id ? null : id;
-        renderAdminTab();
-        requestAnimationFrame(() => {
-          document.getElementById(`admin-comp-row-${id}`)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        });
-      };
-      leftPart.appendChild(editBtn);
-    }
+    // Past (ended) competitions are editable too — same form, plus a read-only winner.
+    const editBtn = document.createElement("button");
+    editBtn.type = "button";
+    editBtn.className = "comp-status-chip comp-status-edit";
+    editBtn.textContent = state.admin.editingCompId === id ? "Close" : "Edit";
+    editBtn.onclick = () => {
+      state.admin.editingCompId = state.admin.editingCompId === id ? null : id;
+      renderAdminTab();
+      requestAnimationFrame(() => {
+        document.getElementById(`admin-comp-row-${id}`)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    };
+    leftPart.appendChild(editBtn);
     item.appendChild(leftPart);
 
     compWrap.id = `admin-comp-row-${id}`;
