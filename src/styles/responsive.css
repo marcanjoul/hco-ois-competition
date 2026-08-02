@@ -615,6 +615,8 @@
 #screen-admin .admin-tab-bar {
   display: flex;
   align-items: stretch;
+  /* Icon-only tabs are narrow — centred so the row doesn't hug the left edge. */
+  justify-content: center;
   /* No flex gap between icon and label — the label owns its own margin so the
      spacing can collapse with it. */
   gap: 8px !important;
@@ -687,6 +689,7 @@
   /* Sizes hardcoded in px elsewhere, tuned for the player screens. */
   /* Narrow screens: the active tab also stretches to fill the leftover room. */
   #screen-admin .admin-tab-bar {
+    justify-content: center;
     gap: 6px !important;
     padding: 10px 12px !important;
     overflow-x: visible;

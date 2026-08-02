@@ -60,6 +60,8 @@ let state = {
   endedRevealDismissedCompId: null,
   admin: {
     showAllComps: false,
+    showActivePlayers: false,
+    showPastPlayers: false,
     showUnloggedPlayers: false,
     selectedPlayer: null,
     selectedComp: null,
@@ -2635,16 +2637,18 @@ function renderAdminPlayersList() {
 
     const pastToggle = document.createElement("button");
     pastToggle.type = "button";
-    pastToggle.className = "admin-log-player-toggle";
+    // Open by default and remembered in state, so a background data update
+    // doesn't snap it shut while the manager is working in it.
+    pastToggle.className = `admin-log-player-toggle${state.admin.showPastPlayers ? " expanded" : ""}`;
     pastToggle.innerHTML = `
       <span class="admin-log-player-section-title">Past Players</span>
       <span class="admin-log-player-toggle-meta">${allPast.length} total</span>
-      <span class="admin-log-player-toggle-icon">▼</span>
+      <span class="admin-log-player-toggle-icon">${state.admin.showPastPlayers ? "▲" : "▼"}</span>
     `;
 
     const pastContent = document.createElement("div");
     pastContent.className = "admin-past-players-content";
-    pastContent.style.display = "none";
+    pastContent.style.display = state.admin.showPastPlayers ? "block" : "none";
 
     // Same search the active roster has — past players pile up over time.
     const pastSearchWrap = document.createElement("div");
@@ -2652,7 +2656,7 @@ function renderAdminPlayersList() {
     pastSearchWrap.innerHTML = `
       <label class="admin-team-field admin-team-search-wrap">
         <div class="admin-team-input-shell">
-          <input type="text" id="admin-past-player-search" class="log-input admin-team-input" placeholder="Search..." />
+          <input type="text" id="admin-past-player-search" class="log-input admin-team-input search-input" placeholder="Search..." />
         </div>
       </label>
     `;
@@ -2731,10 +2735,10 @@ function renderAdminPlayersList() {
     };
 
     pastToggle.onclick = () => {
-      const isHidden = pastContent.style.display === "none";
-      pastContent.style.display = isHidden ? "block" : "none";
-      pastToggle.classList.toggle("expanded", isHidden);
-      pastToggle.querySelector(".admin-log-player-toggle-icon").textContent = isHidden ? "▲" : "▼";
+      state.admin.showPastPlayers = !state.admin.showPastPlayers;
+      pastContent.style.display = state.admin.showPastPlayers ? "block" : "none";
+      pastToggle.classList.toggle("expanded", state.admin.showPastPlayers);
+      pastToggle.querySelector(".admin-log-player-toggle-icon").textContent = state.admin.showPastPlayers ? "▲" : "▼";
     };
   }
 }
@@ -2743,33 +2747,72 @@ function renderAdminPlayers(container) {
   const playerCount = Object.values(state.players || {}).filter(e => !e.inactive).length;
   container.innerHTML = `<div class="admin-section-title">MANAGE PLAYERS (${playerCount})</div>`;
 
-  const toolsWrap = document.createElement("div");
-  toolsWrap.className = "admin-team-tools";
-  toolsWrap.innerHTML = `
-    <div class="admin-team-controls">
-      <label class="admin-team-field admin-team-add-wrap">
-        <span class="admin-team-field-label">Quick add</span>
-        <div class="admin-new-row admin-new-row-top">
-          <input type="text" id="input-new-player" class="log-input admin-team-input" placeholder="First name *" oninput="updateBtnState('input-new-player','btn-add-player')" />
-          <input type="text" id="input-new-player-last" class="log-input admin-team-input" placeholder="Last name" />
-          <button class="comp-status-chip comp-status-edit btn-ghost" type="button" id="btn-add-player" disabled>Add</button>
-        </div>
-      </label>
+  // Same shape as the Insert OIS card and New Competition: a CTA that opens a
+  // labelled form, rather than a cramped inline row.
+  const addSection = document.createElement("div");
+  addSection.className = "goal-admin-block admin-new-comp-section";
+
+  const addToggle = document.createElement("button");
+  addToggle.type = "button";
+  addToggle.className = "collapsible-toggle collapsible-toggle-cta";
+  addToggle.innerHTML = `<span class="ois-trigger-icon pixel-icon-plus" aria-hidden="true"></span> NEW PLAYER`;
+
+  const addForm = document.createElement("div");
+  addForm.className = "admin-new-comp-form";
+  addForm.style.display = "none";
+  addForm.innerHTML = `
+    <div class="admin-form-field-offset">
+      <label class="field-label" for="input-new-player">FIRST NAME *</label>
+      <input type="text" id="input-new-player" class="log-input admin-form-input-spaced" placeholder="e.g. Ana" autocomplete="off" oninput="updateBtnState('input-new-player','btn-add-player')" />
     </div>
+    <div class="admin-form-field-offset">
+      <label class="field-label" for="input-new-player-last">LAST NAME</label>
+      <input type="text" id="input-new-player-last" class="log-input admin-form-input-spaced" placeholder="Optional" autocomplete="off" />
+    </div>
+    <button class="log-btn btn-ghost" type="button" id="btn-add-player" disabled><span class="pixel-icon-plus"></span>ADD PLAYER</button>
   `;
-  container.appendChild(toolsWrap);
+
+  addSection.appendChild(addToggle);
+  addSection.appendChild(addForm);
+  container.appendChild(addSection);
+
+  addToggle.onclick = () => {
+    const isHidden = addForm.style.display === "none";
+    addForm.style.display = isHidden ? "block" : "none";
+    addToggle.classList.toggle("expanded", isHidden);
+    if (isHidden) focusElementSoon(document.getElementById("input-new-player"), { preventScroll: true });
+  };
+
+  // Active roster collapses the same way Past Players does, so the two sections
+  // read as a matching pair. Starts open — it's the list you came here for.
+  const activeSection = document.createElement("div");
+  activeSection.className = "goal-admin-block admin-active-players-section";
+
+  const activeToggle = document.createElement("button");
+  activeToggle.type = "button";
+  activeToggle.className = `admin-log-player-toggle${state.admin.showActivePlayers ? " expanded" : ""}`;
+  activeToggle.innerHTML = `
+    <span class="admin-log-player-section-title">Active Players</span>
+    <span class="admin-log-player-toggle-meta">${playerCount} total</span>
+    <span class="admin-log-player-toggle-icon">${state.admin.showActivePlayers ? "▲" : "▼"}</span>
+  `;
+  activeSection.appendChild(activeToggle);
+
+  const activeContent = document.createElement("div");
+  activeContent.className = "admin-active-players-content";
+  activeContent.style.display = state.admin.showActivePlayers ? "block" : "none";
 
   // Bordered player list box that encompasses both Search and list container
   const listBox = document.createElement("div");
   listBox.className = "admin-player-list-box";
-  
+
   // Search wrap
   const searchWrap = document.createElement("div");
   searchWrap.className = "admin-player-list-search-wrap";
   searchWrap.innerHTML = `
     <label class="admin-team-field admin-team-search-wrap">
       <div class="admin-team-input-shell">
-        <input type="text" id="admin-player-search" class="log-input admin-team-input" placeholder="Search..." />
+        <input type="text" id="admin-player-search" class="log-input admin-team-input search-input" placeholder="Search..." />
       </div>
     </label>
   `;
@@ -2780,7 +2823,16 @@ function renderAdminPlayers(container) {
   listContainer.id = "admin-player-list-container";
   listBox.appendChild(listContainer);
 
-  container.appendChild(listBox);
+  activeContent.appendChild(listBox);
+  activeSection.appendChild(activeContent);
+  container.appendChild(activeSection);
+
+  activeToggle.onclick = () => {
+    state.admin.showActivePlayers = !state.admin.showActivePlayers;
+    activeContent.style.display = state.admin.showActivePlayers ? "block" : "none";
+    activeToggle.classList.toggle("expanded", state.admin.showActivePlayers);
+    activeToggle.querySelector(".admin-log-player-toggle-icon").textContent = state.admin.showActivePlayers ? "▲" : "▼";
+  };
 
   // Past Players renders below, outside the active-roster box.
   const pastContainer = document.createElement("div");
@@ -3320,7 +3372,7 @@ function refreshAdminDayView() {
         <div class="admin-player-list-search-wrap">
           <label class="admin-team-field">
             <div class="admin-team-input-shell">
-              <input type="text" id="admin-day-player-search" class="log-input admin-team-input" placeholder="Search..." />
+              <input type="text" id="admin-day-player-search" class="log-input admin-team-input search-input" placeholder="Search..." />
             </div>
           </label>
         </div>`;

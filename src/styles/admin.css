@@ -247,11 +247,20 @@
 }
 
 /* Toggle → search → list all get the same gap when expanded. */
+.admin-active-players-content,
 .admin-past-players-content {
   padding-top: 8px;
 }
 .admin-past-players-content .admin-player-list-search-wrap {
   margin-bottom: 8px;
+}
+
+/* Five rows tall (52px row + 8px gap), then it scrolls. */
+.admin-active-players-content .admin-player-list,
+.admin-past-players-content .admin-player-list {
+  max-height: 292px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .admin-recently-deleted-section {
