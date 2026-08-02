@@ -2335,6 +2335,36 @@ function renderAdminComps(container) {
   }
 }
 
+// Final standings for one competition as a CSV download — same ranking (and
+// tie handling) the leaderboard shows.
+function exportCompCsv(compId, comp) {
+  const players = getRankedPlayers(compId);
+  if (!players.length) { showToast("No orders to export yet"); return; }
+
+  const compLogs = state.logs[compId] || {};
+  const cell = (value) => `"${String(value).replace(/"/g, '""')}"`;
+  const rows = [
+    ["Rank", "Player", "Sales", "Hours", "$/HR", "Days Logged"],
+    ...players.map((player, i) => [
+      getLeaderboardDisplayRank(players, i),
+      player.name,
+      player.total.toFixed(2),
+      player.hours.toFixed(1),
+      player.sph.toFixed(2),
+      Object.keys(compLogs[player.id] || {}).length,
+    ]),
+  ];
+  const csv = rows.map(row => row.map(cell).join(",")).join("\r\n");
+
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${slugify(comp.name || "competition")}-results.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+  showToast("Results exported");
+}
+
 function renderCompEditForm(compId, comp, editForm, { onDone = null } = {}) {
   editForm.innerHTML = "";
   const changedFields = {};
@@ -2419,6 +2449,7 @@ function renderCompEditForm(compId, comp, editForm, { onDone = null } = {}) {
     </div>
     <div class="admin-edit-actions">
       <button class="log-btn btn-ghost" id="admin-save-comp-edit-btn" disabled>SAVE ALL CHANGES</button>
+      <button class="log-btn btn-secondary" id="admin-export-comp-btn" type="button">EXPORT CSV</button>
       <button class="log-btn admin-danger-btn" id="admin-delete-comp-edit-btn">DELETE COMPETITION</button>
     </div>
   `;
@@ -2441,6 +2472,8 @@ function renderCompEditForm(compId, comp, editForm, { onDone = null } = {}) {
   startDateInput?.addEventListener("input", updateDateRangeUI);
   endDateInput?.addEventListener("input", updateDateRangeUI);
   updateDateRangeUI();
+
+  editForm.querySelector("#admin-export-comp-btn").onclick = () => exportCompCsv(compId, comp);
 
   saveAllBtn = editForm.querySelector("#admin-save-comp-edit-btn");
   saveAllBtn.onclick = async () => {
