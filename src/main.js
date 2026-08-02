@@ -3024,7 +3024,9 @@ function refreshAdminDayView() {
     .map(([id, player]) => {
       const log = (state.logs[compId] || {})[id]?.[selectedDate] || null;
       return { id, player, log };
-    });
+    })
+    // ponytail: hide past players unless they already have a log to edit that day
+    .filter(({ player, log }) => !player.inactive || log);
   const loggedCount = playersForDay.filter(p => p.log).length;
   playerStatus.textContent = loggedCount === 0 ? "No players entered an OIS today" : "";
 
