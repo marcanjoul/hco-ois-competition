@@ -1629,7 +1629,7 @@ function renderBoard() {
         <div class="board-empty-icon board-empty-pixel-icon"><span class="pixel-icon-play" style="margin: 0 auto;"></span></div>
         <div class="board-empty-title">COMPETITION STARTS NOW</div>
         <div class="board-empty-sub">Be the first to insert an OIS and claim the top spot!</div>
-        <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()"><span class="pixel-icon-plus"></span>LOG AN ORDER</button>
+        <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()"><span class="pixel-icon-plus"></span>INSERT AN OIS</button>
       </div>
     `;
     return;
@@ -1642,7 +1642,7 @@ function renderBoard() {
         <div class="board-empty-icon board-empty-pixel-icon"><span class="pixel-icon-play" style="margin: 0 auto;"></span></div>
         <div class="board-empty-title">NO ORDERS YET</div>
         <div class="board-empty-sub">The scoreboard is empty. Log your first OIS and lead the pack!</div>
-        <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()"><span class="pixel-icon-plus"></span>LOG AN ORDER</button>
+        <button class="board-empty-cta" onclick="document.getElementById('nav-home').click()"><span class="pixel-icon-plus"></span>INSERT AN OIS</button>
       </div>
     `;
     return;
