@@ -66,6 +66,7 @@ let state = {
     editingCompId: null,
     selectedDate: getTodayDate(),
     playerSearch: "",
+    pastPlayerSearch: "",
     dayPlayerSearch: "",
     tab: "competitions",
   },
@@ -272,15 +273,17 @@ function getLatestEndedCompId() {
   return entries[0]?.[0] || null;
 }
 
+// Stamps the winner on every ended competition. Recomputes rather than only
+// filling a blank: a manager fixing an order after the comp ended can change
+// who actually won, and the crown has to follow. Writes only on a real change,
+// so the resulting snapshot doesn't loop back into another write.
 async function checkAndAutoCloseComps() {
   for (const [id, comp] of Object.entries(state.competitions)) {
-    if (!comp.winner && isCompEnded(comp)) {
-      const ranked = getRankedPlayers(id);
-      const winner = ranked.find(p => p.hours > 0);
-      await update(dbRef.comp(id), {
-        winner: winner ? winner.id : null,
-      });
-    }
+    if (!isCompEnded(comp)) continue;
+    const ranked = getRankedPlayers(id);
+    const winnerId = ranked.find(p => p.hours > 0)?.id ?? null;
+    if ((comp.winner ?? null) === winnerId) continue;
+    await update(dbRef.comp(id), { winner: winnerId });
   }
 }
 
@@ -391,6 +394,8 @@ function startListeners() {
 
   onValue(dbRef.logs(), snap => {
     state.logs = snap.val() || {};
+    // Orders can be corrected after a competition ends — re-check the winner.
+    if (_dataReady) checkAndAutoCloseComps();
     scheduleRender("pick", renderPickScreen);
     if (state.currentUser) {
       scheduleRender("dash", renderDash);
@@ -2620,9 +2625,30 @@ function renderAdminPlayersList() {
     const pastContent = document.createElement("div");
     pastContent.style.display = "none";
 
+    // Same search the active roster has — past players pile up over time.
+    const pastSearchWrap = document.createElement("div");
+    pastSearchWrap.className = "admin-player-list-search-wrap";
+    pastSearchWrap.innerHTML = `
+      <label class="admin-team-field admin-team-search-wrap">
+        <div class="admin-team-input-shell">
+          <input type="text" id="admin-past-player-search" class="log-input admin-team-input" placeholder="Search..." />
+        </div>
+      </label>
+    `;
+
     const pastList = document.createElement("div");
     pastList.className = "admin-list admin-player-list";
-    allPast.forEach(([id, player]) => {
+    const renderPastRows = () => {
+      const pastSearch = (state.admin.pastPlayerSearch || "").toLowerCase();
+      const matched = pastSearch
+        ? allPast.filter(([, player]) => player.name.toLowerCase().includes(pastSearch))
+        : allPast;
+      pastList.innerHTML = "";
+      if (!matched.length) {
+        pastList.innerHTML = `<div class="ui-empty-state admin-list-empty-state">No players found</div>`;
+        return;
+      }
+      matched.forEach(([id, player]) => {
       const item = document.createElement("div");
       item.className = "admin-item admin-player-item";
 
@@ -2665,13 +2691,23 @@ function renderAdminPlayersList() {
       }));
       item.appendChild(rightPart);
 
-      pastList.appendChild(item);
-    });
+        pastList.appendChild(item);
+      });
+    };
+    renderPastRows();
 
+    pastContent.appendChild(pastSearchWrap);
     pastContent.appendChild(pastList);
     pastSection.appendChild(pastToggle);
     pastSection.appendChild(pastContent);
     (pastContainer || listContainer).appendChild(pastSection);
+
+    const pastSearchInput = pastSearchWrap.querySelector("#admin-past-player-search");
+    pastSearchInput.value = state.admin.pastPlayerSearch || "";
+    pastSearchInput.oninput = (e) => {
+      state.admin.pastPlayerSearch = e.target.value;
+      renderPastRows();
+    };
 
     pastToggle.onclick = () => {
       const isHidden = pastContent.style.display === "none";
@@ -3089,6 +3125,7 @@ function refreshAdminDayView() {
   state.admin.selectedDate = clampCompetitionDate(state.admin.selectedDate);
   const week = getWeekForDate(state.admin.selectedDate);
 
+
   dayContainer.innerHTML = `<button class="week-nav-btn" id="admin-prev-week-btn">←</button>`;
 
   week.days.forEach(dayInfo => {
@@ -3384,10 +3421,22 @@ async function confirmAndDeleteAdminLog(playerId, compId, date) {
   });
   if (!confirmed) return;
 
+  const deleted = { ...(state.logs[compId]?.[playerId]?.[date] || {}) };
   await remove(dbRef.dateLog(compId, playerId, date));
   removeLocalLog(compId, playerId, date);
   state.admin.selectedPlayer = null;
-  showToast("Order deleted");
+  // Orders have no Recently Deleted like competitions do, so the only safety
+  // net is putting the numbers straight back.
+  showToast("Order deleted", 6000, {
+    label: "Undo",
+    onClick: async () => {
+      await set(dbRef.dateLog(compId, playerId, date), { sales: deleted.sales || 0, hours: deleted.hours || 0 });
+      upsertLocalLog(compId, playerId, date, { sales: deleted.sales || 0, hours: deleted.hours || 0 });
+      showToast("Order restored");
+      refreshAdminDayView();
+      if (state.currentUser === playerId) { renderDash(); renderBoard(); renderAllTime(); }
+    },
+  });
   refreshAdminDayView();
   if (state.currentUser === playerId) { renderDash(); renderBoard(); renderAllTime(); }
 }
@@ -3427,15 +3476,31 @@ function renderAdminLogEdit(playerId, compId, date, log, target = null) {
 // ══════════════════════════════════════════════════════
 
 let toastTimer;
-function showToast(msg, duration = 2200) {
+// `action` adds one button to the toast (e.g. Undo). Tapping it dismisses the
+// toast and runs the callback.
+function showToast(msg, duration = 2200, action = null) {
   const toast = document.getElementById("toast");
   toast.textContent = msg;
   toast.classList.remove("hidden", "toast-exit");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
+  toast.classList.toggle("toast-with-action", !!action);
+  const dismiss = () => {
     toast.classList.add("toast-exit");
     setTimeout(() => toast.classList.add("hidden"), 200);
-  }, duration);
+  };
+  if (action) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "toast-action";
+    btn.textContent = action.label;
+    btn.onclick = () => {
+      clearTimeout(toastTimer);
+      dismiss();
+      action.onClick();
+    };
+    toast.appendChild(btn);
+  }
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(dismiss, duration);
 }
 
 function showAppConfirm({

@@ -88,6 +88,28 @@
 .toast.hidden { display: none; }
 .toast.toast-exit { animation: toast-out 0.2s ease forwards; }
 
+/* Toasts carrying an action button (e.g. Undo) lay text and button side by side. */
+.toast.toast-with-action {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.toast-action {
+  flex: none;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 810;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.toast-action:hover { filter: brightness(1.1); }
+
 @keyframes toast-in {
   from { opacity: 0; transform: translateX(-50%) translateY(12px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
