@@ -1057,8 +1057,85 @@
   font-weight: 630;
 }
 
+/* Competition picker in admin Orders: a dropdown listing three competitions at
+   a time, scrolling within for the rest. */
 .admin-logs-comp-picker {
+  position: relative;
   margin-bottom: var(--space-4);
+  /* One row: 40px content + 2px borders + 2×4px padding = 48px. */
+  --comp-pick-row: 48px;
+}
+
+.admin-comp-pick-trigger,
+.admin-comp-pick-btn {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--comp-pick-row);
+  padding: var(--space-1) var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--type-label-family);
+  font-size: var(--type-label-size);
+  font-weight: var(--type-label-weight);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.admin-comp-pick-name { flex: 1; min-width: 0; text-align: left; }
+
+.admin-comp-pick-caret { flex: none; font-size: 0.7em; color: var(--text2); }
+.admin-comp-pick-trigger[aria-expanded="true"] .admin-comp-pick-caret { transform: rotate(180deg); }
+
+.admin-comp-pick-trigger { box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); }
+.admin-comp-pick-trigger[aria-expanded="true"] { border-color: var(--accent); }
+
+.admin-comp-pick-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + var(--space-1));
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px;
+  /* Exactly three rows visible (rows + the 2px gaps and padding around them);
+     the rest scroll. */
+  max-height: calc(var(--comp-pick-row) * 3 + 8px);
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  /* The menu floats over the day/player rows — blur plus a deep shadow keeps
+     the two layers from reading as one. */
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.55), 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* display:flex above beats the UA [hidden] rule, so restate it. */
+.admin-comp-pick-menu[hidden] { display: none; }
+
+.admin-comp-pick-menu .admin-comp-pick-btn {
+  flex: none;
+  border: 1px solid transparent;
+  border-radius: 0;
+  color: var(--text2);
+  /* Rows sit a shade off the menu so the 2px gaps read as separation. */
+  background: var(--surface2);
+}
+
+.admin-comp-pick-btn:hover { color: var(--text); background: rgba(43, 109, 255, 0.08); }
+
+.admin-comp-pick-menu .admin-comp-pick-btn.active {
+  color: var(--text);
+  background: rgba(43, 109, 255, 0.18);
+  border-color: var(--accent);
 }
 
 /* Admin day buttons

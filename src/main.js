@@ -2891,12 +2891,8 @@ function renderAdminLogs(container) {
   container.appendChild(compLabel);
 
   const compWrap = document.createElement("div");
-  compWrap.className = "board-comp-picker admin-logs-comp-picker";
-  compWrap.innerHTML = `
-    <button class="board-comp-arrow" id="admin-logs-comp-prev" type="button" aria-label="Previous competition">←</button>
-    <span class="board-comp-name" id="admin-logs-comp-name"></span>
-    <button class="board-comp-arrow" id="admin-logs-comp-next" type="button" aria-label="Next competition">→</button>
-  `;
+  compWrap.className = "admin-logs-comp-picker";
+  compWrap.id = "admin-logs-comp-picker";
   container.appendChild(compWrap);
   renderAdminLogsCompPicker();
 
@@ -2921,45 +2917,87 @@ function renderAdminLogs(container) {
   refreshAdminDayView();
 }
 
+// Dropdown of competitions — picking is explicit, so a manager can't arrow past
+// the one they meant and edit the wrong competition's orders. The list shows
+// three at a time and scrolls for the rest (height capped in admin.css).
 function renderAdminLogsCompPicker() {
-  const nameEl = document.getElementById("admin-logs-comp-name");
-  const prevBtn = document.getElementById("admin-logs-comp-prev");
-  const nextBtn = document.getElementById("admin-logs-comp-next");
-  if (!nameEl || !prevBtn || !nextBtn) return;
+  const picker = document.getElementById("admin-logs-comp-picker");
+  if (!picker) return;
+  picker.innerHTML = "";
 
+  // Newest first: the competition being managed is almost always the latest one.
   const sortedComps = Object.entries(state.competitions)
-    .sort(([, a], [, b]) => (a.startDate || "").localeCompare(b.startDate || "") || (a.createdAt || 0) - (b.createdAt || 0));
+    .sort(([, a], [, b]) => (b.startDate || "").localeCompare(a.startDate || "") || (b.createdAt || 0) - (a.createdAt || 0));
 
   if (sortedComps.length === 0) {
-    nameEl.textContent = "No competitions";
-    prevBtn.style.visibility = "hidden";
-    nextBtn.style.visibility = "hidden";
+    picker.innerHTML = `<div class="admin-log-empty-state">No competitions yet</div>`;
     return;
   }
 
-  let index = sortedComps.findIndex(([id]) => id === state.admin.selectedComp);
-  if (index === -1) index = sortedComps.length - 1;
-  const [activeId, activeComp] = sortedComps[index];
-  state.admin.selectedComp = activeId;
-  nameEl.textContent = activeComp.name;
+  if (!sortedComps.some(([id]) => id === state.admin.selectedComp)) {
+    state.admin.selectedComp = sortedComps[0][0];
+  }
 
-  prevBtn.style.visibility = index > 0 ? "visible" : "hidden";
-  nextBtn.style.visibility = index < sortedComps.length - 1 ? "visible" : "hidden";
+  const statusChip = (comp) => (
+    isCompEnded(comp) ? `<span class="comp-status-chip comp-status-ended">Ended</span>`
+      : isCompUpcoming(comp) ? `<span class="comp-status-chip comp-status-upcoming">Upcoming</span>`
+      : ""
+  );
 
-  prevBtn.onclick = () => {
-    if (index <= 0) return;
-    state.admin.selectedComp = sortedComps[index - 1][0];
-    state.admin.selectedPlayer = null;
-    renderAdminLogsCompPicker();
-    refreshAdminDayView();
+  const selected = state.competitions[state.admin.selectedComp];
+  const trigger = document.createElement("button");
+  trigger.type = "button";
+  trigger.className = "admin-comp-pick-trigger";
+  trigger.setAttribute("aria-expanded", "false");
+  trigger.innerHTML = `
+    <span class="admin-comp-pick-name">${escapeHtml(selected?.name || "Select a competition")}</span>
+    ${statusChip(selected)}
+    <span class="admin-comp-pick-caret" aria-hidden="true">▼</span>
+  `;
+
+  const menu = document.createElement("div");
+  menu.className = "admin-comp-pick-menu";
+  menu.hidden = true;
+
+  const closeMenu = () => {
+    menu.hidden = true;
+    trigger.setAttribute("aria-expanded", "false");
+    document.removeEventListener("click", onOutsideClick);
   };
-  nextBtn.onclick = () => {
-    if (index >= sortedComps.length - 1) return;
-    state.admin.selectedComp = sortedComps[index + 1][0];
-    state.admin.selectedPlayer = null;
-    renderAdminLogsCompPicker();
-    refreshAdminDayView();
+  const onOutsideClick = (e) => { if (!picker.contains(e.target)) closeMenu(); };
+
+  trigger.onclick = (e) => {
+    e.stopPropagation();
+    if (menu.hidden) {
+      menu.hidden = false;
+      trigger.setAttribute("aria-expanded", "true");
+      document.addEventListener("click", onOutsideClick);
+      menu.querySelector(".admin-comp-pick-btn.active")?.scrollIntoView({ block: "nearest" });
+    } else {
+      closeMenu();
+    }
   };
+
+  sortedComps.forEach(([id, comp]) => {
+    const isActive = state.admin.selectedComp === id;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `admin-comp-pick-btn${isActive ? " active" : ""}`;
+    btn.setAttribute("aria-pressed", String(isActive));
+    btn.innerHTML = `<span class="admin-comp-pick-name">${escapeHtml(comp.name)}</span>${statusChip(comp)}`;
+    btn.onclick = () => {
+      closeMenu();
+      if (state.admin.selectedComp === id) return;
+      state.admin.selectedComp = id;
+      state.admin.selectedPlayer = null;
+      renderAdminLogsCompPicker();
+      refreshAdminDayView();
+    };
+    menu.appendChild(btn);
+  });
+
+  picker.appendChild(trigger);
+  picker.appendChild(menu);
 }
 
 function refreshAdminDayView() {
@@ -3055,7 +3093,7 @@ function refreshAdminDayView() {
     // ponytail: hide past players unless they already have a log to edit that day
     .filter(({ player, log }) => !player.inactive || log);
   const loggedCount = playersForDay.filter(p => p.log).length;
-  playerStatus.textContent = loggedCount === 0 ? "No players entered an OIS today" : "";
+  playerStatus.textContent = loggedCount === 0 ? "No players entered an OIS" : "";
 
   if (!playersForDay.length) {
     playerList.innerHTML = `<div class="admin-log-empty-state">No players found for this day</div>`;
